@@ -50,8 +50,8 @@ public class RecordActivityHelper implements PasswdFileActivity
     {
         if (success) {
             itsActivity.setResult(PasswdSafeApp.RESULT_MODIFIED);
+            itsActivity.finish();
         }
-        itsActivity.finish();
     }
 
     public final File getFile()
