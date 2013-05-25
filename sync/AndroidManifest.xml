@@ -38,12 +38,7 @@
             </intent-filter>
             <meta-data
                 android:name="com.google.android.apps.drive.APP_ID"
-                android:value="id=XXX-7ckont6g0pt1l2koarumlee2mgqllnr4" />
-            <!--
-            <meta-data
-                android:name="com.google.android.apps.drive.APP_ID"
-                android:value="id=XXX-dlusebuosvkokis6olqvtr1s3f44s5jk" />
-                -->
+                android:value="id=XXX" />
         </activity>
 
         <provider
