@@ -143,7 +143,13 @@
     <string name="new_policy">New Policy</string>
     <string name="next">Next</string>
     <string name="no_alias_chosen">No alias chosen</string>
-    <string name="no_files_select_to_open">No Files - Select action to open or create a new file</string>
+    <string name="no_files_select_to_open">
+        No Files - Select action to open or create a new file
+        \n\nIf files are not showing in the documents screen, use the menu to
+        show internal storage or the SD card.
+        \n\nThe previous file chooser can be enabled by opening the menu and
+        selecting Preferences, File Settings, and the legacy file chooser.
+    </string>
     <string name="no_shortcut_chosen">No shortcut chosen</string>
     <string name="no_policies">No Policies</string>
     <string name="no_records">No Records</string>
@@ -265,6 +271,9 @@
     </string>
 
     <string name="release_notes">
+        &lt;b&gt;5.3.1&lt;/b&gt; - Add help for enabling internal storage for
+        the new chooser or enabling the legacy chooser.
+        \n\n
         &lt;b&gt;5.3.0&lt;/b&gt; - Add slider to reveal parts of a password. On
         Kitkat and higher, use the built-in document manager to open or create
         files.
