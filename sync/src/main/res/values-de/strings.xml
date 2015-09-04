@@ -21,6 +21,7 @@
     <string name="gdrive_state_pending_auth">Warten auf Authenfizierung mit Google-Konto. Klicken Sie auf die Anmelde-Aufforderung in den Mitteilungen.</string>
     <string name="google_acct_not_available">Google-Konto nicht verfügbar</string>
     <string name="incremental_sync">Inkrementelle Synchronisierung</string>
+    <string name="interval">Intervall</string>
     <string name="logs">Log</string>
     <string name="manual">Manuell</string>
     <string name="network_connected">Netzwerk verbunden</string>
@@ -59,9 +60,10 @@
     <string name="sync_oper_rmfile_local">Gelöschte lokale Datei: %1$s</string>
     <string name="sync_oper_rmfile_remote">Gelöschte entfernte Datei: %1$s</string>
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
-    <string name="use_https">Verwenden Sie HTTPS</string>
 
     <string name="release_notes">
+        &lt;b&gt;2.3.2&lt;/b&gt; - In Konfiguration des URL für ownCloud
+        \n\n
         &lt;b&gt;2.3.1&lt;/b&gt; - Fix Onedrive sync von Dateien und
         Ordnern mit Leerzeichen
         \n\n

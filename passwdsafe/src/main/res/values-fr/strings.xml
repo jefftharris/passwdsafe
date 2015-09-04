@@ -56,7 +56,6 @@
     <string name="done">Valider</string>
     <string name="duplicate_entry">Dupliquer l\'entrée</string>
     <string name="duplicate_name">Dupliquer le nom</string>
-    <string name="edit">Modifier</string>
     <string name="edit_item">Modifier %s</string>
     <string name="edit_policy">Modifier la stratégie</string>
     <string name="email">Email</string>
@@ -70,7 +69,6 @@
     <string name="enabled">Activé</string>
     <string name="enter_net_group">Entrer un nouveau groupe:</string>
     <string name="erase_all_expiration_notifications">Effacer toutes les notifications d\'expiration de mot de passe et les fichiers logs</string>
-    <string name="error_msg">&lt;i&gt;%1$s&lt;/i&gt;</string>
     <string name="expiration">Expiration</string>
     <string name="expiration_notifications">Notifications d\'Expiration</string>
     <string name="expiration_notifications_warning">L\'activation des notifications d\'expiration implique que PasswdSafe stocke les informations d\'expiration dans un fichier (titre de l\'entrée, le groupe et la date d\'expiration). Ces informations sont stockées en clair sur l\'appareil, mais aucun mot de passe n\'y est stockés.</string>
@@ -250,7 +248,6 @@
     <string name="unprotect_group">Déprotéger les groupes</string>
     <string name="unprotect_to_modify">Déprotéger les modifications</string>
     <string name="up">Haut</string>
-    <string name="url">URL</string>
     <string name="username">Nom utilisateur</string>
     <string name="use_count">Utiliser compteur</string>
     <string name="use_digits">Utiliser chiffres</string>

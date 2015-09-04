@@ -21,6 +21,7 @@
     <string name="gdrive_state_pending_auth">Authentification de compte Google est en cours. Sélectionnez la notification de la demande de session.</string>
     <string name="google_acct_not_available">Compte Google n\'est pas disponible</string>
     <string name="incremental_sync">Synchronisation incrémental</string>
+    <string name="interval">Intervalle</string>
     <string name="logs">Archives</string>
     <string name="manual">Manuel</string>
     <string name="network_connected">Réseau connecté</string>
@@ -60,9 +61,11 @@
     <string name="sync_oper_rmfile_local">Supprimer le fichier local: %1$s</string>
     <string name="sync_oper_rmfile_remote">Supprimer le fichier distant: %1$s</string>
     <string name="updating_account">Mise à jour compte&#8230;</string>
-    <string name="use_https">Utilisez HTTPS</string>
-    
+
     <string name="release_notes">
+        &lt;b&gt;2.3.2&lt;/b&gt; - Ajouter la configuration de l\'URL de
+        ownCloud
+        \n\n
         &lt;b&gt;2.3.1&lt;/b&gt; - Fixer synchronisation OneDrive des fichiers
         et des dossiers avec des espaces
         \n\n

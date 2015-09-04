@@ -21,6 +21,7 @@
     <string name="gdrive_state_pending_auth">Google account authentication is pending.  Select the sign-in request notification.</string>
     <string name="google_acct_not_available">Google account not available</string>
     <string name="incremental_sync">Incremental sync</string>
+    <string name="interval">Interval</string>
     <string name="logs">Logs</string>
     <string name="manual">Manual</string>
     <string name="network_connected">Network connected</string>
@@ -58,9 +59,10 @@
     <string name="sync_oper_rmfile_local">Remove local file: %1$s</string>
     <string name="sync_oper_rmfile_remote">Remove remote file: %1$s</string>
     <string name="updating_account">Updating account&#8230;</string>
-    <string name="use_https">Use HTTPS</string>
 
     <string name="release_notes">
+        &lt;b&gt;2.3.2&lt;/b&gt; - Add configuration of ownCloud URL
+        \n\n
         &lt;b&gt;2.3.1&lt;/b&gt; - Fix OneDrive sync of files and folders with
         spaces
         \n\n
