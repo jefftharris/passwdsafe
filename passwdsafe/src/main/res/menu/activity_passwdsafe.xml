@@ -10,6 +10,12 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.jefftharris.passwdsafe.PasswdSafeActivity">
 
+    <item android:id="@+id/menu_search"
+          android:title="@string/search"
+          android:icon="@android:drawable/ic_menu_search"
+          app:showAsAction="ifRoom|collapseActionView"
+          app:actionViewClass="android.support.v7.widget.SearchView" />
+
     <item android:id="@+id/menu_add"
           android:title="@string/add_record"
           android:icon="@drawable/ic_action_add"

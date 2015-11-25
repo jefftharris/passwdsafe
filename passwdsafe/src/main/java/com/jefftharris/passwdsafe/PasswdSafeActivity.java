@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,19 +17,24 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
+import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -49,6 +55,7 @@ import java.util.List;
  */
 public class PasswdSafeActivity extends AppCompatActivity
         implements AbstractPasswdSafeRecordFragment.Listener,
+                   View.OnClickListener,
                    ConfirmPromptDialog.Listener,
                    PasswdSafeChangePasswordFragment.Listener,
                    PasswdSafeEditRecordFragment.Listener,
@@ -58,7 +65,6 @@ public class PasswdSafeActivity extends AppCompatActivity
                    PasswdSafeNewFileFragment.Listener,
                    PasswdSafeRecordFragment.Listener
 {
-    // TODO: search
     // TODO: 3rdparty file open
     // TODO: policies
     // TODO: expired passwords
@@ -129,6 +135,15 @@ public class PasswdSafeActivity extends AppCompatActivity
     /** The location in the password file */
     private PasswdLocation itsLocation = new PasswdLocation();
 
+    /** Panel for displaying the query */
+    private View itsQueryPanel;
+
+    /** The query label */
+    private TextView itsQuery;
+
+    /** The search menu item */
+    private MenuItem itsSearchItem = null;
+
     /** Fragment managing the behaviors, interactions and presentation of the
      * navigation drawer. */
     private PasswdSafeNavDrawerFragment itsNavDrawerFrag;
@@ -150,6 +165,7 @@ public class PasswdSafeActivity extends AppCompatActivity
 
     private static final String FRAG_DATA = "data";
     private static final String STATE_TITLE = "title";
+    private static final String STATE_QUERY = "query";
 
     private static final String CONFIRM_ARG_ACTION = "action";
     private static final String CONFIRM_ARG_LOCATION = "location";
@@ -168,6 +184,11 @@ public class PasswdSafeActivity extends AppCompatActivity
                 getSupportFragmentManager().findFragmentById(
                         R.id.navigation_drawer);
         itsNavDrawerFrag.setUp((DrawerLayout)findViewById(R.id.drawer_layout));
+
+        itsQueryPanel = findViewById(R.id.query_panel);
+        View queryClearBtn = findViewById(R.id.query_clear_btn);
+        queryClearBtn.setOnClickListener(this);
+        itsQuery = (TextView)findViewById(R.id.query);
 
         FragmentManager fragMgr = getSupportFragmentManager();
         itsFileDataFrag = (PasswdSafeFileDataFragment)
@@ -205,6 +226,7 @@ public class PasswdSafeActivity extends AppCompatActivity
             }
         } else {
             itsTitle = savedInstanceState.getCharSequence(STATE_TITLE);
+            itsQuery.setText(savedInstanceState.getCharSequence(STATE_QUERY));
         }
     }
 
@@ -213,10 +235,16 @@ public class PasswdSafeActivity extends AppCompatActivity
     {
         super.onNewIntent(intent);
 
-        FragmentManager fragMgr = getSupportFragmentManager();
-        Fragment frag = fragMgr.findFragmentById(R.id.content);
-        if (frag instanceof PasswdSafeOpenFileFragment) {
-            ((PasswdSafeOpenFileFragment)frag).onNewIntent(intent);
+        PasswdSafeUtil.dbginfo(TAG, "onNewIntent: %s", intent);
+
+        if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
+            setRecordFilter(intent.getStringExtra(SearchManager.QUERY));
+        } else {
+            FragmentManager fragMgr = getSupportFragmentManager();
+            Fragment frag = fragMgr.findFragmentById(R.id.content);
+            if (frag instanceof PasswdSafeOpenFileFragment) {
+                ((PasswdSafeOpenFileFragment)frag).onNewIntent(intent);
+            }
         }
     }
 
@@ -232,6 +260,7 @@ public class PasswdSafeActivity extends AppCompatActivity
     {
         super.onSaveInstanceState(outState);
         outState.putCharSequence(STATE_TITLE, itsTitle);
+        outState.putCharSequence(STATE_QUERY, itsQuery.getText());
     }
 
     @Override
@@ -260,6 +289,18 @@ public class PasswdSafeActivity extends AppCompatActivity
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.activity_passwdsafe, menu);
             restoreActionBar();
+
+            // Get the SearchView and set the searchable configuration
+            SearchManager searchManager =
+                    (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+            itsSearchItem = menu.findItem(R.id.menu_search);
+            MenuItemCompat.collapseActionView(itsSearchItem);
+            SearchView searchView = (SearchView)
+                    MenuItemCompat.getActionView(itsSearchItem);
+            searchView.setSearchableInfo(
+                    searchManager.getSearchableInfo(getComponentName()));
+            searchView.setIconifiedByDefault(true);
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -274,10 +315,12 @@ public class PasswdSafeActivity extends AppCompatActivity
         boolean viewCanAdd = false;
         boolean viewHasFileOps = false;
         boolean viewHasFileChangePassword = false;
+        boolean viewHasSearch = false;
         boolean viewHasClose = true;
         switch (itsCurrViewMode) {
         case VIEW_LIST: {
             viewCanAdd = fileEditable;
+            viewHasSearch = true;
             if (itsLocation.getGroups().isEmpty() && fileEditable) {
                 viewHasFileOps = true;
                 viewHasFileChangePassword = !fileData.isYubikey();
@@ -318,6 +361,11 @@ public class PasswdSafeActivity extends AppCompatActivity
         item = menu.findItem(R.id.menu_file_change_password);
         if (item != null) {
             item.setEnabled(viewHasFileChangePassword);
+        }
+
+        item = menu.findItem(R.id.menu_search);
+        if (item != null) {
+            item.setVisible(viewHasSearch);
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -389,6 +437,22 @@ public class PasswdSafeActivity extends AppCompatActivity
                 PasswdSafeActivity.super.onBackPressed();
             }
         });
+    }
+
+    /**
+     * Called when a view has been clicked.
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v)
+    {
+        switch (v.getId()) {
+        case R.id.query_clear_btn: {
+            setRecordFilter(null);
+            break;
+        }
+        }
     }
 
     /**
@@ -490,10 +554,6 @@ public class PasswdSafeActivity extends AppCompatActivity
             boolean incGroups)
     {
         PasswdFileDataView dataView = itsFileDataFrag.getFileDataView();
-        if (dataView == null) {
-            return null;
-        }
-
         return dataView.getRecords(incRecords, incGroups,
                                    getApplicationContext());
     }
@@ -683,6 +743,35 @@ public class PasswdSafeActivity extends AppCompatActivity
     }
 
     /**
+     * Set the record filter from a query string
+     */
+    private void setRecordFilter(String query)
+    {
+        PasswdFileDataView fileView = itsFileDataFrag.getFileDataView();
+        try {
+            fileView.setRecordFilter(query, this);
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            Log.e(TAG, msg, e);
+            PasswdSafeUtil.showErrorMsg(msg, this);
+            return;
+        }
+        PasswdRecordFilter filter = fileView.getRecordFilter();
+        if (filter != null) {
+            itsQuery.setText(getString(R.string.query_label,
+                                       filter.toString(this)));
+        }
+        GuiUtils.setVisible(itsQueryPanel, (filter != null));
+
+        if ((itsSearchItem != null) && (filter != null) &&
+            MenuItemCompat.isActionViewExpanded(itsSearchItem)) {
+            MenuItemCompat.collapseActionView(itsSearchItem);
+        }
+
+        changeOpenView(new PasswdLocation(), true);
+    }
+
+    /**
      * Change the initial view
      */
     private void changeInitialView()
@@ -843,12 +932,15 @@ public class PasswdSafeActivity extends AppCompatActivity
         PasswdSafeUtil.dbginfo(TAG, "doUpdateView: mode: %s, loc: %s",
                                mode, location);
 
+        PasswdFileDataView fileDataView = itsFileDataFrag.getFileDataView();
+
         itsLocation = location;
-        itsFileDataFrag.getFileDataView().setCurrGroups(itsLocation.getGroups());
+        fileDataView.setCurrGroups(itsLocation.getGroups());
         itsCurrViewMode = mode;
 
         FragmentManager fragMgr = getSupportFragmentManager();
         boolean showLeftList = false;
+        boolean queryVisibleForMode = false;
         PasswdSafeNavDrawerFragment.NavMode drawerMode =
                 PasswdSafeNavDrawerFragment.NavMode.INIT;
         boolean fileTimeoutPaused = true;
@@ -861,6 +953,7 @@ public class PasswdSafeActivity extends AppCompatActivity
         }
         case VIEW_LIST: {
             showLeftList = true;
+            queryVisibleForMode = true;
             drawerMode = PasswdSafeNavDrawerFragment.NavMode.FILE_OPEN;
             fileTimeoutPaused = false;
             itsTitle = null;
@@ -925,6 +1018,10 @@ public class PasswdSafeActivity extends AppCompatActivity
         itsNavDrawerFrag.setMode(drawerMode);
         restoreActionBar();
         itsTimeoutReceiver.updateTimeout(fileTimeoutPaused);
+
+        GuiUtils.setVisible(itsQueryPanel,
+                            queryVisibleForMode &&
+                            (fileDataView.getRecordFilter() != null));
 
         if (itsIsTwoPane) {
             PasswdSafeListFragment.Mode listMode = itsLocation.isRecord() ?
