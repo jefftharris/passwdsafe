@@ -50,6 +50,7 @@ import org.pwsafe.lib.file.PwsRecord;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,6 +63,7 @@ public class PasswdSafe extends AppCompatActivity
                    ConfirmPromptDialog.Listener,
                    PasswdSafeChangePasswordFragment.Listener,
                    PasswdSafeEditRecordFragment.Listener,
+                   PasswdSafeExpirationsFragment.Listener,
                    PasswdSafeListFragment.Listener,
                    PasswdSafeOpenFileFragment.Listener,
                    PasswdSafePolicyListFragment.Listener,
@@ -70,14 +72,11 @@ public class PasswdSafe extends AppCompatActivity
                    PasswdSafeRecordFragment.Listener,
                    PreferencesFragment.Listener
 {
-    // TODO: expired passwords
-    // TODO: expiry notifications
+    // TODO: Show frame for expired entries on file open
     // TODO: recheck all icons (remove use of all built-in ones)
-    // TODO: autobackup
     // TODO: shortcuts
-    // TODO: check manifest errors regarding icons
     // TODO: storage access framework support (want to keep support?)
-    // TODO: recent files db (should that be carried forward? only if SAF kept)
+    // TODO: recent files db (should that be carried forward? only if SAF kept??)
 
     private enum ChangeMode
     {
@@ -99,6 +98,8 @@ public class PasswdSafe extends AppCompatActivity
         CHANGE_PASSWORD,
         /** View about info */
         VIEW_ABOUT,
+        /** View expiration info */
+        VIEW_EXPIRATION,
         /** View policy list */
         VIEW_POLICY_LIST,
         /** View preferences */
@@ -123,6 +124,8 @@ public class PasswdSafe extends AppCompatActivity
         CHANGING_PASSWORD,
         /** Viewing about info */
         VIEW_ABOUT,
+        /** Viewing expiration info */
+        VIEW_EXPIRATION,
         /** Viewing a list of policies */
         VIEW_POLICY_LIST,
         /** Viewing preferences */
@@ -171,6 +174,9 @@ public class PasswdSafe extends AppCompatActivity
 
     /** Current view mode */
     private ViewMode itsCurrViewMode = ViewMode.INIT;
+
+    /** Whether to confirm a back operation if it will close the file */
+    private boolean itsIsConfirmBackClosed = true;
 
     private static final String FRAG_DATA = "data";
     private static final String STATE_TITLE = "title";
@@ -276,7 +282,7 @@ public class PasswdSafe extends AppCompatActivity
             break;
         }
         case Intent.ACTION_SEARCH: {
-            setRecordFilter(intent.getStringExtra(SearchManager.QUERY));
+            setRecordQueryFilter(intent.getStringExtra(SearchManager.QUERY));
             break;
         }
         default: {
@@ -382,6 +388,7 @@ public class PasswdSafe extends AppCompatActivity
                 case FILE_OPEN:
                 case FILE_NEW:
                 case VIEW_ABOUT:
+                case VIEW_EXPIRATION:
                 case VIEW_POLICY_LIST:
                 case VIEW_PREFERENCES: {
                     break;
@@ -488,8 +495,7 @@ public class PasswdSafe extends AppCompatActivity
                                   ConfirmAction.DELETE_FILE.name());
             ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
                     getString(R.string.delete_file_msg, uriName.get()),
-                    getString(R.string.delete),
-                    confirmArgs);
+                    null, getString(R.string.delete), confirmArgs);
             dialog.show(getSupportFragmentManager(), "Delete file");
             return true;
         }
@@ -510,6 +516,33 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
+        FragmentManager fragMgr = getSupportFragmentManager();
+        if (fragMgr.getBackStackEntryCount() == 0) {
+            switch (itsCurrViewMode) {
+            case VIEW_LIST: {
+                if (itsIsConfirmBackClosed) {
+                    Toast.makeText(this, R.string.press_again_close_warning,
+                                   Toast.LENGTH_SHORT).show();
+                    itsIsConfirmBackClosed = false;
+                    return;
+                }
+                break;
+            }
+            case INIT:
+            case CHANGING_PASSWORD:
+            case EDIT_RECORD:
+            case FILE_OPEN:
+            case FILE_NEW:
+            case VIEW_RECORD:
+            case VIEW_ABOUT:
+            case VIEW_EXPIRATION:
+            case VIEW_POLICY_LIST:
+            case VIEW_PREFERENCES: {
+                break;
+            }
+            }
+        }
+
         checkNavigation(false, new Runnable()
         {
             @Override
@@ -530,7 +563,7 @@ public class PasswdSafe extends AppCompatActivity
     {
         switch (v.getId()) {
         case R.id.query_clear_btn: {
-            setRecordFilter(null);
+            setRecordQueryFilter(null);
             break;
         }
         }
@@ -561,7 +594,8 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void showFileExpiredPasswords()
     {
-        Toast.makeText(this, "showFileExpiredPasswords", Toast.LENGTH_SHORT).show();
+        doChangeView(ChangeMode.VIEW_EXPIRATION,
+                     PasswdSafeExpirationsFragment.newInstance());
     }
 
     /**
@@ -682,9 +716,8 @@ public class PasswdSafe extends AppCompatActivity
                               ConfirmAction.DELETE_RECORD.name());
         confirmArgs.putParcelable(CONFIRM_ARG_LOCATION, location);
         ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                getString(R.string.delete_record_msg, title),
-                getString(R.string.delete),
-                confirmArgs);
+                getString(R.string.delete_record_msg, title), null,
+                getString(R.string.delete), confirmArgs);
         dialog.show(getSupportFragmentManager(), "Delete record");
     }
 
@@ -762,6 +795,22 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
+    public void updateViewExpirations()
+    {
+        doUpdateView(ViewMode.VIEW_EXPIRATION, itsLocation);
+    }
+
+    @Override
+    public void setRecordExpiryFilter(PasswdRecordFilter.ExpiryFilter filter,
+                                      Date customDate)
+    {
+        PasswdRecordFilter recFilter =
+                new PasswdRecordFilter(filter, customDate,
+                                       PasswdRecordFilter.OPTS_DEFAULT);
+        setRecordFilter(recFilter);
+    }
+
+    @Override
     public void updateViewPolicyList()
     {
         doUpdateView(ViewMode.VIEW_POLICY_LIST, itsLocation);
@@ -836,21 +885,36 @@ public class PasswdSafe extends AppCompatActivity
         }
     }
 
+    @Override
+    public void promptCanceled(Bundle confirmArgs)
+    {
+    }
+
     /**
      * Set the record filter from a query string
      */
-    private void setRecordFilter(String query)
+    private void setRecordQueryFilter(String query)
     {
         PasswdFileDataView fileView = itsFileDataFrag.getFileDataView();
+        PasswdRecordFilter filter;
         try {
-            fileView.setRecordFilter(query);
+            filter = fileView.createRecordFilter(query);
         } catch (Exception e) {
             String msg = e.getMessage();
             Log.e(TAG, msg, e);
             PasswdSafeUtil.showErrorMsg(msg, this);
             return;
         }
-        PasswdRecordFilter filter = fileView.getRecordFilter();
+        setRecordFilter(filter);
+    }
+
+    /**
+     * Set the record filter
+     */
+    private void setRecordFilter(PasswdRecordFilter filter)
+    {
+        PasswdFileDataView fileView = itsFileDataFrag.getFileDataView();
+        fileView.setRecordFilter(filter);
         if (filter != null) {
             itsQuery.setText(getString(R.string.query_label,
                                        filter.toString(this)));
@@ -1040,6 +1104,7 @@ public class PasswdSafe extends AppCompatActivity
                 case EDIT_RECORD:
                 case CHANGE_PASSWORD:
                 case VIEW_ABOUT:
+                case VIEW_EXPIRATION:
                 case VIEW_POLICY_LIST:
                 case VIEW_PREFERENCES: {
                     supportsBack = true;
@@ -1069,6 +1134,7 @@ public class PasswdSafe extends AppCompatActivity
                 }
 
                 txn.commit();
+                itsIsConfirmBackClosed = true;
             }
         });
     }
@@ -1092,6 +1158,7 @@ public class PasswdSafe extends AppCompatActivity
         case VIEW_RECORD:
         case CHANGING_PASSWORD:
         case VIEW_ABOUT:
+        case VIEW_EXPIRATION:
         case VIEW_POLICY_LIST:
         case VIEW_PREFERENCES: {
             break;
@@ -1244,6 +1311,13 @@ public class PasswdSafe extends AppCompatActivity
             fileTimeoutPaused = false;
             itsTitle = PasswdSafeApp.getAppTitle(getString(R.string.about),
                                                  this);
+            break;
+        }
+        case VIEW_EXPIRATION: {
+            drawerMode = PasswdSafeNavDrawerFragment.Mode.EXPIRATIONS;
+            fileTimeoutPaused = false;
+            itsTitle = PasswdSafeApp.getAppTitle(
+                    getString(R.string.password_expiration), this);
             break;
         }
         case VIEW_POLICY_LIST: {

@@ -51,6 +51,7 @@ import com.jefftharris.passwdsafe.view.DialogUtils;
 /**
  * The NotificationMgr class encapsulates the notifications provided by the app
  */
+@SuppressWarnings("TryFinallyCanBeTryWithResources")
 public class NotificationMgr implements PasswdFileDataObserver
 {
     private static final String TAG = "NotificationMgr";
@@ -105,6 +106,36 @@ public class NotificationMgr implements PasswdFileDataObserver
     public boolean hasPasswdExpiryNotif(PasswdFileUri uri)
     {
         return itsNotifUris.contains(uri.getUri());
+    }
+
+    /**
+     * Set whether notifications are enabled for a password file
+     */
+    public void setPasswdExpiryNotif(@NonNull PasswdFileData fileData,
+                                     boolean enabled)
+    {
+        try {
+            SQLiteDatabase db = itsDbHelper.getWritableDatabase();
+            try {
+                db.beginTransaction();
+                Long uriId = getDbUriId(fileData.getUri(), db);
+                if (enabled) {
+                    if (uriId == null) {
+                        enablePasswdExpiryNotif(fileData, db);
+                    }
+                } else {
+                    if (uriId != null) {
+                        removeUri(uriId, db);
+                        loadEntries(db);
+                    }
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        } catch (SQLException e) {
+            Log.e(TAG, "Database error", e);
+        }
     }
 
 
@@ -273,16 +304,13 @@ public class NotificationMgr implements PasswdFileDataObserver
 
 
     /** Enable notifications for the password file */
-    private void enablePasswdExpiryNotif(PasswdFileData fileData)
+    private void enablePasswdExpiryNotif(@NonNull PasswdFileData fileData)
     {
         try {
             SQLiteDatabase db = itsDbHelper.getWritableDatabase();
             try {
                 db.beginTransaction();
-                ContentValues values = new ContentValues(1);
-                values.put(DB_COL_URIS_URI, fileData.getUri().toString());
-                long id = db.insertOrThrow(DB_TABLE_URIS, null, values);
-                doUpdatePasswdFileData(id, fileData, db);
+                enablePasswdExpiryNotif(fileData, db);
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
@@ -290,6 +318,18 @@ public class NotificationMgr implements PasswdFileDataObserver
         } catch (SQLException e) {
             Log.e(TAG, "Database error", e);
         }
+    }
+
+
+    /** Enable notifications for the password file */
+    private void enablePasswdExpiryNotif(@NonNull PasswdFileData fileData,
+                                         SQLiteDatabase db)
+            throws SQLException
+    {
+        ContentValues values = new ContentValues(1);
+        values.put(DB_COL_URIS_URI, fileData.getUri().toString());
+        long id = db.insertOrThrow(DB_TABLE_URIS, null, values);
+        doUpdatePasswdFileData(id, fileData, db);
     }
 
 

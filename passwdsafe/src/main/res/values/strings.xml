@@ -71,6 +71,8 @@
     <string name="empty_name">Empty name</string>
     <string name="empty_password">Empty password</string>
     <string name="empty_title">Empty title</string>
+    <string name="enable_expiration_notifications">Enable expiration notifications</string>
+    <string name="enable">Enable</string>
     <string name="enabled">Enabled</string>
     <string name="erase_all_expiration_notifications">Erase all password expiration notifications and tracked files</string>
     <string name="expiration">Expiration</string>
@@ -202,6 +204,7 @@
     <string name="policy_yes_sym_policy">Yes - At least %1$d from policy symbols: %2$s</string>
     <string name="policy_yes_sym_pronounce" tools:ignore="StringFormatCount">Yes - Symbols: %2$s</string>
     <string name="preferences">Preferences</string>
+    <string name="press_again_close_warning">Press again to close the file</string>
     <string name="press_password_warning">Press Password again to paste into visible field</string>
     <string name="press_yubikey">Press YubiKey</string>
     <string name="protect_all">Protect All Records</string>
@@ -258,6 +261,7 @@
     <string name="use_symbols">Use Symbols</string>
     <string name="use_uppercase">Use Uppercase</string>
     <string name="username_header">USER NAME</string>
+    <string name="view_password_expirations">View password expirations</string>
     <string name="word_wrap">Word Wrap</string>
     <string name="yes">Yes</string>
     <string name="yubikey">YubiKey</string>
