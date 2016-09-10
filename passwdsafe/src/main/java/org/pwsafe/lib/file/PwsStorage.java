@@ -41,7 +41,8 @@ public interface PwsStorage
      * @return The header bytes
      * @throws IOException
      */
-    byte[] openForLoad(int headerLen) throws IOException;
+    byte[] openForLoad(@SuppressWarnings("SameParameterValue") int headerLen)
+            throws IOException;
 
     /**
      * Grab all the bytes in the file
