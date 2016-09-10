@@ -21,6 +21,7 @@ import com.jefftharris.passwdsafe.file.PasswdPolicy;
 /**
  * Tests for the PasswdPolicy class
  */
+@SuppressWarnings("unused")
 public class PasswdPolicyTest extends AndroidTestCase
 {
     //private static final String TAG = "PasswdPolicyTest";

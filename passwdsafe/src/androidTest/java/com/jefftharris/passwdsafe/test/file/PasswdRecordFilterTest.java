@@ -19,6 +19,7 @@ import android.test.AndroidTestCase;
 /**
  * Tests for the PasswdRecordFilter class
  */
+@SuppressWarnings("unused")
 public class PasswdRecordFilterTest extends AndroidTestCase
 {
     /** Test parcelling a query filter */
