@@ -19,6 +19,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Unit tests for CountedBool
  */
+@SuppressWarnings("unused")
 public class CountedBoolTest
 {
     private CountedBool itsBool;
