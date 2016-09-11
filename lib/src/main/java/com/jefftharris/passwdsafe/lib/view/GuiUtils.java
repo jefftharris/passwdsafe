@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe.lib.view;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -241,65 +240,62 @@ public final class GuiUtils
                                         List<String> bigLines,
                                         PendingIntent intent,
                                         int notifyId,
+                                        String notifyTag,
                                         boolean autoCancel)
     {
-        BitmapDrawable b =
-                (BitmapDrawable)getDrawable(ctx.getResources(), bigIcon);
-        if (b == null) {
-            return;
-        }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setContentIntent(intent)
                 .setSmallIcon(iconId)
-                .setLargeIcon(b.getBitmap())
                 .setTicker(tickerText)
                 .setAutoCancel(autoCancel);
-        NotificationCompat.InboxStyle style =
-                new NotificationCompat.InboxStyle(builder)
-                .setBigContentTitle(title)
-                .setSummaryText(content);
-
-        int numLines = Math.min(bigLines.size(), 5);
-        for (int i = 0; i < numLines; ++i) {
-            style.addLine(bigLines.get(i));
-        }
-        if (numLines < bigLines.size()) {
-            style.addLine("…");
-        }
-
-        builder.setStyle(style);
-        Notification notif = builder.build();
-        notifyMgr.notify(notifyId, notif);
+        setInboxStyle(builder, title, content, bigLines);
+        showNotification(notifyMgr, builder, bigIcon, notifyId, notifyTag, ctx);
     }
 
 
-    /** Show a simple notification */
-    public static void showSimpleNotification(NotificationManager notifyMgr,
-                                              Context ctx,
-                                              int iconId,
-                                              String title,
-                                              int bigIcon,
-                                              String content,
-                                              PendingIntent intent,
-                                              int notifyId,
-                                              boolean autoCancel)
+    /**
+     * Show a notification with a custom builder
+     */
+    public static void showNotification(NotificationManager notifyMgr,
+                                        NotificationCompat.Builder builder,
+                                        int bigIcon,
+                                        int notifyId,
+                                        String notifyTag,
+                                        Context ctx)
     {
         BitmapDrawable b =
                 (BitmapDrawable)getDrawable(ctx.getResources(), bigIcon);
         if (b == null) {
             return;
         }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setContentIntent(intent)
-                .setSmallIcon(iconId)
-                .setLargeIcon(b.getBitmap())
-                .setTicker(title)
-                .setAutoCancel(autoCancel);
-        Notification notif = builder.build();
-        notifyMgr.notify(notifyId, notif);
+        builder.setLargeIcon(b.getBitmap());
+        notifyMgr.notify(notifyTag, notifyId, builder.build());
+    }
+
+
+    /**
+     * Set an inbox style for a notification
+     */
+    public static void setInboxStyle(NotificationCompat.Builder builder,
+                                     String title,
+                                     String content,
+                                     List<String> lines)
+    {
+        NotificationCompat.InboxStyle style =
+                new NotificationCompat.InboxStyle(builder)
+                        .setBigContentTitle(title)
+                        .setSummaryText(content);
+
+        int linesSize = lines.size();
+        int numLines = Math.min(linesSize, 5);
+        for (int i = 0; i < numLines; ++i) {
+            style.addLine(lines.get(i));
+        }
+        if (numLines < linesSize) {
+            style.addLine("…");
+            builder.setNumber(linesSize);
+        }
     }
 }
