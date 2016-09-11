@@ -27,9 +27,20 @@ public class PwsFileV2 extends PwsFileV1V2
     /**
      * The string that identifies a database as V2 rather than V1
      */
-    public static final String ID_STRING = " !!!Version 2 File Format!!! " +
-                                           "Please upgrade to PasswordSafe 2.0" +
-					   " or later";
+    public static final String ID_STRING =
+            " !!!Version 2 File Format!!! Please upgrade to PasswordSafe 2.0" +
+            " or later";
+
+    /**
+     * Return whether the record header represents a V2 file format header
+     */
+    public static boolean isV2Header(PwsRecordV1 header)
+    {
+        PwsField title = header.getField(PwsRecordV1.TITLE);
+        return (title != null) &&
+               title.equals(new PwsStringField(PwsRecordV1.TITLE,
+                                               PwsFileV2.ID_STRING));
+    }
 
     /**
      * Use of this constructor to load a PasswordSafe database is STRONGLY
@@ -98,7 +109,7 @@ public class PwsFileV2 extends PwsFileV1V2
         hdr = new PwsRecordV1();
         hdr.loadRecord(file);
 
-        if (!hdr.getField(PwsRecordV1.TITLE).equals(ID_STRING)) {
+        if (!isV2Header(hdr)) {
             throw new UnsupportedFileVersionException();
         }
     }
