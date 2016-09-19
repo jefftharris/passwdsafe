@@ -11,6 +11,8 @@ package com.jefftharris.passwdsafe;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,10 +22,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.view.CopyField;
@@ -34,6 +38,7 @@ import org.pwsafe.lib.file.PwsRecord;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 /**
@@ -41,8 +46,22 @@ import java.util.List;
  */
 public class PasswdSafeRecordBasicFragment
         extends AbstractPasswdSafeRecordFragment
-        implements View.OnClickListener
+        implements View.OnClickListener,
+                   CompoundButton.OnCheckedChangeListener
 {
+    /**
+     * Password visibility option change
+     */
+    private enum PasswordVisibilityChange
+    {
+        INITIAL,
+        TOGGLE,
+        SEEK,
+        SHOW_SUBSET
+    }
+
+    private static final Pattern SUBSET_SPLIT = Pattern.compile("[ ,;]+");
+
     private boolean itsIsPasswordShown = false;
     private String itsHiddenPasswordStr;
     private String itsTitle;
@@ -56,6 +75,9 @@ public class PasswdSafeRecordBasicFragment
     private View itsPasswordRow;
     private TextView itsPassword;
     private SeekBar itsPasswordSeek;
+    private CompoundButton itsPasswordSubsetBtn;
+    private View itsPasswordSubsetInput;
+    private TextView itsPasswordSubset;
     private View itsUrlRow;
     private TextView itsUrl;
     private View itsEmailRow;
@@ -109,7 +131,8 @@ public class PasswdSafeRecordBasicFragment
                                                   boolean fromUser)
                     {
                         if (fromUser) {
-                            updatePasswordShown(false, progress);
+                            updatePasswordShown(PasswordVisibilityChange.SEEK,
+                                                progress, false);
                         }
                     }
 
@@ -123,6 +146,23 @@ public class PasswdSafeRecordBasicFragment
                     {
                     }
                 });
+        itsPasswordSubsetBtn = (CompoundButton)
+                root.findViewById(R.id.password_subset_btn);
+        itsPasswordSubsetBtn.setOnCheckedChangeListener(this);
+        itsPasswordSubsetInput = root.findViewById(R.id.password_subset_input);
+        itsPasswordSubset = (TextView)root.findViewById(R.id.password_subset);
+        itsPasswordSubset.addTextChangedListener(new AbstractTextWatcher()
+        {
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                passwordSubsetChanged();
+            }
+        });
+        // TODO: key listener for digits, spaces, and commas
+        // TODO: i18n for subset
+        // TODO: help
+        //itsPasswordSubset.setKeyListener(TextKeyListener.getInstance());
         itsUrlRow = root.findViewById(R.id.url_row);
         itsUrl = (TextView)root.findViewById(R.id.url);
         itsEmailRow = root.findViewById(R.id.email_row);
@@ -148,6 +188,7 @@ public class PasswdSafeRecordBasicFragment
 
         registerForContextMenu(itsUserRow);
         registerForContextMenu(itsPasswordRow);
+        updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
 
         return root;
     }
@@ -197,7 +238,7 @@ public class PasswdSafeRecordBasicFragment
             return true;
         }
         case R.id.menu_toggle_password: {
-            updatePasswordShown(true, 0);
+            updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
             return true;
         }
         default: {
@@ -256,7 +297,19 @@ public class PasswdSafeRecordBasicFragment
             break;
         }
         case R.id.password_row: {
-            updatePasswordShown(true, 0);
+            updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
+            break;
+        }
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton btn, boolean checked)
+    {
+        switch (btn.getId()) {
+        case R.id.password_subset_btn: {
+            updatePasswordShown(PasswordVisibilityChange.SHOW_SUBSET,
+                                0, checked);
             break;
         }
         }
@@ -390,28 +443,97 @@ public class PasswdSafeRecordBasicFragment
     /**
      * Update whether the password is shown
      */
-    private void updatePasswordShown(boolean isToggle, int progress)
+    private void updatePasswordShown(PasswordVisibilityChange change,
+                                     int progress,
+                                     boolean showSubset)
     {
-        String password;
-        if (isToggle) {
+        String password = null;
+        boolean seekShown = true;
+        boolean subsetShown = false;
+
+        switch (change) {
+        case INITIAL: {
+            itsIsPasswordShown = false;
+            itsPasswordSeek.setProgress(0);
+            break;
+        }
+        case TOGGLE: {
             itsIsPasswordShown = !itsIsPasswordShown;
-            password = itsIsPasswordShown ? getPassword() : itsHiddenPasswordStr;
+            if (itsIsPasswordShown) {
+                password = getPassword();
+            }
             itsPasswordSeek.setProgress(
                     itsIsPasswordShown ? itsPasswordSeek.getMax() : 0);
-        } else if (progress == 0) {
-            itsIsPasswordShown = false;
-            password = itsHiddenPasswordStr;
-        } else {
-            itsIsPasswordShown = true;
-            password = getPassword();
-            if ((password != null) && (progress < password.length())) {
-                password = password.substring(0, progress) + "…";
-            }
+            break;
         }
-        itsPassword.setText(password);
+        case SEEK: {
+            if (progress == 0) {
+                itsIsPasswordShown = false;
+                password = itsHiddenPasswordStr;
+            } else {
+                itsIsPasswordShown = true;
+                password = getPassword();
+                if ((password != null) && (progress < password.length())) {
+                    password = password.substring(0, progress) + "…";
+                }
+            }
+            break;
+        }
+        case SHOW_SUBSET: {
+            itsPasswordSeek.setProgress(0);
+            if (showSubset) {
+                seekShown = false;
+                subsetShown = true;
+                itsIsPasswordShown = true;
+                password = "";
+                itsPasswordSubset.setText(null);
+            } else {
+                itsIsPasswordShown = false;
+            }
+            break;
+        }
+        }
+
+        itsPasswordSubsetBtn.setChecked(subsetShown);
+        GuiUtils.setVisible(itsPasswordSeek, seekShown);
+        GuiUtils.setVisible(itsPasswordSubsetInput, subsetShown);
+        itsPassword.setText(
+                (password != null) ? password : itsHiddenPasswordStr);
         Activity act = getActivity();
         TypefaceUtils.enableMonospace(itsPassword, itsIsPasswordShown, act);
         GuiUtils.invalidateOptionsMenu(act);
+    }
+
+    /**
+     * Handle a change in the password subset to show
+     */
+    private void passwordSubsetChanged()
+    {
+        String subset = itsPasswordSubset.getText().toString();
+        String password = getPassword();
+        int passwordLen = password.length();
+        StringBuilder passwordSubset = new StringBuilder();
+        for (String token: TextUtils.split(subset, SUBSET_SPLIT)) {
+            int idx;
+            try {
+                idx = Integer.parseInt(token.trim());
+            } catch (Exception e) {
+                continue;
+            }
+            char c;
+            if ((idx > 0) && (idx <= passwordLen)) {
+                c = password.charAt(idx - 1);
+            } else if ((idx < 0) && (-idx <= passwordLen)) {
+                c = password.charAt(passwordLen + idx);
+            } else {
+                continue;
+            }
+            if (passwordSubset.length() > 0) {
+                passwordSubset.append(" ");
+            }
+            passwordSubset.append(c);
+        }
+        itsPassword.setText(passwordSubset);
     }
 
     /**
