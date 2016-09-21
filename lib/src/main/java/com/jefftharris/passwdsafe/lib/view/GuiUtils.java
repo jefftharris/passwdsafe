@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.text.InputType;
@@ -119,6 +120,23 @@ public final class GuiUtils
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * Set whether a TextInputLayout is visible
+     */
+    public static void setTextInputVisible(final TextInputLayout view,
+                                           final boolean visible)
+    {
+        // Use a delayed post to prevent stack overflow errors on gingerbread
+        // from repeated toggles on Gingerbread
+        view.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                view.setVisibility(visible ? View.VISIBLE : View.GONE);
+            }
+        });
+    }
 
     /**
      * Setup the keyboard on a form.  The final field clicks the supplied OK
