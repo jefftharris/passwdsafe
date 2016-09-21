@@ -11,8 +11,11 @@ package com.jefftharris.passwdsafe;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.NumberKeyListener;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,6 +64,9 @@ public class PasswdSafeRecordBasicFragment
     }
 
     private static final Pattern SUBSET_SPLIT = Pattern.compile("[ ,;]+");
+    private static final char[] SUBSET_CHARS =
+            { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+              '-', ' ', ',', ';' };
 
     private boolean itsIsPasswordShown = false;
     private String itsHiddenPasswordStr;
@@ -76,7 +82,7 @@ public class PasswdSafeRecordBasicFragment
     private TextView itsPassword;
     private SeekBar itsPasswordSeek;
     private CompoundButton itsPasswordSubsetBtn;
-    private View itsPasswordSubsetInput;
+    private TextInputLayout itsPasswordSubsetInput;
     private TextView itsPasswordSubset;
     private View itsUrlRow;
     private TextView itsUrl;
@@ -149,7 +155,8 @@ public class PasswdSafeRecordBasicFragment
         itsPasswordSubsetBtn = (CompoundButton)
                 root.findViewById(R.id.password_subset_btn);
         itsPasswordSubsetBtn.setOnCheckedChangeListener(this);
-        itsPasswordSubsetInput = root.findViewById(R.id.password_subset_input);
+        itsPasswordSubsetInput = (TextInputLayout)
+                root.findViewById(R.id.password_subset_input);
         itsPasswordSubset = (TextView)root.findViewById(R.id.password_subset);
         itsPasswordSubset.addTextChangedListener(new AbstractTextWatcher()
         {
@@ -159,10 +166,23 @@ public class PasswdSafeRecordBasicFragment
                 passwordSubsetChanged();
             }
         });
-        // TODO: key listener for digits, spaces, and commas
         // TODO: i18n for subset
         // TODO: help
-        //itsPasswordSubset.setKeyListener(TextKeyListener.getInstance());
+        itsPasswordSubset.setKeyListener(new NumberKeyListener()
+        {
+            @Override
+            protected char[] getAcceptedChars()
+            {
+                return SUBSET_CHARS;
+            }
+
+            @Override
+            public int getInputType()
+            {
+                return InputType.TYPE_CLASS_NUMBER |
+                       InputType.TYPE_NUMBER_FLAG_SIGNED;
+            }
+        });
         itsUrlRow = root.findViewById(R.id.url_row);
         itsUrl = (TextView)root.findViewById(R.id.url);
         itsEmailRow = root.findViewById(R.id.email_row);
@@ -496,7 +516,7 @@ public class PasswdSafeRecordBasicFragment
 
         itsPasswordSubsetBtn.setChecked(subsetShown);
         GuiUtils.setVisible(itsPasswordSeek, seekShown);
-        GuiUtils.setVisible(itsPasswordSubsetInput, subsetShown);
+        GuiUtils.setTextInputVisible(itsPasswordSubsetInput, subsetShown);
         itsPassword.setText(
                 (password != null) ? password : itsHiddenPasswordStr);
         Activity act = getActivity();
@@ -533,7 +553,7 @@ public class PasswdSafeRecordBasicFragment
             }
             passwordSubset.append(c);
         }
-        itsPassword.setText(passwordSubset);
+        itsPassword.setText(passwordSubset.toString());
     }
 
     /**
