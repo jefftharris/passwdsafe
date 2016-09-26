@@ -131,7 +131,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Password subset. E.g. 1,5,-1"
                         android:inputType="text"
-                        android:singleLine="true"/>
+                        android:maxLines="1"/>
                 </android.support.design.widget.TextInputLayout>
 
             </RelativeLayout>

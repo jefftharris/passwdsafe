@@ -36,6 +36,7 @@ import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
+import com.jefftharris.passwdsafe.view.TextInputUtils;
 
 import org.pwsafe.lib.file.PwsRecord;
 
@@ -66,7 +67,7 @@ public class PasswdSafeRecordBasicFragment
     private static final Pattern SUBSET_SPLIT = Pattern.compile("[ ,;]+");
     private static final char[] SUBSET_CHARS =
             { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-              '-', ' ', ',', ';' };
+              '-', ' ', ',', ';', '?' };
 
     private boolean itsIsPasswordShown = false;
     private String itsHiddenPasswordStr;
@@ -167,7 +168,6 @@ public class PasswdSafeRecordBasicFragment
             }
         });
         // TODO: i18n for subset
-        // TODO: help
         itsPasswordSubset.setKeyListener(new NumberKeyListener()
         {
             @Override
@@ -533,12 +533,20 @@ public class PasswdSafeRecordBasicFragment
         String password = getPassword();
         int passwordLen = password.length();
         StringBuilder passwordSubset = new StringBuilder();
-        for (String token: TextUtils.split(subset, SUBSET_SPLIT)) {
+        boolean error = false;
+        String[] tokens = TextUtils.split(subset, SUBSET_SPLIT);
+        for (int i = 0; i < tokens.length; ++i) {
+            String trimToken = tokens[i].trim();
+            if ((trimToken.length() == 0) ||
+                ((i == (tokens.length - 1)) && trimToken.equals("-"))) {
+                continue;
+            }
             int idx;
             try {
-                idx = Integer.parseInt(token.trim());
+                idx = Integer.parseInt(trimToken);
             } catch (Exception e) {
-                continue;
+                error = true;
+                break;
             }
             char c;
             if ((idx > 0) && (idx <= passwordLen)) {
@@ -546,13 +554,20 @@ public class PasswdSafeRecordBasicFragment
             } else if ((idx < 0) && (-idx <= passwordLen)) {
                 c = password.charAt(passwordLen + idx);
             } else {
-                continue;
+                error = true;
+                break;
             }
             if (passwordSubset.length() > 0) {
                 passwordSubset.append(" ");
             }
             passwordSubset.append(c);
         }
+        String errorStr = "Positions are separated by spaces, commas, or " +
+                "semicolons. They are numbered from 1 to the " +
+                String.format("password length, %d. ", passwordLen) +
+                          "Negative values count from the end.";
+        TextInputUtils.setTextInputError(
+                error ? errorStr : null, itsPasswordSubsetInput);
         itsPassword.setText(passwordSubset.toString());
     }
 
