@@ -49,7 +49,9 @@ public class PwsStringUnicodeField extends PwsField
      * @param type  the field's type.
      * @param value the field's value.
      */
-    public PwsStringUnicodeField(PwsFieldType type, String value)
+    public PwsStringUnicodeField(
+            @SuppressWarnings("SameParameterValue") PwsFieldType type,
+            @SuppressWarnings("SameParameterValue") String value)
     {
         super(type, value);
     }

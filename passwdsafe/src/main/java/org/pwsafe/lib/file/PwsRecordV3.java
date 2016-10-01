@@ -309,7 +309,8 @@ public class PwsRecordV3 extends PwsRecord
      *
      * @param isHeader Marker for header record
      */
-    PwsRecordV3(@SuppressWarnings("UnusedParameters") boolean isHeader)
+    PwsRecordV3(@SuppressWarnings({"UnusedParameters",
+                                   "SameParameterValue"}) boolean isHeader)
     {
         super(VALID_TYPES, true);
         setField(new PwsVersionField(HEADER_VERSION,
@@ -339,7 +340,9 @@ public class PwsRecordV3 extends PwsRecord
      * @throws EndOfFileException If end of file is reached
      * @throws IOException        If a read error occurs.
      */
-    PwsRecordV3(PwsFile file, boolean ignoreFieldTypes)
+    PwsRecordV3(
+            PwsFile file,
+            @SuppressWarnings("SameParameterValue") boolean ignoreFieldTypes)
             throws EndOfFileException, IOException
     {
         super(file, VALID_TYPES, ignoreFieldTypes);

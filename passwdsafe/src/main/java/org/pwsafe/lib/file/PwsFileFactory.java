@@ -215,13 +215,10 @@ public class PwsFileFactory
             rec = (PwsRecordV1)file.readRecord();
             file.close();
 
-            // TODOlib what can we do about this?
-            // it will probably be fooled if someone is daft enough to create
-            // a V1 file with the
-            // title of the first record set to the value of PwsFileV2
-		// .ID_STRING!
-
-            if (rec.getField(PwsRecordV1.TITLE).equals(PwsFileV2.ID_STRING)) {
+            // The test will probably be fooled if someone is daft enough to
+            // create a V1 file with the title of the first record set to the
+            // value of PwsFileV2 .ID_STRING!
+            if (PwsFileV2.isV2Header(rec)) {
                 file = new PwsFileV2(storage, passwd, encoding);
             } else {
                 file = new PwsFileV1(storage, passwd, encoding);

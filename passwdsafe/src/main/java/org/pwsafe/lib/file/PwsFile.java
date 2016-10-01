@@ -718,7 +718,8 @@ public abstract class PwsFile
      *
      * @param readOnly the readOnly to set
      */
-    public void setReadOnly(boolean readOnly)
+    public void setReadOnly(
+            @SuppressWarnings("SameParameterValue") boolean readOnly)
     {
         this.readOnly = readOnly;
     }

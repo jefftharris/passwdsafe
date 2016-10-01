@@ -204,7 +204,9 @@ public final class Util
      * @throws IndexOutOfBoundsException if offset is negative or <code>buff
      * .length</code> &lt; <code>offset + 4</code>.
      */
-    public static int getIntFromByteArray(byte[] buff, int offset)
+    public static int getIntFromByteArray(
+            byte[] buff,
+            @SuppressWarnings("SameParameterValue") int offset)
     {
         int result;
 
@@ -226,7 +228,9 @@ public final class Util
      * @throws IndexOutOfBoundsException if offset is negative or <code>buff
      * .length</code> &lt; <code>offset + 2</code>.
      */
-    public static short getShortFromByteArray(byte[] buff, int offset)
+    public static short getShortFromByteArray(
+            byte[] buff,
+            @SuppressWarnings("SameParameterValue") int offset)
     {
         short result;
 
@@ -281,7 +285,9 @@ public final class Util
      * @param value  the short value to store.
      * @param offset the offset at which to store the value.
      */
-    public static void putShortToByteArray(byte[] buff, short value, int offset)
+    public static void putShortToByteArray(
+            byte[] buff, short value,
+            @SuppressWarnings("SameParameterValue") int offset)
     {
         buff[offset + 0] = (byte)(value & 0xff);
         buff[offset + 1] = (byte)((value & 0xff00) >>> 8);
@@ -298,7 +304,9 @@ public final class Util
      * @throws IndexOutOfBoundsException if offset is negative or <code>buff
      * .length</code> &lt; <code>offset + 4</code>.
      */
-    public static long getMillisFromByteArray(byte[] buff, int offset)
+    public static long getMillisFromByteArray(
+            byte[] buff,
+            @SuppressWarnings("SameParameterValue") int offset)
     {
 
         long result;
@@ -321,7 +329,9 @@ public final class Util
      * @param value  the millis long value to store.
      * @param offset the offset at which to store the value.
      */
-    public static void putMillisToByteArray(byte[] buff, long value, int offset)
+    public static void putMillisToByteArray(
+            byte[] buff, long value,
+            @SuppressWarnings("SameParameterValue") int offset)
     {
         value /= 1000L; // convert from millis to seconds
 

@@ -226,8 +226,10 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @throws EndOfFileException
      * @throws IOException
      */
-    protected PwsRecord(PwsFile owner, Object[] validTypes,
-                        boolean ignoreFieldTypes)
+    protected PwsRecord(
+            PwsFile owner,
+            @SuppressWarnings("SameParameterValue") Object[] validTypes,
+            boolean ignoreFieldTypes)
             throws EndOfFileException, IOException
     {
         super();
@@ -248,7 +250,9 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param ignoreFieldTypes true if all fields types should be ignored,
      *                         false otherwise
      */
-    protected PwsRecord(Object[] validTypes, boolean ignoreFieldTypes)
+    protected PwsRecord(
+            @SuppressWarnings("SameParameterValue") Object[] validTypes,
+            @SuppressWarnings("SameParameterValue") boolean ignoreFieldTypes)
     {
         super();
 
