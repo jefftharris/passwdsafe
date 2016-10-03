@@ -245,6 +245,13 @@
     <string name="password_record">Password record</string>
     <string name="password_save_canceled_key_error">Password save canceled.  Failed to create an encryption key: %s</string>
     <string name="password_saved">Password saved</string>
+    <string name="password_subset">Password subset. E.g. 1,5,-1</string>
+    <string name="password_subset_btn" translatable="false">a**d</string>
+    <string name="password_subset_error">
+        Positions are separated by spaces, commas, or semicolons. They are
+        numbered from 1 to the password length, %1$d. Negative values count
+        from the end.
+    </string>
     <string name="password_times_header">PASSWORD TIMES</string>
     <string name="password_with_expiration">Password with expiration date</string>
     <string name="passwords">Passwords</string>

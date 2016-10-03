@@ -253,6 +253,12 @@
     <string name="password_save_canceled_key_error">Enregistrement du mot de
         passe annulé. Échec de la création de la clé d\'encryption:%1$s</string>
     <string name="password_saved">Mot de passe enregistré</string>
+    <string name="password_subset">Morceaux mots de passe. E.g. 1,5,-1</string>
+    <string name="password_subset_error">
+        Les positions sont séparés par des espaces, virgules ou tiret.  Elles
+        sont numérotée de 1 à la longueur du mot de passe, %1$d. Les valeurs
+        négatives comptent depuis la fin.
+    </string>
     <string name="password_times_header">TEMPS MOT DE PASSE</string>
     <string name="password_with_expiration">Mot de passe avec date d\'expiration</string>
     <string name="passwords">Mots de passe</string>

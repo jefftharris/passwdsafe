@@ -88,10 +88,10 @@
                               android:layout_alignParentTop="true"
                               android:checked="false"
                               android:minWidth="48dp"
-                              android:text="a**d"
+                              android:text="@string/password_subset_btn"
                               android:textAppearance="?android:textAppearanceSmall"
-                              android:textOff="a**d"
-                              android:textOn="a**d"/>
+                              android:textOff="@string/password_subset_btn"
+                              android:textOn="@string/password_subset_btn"/>
 
                 <TextView android:id="@+id/password"
                           android:layout_width="match_parent"
@@ -129,7 +129,7 @@
                         android:id="@+id/password_subset"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Password subset. E.g. 1,5,-1"
+                        android:hint="@string/password_subset"
                         android:inputType="text"
                         android:maxLines="1"/>
                 </android.support.design.widget.TextInputLayout>

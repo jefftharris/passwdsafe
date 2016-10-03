@@ -71,6 +71,7 @@ public class PasswdSafeRecordBasicFragment
 
     private boolean itsIsPasswordShown = false;
     private String itsHiddenPasswordStr;
+    private String itsSubsetErrorStr;
     private String itsTitle;
     private View itsBaseRow;
     private TextView itsBaseLabel;
@@ -167,7 +168,6 @@ public class PasswdSafeRecordBasicFragment
                 passwordSubsetChanged();
             }
         });
-        // TODO: i18n for subset
         itsPasswordSubset.setKeyListener(new NumberKeyListener()
         {
             @Override
@@ -395,8 +395,11 @@ public class PasswdSafeRecordBasicFragment
         String password = info.itsFileData.getPassword(recForPassword);
         setFieldText(itsPassword, itsPasswordRow,
                      ((password != null) ? itsHiddenPasswordStr : null));
-        itsPasswordSeek.setMax((password != null) ? password.length() : 0);
+        int passwordLen = (password != null) ? password.length() : 0;
+        itsPasswordSeek.setMax(passwordLen);
         itsPasswordSeek.setProgress(0);
+        itsSubsetErrorStr = getString(R.string.password_subset_error,
+                                      passwordLen);
 
         setFieldText(itsUrl, itsUrlRow, url);
         setFieldText(itsEmail, itsEmailRow, email);
@@ -562,12 +565,9 @@ public class PasswdSafeRecordBasicFragment
             }
             passwordSubset.append(c);
         }
-        String errorStr = "Positions are separated by spaces, commas, or " +
-                "semicolons. They are numbered from 1 to the " +
-                String.format("password length, %d. ", passwordLen) +
-                          "Negative values count from the end.";
-        TextInputUtils.setTextInputError(
-                error ? errorStr : null, itsPasswordSubsetInput);
+
+        TextInputUtils.setTextInputError(error ? itsSubsetErrorStr : null,
+                                         itsPasswordSubsetInput);
         itsPassword.setText(passwordSubset.toString());
     }
 
