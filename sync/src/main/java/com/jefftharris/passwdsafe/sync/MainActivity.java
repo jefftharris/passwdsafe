@@ -25,7 +25,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -80,7 +79,6 @@ public class MainActivity extends AppCompatActivity
     private boolean itsDropboxPendingAcctLink = false;
     private Uri itsBoxUri = null;
     private Uri itsOnedriveUri = null;
-    private boolean itsOnedrivePendingAcctLink = false;
     private Uri itsOwncloudUri = null;
     private int itsOwncloudSyncFreq = 0;
 
@@ -204,10 +202,6 @@ public class MainActivity extends AppCompatActivity
             itsDropboxPendingAcctLink = false;
             itsNewAccountTask = getDbxProvider().finishAccountLink(
                     Activity.RESULT_OK, null, itsDropboxUri);
-        } else if (itsOnedrivePendingAcctLink) {
-            itsOnedrivePendingAcctLink = false;
-            itsNewAccountTask = getOnedriveProvider().finishAccountLink(
-                    Activity.RESULT_OK, null, itsOnedriveUri);
         }
 
         if (itsNewAccountTask != null) {
@@ -227,6 +221,11 @@ public class MainActivity extends AppCompatActivity
             itsNewAccountTask =
                     getBoxProvider().finishAccountLink(resultCode, data,
                                                        itsBoxUri);
+            break;
+        }
+        case ONEDRIVE_LINK_RC: {
+            itsNewAccountTask = getOnedriveProvider().finishAccountLink(
+                    resultCode, null, itsOnedriveUri);
             break;
         }
         case OWNCLOUD_LINK_RC: {
@@ -267,13 +266,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.activity_main, menu);
-
-        for (int id:
-                new int[] {R.id.menu_add, R.id.menu_about, R.id.menu_logs}) {
-            MenuItem item = menu.findItem(id);
-            MenuItemCompat.setShowAsAction(
-                    item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-        }
         return true;
     }
 
@@ -304,6 +296,12 @@ public class MainActivity extends AppCompatActivity
         case R.id.menu_logs: {
             Intent intent = new Intent();
             intent.setClass(this, SyncLogsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        case R.id.menu_preferences: {
+            Intent intent = new Intent();
+            intent.setClass(this, PreferencesActivity.class);
             startActivity(intent);
             return true;
         }
@@ -488,7 +486,6 @@ public class MainActivity extends AppCompatActivity
         Provider onedriveProvider = getOnedriveProvider();
         try {
             onedriveProvider.startAccountLink(this, ONEDRIVE_LINK_RC);
-            itsOnedrivePendingAcctLink = true;
         } catch (Exception e) {
             Log.e(TAG, "OneDrive startAccountLink failed", e);
             onedriveProvider.unlinkAccount();

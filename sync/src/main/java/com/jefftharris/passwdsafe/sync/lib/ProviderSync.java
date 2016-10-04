@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +23,7 @@ import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.R;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -29,6 +31,9 @@ import java.util.List;
  */
 public class ProviderSync
 {
+    private static final HashSet<String> itsLastProviderFailures =
+            new HashSet<>();
+
     private static final String TAG = "ProviderSync";
 
     private final Account itsAccount;
@@ -36,6 +41,7 @@ public class ProviderSync
     private final Provider itsProviderImpl;
     private final Context itsContext;
     private final String itsNotifTag;
+    private final boolean itsIsShowNotifs;
 
 
     /**
@@ -51,6 +57,9 @@ public class ProviderSync
         itsProviderImpl = providerImpl;
         itsContext = ctx;
         itsNotifTag = Long.toString(itsProvider.itsId);
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(itsContext);
+        itsIsShowNotifs = Preferences.getNotifShowSyncPref(prefs);
     }
 
     /**
@@ -85,7 +94,9 @@ public class ProviderSync
                                itsAccount.name, itsAccount.type, manual);
         String displayName = TextUtils.isEmpty(itsProvider.itsDisplayName) ?
                              itsProvider.itsAcct : itsProvider.itsDisplayName;
-        showProgressNotif();
+        if (itsIsShowNotifs) {
+            showProgressNotif();
+        }
         return new SyncLogRecord(
                 displayName,
                 ((itsProvider.itsType != null) ?
@@ -158,8 +169,10 @@ public class ProviderSync
             db.endTransaction();
         }
 
-        NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
-                               itsNotifTag, itsContext);
+        if (itsIsShowNotifs) {
+            NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
+                                   itsNotifTag, itsContext);
+        }
         showResultNotifs(logrec);
     }
 
@@ -196,14 +209,30 @@ public class ProviderSync
                                              failure.getLocalizedMessage()));
             success = false;
         }
-        results.addAll(logrec.getEntries());
-        if (!results.isEmpty()) {
-            showResultNotif(NotifUtils.Type.SYNC_RESULTS, success, results);
+
+        boolean lastFailure;
+        synchronized (itsLastProviderFailures) {
+            lastFailure = itsLastProviderFailures.contains(itsNotifTag);
+            if (lastFailure && success) {
+                itsLastProviderFailures.remove(itsNotifTag);
+            } else if (!lastFailure && !success) {
+                itsLastProviderFailures.add(itsNotifTag);
+            }
         }
 
-        results = logrec.getConflictFiles();
+        if (itsIsShowNotifs) {
+            results.addAll(logrec.getEntries());
+        }
         if (!results.isEmpty()) {
-            showResultNotif(NotifUtils.Type.SYNC_CONFLICT, false, results);
+            showResultNotif(NotifUtils.Type.SYNC_RESULTS, success, results);
+        } else if (lastFailure && success) {
+            NotifUtils.cancelNotif(NotifUtils.Type.SYNC_RESULTS, itsNotifTag,
+                                   itsContext);
+        }
+
+        List<String> conflicts = logrec.getConflictFiles();
+        if (!conflicts.isEmpty()) {
+            showResultNotif(NotifUtils.Type.SYNC_CONFLICT, false, conflicts);
         }
     }
 
