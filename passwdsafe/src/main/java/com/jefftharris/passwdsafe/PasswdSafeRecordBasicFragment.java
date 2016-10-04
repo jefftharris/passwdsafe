@@ -520,9 +520,13 @@ public class PasswdSafeRecordBasicFragment
         itsPasswordSubsetBtn.setChecked(subsetShown);
         GuiUtils.setVisible(itsPasswordSeek, seekShown);
         GuiUtils.setTextInputVisible(itsPasswordSubsetInput, subsetShown);
+        if (subsetShown) {
+            itsPasswordSubset.requestFocus();
+        }
+        Activity act = getActivity();
+        GuiUtils.setKeyboardVisible(itsPasswordSubset, act, subsetShown);
         itsPassword.setText(
                 (password != null) ? password : itsHiddenPasswordStr);
-        Activity act = getActivity();
         TypefaceUtils.enableMonospace(itsPassword, itsIsPasswordShown, act);
         GuiUtils.invalidateOptionsMenu(act);
     }
