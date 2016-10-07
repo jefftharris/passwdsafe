@@ -244,12 +244,13 @@
     <string name="password_record">Passworteintrag</string>
     <string name="password_save_canceled_key_error">Speichern des Passworts abgebrochen. Verschlüsselungsschlüssel konnte nicht erstellt werden: %1$s</string>
     <string name="password_saved">Passwort gespeichert</string>
-    <string name="password_subset">Passwortteilmenge. E.g. 1,5,-1</string>
+    <string name="password_subset">Passwortteilmenge</string>
     <string name="password_subset_error">
         Positionen sind getrennt durch Leerzeichen, Kommata oder Semikolons.
         Sie sind nummeriert von 1 bis zur Passwortlänge, %1$d. Negative Werte
         zählen vom Ende des Passworts.
     </string>
+    <string name="password_subset_hint">Passwortteilmenge. E.g. 1,5,-1</string>
     <string name="password_times_header">PASSWORTZEITEN</string>
     <string name="password_with_expiration">Passwort mit Ablaufdatum</string>
     <string name="passwords">Passwörter</string>

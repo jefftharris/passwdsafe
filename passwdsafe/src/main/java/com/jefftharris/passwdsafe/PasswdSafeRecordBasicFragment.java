@@ -29,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -51,6 +52,7 @@ import java.util.regex.Pattern;
 public class PasswdSafeRecordBasicFragment
         extends AbstractPasswdSafeRecordFragment
         implements View.OnClickListener,
+                   View.OnLongClickListener,
                    CompoundButton.OnCheckedChangeListener
 {
     /**
@@ -157,6 +159,7 @@ public class PasswdSafeRecordBasicFragment
         itsPasswordSubsetBtn = (CompoundButton)
                 root.findViewById(R.id.password_subset_btn);
         itsPasswordSubsetBtn.setOnCheckedChangeListener(this);
+        itsPasswordSubsetBtn.setOnLongClickListener(this);
         itsPasswordSubsetInput = (TextInputLayout)
                 root.findViewById(R.id.password_subset_input);
         itsPasswordSubset = (TextView)root.findViewById(R.id.password_subset);
@@ -321,6 +324,19 @@ public class PasswdSafeRecordBasicFragment
             break;
         }
         }
+    }
+
+    @Override
+    public boolean onLongClick(View v)
+    {
+        switch (v.getId()) {
+        case R.id.password_subset_btn: {
+            Toast.makeText(getContext(), R.string.password_subset,
+                           Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        }
+        return false;
     }
 
     @Override
