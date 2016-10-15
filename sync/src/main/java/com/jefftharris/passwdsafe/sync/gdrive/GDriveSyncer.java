@@ -184,7 +184,8 @@ public class GDriveSyncer extends AbstractProviderSyncer<Drive>
             for (String parent: parents) {
                 for (File replacedFile: listFiles(
                         String.format("'%s' in parents and name='%s'",
-                                      parent, dbfile.itsRemoteTitle))) {
+                                      encodeQueryVal(parent),
+                                      encodeQueryVal(dbfile.itsRemoteTitle)))) {
                     if (driveFiles.getRemoteFile(replacedFile.getId()) ==
                         null) {
                         continue;
@@ -220,7 +221,7 @@ public class GDriveSyncer extends AbstractProviderSyncer<Drive>
     {
         List<File> fileList =
                 listFiles(String.format("'root' in parents and name='%s'",
-                                        dbfile.itsLocalTitle));
+                                        encodeQueryVal(dbfile.itsLocalTitle)));
         if (!fileList.isEmpty()) {
             File remfile = fileList.get(0);
             driveFiles.addRemoteFileForNew(
@@ -275,6 +276,11 @@ public class GDriveSyncer extends AbstractProviderSyncer<Drive>
         return (ext != null) && ext.equals("psafe3");
     }
 
+    /** Encode a value used in a query */
+    private static String encodeQueryVal(String str)
+    {
+        return str.replace("'", "\\'");
+    }
 
     /** Is the file a folder */
     public static boolean isFolderFile(@NonNull File file)
