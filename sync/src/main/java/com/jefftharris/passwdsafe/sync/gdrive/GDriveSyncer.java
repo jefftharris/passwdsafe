@@ -175,9 +175,13 @@ public class GDriveSyncer extends AbstractProviderSyncer<Drive>
                 }
             }
 
+            List<String> parents = dbremfile.getParents();
+            if (parents == null) {
+                break;
+            }
             PasswdSafeUtil.dbginfo(TAG, "check replace %s", dbremfile);
             parentsloop:
-            for (String parent: dbremfile.getParents()) {
+            for (String parent: parents) {
                 for (File replacedFile: listFiles(
                         String.format("'%s' in parents and name='%s'",
                                       parent, dbfile.itsRemoteTitle))) {

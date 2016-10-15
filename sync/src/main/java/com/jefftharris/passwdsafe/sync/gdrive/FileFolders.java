@@ -1,7 +1,8 @@
 /*
- * Copyright (©) 2014 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync.gdrive;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -41,8 +43,11 @@ public class FileFolders
         String fileId = file.getId();
         itsFileCache.put(fileId, file);
         ArrayList<String> folders = new ArrayList<>();
-        for (String parentId: file.getParents()) {
-            traceParentRefs(parentId, "", folders);
+        List<String> parents = file.getParents();
+        if (parents != null) {
+            for (String parentId : parents) {
+                traceParentRefs(parentId, "", folders);
+            }
         }
         Collections.sort(folders);
         return TextUtils.join(", ", folders);
@@ -80,12 +85,13 @@ public class FileFolders
         if (parentFile == null) {
             return;
         }
-        if (parentFile.getParents() == null) {
+        List<String> parents = parentFile.getParents();
+        if (parents == null) {
             suffix = parentFile.getName() + suffix;
             folders.add(suffix);
         } else {
             suffix = "/" + parentFile.getName() + suffix;
-            for (String parentParentId: parentFile.getParents()) {
+            for (String parentParentId: parents) {
                 traceParentRefs(parentParentId, suffix, folders);
             }
         }
