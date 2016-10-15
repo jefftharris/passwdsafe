@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2013 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -18,7 +18,6 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -59,6 +58,9 @@ public final class FileListFragment extends ListFragment
     {
         /** Open a file */
         void openFile(Uri uri, String fileName);
+
+        /** Create a new file */
+        void createNewFile(Uri dirUri);
 
         /** Does the activity have a menu */
         boolean activityHasMenu();
@@ -205,8 +207,7 @@ public final class FileListFragment extends ListFragment
         switch (item.getItemId()) {
         case R.id.menu_file_new: {
             if (itsDir != null) {
-                startActivity(new Intent(PasswdSafeUtil.NEW_INTENT,
-                                         Uri.fromFile(itsDir)));
+                itsListener.createNewFile(Uri.fromFile(itsDir));
             }
             return true;
         }
