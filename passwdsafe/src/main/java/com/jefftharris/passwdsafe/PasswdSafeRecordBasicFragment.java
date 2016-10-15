@@ -29,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -36,6 +37,7 @@ import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
+import com.jefftharris.passwdsafe.view.TextInputUtils;
 
 import org.pwsafe.lib.file.PwsRecord;
 
@@ -50,6 +52,7 @@ import java.util.regex.Pattern;
 public class PasswdSafeRecordBasicFragment
         extends AbstractPasswdSafeRecordFragment
         implements View.OnClickListener,
+                   View.OnLongClickListener,
                    CompoundButton.OnCheckedChangeListener
 {
     /**
@@ -66,10 +69,11 @@ public class PasswdSafeRecordBasicFragment
     private static final Pattern SUBSET_SPLIT = Pattern.compile("[ ,;]+");
     private static final char[] SUBSET_CHARS =
             { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-              '-', ' ', ',', ';' };
+              '-', ' ', ',', ';', '?' };
 
     private boolean itsIsPasswordShown = false;
     private String itsHiddenPasswordStr;
+    private String itsSubsetErrorStr;
     private String itsTitle;
     private View itsBaseRow;
     private TextView itsBaseLabel;
@@ -155,6 +159,7 @@ public class PasswdSafeRecordBasicFragment
         itsPasswordSubsetBtn = (CompoundButton)
                 root.findViewById(R.id.password_subset_btn);
         itsPasswordSubsetBtn.setOnCheckedChangeListener(this);
+        itsPasswordSubsetBtn.setOnLongClickListener(this);
         itsPasswordSubsetInput = (TextInputLayout)
                 root.findViewById(R.id.password_subset_input);
         itsPasswordSubset = (TextView)root.findViewById(R.id.password_subset);
@@ -166,8 +171,6 @@ public class PasswdSafeRecordBasicFragment
                 passwordSubsetChanged();
             }
         });
-        // TODO: i18n for subset
-        // TODO: help
         itsPasswordSubset.setKeyListener(new NumberKeyListener()
         {
             @Override
@@ -324,6 +327,19 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
+    public boolean onLongClick(View v)
+    {
+        switch (v.getId()) {
+        case R.id.password_subset_btn: {
+            Toast.makeText(getContext(), R.string.password_subset,
+                           Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        }
+        return false;
+    }
+
+    @Override
     public void onCheckedChanged(CompoundButton btn, boolean checked)
     {
         switch (btn.getId()) {
@@ -395,8 +411,11 @@ public class PasswdSafeRecordBasicFragment
         String password = info.itsFileData.getPassword(recForPassword);
         setFieldText(itsPassword, itsPasswordRow,
                      ((password != null) ? itsHiddenPasswordStr : null));
-        itsPasswordSeek.setMax((password != null) ? password.length() : 0);
+        int passwordLen = (password != null) ? password.length() : 0;
+        itsPasswordSeek.setMax(passwordLen);
         itsPasswordSeek.setProgress(0);
+        itsSubsetErrorStr = getString(R.string.password_subset_error,
+                                      passwordLen);
 
         setFieldText(itsUrl, itsUrlRow, url);
         setFieldText(itsEmail, itsEmailRow, email);
@@ -517,9 +536,13 @@ public class PasswdSafeRecordBasicFragment
         itsPasswordSubsetBtn.setChecked(subsetShown);
         GuiUtils.setVisible(itsPasswordSeek, seekShown);
         GuiUtils.setTextInputVisible(itsPasswordSubsetInput, subsetShown);
+        if (subsetShown) {
+            itsPasswordSubset.requestFocus();
+        }
+        Activity act = getActivity();
+        GuiUtils.setKeyboardVisible(itsPasswordSubset, act, subsetShown);
         itsPassword.setText(
                 (password != null) ? password : itsHiddenPasswordStr);
-        Activity act = getActivity();
         TypefaceUtils.enableMonospace(itsPassword, itsIsPasswordShown, act);
         GuiUtils.invalidateOptionsMenu(act);
     }
@@ -533,12 +556,20 @@ public class PasswdSafeRecordBasicFragment
         String password = getPassword();
         int passwordLen = password.length();
         StringBuilder passwordSubset = new StringBuilder();
-        for (String token: TextUtils.split(subset, SUBSET_SPLIT)) {
+        boolean error = false;
+        String[] tokens = TextUtils.split(subset, SUBSET_SPLIT);
+        for (int i = 0; i < tokens.length; ++i) {
+            String trimToken = tokens[i].trim();
+            if ((trimToken.length() == 0) ||
+                ((i == (tokens.length - 1)) && trimToken.equals("-"))) {
+                continue;
+            }
             int idx;
             try {
-                idx = Integer.parseInt(token.trim());
+                idx = Integer.parseInt(trimToken);
             } catch (Exception e) {
-                continue;
+                error = true;
+                break;
             }
             char c;
             if ((idx > 0) && (idx <= passwordLen)) {
@@ -546,13 +577,17 @@ public class PasswdSafeRecordBasicFragment
             } else if ((idx < 0) && (-idx <= passwordLen)) {
                 c = password.charAt(passwordLen + idx);
             } else {
-                continue;
+                error = true;
+                break;
             }
             if (passwordSubset.length() > 0) {
                 passwordSubset.append(" ");
             }
             passwordSubset.append(c);
         }
+
+        TextInputUtils.setTextInputError(error ? itsSubsetErrorStr : null,
+                                         itsPasswordSubsetInput);
         itsPassword.setText(passwordSubset.toString());
     }
 
