@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,9 +7,11 @@
  */
 package com.jefftharris.passwdsafe.view;
 
+import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Comparator for records
@@ -18,25 +20,27 @@ public final class PasswdRecordListDataComparator
         implements Comparator<PasswdRecordListData>
 {
     private final boolean itsIsSortCaseSensitive;
-    private final RecordSortOrderPref itsSortOrder;
+    private final RecordSortOrderPref itsGroupSortOrder;
+    private final RecordFieldSortPref itsFieldSortOrder;
 
     /**
      * Constructor
      */
     public PasswdRecordListDataComparator(boolean sortCaseSensitive,
-                                          RecordSortOrderPref sortOrder)
+                                          RecordSortOrderPref groupSortOrder,
+                                          RecordFieldSortPref fieldSortOrder)
     {
         itsIsSortCaseSensitive = sortCaseSensitive;
-        itsSortOrder = sortOrder;
+        itsGroupSortOrder = groupSortOrder;
+        itsFieldSortOrder = fieldSortOrder;
     }
 
     @Override
-    public int compare(PasswdRecordListData arg0,
-                       PasswdRecordListData arg1)
+    public int compare(PasswdRecordListData arg0, PasswdRecordListData arg1)
     {
         int rc;
         // Compare group order
-        switch (itsSortOrder) {
+        switch (itsGroupSortOrder) {
         case GROUP_FIRST: {
             rc = compareIsGroup(arg0, arg1);
             if (rc != 0) {
@@ -49,6 +53,31 @@ public final class PasswdRecordListDataComparator
         }
         case GROUP_LAST: {
             rc = -compareIsGroup(arg0, arg1);
+            if (rc != 0) {
+                return rc;
+            }
+            break;
+        }
+        }
+
+        // Compare record field
+        switch (itsFieldSortOrder) {
+        case TITLE: {
+            break;
+        }
+        case CREATION_DATE: {
+            rc = compareDateField(arg0.itsCreationTime, arg1.itsCreationTime);
+            if (rc != 0) {
+                return rc;
+            }
+            break;
+        }
+        case MOD_DATE: {
+            Date date0 = (arg0.itsModTime != null) ?
+                         arg0.itsModTime : arg0.itsCreationTime;
+            Date date1 = (arg1.itsModTime != null) ?
+                         arg1.itsModTime : arg1.itsCreationTime;
+            rc = compareDateField(date0, date1);
             if (rc != 0) {
                 return rc;
             }
@@ -80,6 +109,22 @@ public final class PasswdRecordListDataComparator
             } else {
                 return arg0.compareToIgnoreCase(arg1);
             }
+        }
+    }
+
+    /**
+     * Compare two date fields
+     */
+    private int compareDateField(Date arg0, Date arg1)
+    {
+        if ((arg0 == null) && (arg1 == null)) {
+            return 0;
+        } else if ((arg0 != null) && (arg1 == null)) {
+            return 1;
+        } else if (arg0 == null) {
+            return -1;
+        } else {
+            return arg0.compareTo(arg1);
         }
     }
 

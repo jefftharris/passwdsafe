@@ -280,6 +280,7 @@
     <string name="record_has_references">Record has references</string>
     <string name="record_not_found">Record not found</string>
     <string name="record_policy">Record Policy</string>
+    <string name="record_sort_field">Record sort field</string>
     <string name="record_sort_order">Record sort order</string>
     <string name="record_type">Record type</string>
     <string name="read_only_about">Read-only</string>
@@ -484,6 +485,13 @@
         <item>Groups first</item>
         <item>Groups mixed</item>
         <item>Groups last</item>
+    </string-array>
+
+    <!-- Order must match constants in RecordFieldSortPref -->
+    <string-array name="record_field_sort_pref">
+        <item>Title</item>
+        <item>Creation date</item>
+        <item>Modification date</item>
     </string-array>
 
     <!-- Order must match constants in PasswdSafeEditRecordFragment -->

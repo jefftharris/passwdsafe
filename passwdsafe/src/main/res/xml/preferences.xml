@@ -123,6 +123,12 @@
             android:key="recordSortOrderPref"
             android:title="@string/record_sort_order"/>
 
+        <!--suppress AndroidElementNotAllowed -->
+        <com.jefftharris.passwdsafe.view.LongListPreference
+            android:name="recordFieldSortPref"
+            android:key="recordFieldSortPref"
+            android:title="@string/record_sort_field"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:key="searchOptions"

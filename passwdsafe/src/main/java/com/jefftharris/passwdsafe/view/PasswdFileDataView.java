@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -22,6 +22,7 @@ import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
+import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 
 import org.pwsafe.lib.file.PwsRecord;
@@ -29,6 +30,7 @@ import org.pwsafe.lib.file.PwsRecord;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -65,6 +67,8 @@ public class PasswdFileDataView
             Preferences.PREF_SEARCH_REGEX_DEF;
     private RecordSortOrderPref itsRecordSortOrder =
             Preferences.PREF_RECORD_SORT_ORDER_DEF;
+    private RecordFieldSortPref itsRecordFieldSort =
+            Preferences.PREF_RECORD_FIELD_SORT_DEF;
     private PasswdExpiryNotifPref itsExpiryNotifPref =
             Preferences.PREF_PASSWD_EXPIRY_NOTIF_DEF;
     private Context itsContext;
@@ -93,6 +97,7 @@ public class PasswdFileDataView
                 Preferences.getSearchCaseSensitivePref(prefs);
         itsIsSearchRegex = Preferences.getSearchRegexPref(prefs);
         itsRecordSortOrder = Preferences.getRecordSortOrderPref(prefs);
+        itsRecordFieldSort = Preferences.getRecordFieldSortPref(prefs);
         itsExpiryNotifPref = Preferences.getPasswdExpiryNotifPref(prefs);
 
         Resources.Theme theme = ctx.getTheme();
@@ -145,6 +150,11 @@ public class PasswdFileDataView
         }
         case Preferences.PREF_RECORD_SORT_ORDER: {
             itsRecordSortOrder = Preferences.getRecordSortOrderPref(prefs);
+            rebuild = true;
+            break;
+        }
+        case Preferences.PREF_RECORD_FIELD_SORT: {
+            itsRecordFieldSort = Preferences.getRecordFieldSortPref(prefs);
             rebuild = true;
             break;
         }
@@ -223,7 +233,7 @@ public class PasswdFileDataView
                             R.plurals.group_items, items, items);
 
                     records.add(new PasswdRecordListData(
-                            entry.getKey(), str, null,
+                            entry.getKey(), str, null, null, null,
                             null, itsFolderIcon, false));
                 }
             }
@@ -240,7 +250,8 @@ public class PasswdFileDataView
 
         PasswdRecordListDataComparator comp =
                 new PasswdRecordListDataComparator(itsIsSortCaseSensitive,
-                                                   itsRecordSortOrder);
+                                                   itsRecordSortOrder,
+                                                   itsRecordFieldSort);
         Collections.sort(records, comp);
         return records;
     }
@@ -513,8 +524,9 @@ public class PasswdFileDataView
             user = "[" + user + "]";
         }
 
-        return new PasswdRecordListData(title, user, rec.itsUuid, rec.itsMatch,
-                                        itsRecordIcon, true);
+        return new PasswdRecordListData(title, user, rec.itsUuid,
+                                        rec.itsCreationTime, rec.itsModTime,
+                                        rec.itsMatch, itsRecordIcon, true);
     }
 
 
@@ -592,11 +604,13 @@ public class PasswdFileDataView
     /**
      * A matched PwsRecord
      */
-    public static final class MatchPwsRecord
+    private static final class MatchPwsRecord
     {
         public final String itsTitle;
         public final String itsUsername;
         public final String itsUuid;
+        public final Date itsCreationTime;
+        public final Date itsModTime;
         public final String itsMatch;
 
         public MatchPwsRecord(PwsRecord rec,
@@ -606,6 +620,17 @@ public class PasswdFileDataView
             itsTitle = fileData.getTitle(rec);
             itsUsername = fileData.getUsername(rec);
             itsUuid = fileData.getUUID(rec);
+            itsCreationTime = fileData.getCreationTime(rec);
+            Date modTime = fileData.getLastModTime(rec);
+            Date passwdModTime = fileData.getPasswdLastModTime(rec);
+            if ((modTime != null) && (passwdModTime != null)) {
+                if (passwdModTime.compareTo(modTime) > 0) {
+                    modTime = passwdModTime;
+                }
+            } else if (modTime == null) {
+                modTime = passwdModTime;
+            }
+            itsModTime = modTime;
             itsMatch = match;
         }
     }

@@ -23,6 +23,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
+import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 
 /**
@@ -89,6 +90,11 @@ public class Preferences
     public static final String PREF_RECORD_SORT_ORDER = "recordSortOrderPref";
     public static final RecordSortOrderPref PREF_RECORD_SORT_ORDER_DEF =
             RecordSortOrderPref.GROUP_FIRST;
+
+    public static final String PREF_RECORD_FIELD_SORT =
+            "recordFieldSortPref";
+    public static final RecordFieldSortPref PREF_RECORD_FIELD_SORT_DEF =
+            RecordFieldSortPref.TITLE;
 
     public static final String PREF_SEARCH_CASE_SENSITIVE =
         "searchCaseSensitivePref";
@@ -405,6 +411,18 @@ public class Preferences
                                     PREF_RECORD_SORT_ORDER_DEF.toString()));
         } catch (IllegalArgumentException e) {
             return RecordSortOrderPref.GROUP_FIRST;
+        }
+    }
+
+    public static RecordFieldSortPref getRecordFieldSortPref(
+            SharedPreferences prefs)
+    {
+        try {
+            return RecordFieldSortPref.valueOf(
+                    prefs.getString(PREF_RECORD_FIELD_SORT,
+                                    PREF_RECORD_FIELD_SORT_DEF.toString()));
+        } catch (IllegalArgumentException e) {
+            return PREF_RECORD_FIELD_SORT_DEF;
         }
     }
 

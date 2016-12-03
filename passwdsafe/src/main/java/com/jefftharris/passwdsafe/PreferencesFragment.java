@@ -30,6 +30,7 @@ import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
+import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 
@@ -76,6 +77,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     private ListPreference itsPasswdExpiryNotifPref;
     private EditTextPreference itsPasswdDefaultSymsPref;
     private ListPreference itsRecordSortOrderPref;
+    private ListPreference itsRecordFieldSortPref;
 
     /**
      * Create a new instance
@@ -161,6 +163,13 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                 RecordSortOrderPref.getDisplayNames(res));
         itsRecordSortOrderPref.setEntryValues(RecordSortOrderPref.getValues());
         onSharedPreferenceChanged(prefs, Preferences.PREF_RECORD_SORT_ORDER);
+
+        itsRecordFieldSortPref = (ListPreference)
+                findPreference(Preferences.PREF_RECORD_FIELD_SORT);
+        itsRecordFieldSortPref.setEntries(
+                RecordFieldSortPref.getDisplayNames(res));
+        itsRecordFieldSortPref.setEntryValues(RecordFieldSortPref.getValues());
+        onSharedPreferenceChanged(prefs, Preferences.PREF_RECORD_FIELD_SORT);
     }
 
     @Override
@@ -246,6 +255,13 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                     Preferences.getRecordSortOrderPref(prefs);
             Resources res = getResources();
             itsRecordSortOrderPref.setSummary(pref.getDisplayName(res));
+            break;
+        }
+        case Preferences.PREF_RECORD_FIELD_SORT: {
+            RecordFieldSortPref pref =
+                    Preferences.getRecordFieldSortPref(prefs);
+            Resources res = getResources();
+            itsRecordFieldSortPref.setSummary(pref.getDisplayName(res));
             break;
         }
         case Preferences.PREF_DISPLAY_THEME_LIGHT: {
