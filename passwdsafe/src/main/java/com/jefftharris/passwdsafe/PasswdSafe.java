@@ -666,6 +666,14 @@ public class PasswdSafe extends AppCompatActivity
                      PasswdSafeExpirationsFragment.newInstance());
     }
 
+    @Override
+    public void showRecordPreferences()
+    {
+        doChangeView(ChangeMode.VIEW_PREFERENCES,
+                     PreferencesFragment.newInstance(
+                             PreferencesFragment.SCREEN_RECORD));
+    }
+
     /**
      * Show the preferences
      */
@@ -924,6 +932,12 @@ public class PasswdSafe extends AppCompatActivity
     public void updateViewEditRecord(PasswdLocation location)
     {
         doUpdateView(ViewMode.EDIT_RECORD, location);
+    }
+
+    @Override
+    public boolean activityHasMenu()
+    {
+        return true;
     }
 
     @Override

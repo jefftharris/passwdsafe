@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2011-2013 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -223,6 +223,23 @@ public class LauncherRecordShortcuts extends AppCompatActivity
             ((PasswdSafeListFragment)contentsFrag).updateLocationView(
                     itsLocation, PasswdSafeListFragment.Mode.ALL);
         }
+    }
+
+    @Override
+    public boolean activityHasMenu()
+    {
+        return false;
+    }
+
+    @Override
+    public void showRecordPreferences()
+    {
+    }
+
+    @Override
+    public boolean isNavDrawerClosed()
+    {
+        return true;
     }
 
     /**

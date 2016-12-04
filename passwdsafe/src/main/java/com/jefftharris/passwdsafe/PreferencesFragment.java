@@ -52,6 +52,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         void updateViewPreferences();
     }
 
+    public static final String SCREEN_RECORD = "recordOptions";
+
     /** Action confirmed via ConfirmPromptDialog */
     private enum ConfirmAction
     {
@@ -92,22 +94,22 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s)
+    public void onCreatePreferences(Bundle bundle, String key)
     {
-        setPreferencesFromResource(R.xml.preferences, s);
+        setPreferencesFromResource(R.xml.preferences, key);
         SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
         Resources res = getResources();
 
-        if ((s == null) || s.equals("top_prefs")) {
+        if ((key == null) || key.equals("top_prefs")) {
             itsScreen = new RootScreen();
-        } else if (s.equals("fileOptions")) {
+        } else if (key.equals("fileOptions")) {
             itsScreen = new FilesScreen(prefs, res);
-        } else if (s.equals("passwordOptions")) {
+        } else if (key.equals("passwordOptions")) {
             itsScreen = new PasswordScreen(prefs, res);
-        } else if (s.equals("recordOptions")) {
+        } else if (key.equals(SCREEN_RECORD)) {
             itsScreen = new RecordScreen(prefs, res);
         } else {
-            PasswdSafeUtil.showFatalMsg("Unknown preferences screen: " + s,
+            PasswdSafeUtil.showFatalMsg("Unknown preferences screen: " + key,
                                         getActivity());
         }
     }

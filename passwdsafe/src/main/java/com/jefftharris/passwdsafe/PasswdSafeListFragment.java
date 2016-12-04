@@ -16,6 +16,8 @@ import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,11 +64,20 @@ public class PasswdSafeListFragment extends ListFragment
         /** Copy a field */
         void copyField(CopyField field, String recUuid);
 
+        /** Show the record preferences */
+        void showRecordPreferences();
+
         /** Change the location in the password file */
         void changeLocation(PasswdLocation location);
 
         /** Update the view for a list of records */
         void updateViewList(PasswdLocation location);
+
+        /** Does the activity have a menu */
+        boolean activityHasMenu();
+
+        /** Is the navigation drawer closed */
+        boolean isNavDrawerClosed();
     }
 
     private static final String STATE_SELECTED_RECORD = "selectedRecord";
@@ -138,6 +149,7 @@ public class PasswdSafeListFragment extends ListFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
+        setHasOptionsMenu(true);
         View root = inflater.inflate(R.layout.fragment_passwdsafe_list,
                                      container, false);
 
@@ -191,6 +203,32 @@ public class PasswdSafeListFragment extends ListFragment
     {
         super.onDetach();
         itsListener = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        if (itsIsContents && (itsListener != null) &&
+            itsListener.activityHasMenu() && itsListener.isNavDrawerClosed()) {
+            inflater.inflate(R.menu.fragment_passwdsafe_list, menu);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+        case R.id.menu_sort: {
+            if (itsListener != null) {
+                itsListener.showRecordPreferences();
+            }
+            return true;
+        }
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
+        }
     }
 
     @Override
