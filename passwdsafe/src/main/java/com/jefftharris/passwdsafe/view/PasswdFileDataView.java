@@ -219,7 +219,7 @@ public class PasswdFileDataView
             boolean incGroups)
     {
         List<PasswdRecordListData> records = new ArrayList<>();
-        if (itsCurrGroupNode == null) {
+        if ((itsCurrGroupNode == null) || (itsContext == null)) {
             return records;
         }
 
