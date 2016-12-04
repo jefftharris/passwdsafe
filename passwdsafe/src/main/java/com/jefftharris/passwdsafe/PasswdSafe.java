@@ -23,6 +23,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -73,7 +75,8 @@ public class PasswdSafe extends AppCompatActivity
                    PasswdSafeNavDrawerFragment.Listener,
                    PasswdSafeNewFileFragment.Listener,
                    PasswdSafeRecordFragment.Listener,
-                   PreferencesFragment.Listener
+                   PreferencesFragment.Listener,
+                   PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 {
     public static final int CONTEXT_GROUP_RECORD_BASIC = 1;
     public static final int CONTEXT_GROUP_LIST = 2;
@@ -625,6 +628,15 @@ public class PasswdSafe extends AppCompatActivity
         }
     }
 
+    @Override
+    public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller,
+                                           PreferenceScreen pref)
+    {
+        doChangeView(ChangeMode.VIEW_PREFERENCES,
+                     PreferencesFragment.newInstance(pref.getKey()));
+        return true;
+    }
+
     /**
      * Show the file records
      */
@@ -661,7 +673,7 @@ public class PasswdSafe extends AppCompatActivity
     public void showPreferences()
     {
         doChangeView(ChangeMode.VIEW_PREFERENCES,
-                     PreferencesFragment.newInstance());
+                     PreferencesFragment.newInstance(null));
     }
 
     /**

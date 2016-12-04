@@ -20,6 +20,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,7 +47,8 @@ public class FileListActivity extends AppCompatActivity
                    SharedPreferences.OnSharedPreferenceChangeListener,
                    StorageFileListFragment.Listener,
                    SyncProviderFragment.Listener,
-                   SyncProviderFilesFragment.Listener
+                   SyncProviderFilesFragment.Listener,
+                   PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 {
     public static final String INTENT_EXTRA_CLOSE_ON_OPEN = "closeOnOpen";
 
@@ -245,6 +248,15 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller,
+                                           PreferenceScreen pref)
+    {
+        doChangeView(ChangeMode.VIEW_PREFERENCES,
+                     PreferencesFragment.newInstance(pref.getKey()), null);
+        return true;
+    }
+
+    @Override
     public void showSyncProviderFiles(Uri uri)
     {
         FragmentManager fragMgr = getSupportFragmentManager();
@@ -352,7 +364,7 @@ public class FileListActivity extends AppCompatActivity
     public void showPreferences()
     {
         doChangeView(ChangeMode.VIEW_PREFERENCES,
-                     PreferencesFragment.newInstance(), null);
+                     PreferencesFragment.newInstance(null), null);
     }
 
     /**

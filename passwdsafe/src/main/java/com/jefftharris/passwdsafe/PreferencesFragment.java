@@ -27,6 +27,7 @@ import android.util.Log;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
@@ -42,9 +43,7 @@ import java.io.File;
  * Fragment for PasswdSafe preferences
  */
 public class PreferencesFragment extends PreferenceFragmentCompat
-        implements ConfirmPromptDialog.Listener,
-                   SharedPreferences.OnSharedPreferenceChangeListener,
-                   Preference.OnPreferenceClickListener
+        implements ConfirmPromptDialog.Listener
 {
     /** Listener interface for owning activity */
     public interface Listener
@@ -69,22 +68,18 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     private static final String TAG = "PreferencesFragment";
 
     private Listener itsListener;
-    private EditTextPreference itsFileDirPref;
-    private Preference itsDefFilePref;
-    private ListPreference itsFileClosePref;
-    private ListPreference itsFileBackupPref;
-    private ListPreference itsPasswdEncPref;
-    private ListPreference itsPasswdExpiryNotifPref;
-    private EditTextPreference itsPasswdDefaultSymsPref;
-    private ListPreference itsRecordSortOrderPref;
-    private ListPreference itsRecordFieldSortPref;
+    private Screen itsScreen;
 
     /**
      * Create a new instance
      */
-    public static PreferencesFragment newInstance()
+    public static PreferencesFragment newInstance(String key)
     {
-        return new PreferencesFragment();
+        Bundle args = new Bundle();
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, key);
+        PreferencesFragment frag = new PreferencesFragment();
+        frag.setArguments(args);
+        return frag;
     }
 
     @Override
@@ -99,86 +94,41 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     @Override
     public void onCreatePreferences(Bundle bundle, String s)
     {
-        addPreferencesFromResource(R.xml.preferences);
+        setPreferencesFromResource(R.xml.preferences, s);
         SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
-        prefs.registerOnSharedPreferenceChangeListener(this);
         Resources res = getResources();
 
-        itsFileDirPref = (EditTextPreference)
-                findPreference(Preferences.PREF_FILE_DIR);
-        itsFileDirPref.setDefaultValue(Preferences.PREF_FILE_DIR_DEF);
-        onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_DIR);
-
-        itsDefFilePref = findPreference(Preferences.PREF_DEF_FILE);
-        itsDefFilePref.setOnPreferenceClickListener(this);
-        onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
-
-        itsFileClosePref = (ListPreference)
-                findPreference(Preferences.PREF_FILE_CLOSE_TIMEOUT);
-        itsFileClosePref.setEntries(FileTimeoutPref.getDisplayNames(res));
-        itsFileClosePref.setEntryValues(FileTimeoutPref.getValues());
-        onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_CLOSE_TIMEOUT);
-
-        itsFileBackupPref = (ListPreference)
-                findPreference(Preferences.PREF_FILE_BACKUP);
-        itsFileBackupPref.setEntries(FileBackupPref.getDisplayNames(res));
-        itsFileBackupPref.setEntryValues(FileBackupPref.getValues());
-        onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_BACKUP);
-
-        itsPasswdEncPref = (ListPreference)
-                findPreference(Preferences.PREF_PASSWD_ENC);
-        String[] charsets =  PwsFile.ALL_PASSWORD_CHARSETS.toArray(
-                new String[PwsFile.ALL_PASSWORD_CHARSETS.size()]);
-        itsPasswdEncPref.setEntries(charsets);
-        itsPasswdEncPref.setEntryValues(charsets);
-        itsPasswdEncPref.setDefaultValue(Preferences.PREF_PASSWD_ENC_DEF);
-        onSharedPreferenceChanged(prefs, Preferences.PREF_PASSWD_ENC);
-
-        itsPasswdExpiryNotifPref = (ListPreference)
-                findPreference(Preferences.PREF_PASSWD_EXPIRY_NOTIF);
-        itsPasswdExpiryNotifPref.setEntries(
-                PasswdExpiryNotifPref.getDisplayNames(res));
-        itsPasswdExpiryNotifPref.setEntryValues(
-                PasswdExpiryNotifPref.getValues());
-        onSharedPreferenceChanged(prefs, Preferences.PREF_PASSWD_EXPIRY_NOTIF);
-
-        itsPasswdDefaultSymsPref = (EditTextPreference)
-                findPreference(Preferences.PREF_PASSWD_DEFAULT_SYMS);
-        itsPasswdDefaultSymsPref.setDialogMessage(
-                getString(R.string.default_symbols_empty_pref,
-                          PasswdPolicy.SYMBOLS_DEFAULT));
-        itsPasswdDefaultSymsPref.setDefaultValue(PasswdPolicy.SYMBOLS_DEFAULT);
-        onSharedPreferenceChanged(prefs, Preferences.PREF_PASSWD_DEFAULT_SYMS);
-
-        Preference clearNotifsPref =
-                findPreference(Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS);
-        clearNotifsPref.setOnPreferenceClickListener(this);
-        Preference clearAllSavedPref =
-                findPreference(Preferences.PREF_PASSWD_CLEAR_ALL_SAVED);
-        clearAllSavedPref.setOnPreferenceClickListener(this);
-
-        itsRecordSortOrderPref = (ListPreference)
-                findPreference(Preferences.PREF_RECORD_SORT_ORDER);
-        itsRecordSortOrderPref.setEntries(
-                RecordSortOrderPref.getDisplayNames(res));
-        itsRecordSortOrderPref.setEntryValues(RecordSortOrderPref.getValues());
-        onSharedPreferenceChanged(prefs, Preferences.PREF_RECORD_SORT_ORDER);
-
-        itsRecordFieldSortPref = (ListPreference)
-                findPreference(Preferences.PREF_RECORD_FIELD_SORT);
-        itsRecordFieldSortPref.setEntries(
-                RecordFieldSortPref.getDisplayNames(res));
-        itsRecordFieldSortPref.setEntryValues(RecordFieldSortPref.getValues());
-        onSharedPreferenceChanged(prefs, Preferences.PREF_RECORD_FIELD_SORT);
+        if ((s == null) || s.equals("top_prefs")) {
+            itsScreen = new RootScreen();
+        } else if (s.equals("fileOptions")) {
+            itsScreen = new FilesScreen(prefs, res);
+        } else if (s.equals("passwordOptions")) {
+            itsScreen = new PasswordScreen(prefs, res);
+        } else if (s.equals("recordOptions")) {
+            itsScreen = new RecordScreen(prefs, res);
+        } else {
+            PasswdSafeUtil.showFatalMsg("Unknown preferences screen: " + s,
+                                        getActivity());
+        }
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
+        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+        prefs.registerOnSharedPreferenceChangeListener(itsScreen);
         if (itsListener != null) {
             itsListener.updateViewPreferences();
         }
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+        prefs.unregisterOnSharedPreferenceChangeListener(itsScreen);
     }
 
     @Override
@@ -189,144 +139,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
-        prefs.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
-    {
-        switch (key) {
-        case Preferences.PREF_FILE_DIR: {
-            File pref = Preferences.getFileDirPref(prefs);
-            if (pref == null) {
-                itsFileDirPref.setText(null);
-                itsFileDirPref.setSummary(null);
-                break;
-            }
-            if (TextUtils.isEmpty(pref.toString())) {
-                pref = new File(Preferences.PREF_FILE_DIR_DEF);
-                itsFileDirPref.setText(pref.toString());
-            }
-            if (!TextUtils.equals(pref.toString(), itsFileDirPref.getText())) {
-                itsFileDirPref.setText(pref.toString());
-            }
-            itsFileDirPref.setSummary(pref.toString());
-            break;
-        }
-        case Preferences.PREF_DEF_FILE: {
-            new DefaultFileResolver(
-                    Preferences.getDefFilePref(prefs)).execute();
-            break;
-        }
-        case Preferences.PREF_FILE_CLOSE_TIMEOUT: {
-            FileTimeoutPref pref = Preferences.getFileCloseTimeoutPref(prefs);
-            itsFileClosePref.setSummary(pref.getDisplayName(getResources()));
-            break;
-        }
-        case Preferences.PREF_FILE_BACKUP: {
-            FileBackupPref pref = Preferences.getFileBackupPref(prefs);
-            itsFileBackupPref.setSummary(pref.getDisplayName(getResources()));
-            break;
-        }
-        case Preferences.PREF_PASSWD_ENC: {
-            itsPasswdEncPref.setSummary(
-                    Preferences.getPasswordEncodingPref(prefs));
-            break;
-        }
-        case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
-            PasswdExpiryNotifPref pref =
-                    Preferences.getPasswdExpiryNotifPref(prefs);
-            Resources res = getResources();
-            itsPasswdExpiryNotifPref.setSummary(pref.getDisplayName(res));
-            break;
-        }
-        case Preferences.PREF_PASSWD_DEFAULT_SYMS: {
-            String val = Preferences.getPasswdDefaultSymbolsPref(prefs);
-            itsPasswdDefaultSymsPref.setSummary(
-                    getString(R.string.symbols_used_by_default, val));
-            break;
-        }
-        case Preferences.PREF_RECORD_SORT_ORDER: {
-            RecordSortOrderPref pref =
-                    Preferences.getRecordSortOrderPref(prefs);
-            Resources res = getResources();
-            itsRecordSortOrderPref.setSummary(pref.getDisplayName(res));
-            break;
-        }
-        case Preferences.PREF_RECORD_FIELD_SORT: {
-            RecordFieldSortPref pref =
-                    Preferences.getRecordFieldSortPref(prefs);
-            Resources res = getResources();
-            itsRecordFieldSortPref.setSummary(pref.getDisplayName(res));
-            break;
-        }
-        case Preferences.PREF_DISPLAY_THEME_LIGHT: {
-            ApiCompat.recreateActivity(getActivity());
-            break;
-        }
-        }
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference)
-    {
-        switch (preference.getKey()) {
-        case Preferences.PREF_DEF_FILE: {
-            Intent intent = new Intent(Intent.ACTION_CREATE_SHORTCUT, null,
-                                       getContext(),
-                                       LauncherFileShortcuts.class);
-            intent.putExtra(LauncherFileShortcuts.EXTRA_IS_DEFAULT_FILE, true);
-            startActivityForResult(intent, REQUEST_DEFAULT_FILE);
-            return true;
-        }
-        case Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS: {
-            Activity act = getActivity();
-            PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
-            Bundle confirmArgs = new Bundle();
-            confirmArgs.putString(CONFIRM_ARG_ACTION,
-                                  ConfirmAction.CLEAR_ALL_NOTIFS.name());
-            DialogFragment dlg = app.getNotifyMgr().createClearAllPrompt(
-                    act, confirmArgs);
-            dlg.setTargetFragment(this, REQUEST_CLEAR_ALL_NOTIFS);
-            dlg.show(getFragmentManager(), "clearNotifsConfirm");
-            return true;
-        }
-        case Preferences.PREF_PASSWD_CLEAR_ALL_SAVED: {
-            Bundle confirmArgs = new Bundle();
-            confirmArgs.putString(CONFIRM_ARG_ACTION,
-                                  ConfirmAction.CLEAR_ALL_SAVED.name());
-            ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
-                    getString(R.string.clear_all_saved_passwords),
-                    getString(R.string.erase_all_saved_passwords),
-                    getString(R.string.clear), confirmArgs);
-            dlg.setTargetFragment(this, REQUEST_CLEAR_ALL_SAVED);
-            dlg.show(getFragmentManager(), "clearSavedConfirm");
-            return true;
-        }
-        }
-        return false;
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        switch (requestCode) {
-        case REQUEST_DEFAULT_FILE: {
-            if (resultCode != Activity.RESULT_OK) {
-                break;
-            }
-            Intent val = data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT);
-            setDefFilePref((val != null) ? val.getData().toString() : null);
-            break;
-        }
-        default: {
+        if (!itsScreen.onActivityResult(requestCode, resultCode, data))
+        {
             super.onActivityResult(requestCode, resultCode, data);
-            break;
-        }
         }
     }
 
@@ -345,91 +162,439 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         } catch (Exception e) {
             return;
         }
+        itsScreen.promptConfirmed(action);
+    }
 
-        switch (action) {
-        case CLEAR_ALL_NOTIFS: {
-            Activity act = getActivity();
-            PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
-            app.getNotifyMgr().handleClearAllConfirmed();
-            break;
+    /**
+     * A screen of preferences
+     */
+    private abstract class Screen
+        implements Preference.OnPreferenceClickListener,
+                   SharedPreferences.OnSharedPreferenceChangeListener
+    {
+        /**
+         * Handle an activity result
+         * @return true if handled; false otherwise
+         */
+        public boolean onActivityResult(int requestCode, int resultCode,
+                                        Intent data)
+        {
+            return false;
         }
-        case CLEAR_ALL_SAVED: {
-            SavedPasswordsMgr passwdMgr = new SavedPasswordsMgr(getContext());
-            passwdMgr.removeAllSavedPasswords();
-            break;
+
+        /**
+         * Handle a confirmed dialog prompt
+         */
+        public void promptConfirmed(ConfirmAction action)
+        {
         }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference)
+        {
+            return false;
         }
     }
 
     /**
-     * Set the default file preference
+     * The root screen of preferences
      */
-    private void setDefFilePref(String prefVal)
+    private final class RootScreen extends Screen
     {
-        SharedPreferences.Editor editor =
-                itsDefFilePref.getSharedPreferences().edit();
-        editor.putString(Preferences.PREF_DEF_FILE, prefVal);
-        editor.apply();
+        /**
+         * Constructor
+         */
+        public RootScreen()
+        {
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                              String key)
+        {
+            switch (key) {
+            case Preferences.PREF_DISPLAY_THEME_LIGHT: {
+                ApiCompat.recreateActivity(getActivity());
+                break;
+            }
+            }
+        }
     }
 
     /**
-     * Background task to resolve the default file URI and set the preference's
-     * summary
+     * The screen of file preferences
      */
-    private final class DefaultFileResolver
-            extends AsyncTask<Void, Void, PasswdFileUri>
+    private final class FilesScreen extends Screen
     {
-        private PasswdFileUri.Creator itsUriCreator;
+        private final EditTextPreference itsFileDirPref;
+        private final Preference itsDefFilePref;
+        private final ListPreference itsFileClosePref;
+        private final ListPreference itsFileBackupPref;
 
         /**
          * Constructor
          */
-        public DefaultFileResolver(Uri fileUri)
+        public FilesScreen(SharedPreferences prefs, Resources res)
         {
-            if (fileUri != null) {
-                itsUriCreator = new PasswdFileUri.Creator(fileUri,
-                                                          getContext());
-            }
+            itsFileDirPref = (EditTextPreference)
+                    findPreference(Preferences.PREF_FILE_DIR);
+            itsFileDirPref.setDefaultValue(Preferences.PREF_FILE_DIR_DEF);
+            onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_DIR);
+
+            itsDefFilePref = findPreference(Preferences.PREF_DEF_FILE);
+            itsDefFilePref.setOnPreferenceClickListener(this);
+            onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
+
+            itsFileClosePref = (ListPreference)
+                    findPreference(Preferences.PREF_FILE_CLOSE_TIMEOUT);
+            itsFileClosePref.setEntries(FileTimeoutPref.getDisplayNames(res));
+            itsFileClosePref.setEntryValues(FileTimeoutPref.getValues());
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_FILE_CLOSE_TIMEOUT);
+
+            itsFileBackupPref = (ListPreference)
+                    findPreference(Preferences.PREF_FILE_BACKUP);
+            itsFileBackupPref.setEntries(FileBackupPref.getDisplayNames(res));
+            itsFileBackupPref.setEntryValues(FileBackupPref.getValues());
+            onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_BACKUP);
         }
 
         @Override
-        protected final void onPreExecute()
+        public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                              String key)
         {
-            super.onPreExecute();
-            if (itsUriCreator != null) {
-                itsUriCreator.onPreExecute();
-            }
-        }
-
-        @Override
-        protected PasswdFileUri doInBackground(Void... params)
-        {
-            return (itsUriCreator != null) ?
-                   itsUriCreator.finishCreate() : null;
-        }
-
-        @Override
-        protected void onPostExecute(PasswdFileUri result)
-        {
-            if (!isResumed()) {
-                return;
-            }
-            String summary;
-            if (result == null) {
-                summary = getString(R.string.none);
-                if (itsUriCreator != null) {
-                    Throwable resolveEx = itsUriCreator.getResolveEx();
-                    if (resolveEx != null) {
-                        Log.e(TAG, "Error resolving default file", resolveEx);
-                        summary =
-                                getString(R.string.file_not_found_perm_denied);
-                        setDefFilePref(null);
-                    }
+            switch (key) {
+            case Preferences.PREF_FILE_DIR: {
+                File pref = Preferences.getFileDirPref(prefs);
+                if (pref == null) {
+                    itsFileDirPref.setText(null);
+                    itsFileDirPref.setSummary(null);
+                    break;
                 }
-            } else {
-                summary = result.getIdentifier(getContext(), false);
+                if (TextUtils.isEmpty(pref.toString())) {
+                    pref = new File(Preferences.PREF_FILE_DIR_DEF);
+                    itsFileDirPref.setText(pref.toString());
+                }
+                if (!TextUtils.equals(pref.toString(),
+                                      itsFileDirPref.getText())) {
+                    itsFileDirPref.setText(pref.toString());
+                }
+                itsFileDirPref.setSummary(pref.toString());
+                break;
             }
-            itsDefFilePref.setSummary(summary);
+            case Preferences.PREF_DEF_FILE: {
+                new DefaultFileResolver(
+                        Preferences.getDefFilePref(prefs)).execute();
+                break;
+            }
+            case Preferences.PREF_FILE_CLOSE_TIMEOUT: {
+                FileTimeoutPref pref =
+                        Preferences.getFileCloseTimeoutPref(prefs);
+                itsFileClosePref.setSummary(pref.getDisplayName(getResources()));
+                break;
+            }
+            case Preferences.PREF_FILE_BACKUP: {
+                FileBackupPref pref = Preferences.getFileBackupPref(prefs);
+                itsFileBackupPref.setSummary(
+                        pref.getDisplayName(getResources()));
+                break;
+            }
+            }
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference)
+        {
+            switch (preference.getKey()) {
+            case Preferences.PREF_DEF_FILE: {
+                Intent intent = new Intent(Intent.ACTION_CREATE_SHORTCUT, null,
+                                           getContext(),
+                                           LauncherFileShortcuts.class);
+                intent.putExtra(LauncherFileShortcuts.EXTRA_IS_DEFAULT_FILE,
+                                true);
+                startActivityForResult(intent, REQUEST_DEFAULT_FILE);
+                return true;
+            }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onActivityResult(int requestCode, int resultCode,
+                                        Intent data)
+        {
+            switch (requestCode) {
+            case REQUEST_DEFAULT_FILE: {
+                if (resultCode != Activity.RESULT_OK) {
+                    return true;
+                }
+                Intent val =
+                        data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT);
+                setDefFilePref((val != null) ? val.getData().toString() : null);
+                return true;
+            }
+            default: {
+                return false;
+            }
+            }
+        }
+
+        /**
+         * Set the default file preference
+         */
+        private void setDefFilePref(String prefVal)
+        {
+            SharedPreferences.Editor editor =
+                    itsDefFilePref.getSharedPreferences().edit();
+            editor.putString(Preferences.PREF_DEF_FILE, prefVal);
+            editor.apply();
+        }
+
+        /**
+         * Background task to resolve the default file URI and set the
+         * preference's summary
+         */
+        private final class DefaultFileResolver
+                extends AsyncTask<Void, Void, PasswdFileUri>
+        {
+            private PasswdFileUri.Creator itsUriCreator;
+
+            /**
+             * Constructor
+             */
+            public DefaultFileResolver(Uri fileUri)
+            {
+                if (fileUri != null) {
+                    itsUriCreator = new PasswdFileUri.Creator(fileUri,
+                                                              getContext());
+                }
+            }
+
+            @Override
+            protected final void onPreExecute()
+            {
+                super.onPreExecute();
+                if (itsUriCreator != null) {
+                    itsUriCreator.onPreExecute();
+                }
+            }
+
+            @Override
+            protected PasswdFileUri doInBackground(Void... params)
+            {
+                return (itsUriCreator != null) ?
+                       itsUriCreator.finishCreate() : null;
+            }
+
+            @Override
+            protected void onPostExecute(PasswdFileUri result)
+            {
+                if (!isResumed()) {
+                    return;
+                }
+                String summary;
+                if (result == null) {
+                    summary = getString(R.string.none);
+                    if (itsUriCreator != null) {
+                        Throwable resolveEx = itsUriCreator.getResolveEx();
+                        if (resolveEx != null) {
+                            Log.e(TAG, "Error resolving default file",
+                                  resolveEx);
+                            summary = getString(
+                                    R.string.file_not_found_perm_denied);
+                            setDefFilePref(null);
+                        }
+                    }
+                } else {
+                    summary = result.getIdentifier(getContext(), false);
+                }
+                itsDefFilePref.setSummary(summary);
+            }
+        }
+    }
+
+    /**
+     * The screen of password preferences
+     */
+    private final class PasswordScreen extends Screen
+    {
+        private final ListPreference itsPasswdEncPref;
+        private final ListPreference itsPasswdExpiryNotifPref;
+        private final EditTextPreference itsPasswdDefaultSymsPref;
+
+        /**
+         * Constructor
+         */
+        public PasswordScreen(SharedPreferences prefs, Resources res)
+        {
+            itsPasswdEncPref = (ListPreference)
+                    findPreference(Preferences.PREF_PASSWD_ENC);
+            String[] charsets =  PwsFile.ALL_PASSWORD_CHARSETS.toArray(
+                    new String[PwsFile.ALL_PASSWORD_CHARSETS.size()]);
+            itsPasswdEncPref.setEntries(charsets);
+            itsPasswdEncPref.setEntryValues(charsets);
+            itsPasswdEncPref.setDefaultValue(Preferences.PREF_PASSWD_ENC_DEF);
+            onSharedPreferenceChanged(prefs, Preferences.PREF_PASSWD_ENC);
+
+            itsPasswdExpiryNotifPref = (ListPreference)
+                    findPreference(Preferences.PREF_PASSWD_EXPIRY_NOTIF);
+            itsPasswdExpiryNotifPref.setEntries(
+                    PasswdExpiryNotifPref.getDisplayNames(res));
+            itsPasswdExpiryNotifPref.setEntryValues(
+                    PasswdExpiryNotifPref.getValues());
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_PASSWD_EXPIRY_NOTIF);
+
+            itsPasswdDefaultSymsPref = (EditTextPreference)
+                    findPreference(Preferences.PREF_PASSWD_DEFAULT_SYMS);
+            itsPasswdDefaultSymsPref.setDialogMessage(
+                    getString(R.string.default_symbols_empty_pref,
+                              PasswdPolicy.SYMBOLS_DEFAULT));
+            itsPasswdDefaultSymsPref.setDefaultValue(
+                    PasswdPolicy.SYMBOLS_DEFAULT);
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_PASSWD_DEFAULT_SYMS);
+
+            Preference clearNotifsPref =
+                    findPreference(Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS);
+            clearNotifsPref.setOnPreferenceClickListener(this);
+            Preference clearAllSavedPref =
+                    findPreference(Preferences.PREF_PASSWD_CLEAR_ALL_SAVED);
+            clearAllSavedPref.setOnPreferenceClickListener(this);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                              String key)
+        {
+            switch (key) {
+            case Preferences.PREF_PASSWD_ENC: {
+                itsPasswdEncPref.setSummary(
+                        Preferences.getPasswordEncodingPref(prefs));
+                break;
+            }
+            case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
+                PasswdExpiryNotifPref pref =
+                        Preferences.getPasswdExpiryNotifPref(prefs);
+                Resources res = getResources();
+                itsPasswdExpiryNotifPref.setSummary(pref.getDisplayName(res));
+                break;
+            }
+            case Preferences.PREF_PASSWD_DEFAULT_SYMS: {
+                String val = Preferences.getPasswdDefaultSymbolsPref(prefs);
+                itsPasswdDefaultSymsPref.setSummary(
+                        getString(R.string.symbols_used_by_default, val));
+                break;
+            }
+            }
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference)
+        {
+            switch (preference.getKey()) {
+            case Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS: {
+                Activity act = getActivity();
+                PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
+                Bundle confirmArgs = new Bundle();
+                confirmArgs.putString(CONFIRM_ARG_ACTION,
+                                      ConfirmAction.CLEAR_ALL_NOTIFS.name());
+                DialogFragment dlg = app.getNotifyMgr().createClearAllPrompt(
+                        act, confirmArgs);
+                dlg.setTargetFragment(PreferencesFragment.this,
+                                      REQUEST_CLEAR_ALL_NOTIFS);
+                dlg.show(getFragmentManager(), "clearNotifsConfirm");
+                return true;
+            }
+            case Preferences.PREF_PASSWD_CLEAR_ALL_SAVED: {
+                Bundle confirmArgs = new Bundle();
+                confirmArgs.putString(CONFIRM_ARG_ACTION,
+                                      ConfirmAction.CLEAR_ALL_SAVED.name());
+                ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
+                        getString(R.string.clear_all_saved_passwords),
+                        getString(R.string.erase_all_saved_passwords),
+                        getString(R.string.clear), confirmArgs);
+                dlg.setTargetFragment(PreferencesFragment.this,
+                                      REQUEST_CLEAR_ALL_SAVED);
+                dlg.show(getFragmentManager(), "clearSavedConfirm");
+                return true;
+            }
+            }
+            return false;
+        }
+
+        @Override
+        public void promptConfirmed(ConfirmAction action)
+        {
+            switch (action) {
+            case CLEAR_ALL_NOTIFS: {
+                Activity act = getActivity();
+                PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
+                app.getNotifyMgr().handleClearAllConfirmed();
+                break;
+            }
+            case CLEAR_ALL_SAVED: {
+                SavedPasswordsMgr passwdMgr =
+                        new SavedPasswordsMgr(getContext());
+                passwdMgr.removeAllSavedPasswords();
+                break;
+            }
+            }
+        }
+    }
+
+    /**
+     * The screen of record preferences
+     */
+    private final class RecordScreen extends Screen
+    {
+        private final ListPreference itsRecordSortOrderPref;
+        private final ListPreference itsRecordFieldSortPref;
+
+        /**
+         * Constructor
+         */
+        public RecordScreen(SharedPreferences prefs, Resources res)
+        {
+            itsRecordSortOrderPref = (ListPreference)
+                    findPreference(Preferences.PREF_RECORD_SORT_ORDER);
+            itsRecordSortOrderPref.setEntries(
+                    RecordSortOrderPref.getDisplayNames(res));
+            itsRecordSortOrderPref.setEntryValues(
+                    RecordSortOrderPref.getValues());
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_RECORD_SORT_ORDER);
+
+            itsRecordFieldSortPref = (ListPreference)
+                    findPreference(Preferences.PREF_RECORD_FIELD_SORT);
+            itsRecordFieldSortPref.setEntries(
+                    RecordFieldSortPref.getDisplayNames(res));
+            itsRecordFieldSortPref.setEntryValues(
+                    RecordFieldSortPref.getValues());
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_RECORD_FIELD_SORT);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                              String key)
+        {
+            switch (key) {
+            case Preferences.PREF_RECORD_SORT_ORDER: {
+                RecordSortOrderPref pref =
+                        Preferences.getRecordSortOrderPref(prefs);
+                Resources res = getResources();
+                itsRecordSortOrderPref.setSummary(pref.getDisplayName(res));
+                break;
+            }
+            case Preferences.PREF_RECORD_FIELD_SORT: {
+                RecordFieldSortPref pref =
+                        Preferences.getRecordFieldSortPref(prefs);
+                Resources res = getResources();
+                itsRecordFieldSortPref.setSummary(pref.getDisplayName(res));
+                break;
+            }
+            }
         }
     }
 }
