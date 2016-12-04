@@ -287,6 +287,7 @@
     <string name="record_has_references">L\'entrée contient des références</string>
     <string name="record_not_found">Entrée introuvable</string>
     <string name="record_policy">Stratégie Entrée</string>
+    <string name="record_sort_field">Enregistrement des selections de tri</string>
     <string name="record_sort_order">Ordre de tri des entrées</string>
     <string name="record_type">Type d\'entrée</string>
     <string name="read_only_about">Lecture seule</string>
@@ -499,6 +500,13 @@
         <item>5 minutes</item>
         <item>15 minutes</item>
         <item>1 heure</item>
+    </string-array>
+
+    <!-- Order must match constants in RecordFieldSortPref -->
+    <string-array name="record_field_sort_pref">
+        <item>Titre</item>
+        <item>Date de création</item>
+        <item>Date de modification</item>
     </string-array>
 
     <!-- Order must match constants in RecordSortOrderPref -->

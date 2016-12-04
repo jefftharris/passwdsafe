@@ -278,6 +278,7 @@
     <string name="record_has_references">Eintrag mit Verweisen</string>
     <string name="record_not_found">Eintrag nicht gefunden</string>
     <string name="record_policy">Eintragsregeln</string>
+    <string name="record_sort_field">Sortiere Einträge nach</string>
     <string name="record_sort_order">Sortierreihenfolge für Einträge</string>
     <string name="record_type">Eintragstyp</string>
     <string name="read_only_about">Nur Lesen</string>
@@ -477,6 +478,13 @@
         <item>5 Minuten</item>
         <item>15 Minuten</item>
         <item>1 Stunde</item>
+    </string-array>
+
+    <!-- Order must match constants in RecordFieldSortPref -->
+    <string-array name="record_field_sort_pref">
+        <item>Titel</item>
+        <item>Erstellungsdatum</item>
+        <item>Änderungsdatum</item>
     </string-array>
 
     <!-- Order must match constants in RecordSortOrderPref -->
