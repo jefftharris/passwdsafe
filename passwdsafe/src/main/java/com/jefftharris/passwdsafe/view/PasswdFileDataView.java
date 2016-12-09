@@ -22,8 +22,6 @@ import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
-import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
-import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 
 import org.pwsafe.lib.file.PwsRecord;
 
@@ -40,7 +38,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * The PasswdFileDataView contains state for viewing a password file
  */
-public class PasswdFileDataView
+public final class PasswdFileDataView
 {
     /**
      * Visitor interface for iterating records
@@ -57,18 +55,12 @@ public class PasswdFileDataView
     private PasswdRecordFilter itsFilter;
     private int itsNumExpired = 0;
     private boolean itsIsExpiryChanged = true;
-    private boolean itsIsGroupRecords =
-            Preferences.PREF_GROUP_RECORDS_DEF;
-    private boolean itsIsSortCaseSensitive =
-            Preferences.PREF_SORT_CASE_SENSITIVE_DEF;
+    private PasswdRecordDisplayOptions itsRecordOptions =
+            new PasswdRecordDisplayOptions();
     private boolean itsIsSearchCaseSensitive =
             Preferences.PREF_SEARCH_CASE_SENSITIVE_DEF;
     private boolean itsIsSearchRegex =
             Preferences.PREF_SEARCH_REGEX_DEF;
-    private RecordSortOrderPref itsRecordSortOrder =
-            Preferences.PREF_RECORD_SORT_ORDER_DEF;
-    private RecordFieldSortPref itsRecordFieldSort =
-            Preferences.PREF_RECORD_FIELD_SORT_DEF;
     private PasswdExpiryNotifPref itsExpiryNotifPref =
             Preferences.PREF_PASSWD_EXPIRY_NOTIF_DEF;
     private Context itsContext;
@@ -91,13 +83,10 @@ public class PasswdFileDataView
     public void onAttach(Context ctx, SharedPreferences prefs)
     {
         itsContext = ctx.getApplicationContext();
-        itsIsGroupRecords = Preferences.getGroupRecordsPref(prefs);
-        itsIsSortCaseSensitive = Preferences.getSortCaseSensitivePref(prefs);
+        itsRecordOptions = new PasswdRecordDisplayOptions(prefs);
         itsIsSearchCaseSensitive =
                 Preferences.getSearchCaseSensitivePref(prefs);
         itsIsSearchRegex = Preferences.getSearchRegexPref(prefs);
-        itsRecordSortOrder = Preferences.getRecordSortOrderPref(prefs);
-        itsRecordFieldSort = Preferences.getRecordFieldSortPref(prefs);
         itsExpiryNotifPref = Preferences.getPasswdExpiryNotifPref(prefs);
 
         Resources.Theme theme = ctx.getTheme();
@@ -126,14 +115,11 @@ public class PasswdFileDataView
         boolean rebuild = false;
         boolean rebuildSearch = false;
         switch (key) {
-        case Preferences.PREF_GROUP_RECORDS: {
-            itsIsGroupRecords = Preferences.getGroupRecordsPref(prefs);
-            rebuild = true;
-            break;
-        }
-        case Preferences.PREF_SORT_CASE_SENSITIVE: {
-            itsIsSortCaseSensitive =
-                    Preferences.getSortCaseSensitivePref(prefs);
+        case Preferences.PREF_SORT_CASE_SENSITIVE:
+        case Preferences.PREF_GROUP_RECORDS:
+        case Preferences.PREF_RECORD_SORT_ORDER:
+        case Preferences.PREF_RECORD_FIELD_SORT: {
+            itsRecordOptions = new PasswdRecordDisplayOptions(prefs);
             rebuild = true;
             break;
         }
@@ -146,16 +132,6 @@ public class PasswdFileDataView
         case Preferences.PREF_SEARCH_REGEX: {
             itsIsSearchRegex = Preferences.getSearchRegexPref(prefs);
             rebuildSearch = true;
-            break;
-        }
-        case Preferences.PREF_RECORD_SORT_ORDER: {
-            itsRecordSortOrder = Preferences.getRecordSortOrderPref(prefs);
-            rebuild = true;
-            break;
-        }
-        case Preferences.PREF_RECORD_FIELD_SORT: {
-            itsRecordFieldSort = Preferences.getRecordFieldSortPref(prefs);
-            rebuild = true;
             break;
         }
         case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
@@ -249,9 +225,7 @@ public class PasswdFileDataView
         }
 
         PasswdRecordListDataComparator comp =
-                new PasswdRecordListDataComparator(itsIsSortCaseSensitive,
-                                                   itsRecordSortOrder,
-                                                   itsRecordFieldSort);
+                new PasswdRecordListDataComparator(itsRecordOptions);
         Collections.sort(records, comp);
         return records;
     }
@@ -403,8 +377,9 @@ public class PasswdFileDataView
         }
 
         List<PwsRecord> records = fileData.getRecords();
-        if (itsIsGroupRecords) {
-            Comparator<String> groupComp = itsIsSortCaseSensitive ?
+        if (itsRecordOptions.itsIsGroupRecords) {
+            Comparator<String> groupComp =
+                    itsRecordOptions.itsIsSortCaseSensitive ?
                     new StringComparator() : String.CASE_INSENSITIVE_ORDER;
 
             for (PwsRecord rec: records) {

@@ -7,9 +7,6 @@
  */
 package com.jefftharris.passwdsafe.view;
 
-import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
-import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
-
 import java.util.Comparator;
 import java.util.Date;
 
@@ -19,20 +16,14 @@ import java.util.Date;
 public final class PasswdRecordListDataComparator
         implements Comparator<PasswdRecordListData>
 {
-    private final boolean itsIsSortCaseSensitive;
-    private final RecordSortOrderPref itsGroupSortOrder;
-    private final RecordFieldSortPref itsFieldSortOrder;
+    private final PasswdRecordDisplayOptions itsOptions;
 
     /**
      * Constructor
      */
-    public PasswdRecordListDataComparator(boolean sortCaseSensitive,
-                                          RecordSortOrderPref groupSortOrder,
-                                          RecordFieldSortPref fieldSortOrder)
+    public PasswdRecordListDataComparator(PasswdRecordDisplayOptions options)
     {
-        itsIsSortCaseSensitive = sortCaseSensitive;
-        itsGroupSortOrder = groupSortOrder;
-        itsFieldSortOrder = fieldSortOrder;
+        itsOptions = options;
     }
 
     @Override
@@ -40,7 +31,7 @@ public final class PasswdRecordListDataComparator
     {
         int rc;
         // Compare group order
-        switch (itsGroupSortOrder) {
+        switch (itsOptions.itsGroupSortOrder) {
         case GROUP_FIRST: {
             rc = compareIsGroup(arg0, arg1);
             if (rc != 0) {
@@ -61,7 +52,7 @@ public final class PasswdRecordListDataComparator
         }
 
         // Compare record field
-        switch (itsFieldSortOrder) {
+        switch (itsOptions.itsFieldSortOrder) {
         case TITLE: {
             break;
         }
@@ -104,7 +95,7 @@ public final class PasswdRecordListDataComparator
         } else if (arg1 == null) {
             return 1;
         } else {
-            if (itsIsSortCaseSensitive) {
+            if (itsOptions.itsIsSortCaseSensitive) {
                 return arg0.compareTo(arg1);
             } else {
                 return arg0.compareToIgnoreCase(arg1);
