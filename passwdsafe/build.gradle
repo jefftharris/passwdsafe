@@ -16,8 +16,8 @@ android {
         minSdkVersion 10
         resConfigs "de", "fr"
         targetSdkVersion 24
-        versionCode 60500
-        versionName "6.5.0"
+        versionCode 60600
+        versionName "6.6.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
