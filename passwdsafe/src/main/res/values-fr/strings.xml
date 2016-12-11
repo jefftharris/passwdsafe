@@ -323,6 +323,7 @@
     <string name="show_password">Afficher mot de passe</string>
     <string name="show_passwords">Afficher mots de passe</string>
     <string name="sort">Trier</string>
+    <string name="sort_ascending">Tri ascendant</string>
     <string name="symbols_used_by_default">Les symboles utilisés par défaut dans de mot de passe stratégie: %1$s</string>
     <string name="sync">Synchroniser</string>
     <string name="times_header">TEMPS</string>

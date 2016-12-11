@@ -19,6 +19,7 @@ import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 public final class PasswdRecordDisplayOptions
 {
     public final boolean itsIsSortCaseSensitive;
+    public final boolean itsIsSortAscending;
     public final boolean itsIsGroupRecords;
     public final RecordSortOrderPref itsGroupSortOrder;
     public final RecordFieldSortPref itsFieldSortOrder;
@@ -28,7 +29,8 @@ public final class PasswdRecordDisplayOptions
      */
     public PasswdRecordDisplayOptions()
     {
-        itsIsSortCaseSensitive = Preferences.PREF_SEARCH_CASE_SENSITIVE_DEF;
+        itsIsSortCaseSensitive = Preferences.PREF_SORT_CASE_SENSITIVE_DEF;
+        itsIsSortAscending = Preferences.PREF_SORT_ASCENDING_DEF;
         itsIsGroupRecords = Preferences.PREF_GROUP_RECORDS_DEF;
         itsGroupSortOrder = Preferences.PREF_RECORD_SORT_ORDER_DEF;
         itsFieldSortOrder = Preferences.PREF_RECORD_FIELD_SORT_DEF;
@@ -41,6 +43,7 @@ public final class PasswdRecordDisplayOptions
     {
         itsIsSortCaseSensitive =
                 Preferences.getSortCaseSensitivePref(prefs);
+        itsIsSortAscending = Preferences.getSortAscendingPref(prefs);
         itsIsGroupRecords = Preferences.getGroupRecordsPref(prefs);
         itsGroupSortOrder = Preferences.getRecordSortOrderPref(prefs);
         itsFieldSortOrder = Preferences.getRecordFieldSortPref(prefs);

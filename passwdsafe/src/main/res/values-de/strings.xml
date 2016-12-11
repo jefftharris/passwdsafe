@@ -315,6 +315,7 @@
     <string name="show_password">Passwort anzeigen</string>
     <string name="show_passwords">Passwörter anzeigen</string>
     <string name="sort">Sortieren</string>
+    <string name="sort_ascending">Aufsteigend sortieren</string>
     <string name="symbols_used_by_default">Standardsymbole in der Passwortregel: %1$s</string>
     <string name="sync">Synchronisieren</string>
     <string name="times_header">ZEITEN</string>

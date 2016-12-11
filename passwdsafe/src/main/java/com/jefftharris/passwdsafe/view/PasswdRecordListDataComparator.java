@@ -51,7 +51,20 @@ public final class PasswdRecordListDataComparator
         }
         }
 
-        // Compare record field
+        rc = compareRecordField(arg0, arg1);
+        if (!itsOptions.itsIsSortAscending) {
+            rc = -rc;
+        }
+        return rc;
+    }
+
+    /**
+     * Compare record field
+     */
+    private int compareRecordField(PasswdRecordListData arg0,
+                                   PasswdRecordListData arg1)
+    {
+        int rc;
         switch (itsOptions.itsFieldSortOrder) {
         case TITLE: {
             break;

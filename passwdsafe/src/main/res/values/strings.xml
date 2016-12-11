@@ -316,6 +316,7 @@
     <string name="show_password">Show Password</string>
     <string name="show_passwords">Show Passwords</string>
     <string name="sort">Sort</string>
+    <string name="sort_ascending">Sort ascending</string>
     <string name="symbols_used_by_default">Symbols used by default in a password policy: %1$s</string>
     <string name="sync">Sync</string>
     <string name="times_header">TIMES</string>

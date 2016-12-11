@@ -105,6 +105,9 @@ public class Preferences
     private static final String PREF_SHOW_HIDDEN_FILES = "showBackupFilesPref";
     private static final boolean PREF_SHOW_HIDDEN_FILES_DEF = false;
 
+    public static final String PREF_SORT_ASCENDING = "sortAscendingPref";
+    public static final boolean PREF_SORT_ASCENDING_DEF = true;
+
     public static final String PREF_SORT_CASE_SENSITIVE =
         "sortCaseSensitivePref";
     public static final boolean PREF_SORT_CASE_SENSITIVE_DEF = true;
@@ -441,6 +444,14 @@ public class Preferences
     {
         return prefs.getBoolean(PREF_SHOW_HIDDEN_FILES,
                                 PREF_SHOW_HIDDEN_FILES_DEF);
+    }
+
+    /**
+     * Get whether to sort ascending
+     */
+    public static boolean getSortAscendingPref(SharedPreferences prefs)
+    {
+        return prefs.getBoolean(PREF_SORT_ASCENDING, PREF_SORT_ASCENDING_DEF);
     }
 
     public static boolean getSortCaseSensitivePref(SharedPreferences prefs)

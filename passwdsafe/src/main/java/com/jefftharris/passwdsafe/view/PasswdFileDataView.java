@@ -115,6 +115,7 @@ public final class PasswdFileDataView
         boolean rebuild = false;
         boolean rebuildSearch = false;
         switch (key) {
+        case Preferences.PREF_SORT_ASCENDING:
         case Preferences.PREF_SORT_CASE_SENSITIVE:
         case Preferences.PREF_GROUP_RECORDS:
         case Preferences.PREF_RECORD_SORT_ORDER:
@@ -381,6 +382,17 @@ public final class PasswdFileDataView
             Comparator<String> groupComp =
                     itsRecordOptions.itsIsSortCaseSensitive ?
                     new StringComparator() : String.CASE_INSENSITIVE_ORDER;
+            if (!itsRecordOptions.itsIsSortAscending) {
+                final Comparator<String> comp = groupComp;
+                groupComp = new Comparator<String>()
+                {
+                    @Override
+                    public int compare(String s1, String s2)
+                    {
+                        return -comp.compare(s1, s2);
+                    }
+                };
+            }
 
             for (PwsRecord rec: records) {
                 String match = filterRecord(rec, fileData);

@@ -115,6 +115,13 @@
 
             <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
+                android:name="sortAscending Pref"
+                android:defaultValue="true"
+                android:key="sortAscendingPref"
+                android:title="@string/sort_ascending"/>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="groupRecords Pref"
                 android:defaultValue="true"
                 android:key="groupRecordsPref"
