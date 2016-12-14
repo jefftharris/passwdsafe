@@ -22,7 +22,7 @@
             android:hint="@string/new_group"
             android:imeOptions="actionGo"
             android:inputType="textCapSentences|textAutoCorrect"
-            android:singleLine="true"/>
+            android:maxLines="1"/>
     </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>

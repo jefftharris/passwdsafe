@@ -40,8 +40,8 @@
                 android:hint="@string/password"
                 android:imeOptions="actionGo"
                 android:inputType="textPassword"
+                android:maxLines="1"
                 android:scrollHorizontally="true"
-                android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
         </android.support.design.widget.TextInputLayout>
 

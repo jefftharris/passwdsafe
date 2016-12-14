@@ -53,9 +53,9 @@
                           style="@style/Widget.AppCompat.Spinner.Underlined"
                           android:layout_width="0dp"
                           android:layout_height="wrap_content"
-                          android:layout_weight="1"
                           android:layout_marginLeft="8dp"
                           android:layout_marginStart="8dp"
+                          android:layout_weight="1"
                           android:hint="@string/choose"/>
 
             </LinearLayout>
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/title"
                 android:inputType="textCapSentences|textAutoCorrect"
-                android:singleLine="true">
+                android:maxLines="1">
                 <requestFocus/>
             </android.support.design.widget.TextInputEditText>
         </android.support.design.widget.TextInputLayout>
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/username"
                 android:inputType="textNoSuggestions"
-                android:singleLine="true"/>
+                android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -141,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/url"
                 android:inputType="textUri"
-                android:singleLine="true"/>
+                android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -154,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
-                android:singleLine="true"/>
+                android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
         <!-- Password fields -->
@@ -208,7 +208,7 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/password"
                         android:inputType="textPassword"
-                        android:singleLine="true"/>
+                        android:maxLines="1"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <ImageView android:id="@+id/password_visibility"
@@ -247,7 +247,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/confirm"
                     android:inputType="textPassword"
-                    android:singleLine="true"/>
+                    android:maxLines="1"/>
             </android.support.design.widget.TextInputLayout>
 
             <!-- Password policy -->
@@ -405,8 +405,8 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/max_size"
                         android:inputType="number"
-                        android:minWidth="100dip"
-                        android:singleLine="false"/>
+                        android:maxLines="1"
+                        android:minWidth="100dip"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <ListView android:id="@+id/history"

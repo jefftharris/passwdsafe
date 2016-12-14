@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -8,20 +8,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
+              android:mode="twoLine"
               android:orientation="horizontal"
-              android:paddingTop="2dip"
               android:paddingBottom="2dip"
               android:paddingLeft="2dip"
               android:paddingRight="2dip"
-              android:mode="twoLine">
+              android:paddingTop="2dip">
 
     <ImageView android:id="@+id/icon"
                android:layout_width="wrap_content"
                android:layout_height="fill_parent"
-               android:scaleType="fitCenter"
-               android:adjustViewBounds="true"
                android:layout_weight="0"
-               android:contentDescription="@string/record_type"/>
+               android:adjustViewBounds="true"
+               android:contentDescription="@string/record_type"
+               android:scaleType="fitCenter"/>
 
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -34,19 +34,19 @@
         <TextView android:id="@android:id/text1"
                   android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
-                  android:textAppearance="?android:attr/textAppearanceMedium"
                   android:paddingEnd="6dip"
                   android:paddingLeft="0dp"
                   android:paddingRight="6dp"
-                  android:paddingStart="0dp"/>
+                  android:paddingStart="0dp"
+                  android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <TextView android:id="@android:id/text2"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:layout_below="@android:id/text1"
                   android:layout_alignLeft="@android:id/text1"
                   android:layout_alignStart="@android:id/text1"
-                  android:singleLine="true"
+                  android:layout_below="@android:id/text1"
+                  android:maxLines="1"
                   android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     </RelativeLayout>
