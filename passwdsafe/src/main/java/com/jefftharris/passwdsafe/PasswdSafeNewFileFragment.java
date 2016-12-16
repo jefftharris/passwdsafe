@@ -123,6 +123,7 @@ public class PasswdSafeNewFileFragment
         itsFileNameInput = (TextInputLayout)
                 rootView.findViewById(R.id.file_name_input);
         itsFileName = (EditText)rootView.findViewById(R.id.file_name);
+        itsFileName.setText(itsPsafe3Sfx);
         itsFileName.setSelection(0);
         itsFileName.addTextChangedListener(new TextWatcher()
         {
