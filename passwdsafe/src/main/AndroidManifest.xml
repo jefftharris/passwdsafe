@@ -17,6 +17,7 @@
         android:protectionLevel="signature"/>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <uses-permission android:name="com.jefftharris.passwdsafe.client.provider.permission.ACCESS"/>
@@ -227,6 +228,16 @@
             android:exported="true"
             android:permission="com.jefftharris.passwdsafe.client.provider.permission.ACCESS"
             android:syncable="false">
+        </provider>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.jefftharris.passwdsafe.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
         </provider>
 
         <receiver

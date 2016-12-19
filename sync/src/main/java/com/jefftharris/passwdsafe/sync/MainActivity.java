@@ -133,8 +133,7 @@ public class MainActivity extends AppCompatActivity
 
         itsPermissionMgr = new DynamicPermissionMgr(
                 Manifest.permission.GET_ACCOUNTS, this,
-                PERMISSIONS_RC, APP_SETTINGS_RC,
-                "com.jefftharris.passwdsafe.sync",
+                PERMISSIONS_RC, APP_SETTINGS_RC, PasswdSafeUtil.SYNC_PACKAGE,
                 R.id.reload, R.id.app_settings);
         View noPermGroup = findViewById(R.id.no_permission_group);
         GuiUtils.setVisible(noPermGroup, !itsPermissionMgr.checkPerms());
@@ -983,10 +982,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void showAbout()
     {
-        String extraLicenses = GoogleApiAvailability
-                .getInstance()
-                .getOpenSourceSoftwareLicenseInfo(this);
-        AboutDialog dlg = AboutDialog.newInstance(extraLicenses);
+        AboutDialog dlg = AboutDialog.newInstance();
         dlg.show(getSupportFragmentManager(), "AboutDialog");
     }
 

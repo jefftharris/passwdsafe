@@ -53,11 +53,19 @@
               android:text="@string/release_notes"
               android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-    <ToggleButton android:id="@+id/toggle_license"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:textOff="@string/licenses"
-                  android:textOn="@string/licenses"/>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+        <ToggleButton android:id="@+id/toggle_license"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textOff="@string/licenses"
+                      android:textOn="@string/licenses"/>
+
+        <Button android:id="@+id/send_log"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_log"/>
+    </LinearLayout>
 
     <TextView android:id="@+id/license"
               android:layout_width="match_parent"

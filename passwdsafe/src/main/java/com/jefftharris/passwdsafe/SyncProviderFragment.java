@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2013 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -83,8 +83,8 @@ public class SyncProviderFragment extends ListFragment
             @Override
             public void onClick(View v)
             {
-                PasswdSafeUtil.startMainActivity(
-                        "com.jefftharris.passwdsafe.sync", getActivity());
+                PasswdSafeUtil.startMainActivity(PasswdSafeUtil.SYNC_PACKAGE,
+                                                 getActivity());
             }
         });
 

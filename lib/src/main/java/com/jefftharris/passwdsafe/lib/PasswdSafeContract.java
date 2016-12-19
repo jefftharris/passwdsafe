@@ -22,7 +22,7 @@ public final class PasswdSafeContract
 {
     /** The sync provider's authority */
     public static final String AUTHORITY =
-        "com.jefftharris.passwdsafe.sync.provider";
+            PasswdSafeUtil.SYNC_PACKAGE + ".provider";
 
     /** The base URI for the provider */
     public static final Uri CONTENT_URI =

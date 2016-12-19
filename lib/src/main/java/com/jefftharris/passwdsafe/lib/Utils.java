@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 import android.content.Context;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 /**
  * The Utils class provides general utilities
@@ -70,16 +72,15 @@ public final class Utils
 
 
     /** Close the streams */
-    public static void closeStreams(InputStream is, OutputStream os)
-            throws IOException
+    public static void closeStreams(Closeable... cs)
     {
-        try {
-            if (is != null) {
-                is.close();
-            }
-        } finally {
-            if (os != null) {
-                os.close();
+        for (Closeable c: cs) {
+            try {
+                if (c != null) {
+                    c.close();
+                }
+            } catch (Exception e) {
+                Log.e(Utils.class.getSimpleName(), "Error closing", e);
             }
         }
     }

@@ -7,11 +7,19 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.AssetManager;
+import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.content.FileProvider;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,8 +31,15 @@ import android.widget.ToggleButton;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Utilities for about dialogs
@@ -41,13 +56,13 @@ public class AboutUtils
      */
     public static String updateAboutFields(View detailsView,
                                            final String extraLicenseInfo,
-                                           Context ctx)
+                                           final Activity act)
     {
         String name;
         StringBuilder version = new StringBuilder();
-        PackageInfo pkgInfo = PasswdSafeUtil.getAppPackageInfo(ctx);
+        final PackageInfo pkgInfo = PasswdSafeUtil.getAppPackageInfo(act);
         if (pkgInfo != null) {
-            name = ctx.getString(pkgInfo.applicationInfo.labelRes);
+            name = act.getString(pkgInfo.applicationInfo.labelRes);
             version.append(pkgInfo.versionName);
         } else {
             name = null;
@@ -82,6 +97,16 @@ public class AboutUtils
             }
         });
         GuiUtils.setVisible(btn, !TextUtils.isEmpty(extraLicenseInfo));
+
+        View sendToBtn = detailsView.findViewById(R.id.send_log);
+        sendToBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                sendLog(act, (pkgInfo != null) ? pkgInfo.packageName : null);
+            }
+        });
         return name;
     }
 
@@ -134,5 +159,92 @@ public class AboutUtils
             return true;
         }
         return false;
+    }
+
+    /**
+     * Send a log file
+     */
+    private static void sendLog(Activity act, String pkgName)
+    {
+        try {
+            File logFileDir = new File(act.getCacheDir(), "shared-tmpfiles");
+            //noinspection ResultOfMethodCallIgnored
+            logFileDir.mkdirs();
+            File logFile = new File(logFileDir, "logcat.txt");
+
+            if (!runLogcat(true, logFile)) {
+                runLogcat(false, logFile);
+            }
+
+            Uri logUri = FileProvider.getUriForFile(act,
+                                                    pkgName + ".fileprovider",
+                                                    logFile);
+            Intent sendIntent = ShareCompat.IntentBuilder
+                    .from(act)
+                    .setStream(logUri)
+                    .setType("text/plain")
+                    .setEmailTo(new String[]
+                                        { "jeffharris@users.sourceforge.net" })
+                    .setSubject("PasswdSafe log")
+                    .getIntent()
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            // Workaround for Android bug.
+            // grantUriPermission also needed for KITKAT,
+            // see https://code.google.com/p/android/issues/detail?id=76683
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                List<ResolveInfo> resInfoList =
+                        act.getPackageManager().queryIntentActivities(
+                                sendIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    act.grantUriPermission(
+                            resolveInfo.activityInfo.packageName, logUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+            }
+
+            act.startActivity(
+                    Intent.createChooser(sendIntent,
+                                         act.getString(R.string.send_log_to)));
+        } catch (Exception e) {
+            PasswdSafeUtil.dbginfo(TAG, e, "Error sharing log");
+        }
+    }
+
+    /**
+     * Run logcat and collect the output
+     */
+    private static boolean runLogcat(boolean useUid, File logFile)
+            throws IOException, InterruptedException
+    {
+        Process proc = new ProcessBuilder("logcat", "-d", "-v",
+                                          useUid ? "uid" : "threadtime", "*:D")
+                .redirectErrorStream(true)
+                .start();
+
+        BufferedReader procReader = null;
+        Writer fileWriter = null;
+        try {
+            procReader = new BufferedReader(
+                    new InputStreamReader(proc.getInputStream()));
+            fileWriter = new BufferedWriter(new FileWriter(logFile));
+
+            Pattern p = null;
+            if (!useUid) {
+                p = Pattern.compile(
+                        "^\\S+\\s+\\S+\\s+" + android.os.Process.myPid() +
+                        "\\s.*");
+            }
+
+            String line;
+            while ((line = procReader.readLine()) != null) {
+                if (useUid || p.matcher(line).matches()) {
+                    fileWriter.append(line).append("\n");
+                }
+            }
+        } finally {
+            Utils.closeStreams(procReader, fileWriter);
+        }
+        return (proc.waitFor() == 0);
     }
 }

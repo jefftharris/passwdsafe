@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.jefftharris.passwdsafe.lib.AboutUtils;
 
 /**
@@ -28,11 +29,10 @@ public class AboutDialog extends AppCompatDialogFragment
         implements DialogInterface.OnClickListener
 {
     /** Create a new instance */
-    public static AboutDialog newInstance(String extraLicenseInfo)
+    public static AboutDialog newInstance()
     {
         AboutDialog frag = new AboutDialog();
         Bundle args = new Bundle();
-        args.putString("extraLicenses", extraLicenseInfo);
         frag.setArguments(args);
         return frag;
     }
@@ -46,9 +46,6 @@ public class AboutDialog extends AppCompatDialogFragment
     public @NonNull
     Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        final String extraLicenseInfo =
-                getArguments().getString("extraLicenses");
-
         Activity act = getActivity();
         LayoutInflater factory = LayoutInflater.from(act);
         View detailsView = factory.inflate(R.layout.fragment_about, null);
@@ -61,7 +58,8 @@ public class AboutDialog extends AppCompatDialogFragment
                                        "license-onedrive.txt",
                                        "license-owncloud.txt") +
                 "\n\n" +
-                extraLicenseInfo;
+                GoogleApiAvailability.getInstance()
+                                     .getOpenSourceSoftwareLicenseInfo(act);
         String name = AboutUtils.updateAboutFields(detailsView, licenses, act);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(act)
