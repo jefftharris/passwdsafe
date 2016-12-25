@@ -13,7 +13,12 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.PowerManager;
+import android.support.annotation.WorkerThread;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -22,9 +27,13 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Encapsulation of a sync operation for a provider
@@ -33,6 +42,8 @@ public class ProviderSync
 {
     private static final HashSet<String> itsLastProviderFailures =
             new HashSet<>();
+    private static final Handler itsUIHandler =
+            new Handler(Looper.getMainLooper());
 
     private static final String TAG = "ProviderSync";
 
@@ -42,7 +53,7 @@ public class ProviderSync
     private final Context itsContext;
     private final String itsNotifTag;
     private final boolean itsIsShowNotifs;
-
+    private PowerManager.WakeLock itsWakeLock;
 
     /**
      * Constructor
@@ -67,113 +78,62 @@ public class ProviderSync
      */
     public void sync(boolean manual)
     {
-        SyncLogRecord logrec = begin(manual);
-        SyncDb syncDb = null;
+        BackgroundSync sync = new BackgroundSync(manual);
+
+        PowerManager powerMgr = (PowerManager)
+                itsContext.getSystemService(Context.POWER_SERVICE);
+        itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                                           "sync");
+        itsWakeLock.acquire();
         try {
-            SyncConnectivityResult connResult = checkSyncConnectivity(logrec);
-            syncDb = SyncDb.acquire();
-            performSync(connResult, syncDb.getDb(), logrec);
-        } finally {
-            if (syncDb == null) {
-                syncDb = SyncDb.acquire();
-            }
+            FutureTask<Void> task = new FutureTask<>(sync, null);
             try {
-                finish(logrec, syncDb.getDb());
-            } finally {
-                syncDb.release();
-            }
-        }
-    }
-
-    /**
-     * Begin a sync
-     */
-    private SyncLogRecord begin(boolean manual)
-    {
-        PasswdSafeUtil.dbginfo(TAG, "Performing sync %s (%s), manual %b",
-                               itsAccount.name, itsAccount.type, manual);
-        String displayName = TextUtils.isEmpty(itsProvider.itsDisplayName) ?
-                             itsProvider.itsAcct : itsProvider.itsDisplayName;
-        if (itsIsShowNotifs) {
-            showProgressNotif();
-        }
-        return new SyncLogRecord(
-                displayName,
-                ((itsProvider.itsType != null) ?
-                 itsProvider.itsType.getName(itsContext) : null),
-                manual);
-    }
-
-    /**
-     * Check the connectivity of a provider before syncing
-     */
-    private SyncConnectivityResult checkSyncConnectivity(SyncLogRecord logrec)
-    {
-        SyncConnectivityResult connResult = null;
-        ConnectivityManager connMgr = (ConnectivityManager)
-                itsContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
-        boolean online = (netInfo != null) && netInfo.isConnected();
-        if (online) {
-            try {
-                connResult = itsProviderImpl.checkSyncConnectivity(itsAccount);
-                online = (connResult != null);
+                Thread t = new Thread(task);
+                t.start();
+                task.get(60, TimeUnit.SECONDS);
             } catch (Exception e) {
-                Log.e(TAG, "checkSyncConnectivity error", e);
-                online = false;
-                logrec.addFailure(e);
+                sync.setTaskException(e);
+                task.cancel(true);
             }
-        }
-        logrec.setNotConnected(!online);
-        return connResult;
-    }
-
-    /**
-     * Perform the sync of a provider
-     */
-    private void performSync(SyncConnectivityResult connResult,
-                             SQLiteDatabase db,
-                             SyncLogRecord logrec)
-    {
-        try {
-            if (!logrec.isNotConnected()) {
-                itsProviderImpl.sync(itsAccount, itsProvider,
-                                     connResult, db, logrec);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Sync error", e);
-            logrec.addFailure(e);
-        }
-    }
-
-    /**
-     * Finish the sync of a provider
-     */
-    private void finish(SyncLogRecord logrec, SQLiteDatabase db)
-    {
-        PasswdSafeUtil.dbginfo(TAG, "Sync finished for %s, online %b",
-                               itsAccount.name, !logrec.isNotConnected());
-        logrec.setEndTime();
-
-        try {
-            db.beginTransaction();
-            Log.i(TAG, logrec.toString(itsContext));
-            SyncDb.deleteSyncLogs(
-                    System.currentTimeMillis() - 2 * DateUtils.WEEK_IN_MILLIS,
-                    db);
-            SyncDb.addSyncLog(logrec, db, itsContext);
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-            Log.e(TAG, "Sync write log error", e);
         } finally {
-            db.endTransaction();
+            itsWakeLock.release();
         }
+    }
 
-        if (itsIsShowNotifs) {
-            NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
-                                   itsNotifTag, itsContext);
-        }
-        showResultNotifs(logrec);
+    /**
+     * Update the UI at the beginning of a sync
+     */
+    private void updateUIBegin()
+    {
+        itsUIHandler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (itsIsShowNotifs) {
+                    showProgressNotif();
+                }
+            }
+        });
+    }
+
+    /**
+     * Update the UI at the end of a sync
+     */
+    private void updateUIEnd(final SyncLogRecord logrec)
+    {
+        itsUIHandler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (itsIsShowNotifs) {
+                    NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
+                                           itsNotifTag, itsContext);
+                }
+                showResultNotifs(logrec);
+            }
+        });
     }
 
     /**
@@ -205,8 +165,11 @@ public class ProviderSync
         List<String> results = new ArrayList<>();
         boolean success = true;
         for (Exception failure: logrec.getFailures()) {
-            results.add(itsContext.getString(R.string.error_fmt,
-                                             failure.getLocalizedMessage()));
+            String err = failure.getLocalizedMessage();
+            if (TextUtils.isEmpty(err)) {
+                err = failure.toString();
+            }
+            results.add(itsContext.getString(R.string.error_fmt, err));
             success = false;
         }
 
@@ -261,5 +224,191 @@ public class ProviderSync
 
         GuiUtils.setInboxStyle(builder, title, content, results);
         NotifUtils.showNotif(builder, type, itsNotifTag, itsContext);
+    }
+
+    /**
+     * Runnable for doing a sync in a background thread
+     */
+    @WorkerThread
+    private class BackgroundSync implements Runnable
+    {
+        private final SyncLogRecord itsLogrec;
+        private final ArrayList<Pair<String, Long>> itsTraces =
+                new ArrayList<>();
+        private boolean itsSaveTraces = false;
+        private boolean itsIsCanceled = false;
+        private SimpleDateFormat itsDateFmt =
+                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
+
+        /**
+         * Constructor
+         */
+        public BackgroundSync(boolean manual)
+        {
+            addTrace("BackgroundSync");
+
+            PasswdSafeUtil.dbginfo(TAG, "Performing sync %s (%s), manual %b",
+                                   itsAccount.name, itsAccount.type, manual);
+            String displayName =
+                    TextUtils.isEmpty(itsProvider.itsDisplayName) ?
+                    itsProvider.itsAcct : itsProvider.itsDisplayName;
+
+            itsLogrec = new SyncLogRecord(
+                    displayName,
+                    ((itsProvider.itsType != null) ?
+                     itsProvider.itsType.getName(itsContext) : null),
+                    manual);
+
+            updateUIBegin();
+        }
+
+        @Override
+        public void run()
+        {
+            itsWakeLock.acquire();
+            try {
+                sync();
+            } finally {
+                addTrace("sync done");
+                itsWakeLock.release();
+            }
+            addTrace("run done");
+        }
+
+        /**
+         * Set a failure in running the task for the background sync
+         */
+        public void setTaskException(Exception e)
+        {
+            addTrace("task exception");
+            itsIsCanceled = true;
+            itsLogrec.addFailure(e);
+        }
+
+        /**
+         * Perform a sync
+         */
+        private void sync()
+        {
+            addTrace("sync");
+            SyncDb syncDb = null;
+            try {
+                SyncConnectivityResult connResult = checkConnectivity();
+                syncDb = SyncDb.acquire();
+                performSync(connResult, syncDb.getDb());
+            } finally {
+                if (syncDb == null) {
+                    syncDb = SyncDb.acquire();
+                }
+                try {
+                    finish(syncDb.getDb());
+                } finally {
+                    syncDb.release();
+                }
+            }
+        }
+
+        /**
+         * Check the connectivity of a provider before syncing
+         */
+        private SyncConnectivityResult checkConnectivity()
+        {
+            addTrace("checkConnectivity");
+            SyncConnectivityResult connResult = null;
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    itsContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
+            addTrace("got network info");
+            boolean online = (netInfo != null) && netInfo.isConnected();
+            addTrace("got connected");
+            if (online) {
+                try {
+                    connResult =
+                            itsProviderImpl.checkSyncConnectivity(itsAccount);
+                    itsLogrec.checkSyncInterrupted();
+                    online = (connResult != null);
+                } catch (Exception e) {
+                    Log.e(TAG, "checkSyncConnectivity error", e);
+                    online = false;
+                    itsLogrec.addFailure(e);
+                }
+            }
+            addTrace("got connectivity");
+            itsLogrec.setNotConnected(!online);
+            return connResult;
+        }
+
+        /**
+         * Perform the sync of a provider
+         */
+        private void performSync(SyncConnectivityResult connResult,
+                                 SQLiteDatabase db)
+        {
+            addTrace("performSync");
+            try {
+                if (!itsIsCanceled && !itsLogrec.isNotConnected()) {
+                    itsLogrec.checkSyncInterrupted();
+                    itsProviderImpl.sync(itsAccount, itsProvider,
+                                         connResult, db, itsLogrec);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Sync error", e);
+                itsLogrec.addFailure(e);
+            }
+            addTrace("performSync finished");
+        }
+
+        /**
+         * Finish the sync of a provider
+         */
+        private void finish(SQLiteDatabase db)
+        {
+            addTrace("finish");
+            PasswdSafeUtil.dbginfo(
+                    TAG, "Sync finished for %s, online %b, canceled %b",
+                    itsAccount.name, !itsLogrec.isNotConnected(),
+                    itsIsCanceled);
+            itsLogrec.setEndTime();
+
+            if (itsSaveTraces || (itsLogrec.getFailures().size() > 0)) {
+                for (Pair<String, Long> entry : itsTraces) {
+                    itsLogrec.addEntry(entry.first);
+                }
+            }
+
+            try {
+                db.beginTransaction();
+                Log.i(TAG, itsLogrec.toString(itsContext));
+                SyncDb.deleteSyncLogs(System.currentTimeMillis()
+                                      - 2 * DateUtils.WEEK_IN_MILLIS,
+                                      db);
+                SyncDb.addSyncLog(itsLogrec, db, itsContext);
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+                Log.e(TAG, "Sync write log error", e);
+            } finally {
+                db.endTransaction();
+                updateUIEnd(itsLogrec);
+            }
+        }
+
+        /**
+         * Add a trace statement
+         */
+        private void addTrace(String trace)
+        {
+            // TODO: remove tracing
+            if (true) return;
+
+            long now = System.currentTimeMillis();
+            if (itsTraces.size() > 0) {
+                long prev = itsTraces.get(itsTraces.size() - 1).second;
+                if ((now - prev) > 20000) {
+                    itsSaveTraces = true;
+                }
+            }
+            String s = trace + " - " + itsDateFmt.format(now);
+            itsTraces.add(new Pair<>(s, now));
+        }
     }
 }

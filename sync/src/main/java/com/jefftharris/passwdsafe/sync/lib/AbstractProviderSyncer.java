@@ -48,6 +48,7 @@ public abstract class AbstractProviderSyncer<ProviderClientT>
 
         try {
             try {
+                itsLogrec.checkSyncInterrupted();
                 itsDb.beginTransaction();
                 opers = performSync();
                 itsDb.setTransactionSuccessful();
@@ -63,6 +64,7 @@ public abstract class AbstractProviderSyncer<ProviderClientT>
                         continue;
                     }
                     try {
+                        itsLogrec.checkSyncInterrupted();
                         itsLogrec.addEntry(oper.getDescription(itsContext));
                         oper.doOper(itsProviderClient, itsContext);
                         try {

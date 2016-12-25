@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <uses-permission android:name="com.jefftharris.passwdsafe.client.provider.permission.ACCESS"/>
     <uses-permission android:name="com.jefftharris.passwdsafe.sync.provider.permission.ACCESS"/>

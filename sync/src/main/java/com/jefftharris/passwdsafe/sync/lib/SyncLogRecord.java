@@ -27,6 +27,7 @@ public class SyncLogRecord
     private long itsEndTime = -1;
     private final boolean itsIsManualSync;
     private boolean itsIsNotConnected = false;
+    private boolean itsIsInterrupted = false;
     private final List<String> itsEntries = new ArrayList<>();
     private final List<String> itsConflictFiles = new ArrayList<>();
 
@@ -90,6 +91,17 @@ public class SyncLogRecord
     public void setNotConnected(boolean notConnected)
     {
         itsIsNotConnected = notConnected;
+    }
+
+    /**
+     * Check whether the sync was interrupted
+     */
+    public void checkSyncInterrupted() throws InterruptedException
+    {
+        if (Thread.interrupted() || itsIsInterrupted) {
+            itsIsInterrupted = true;
+            throw new InterruptedException();
+        }
     }
 
     /** Add a sync operation entry */
