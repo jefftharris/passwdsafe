@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
@@ -38,6 +39,17 @@ public abstract class ProviderSyncer<ProviderClientT>
     private final SQLiteDatabase itsDb;
     private final SyncLogRecord itsLogrec;
     private final String itsTag;
+
+    /**
+     * Interface for a user of the database
+     */
+    private interface DbUser
+    {
+        /**
+         * Use the database
+         */
+        void useDb() throws Exception;
+    }
 
     /** Constructor */
     protected ProviderSyncer(ProviderClientT providerClient,
@@ -61,29 +73,42 @@ public abstract class ProviderSyncer<ProviderClientT>
     public final void sync()
             throws Exception
     {
-        List<AbstractSyncOper<ProviderClientT>> opers = null;
+        final ObjectHolder<List<AbstractSyncOper<ProviderClientT>>> opers =
+                new ObjectHolder<>();
 
         try {
+            final ObjectHolder<List<DbFile>> dbfiles = new ObjectHolder<>();
             try {
-                itsLogrec.checkSyncInterrupted();
-                itsDb.beginTransaction();
-                syncDisplayName();
+                useDb(new DbUser()
+                {
+                    @Override
+                    public void useDb() throws Exception
+                    {
+                        syncDisplayName();
+                        dbfiles.set(SyncDb.getFiles(itsProvider.itsId, itsDb));
+                    }
+                });
 
-                SyncRemoteFiles remoteFiles = getSyncRemoteFiles(
-                        SyncDb.getFiles(itsProvider.itsId, itsDb));
-                if (remoteFiles != null) {
-                    updateDbFiles(remoteFiles);
-                    opers = resolveSyncOpers();
-                }
-                itsDb.setTransactionSuccessful();
+                final SyncRemoteFiles remoteFiles =
+                        getSyncRemoteFiles(dbfiles.get());
+                useDb(new DbUser()
+                {
+                    @Override
+                    public void useDb() throws Exception
+                    {
+                        if (remoteFiles != null) {
+                            updateDbFiles(remoteFiles);
+                            opers.set(resolveSyncOpers());
+                        }
+                    }
+                });
             } catch (Exception e) {
                 throw updateSyncException(e);
-            } finally {
-                itsDb.endTransaction();
             }
 
-            if (opers != null) {
-                for (AbstractSyncOper<ProviderClientT> oper: opers) {
+            if (opers.get() != null) {
+                for (final AbstractSyncOper<ProviderClientT> oper:
+                        opers.get()) {
                     if (oper == null) {
                         continue;
                     }
@@ -91,13 +116,14 @@ public abstract class ProviderSyncer<ProviderClientT>
                         itsLogrec.checkSyncInterrupted();
                         itsLogrec.addEntry(oper.getDescription(itsContext));
                         oper.doOper(itsProviderClient, itsContext);
-                        try {
-                            itsDb.beginTransaction();
-                            oper.doPostOperUpdate(itsDb, itsContext);
-                            itsDb.setTransactionSuccessful();
-                        } finally {
-                            itsDb.endTransaction();
-                        }
+                        useDb(new DbUser()
+                        {
+                            @Override
+                            public void useDb() throws Exception
+                            {
+                                oper.doPostOperUpdate(itsDb, itsContext);
+                            }
+                        });
                     } catch (Exception e) {
                         e = updateSyncException(e);
                         Log.e(itsTag, "Sync error for file " + oper.getFile(),
@@ -140,6 +166,20 @@ public abstract class ProviderSyncer<ProviderClientT>
         return e;
     }
 
+
+    /**
+     * Use the database
+     */
+    private void useDb(DbUser user) throws Exception
+    {
+        try {
+            itsDb.beginTransaction();
+            user.useDb();
+            itsDb.setTransactionSuccessful();
+        } finally {
+            itsDb.endTransaction();
+        }
+    }
 
     /** Update database files from the remote files */
     private void updateDbFiles(@NonNull SyncRemoteFiles remoteFiles)
