@@ -95,7 +95,6 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     protected List<AbstractSyncOper<BoxSession>> performSync()
             throws Exception
     {
-        syncDisplayName();
         updateDbFiles(getBoxFiles());
         return resolveSyncOpers();
     }
@@ -139,16 +138,6 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
             }
         }
         return e;
-    }
-
-    /** Sync account display name */
-    private void syncDisplayName()
-    {
-        String displayName = itsConnResult.getDisplayName();
-        if (!TextUtils.equals(itsProvider.itsDisplayName, displayName)) {
-            SyncDb.updateProviderDisplayName(itsProvider.itsId, displayName,
-                                             itsDb);
-        }
     }
 
     /** Get the files from Box */

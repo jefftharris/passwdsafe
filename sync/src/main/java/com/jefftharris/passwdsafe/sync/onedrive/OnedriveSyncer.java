@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
@@ -91,7 +90,6 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
     protected List<AbstractSyncOper<IOneDriveService>> performSync()
             throws Exception
     {
-        syncDisplayName();
         updateDbFiles(getOnedriveFiles());
         return resolveSyncOpers();
     }
@@ -127,19 +125,6 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
     createRmFileOper(DbFile dbfile)
     {
         return new OnedriveRmFileOper(dbfile);
-    }
-
-
-    /**
-     * Sync account display name
-     */
-    private void syncDisplayName() throws RetrofitError
-    {
-        String displayName = itsConnResult.getDisplayName();
-        if (!TextUtils.equals(itsProvider.itsDisplayName, displayName)) {
-            SyncDb.updateProviderDisplayName(itsProvider.itsId, displayName,
-                                             itsDb);
-        }
     }
 
 

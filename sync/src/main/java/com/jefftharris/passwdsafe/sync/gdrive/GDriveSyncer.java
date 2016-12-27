@@ -87,7 +87,6 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
             return null;
         }
 
-        syncDisplayName();
         updateDbFiles(getDriveFiles());
         return resolveSyncOpers();
     }
@@ -229,19 +228,6 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
                     new GDriveProviderFile(
                             remfile,
                             itsFileFolders.computeFileFolders(remfile)));
-        }
-    }
-
-    /**
-     * Sync account display name
-     */
-    private void syncDisplayName()
-    {
-        String displayName = itsConnResult.getDisplayName();
-        PasswdSafeUtil.dbginfo(TAG, "user %s", displayName);
-        if (!TextUtils.equals(itsProvider.itsDisplayName, displayName)) {
-            SyncDb.updateProviderDisplayName(itsProvider.itsId, displayName,
-                                             itsDb);
         }
     }
 

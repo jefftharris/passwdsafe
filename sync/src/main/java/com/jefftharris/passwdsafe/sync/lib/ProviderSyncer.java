@@ -31,9 +31,9 @@ public abstract class ProviderSyncer<ProviderClientT>
 {
     protected final ProviderClientT itsProviderClient;
     protected final DbProvider itsProvider;
-    protected final SyncConnectivityResult itsConnResult;
     protected final SQLiteDatabase itsDb;
     protected final Context itsContext;
+    private final SyncConnectivityResult itsConnResult;
     private final SyncLogRecord itsLogrec;
     private final String itsTag;
 
@@ -65,6 +65,7 @@ public abstract class ProviderSyncer<ProviderClientT>
             try {
                 itsLogrec.checkSyncInterrupted();
                 itsDb.beginTransaction();
+                syncDisplayName();
                 opers = performSync();
                 itsDb.setTransactionSuccessful();
             } catch (Exception e) {
@@ -192,6 +193,20 @@ public abstract class ProviderSyncer<ProviderClientT>
     protected Exception updateSyncException(Exception e)
     {
         return e;
+    }
+
+
+    /**
+     * Sync the display name of the user
+     */
+    private void syncDisplayName() throws SQLException
+    {
+        String displayName = itsConnResult.getDisplayName();
+        PasswdSafeUtil.dbginfo(itsTag, "syncDisplayName %s", displayName);
+        if (!TextUtils.equals(itsProvider.itsDisplayName, displayName)) {
+            SyncDb.updateProviderDisplayName(itsProvider.itsId, displayName,
+                                             itsDb);
+        }
     }
 
 

@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe.sync.owncloud;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -146,7 +145,6 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
     protected List<AbstractSyncOper<OwnCloudClient>> performSync()
             throws Exception
     {
-        syncDisplayName();
         updateDbFiles(getOwncloudFiles());
         return resolveSyncOpers();
     }
@@ -182,18 +180,6 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
     createRmFileOper(DbFile dbfile)
     {
         return new OwncloudRmFileOper(dbfile);
-    }
-
-
-    /** Sync the display name of the user */
-    private void syncDisplayName()
-    {
-        String displayName = itsConnResult.getDisplayName();
-        PasswdSafeUtil.dbginfo(TAG, "syncDisplayName %s", displayName);
-        if (!TextUtils.equals(itsProvider.itsDisplayName, displayName)) {
-            SyncDb.updateProviderDisplayName(itsProvider.itsId, displayName,
-                                             itsDb);
-        }
     }
 
 

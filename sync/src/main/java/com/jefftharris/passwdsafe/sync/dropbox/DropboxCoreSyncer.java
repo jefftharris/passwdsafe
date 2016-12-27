@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe.sync.dropbox;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
@@ -71,7 +70,6 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
     @Override
     protected List<AbstractSyncOper<DbxClientV2>> performSync() throws Exception
     {
-        syncDisplayName();
         updateDbFiles(getDropboxFiles());
         return resolveSyncOpers();
     }
@@ -101,16 +99,6 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
     createRmFileOper(DbFile dbfile)
     {
         return new DropboxCoreRmFileOper(dbfile);
-    }
-
-
-    /** Sync account display name */
-    private void syncDisplayName()
-    {
-        String name = itsConnResult.getDisplayName();
-        if (!TextUtils.equals(itsProvider.itsDisplayName, name)) {
-            SyncDb.updateProviderDisplayName(itsProvider.itsId, name, itsDb);
-        }
     }
 
 
