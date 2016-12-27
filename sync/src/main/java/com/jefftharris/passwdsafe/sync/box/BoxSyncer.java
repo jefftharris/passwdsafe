@@ -215,7 +215,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
 
 
     /** Convert a Box object to a string for debugging */
-    private String boxToString(BoxJsonObject obj)
+    private static String boxToString(BoxJsonObject obj)
     {
         return BoxProvider.boxToString(obj);
     }
