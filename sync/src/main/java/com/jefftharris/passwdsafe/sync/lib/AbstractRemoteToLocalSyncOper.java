@@ -7,12 +7,15 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
 
 /**
@@ -21,13 +24,43 @@ import com.jefftharris.passwdsafe.sync.R;
 public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
         extends SyncOper<ProviderClientT>
 {
+    private final String itsTag;
     private String itsLocalFileName;
     private boolean itsIsDownloaded = false;
 
     /** Constructor */
-    protected AbstractRemoteToLocalSyncOper(DbFile dbfile)
+    protected AbstractRemoteToLocalSyncOper(DbFile dbfile, String tag)
     {
         super(dbfile);
+        itsTag = tag;
+    }
+
+    @Override
+    public final void doOper(ProviderClientT providerClient, Context ctx)
+        throws Exception
+    {
+        PasswdSafeUtil.dbginfo(itsTag, "syncRemoteToLocal %s", itsFile);
+        itsLocalFileName = SyncHelper.getLocalFileName(itsFile.itsId);
+
+        File tmpfile = File.createTempFile("tmp", "psafe", ctx.getFilesDir());
+        try {
+            doDownload(tmpfile, providerClient, ctx);
+
+            File localFile = ctx.getFileStreamPath(itsLocalFileName);
+            if (!tmpfile.renameTo(localFile)) {
+                throw new IOException("Error renaming to " + localFile);
+            }
+            tmpfile = null;
+
+            if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
+                Log.e(itsTag, "Can't set mod time on " + itsFile);
+            }
+            itsIsDownloaded = true;
+        } finally {
+            if ((tmpfile != null) && !tmpfile.delete()) {
+                Log.e(itsTag, "Can't delete tmp file " + tmpfile);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -61,21 +94,11 @@ public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
                              itsFile.getRemoteTitleAndFolder());
     }
 
-    /** Get the local file name */
-    protected String getLocalFileName()
-    {
-        return itsLocalFileName;
-    }
+    /**
+     * Download the remote file to the given destination file
+     */
+    protected abstract void doDownload(File destFile,
+                                       ProviderClientT providerClient,
+                                       Context ctx) throws Exception;
 
-    /** Set the local file name */
-    protected void setLocalFileName(String fileName)
-    {
-        itsLocalFileName = fileName;
-    }
-
-    /** Set whether the file was downloaded */
-    protected void setDownloaded(boolean downloaded)
-    {
-        itsIsDownloaded = downloaded;
-    }
 }

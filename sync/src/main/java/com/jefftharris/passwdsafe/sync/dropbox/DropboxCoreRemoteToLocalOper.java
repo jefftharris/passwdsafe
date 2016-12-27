@@ -8,15 +8,12 @@
 package com.jefftharris.passwdsafe.sync.dropbox;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.jefftharris.passwdsafe.sync.lib.SyncHelper;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -35,38 +32,21 @@ public class DropboxCoreRemoteToLocalOper
     /** Constructor */
     public DropboxCoreRemoteToLocalOper(DbFile dbfile)
     {
-        super(dbfile);
+        super(dbfile, TAG);
     }
 
-    /** Perform the sync operation */
     @Override
-    public void doOper(DbxClientV2 providerClient,
-                       Context ctx) throws DbxException, IOException
+    protected final void doDownload(File destFile,
+                                    DbxClientV2 providerClient,
+                                    Context ctx)
+            throws DbxException, IOException
     {
-        PasswdSafeUtil.dbginfo(TAG, "syncRemoteToLocal %s", itsFile);
-        setLocalFileName(SyncHelper.getLocalFileName(itsFile.itsId));
-
-        File tmpfile = File.createTempFile("tmp", "psafe", ctx.getFilesDir());
         OutputStream fos = null;
         try {
-            fos = new BufferedOutputStream(new FileOutputStream(tmpfile));
+            fos = new BufferedOutputStream(new FileOutputStream(destFile));
             providerClient.files().download(itsFile.itsRemoteId).download(fos);
-        } catch (Exception e) {
-            if (!tmpfile.delete()) {
-                Log.e(TAG, "Can't delete tmp file " + tmpfile);
-            }
-            throw e;
         } finally {
             Utils.closeStreams(fos);
         }
-
-        File localFile = ctx.getFileStreamPath(getLocalFileName());
-        if (!tmpfile.renameTo(localFile)) {
-            throw new IOException("Error renaming to " + localFile);
-        }
-        if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
-            Log.e(TAG, "Can't set mod time on " + itsFile);
-        }
-        setDownloaded(true);
     }
 }

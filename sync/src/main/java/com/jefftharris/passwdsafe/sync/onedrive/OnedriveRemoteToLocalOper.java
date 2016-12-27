@@ -8,13 +8,10 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.jefftharris.passwdsafe.sync.lib.SyncHelper;
 import com.microsoft.onedriveaccess.IOneDriveService;
 import com.microsoft.onedriveaccess.model.Item;
 
@@ -40,18 +37,15 @@ public class OnedriveRemoteToLocalOper
     /** Constructor */
     public OnedriveRemoteToLocalOper(DbFile dbfile)
     {
-        super(dbfile);
+        super(dbfile, TAG);
     }
 
-    /** Perform the sync operation */
     @Override
-    public void doOper(IOneDriveService providerClient,
-                       Context ctx) throws RetrofitError, IOException
+    protected final void doDownload(File destFile,
+                                    IOneDriveService providerClient,
+                                    Context ctx)
+            throws RetrofitError, IOException
     {
-        PasswdSafeUtil.dbginfo(TAG, "syncRemoteToLocal %s", itsFile);
-        setLocalFileName(SyncHelper.getLocalFileName(itsFile.itsId));
-
-        File tmpfile = File.createTempFile("tmp", "psafe", ctx.getFilesDir());
         OutputStream os = null;
         InputStream is = null;
         HttpURLConnection urlConn = null;
@@ -62,13 +56,8 @@ public class OnedriveRemoteToLocalOper
             urlConn.setInstanceFollowRedirects(true);
             is = urlConn.getInputStream();
 
-            os = new BufferedOutputStream(new FileOutputStream(tmpfile));
+            os = new BufferedOutputStream(new FileOutputStream(destFile));
             Utils.copyStream(is, os);
-        } catch (Exception e) {
-            if (!tmpfile.delete()) {
-                Log.e(TAG, "Can't delete tmp file " + tmpfile);
-            }
-            throw e;
         } finally {
             Utils.closeStreams(is, os);
 
@@ -76,14 +65,5 @@ public class OnedriveRemoteToLocalOper
                 urlConn.disconnect();
             }
         }
-
-        File localFile = ctx.getFileStreamPath(getLocalFileName());
-        if (!tmpfile.renameTo(localFile)) {
-            throw new IOException("Error renaming to " + localFile);
-        }
-        if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
-            Log.e(TAG, "Can't set mod time on " + itsFile);
-        }
-        setDownloaded(true);
     }
 }
