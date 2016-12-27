@@ -20,7 +20,6 @@ import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.ProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
-import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncIOException;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.jefftharris.passwdsafe.sync.lib.SyncRemoteFiles;
@@ -138,12 +137,11 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
 
 
     @Override
-    protected SyncRemoteFiles getSyncRemoteFiles()
+    protected SyncRemoteFiles getSyncRemoteFiles(List<DbFile> dbfiles)
             throws IOException
     {
         SyncRemoteFiles files = new SyncRemoteFiles();
 
-        List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
         for (DbFile dbfile: dbfiles) {
             if (dbfile.itsRemoteId == null) {
                 RemoteFile remfile =

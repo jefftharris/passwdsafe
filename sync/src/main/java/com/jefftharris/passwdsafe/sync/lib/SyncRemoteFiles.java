@@ -7,6 +7,8 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
+import android.support.v4.util.LongSparseArray;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,18 +18,22 @@ import java.util.Map;
 public class SyncRemoteFiles
 {
     /// Map from remote file id to remote file
-    private final Map<String, ProviderRemoteFile> itsRemoteFiles;
+    private final Map<String, ProviderRemoteFile> itsRemoteFiles =
+            new HashMap<>();
 
     /// Map from db file id to remote file for new local files
-    private final Map<Long, ProviderRemoteFile> itsRemoteFilesForNew;
+    private final LongSparseArray<ProviderRemoteFile> itsRemoteFilesForNew =
+            new LongSparseArray<>();
+
+    /// Map from db file id to updated remote file id
+    private final LongSparseArray<String> itsUpdatedRemoteIds =
+            new LongSparseArray<>();
 
     /**
      * Constructor
      */
     public SyncRemoteFiles()
     {
-        itsRemoteFiles = new HashMap<>();
-        itsRemoteFilesForNew = new HashMap<>();
     }
 
     /**
@@ -69,5 +75,29 @@ public class SyncRemoteFiles
                                     ProviderRemoteFile remoteFile)
     {
         itsRemoteFilesForNew.put(dbFileId, remoteFile);
+    }
+
+    /**
+     * Are there any updated remote ids
+     */
+    public boolean hasUpdatedRemoteIds()
+    {
+        return itsUpdatedRemoteIds.size() > 0;
+    }
+
+    /**
+     * Get an updated remote id for a file
+     */
+    public String getUpdatedRemoteId(long dbFileId)
+    {
+        return itsUpdatedRemoteIds.get(dbFileId);
+    }
+
+    /**
+     * Add an updated remote id for a file
+     */
+    public void addUpdatedRemoteId(long dbFileId, String remoteId)
+    {
+        itsUpdatedRemoteIds.put(dbFileId, remoteId);
     }
 }

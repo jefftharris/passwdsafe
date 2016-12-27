@@ -35,9 +35,10 @@ import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
 import com.jefftharris.passwdsafe.sync.lib.ProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
-import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.jefftharris.passwdsafe.sync.lib.SyncRemoteFiles;
+
+import java.util.List;
 
 /**
  * The BoxSyncer class encapsulates a Box sync operation
@@ -88,7 +89,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     }
 
     @Override
-    protected SyncRemoteFiles getSyncRemoteFiles()
+    protected SyncRemoteFiles getSyncRemoteFiles(List<DbFile> dbfiles)
             throws BoxException
     {
         BoxApiFolder folderApi = new BoxApiFolder(itsProviderClient);
@@ -98,7 +99,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
         retrieveBoxFolderFiles(BoxConstants.ROOT_FOLDER_ID, FILE_FIELDS,
                                folderApi, boxfiles);
 
-        for (DbFile dbfile: SyncDb.getFiles(itsProvider.itsId, itsDb)) {
+        for (DbFile dbfile: dbfiles) {
             if (dbfile.itsRemoteId != null) {
                 continue;
             }

@@ -32,10 +32,10 @@ import com.jefftharris.passwdsafe.sync.R;
 public abstract class ProviderSyncer<ProviderClientT>
 {
     protected final ProviderClientT itsProviderClient;
-    protected final DbProvider itsProvider;
-    protected final SQLiteDatabase itsDb;
     protected final Context itsContext;
+    private final DbProvider itsProvider;
     private final SyncConnectivityResult itsConnResult;
+    private final SQLiteDatabase itsDb;
     private final SyncLogRecord itsLogrec;
     private final String itsTag;
 
@@ -68,7 +68,9 @@ public abstract class ProviderSyncer<ProviderClientT>
                 itsLogrec.checkSyncInterrupted();
                 itsDb.beginTransaction();
                 syncDisplayName();
-                SyncRemoteFiles remoteFiles = getSyncRemoteFiles();
+
+                SyncRemoteFiles remoteFiles = getSyncRemoteFiles(
+                        SyncDb.getFiles(itsProvider.itsId, itsDb));
                 if (remoteFiles != null) {
                     updateDbFiles(remoteFiles);
                     opers = resolveSyncOpers();
@@ -112,7 +114,8 @@ public abstract class ProviderSyncer<ProviderClientT>
 
 
     /** Get the remote files to sync */
-    protected abstract @Nullable SyncRemoteFiles getSyncRemoteFiles()
+    protected abstract @Nullable SyncRemoteFiles getSyncRemoteFiles(
+            List<DbFile> dbfiles)
             throws Exception;
 
 
@@ -142,6 +145,24 @@ public abstract class ProviderSyncer<ProviderClientT>
     private void updateDbFiles(@NonNull SyncRemoteFiles remoteFiles)
     {
         List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
+        if (remoteFiles.hasUpdatedRemoteIds()) {
+            boolean modified = false;
+            for (DbFile dbfile: dbfiles) {
+                String remoteId = remoteFiles.getUpdatedRemoteId(dbfile.itsId);
+                if (remoteId != null) {
+                    SyncDb.updateRemoteFile(
+                            dbfile.itsId, remoteId,
+                            dbfile.itsRemoteTitle, dbfile.itsRemoteFolder,
+                            dbfile.itsRemoteModDate, dbfile.itsRemoteHash,
+                            itsDb);
+                    modified = true;
+                }
+            }
+            if (modified) {
+                dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
+            }
+        }
+
         Set<String> processedRemoteFiles = new HashSet<>();
         for (DbFile dbfile: dbfiles) {
             if ((dbfile.itsRemoteId == null) ||
