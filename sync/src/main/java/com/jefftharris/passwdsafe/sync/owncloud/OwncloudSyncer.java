@@ -14,13 +14,13 @@ import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
-import com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
+import com.jefftharris.passwdsafe.sync.lib.ProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncIOException;
@@ -43,7 +43,7 @@ import java.util.Locale;
 /**
  * The OwncloudSyncer class encapsulates an ownCloud sync operation
  */
-public class OwncloudSyncer extends AbstractProviderSyncer<OwnCloudClient>
+public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
 {
     private static final String TAG = "OwncloudSyncer";
 

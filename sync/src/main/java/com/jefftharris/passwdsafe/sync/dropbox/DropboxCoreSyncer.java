@@ -20,13 +20,13 @@ import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
-import com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
+import com.jefftharris.passwdsafe.sync.lib.ProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * The DropboxCoreSyncer class encapsulates a Dropbox sync operation
  */
-public class DropboxCoreSyncer extends AbstractProviderSyncer<DbxClientV2>
+public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
 {
     private static final String TAG = "DropboxCoreSyncer";
 
