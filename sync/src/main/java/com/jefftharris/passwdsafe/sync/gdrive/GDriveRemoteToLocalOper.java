@@ -1,12 +1,15 @@
 /*
- * Copyright (©) 2013-2015 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync.gdrive;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -40,28 +43,28 @@ public class GDriveRemoteToLocalOper
         PasswdSafeUtil.dbginfo(TAG, "syncRemoteToLocal %s", itsFile);
         setLocalFileName(SyncHelper.getLocalFileName(itsFile.itsId));
 
+        File tmpfile = File.createTempFile("tmp", "psafe", ctx.getFilesDir());
+        OutputStream os = null;
         try {
-            OutputStream os = null;
-            try {
-                os = new BufferedOutputStream(
-                        ctx.openFileOutput(getLocalFileName(),
-                                           Context.MODE_PRIVATE));
-
-                drive.files().get(itsFile.itsRemoteId)
-                     .executeMediaAndDownloadTo(os);
-            } finally {
-                Utils.closeStreams(null, os);
+            os = new BufferedOutputStream(new FileOutputStream(tmpfile));
+            drive.files().get(itsFile.itsRemoteId)
+                 .executeMediaAndDownloadTo(os);
+        } catch (Exception e) {
+            if (!tmpfile.delete()) {
+                Log.e(TAG, "Can't delete tmp file " + tmpfile);
             }
-
-            java.io.File localFile = ctx.getFileStreamPath(getLocalFileName());
-            if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
-                Log.e(TAG, "Can't set mod time on " + itsFile);
-            }
-            setDownloaded(true);
-        } catch (IOException e) {
-            ctx.deleteFile(getLocalFileName());
-            setDownloaded(false);
-            Log.e(TAG, "Sync failed to download " + itsFile, e);
+            throw e;
+        } finally {
+            Utils.closeStreams(os);
         }
+
+        File localFile = ctx.getFileStreamPath(getLocalFileName());
+        if (!tmpfile.renameTo(localFile)) {
+            throw new IOException("Error renaming to " + localFile);
+        }
+        if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
+            Log.e(TAG, "Can't set mod time on " + itsFile);
+        }
+        setDownloaded(true);
     }
 }

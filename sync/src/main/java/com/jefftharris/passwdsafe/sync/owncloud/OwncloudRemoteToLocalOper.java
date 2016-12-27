@@ -1,7 +1,8 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync.owncloud;
@@ -44,22 +45,30 @@ public class OwncloudRemoteToLocalOper extends
         PasswdSafeUtil.dbginfo(TAG, "syncRemoteToLocal %s", itsFile);
         setLocalFileName(SyncHelper.getLocalFileName(itsFile.itsId));
 
+        File tmpfile = File.createTempFile("tmp", "psafe", ctx.getFilesDir());
         try {
-            File localFile = ctx.getFileStreamPath(getLocalFileName());
             DownloadRemoteFileOperation oper = new DownloadRemoteFileOperation(
-                    itsFile.itsRemoteId, localFile, true);
+                    itsFile.itsRemoteId, tmpfile, true);
             RemoteOperationResult res = oper.execute(providerClient);
             OwncloudSyncer.checkOperationResult(res, ctx);
-
-            if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
-                Log.e(TAG, "Can't set mod time on " + itsFile);
-            }
-            setDownloaded(true);
         } catch (IOException e) {
-            ctx.deleteFile(getLocalFileName());
-            setDownloaded(false);
-            Log.e(TAG, "Sync failed to download: " + itsFile, e);
+            if (!tmpfile.delete()) {
+                Log.e(TAG, "Can't delete tmp file " + tmpfile);
+            }
             throw e;
+//            ctx.deleteFile(getLocalFileName());
+//            setDownloaded(false);
+//            Log.e(TAG, "Sync failed to download: " + itsFile, e);
+//            throw e;
         }
+
+        File localFile = ctx.getFileStreamPath(getLocalFileName());
+        if (!tmpfile.renameTo(localFile)) {
+            throw new IOException("Error renaming to " + localFile);
+        }
+        if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
+            Log.e(TAG, "Can't set mod time on " + itsFile);
+        }
+        setDownloaded(true);
     }
 }

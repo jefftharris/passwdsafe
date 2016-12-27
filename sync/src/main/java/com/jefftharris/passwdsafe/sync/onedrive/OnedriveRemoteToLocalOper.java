@@ -20,6 +20,7 @@ import com.microsoft.onedriveaccess.model.Item;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,6 +51,7 @@ public class OnedriveRemoteToLocalOper
         PasswdSafeUtil.dbginfo(TAG, "syncRemoteToLocal %s", itsFile);
         setLocalFileName(SyncHelper.getLocalFileName(itsFile.itsId));
 
+        File tmpfile = File.createTempFile("tmp", "psafe", ctx.getFilesDir());
         OutputStream os = null;
         InputStream is = null;
         HttpURLConnection urlConn = null;
@@ -60,17 +62,13 @@ public class OnedriveRemoteToLocalOper
             urlConn.setInstanceFollowRedirects(true);
             is = urlConn.getInputStream();
 
-            os = new BufferedOutputStream(
-                    ctx.openFileOutput(getLocalFileName(),
-                                       Context.MODE_PRIVATE));
-
+            os = new BufferedOutputStream(new FileOutputStream(tmpfile));
             Utils.copyStream(is, os);
-
-            File localFile = ctx.getFileStreamPath(getLocalFileName());
-            if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
-                Log.e(TAG, "Can't set mod time on " + itsFile);
+        } catch (Exception e) {
+            if (!tmpfile.delete()) {
+                Log.e(TAG, "Can't delete tmp file " + tmpfile);
             }
-            setDownloaded(true);
+            throw e;
         } finally {
             Utils.closeStreams(is, os);
 
@@ -78,5 +76,14 @@ public class OnedriveRemoteToLocalOper
                 urlConn.disconnect();
             }
         }
+
+        File localFile = ctx.getFileStreamPath(getLocalFileName());
+        if (!tmpfile.renameTo(localFile)) {
+            throw new IOException("Error renaming to " + localFile);
+        }
+        if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
+            Log.e(TAG, "Can't set mod time on " + itsFile);
+        }
+        setDownloaded(true);
     }
 }
