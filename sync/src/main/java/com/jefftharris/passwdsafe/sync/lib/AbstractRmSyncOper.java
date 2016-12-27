@@ -1,7 +1,8 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync.lib;
@@ -18,8 +19,8 @@ import com.jefftharris.passwdsafe.sync.R;
 /**
  * Abstract sync operation to remove a file
  */
-public abstract class AbstractRmSyncOper<ProviderClientT> extends
-        AbstractSyncOper<ProviderClientT>
+public abstract class AbstractRmSyncOper<ProviderClientT>
+        extends SyncOper<ProviderClientT>
 {
     private final String itsTag;
     private final boolean itsIsRmLocal;
@@ -55,7 +56,7 @@ public abstract class AbstractRmSyncOper<ProviderClientT> extends
      * @see com.jefftharris.passwdsafe.sync.lib.SyncOper#doPostOperUpdate(android.database.sqlite.SQLiteDatabase, android.content.Context)
      */
     @Override
-    public void doPostOperUpdate(SQLiteDatabase db, Context ctx)
+    public final void doPostOperUpdate(SQLiteDatabase db, Context ctx)
             throws IOException, SQLException
     {
         SyncDb.removeFile(itsFile.itsId, db);

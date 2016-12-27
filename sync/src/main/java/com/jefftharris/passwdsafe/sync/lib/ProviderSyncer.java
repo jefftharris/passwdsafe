@@ -73,7 +73,7 @@ public abstract class ProviderSyncer<ProviderClientT>
     public final void sync()
             throws Exception
     {
-        final ObjectHolder<List<AbstractSyncOper<ProviderClientT>>> opers =
+        final ObjectHolder<List<SyncOper<ProviderClientT>>> opers =
                 new ObjectHolder<>();
 
         try {
@@ -107,8 +107,7 @@ public abstract class ProviderSyncer<ProviderClientT>
             }
 
             if (opers.get() != null) {
-                for (final AbstractSyncOper<ProviderClientT> oper:
-                        opers.get()) {
+                for (final SyncOper<ProviderClientT> oper: opers.get()) {
                     if (oper == null) {
                         continue;
                     }
@@ -252,9 +251,9 @@ public abstract class ProviderSyncer<ProviderClientT>
 
 
     /** Resolve the sync operations after the database files are updated */
-    private List<AbstractSyncOper<ProviderClientT>> resolveSyncOpers()
+    private List<SyncOper<ProviderClientT>> resolveSyncOpers()
     {
-        List<AbstractSyncOper<ProviderClientT>> opers = new ArrayList<>();
+        List<SyncOper<ProviderClientT>> opers = new ArrayList<>();
         List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
         for (DbFile dbfile: dbfiles) {
             resolveSyncOper(dbfile, opers);
@@ -329,7 +328,7 @@ public abstract class ProviderSyncer<ProviderClientT>
 
     /** Resolve the sync operations for a file */
     private void resolveSyncOper(DbFile dbfile,
-                                 List<AbstractSyncOper<ProviderClientT>> opers)
+                                 List<SyncOper<ProviderClientT>> opers)
             throws SQLException
     {
         if ((dbfile.itsLocalChange != DbFile.FileChange.NO_CHANGE) ||
@@ -424,11 +423,8 @@ public abstract class ProviderSyncer<ProviderClientT>
      * and the file is updated to resemble a new local file with the same id but
      * a different name indicating a conflict
      */
-    private void splitConflictedFile
-    (
-            DbFile dbfile,
-            List<AbstractSyncOper<ProviderClientT>> opers
-    )
+    private void splitConflictedFile(DbFile dbfile,
+                                     List<SyncOper<ProviderClientT>> opers)
             throws SQLException
     {
         DbFile newRemfile = splitRemoteToNewFile(dbfile);
@@ -441,11 +437,9 @@ public abstract class ProviderSyncer<ProviderClientT>
 
 
     /** Recreate a remotely deleted file from local updates */
-    private void recreateRemoteRemovedFile
-    (
+    private void recreateRemoteRemovedFile(
             DbFile dbfile,
-            List<AbstractSyncOper<ProviderClientT>> opers
-    )
+            List<SyncOper<ProviderClientT>> opers)
             throws SQLException
     {
         resetRemoteFields(dbfile);
