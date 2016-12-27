@@ -22,15 +22,13 @@ import com.jefftharris.passwdsafe.sync.R;
 public abstract class AbstractRmSyncOper<ProviderClientT>
         extends SyncOper<ProviderClientT>
 {
-    private final String itsTag;
     private final boolean itsIsRmLocal;
     private final boolean itsIsRmRemote;
 
     /** Constructor */
     protected AbstractRmSyncOper(DbFile dbfile, String tag)
     {
-        super(dbfile);
-        itsTag = tag;
+        super(dbfile, tag);
         itsIsRmLocal = (itsFile.itsLocalFile != null);
         itsIsRmRemote = (!itsFile.itsIsRemoteDeleted &&
                 (itsFile.itsRemoteId != null));

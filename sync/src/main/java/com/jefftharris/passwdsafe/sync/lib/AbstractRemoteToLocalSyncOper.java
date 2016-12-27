@@ -24,15 +24,13 @@ import com.jefftharris.passwdsafe.sync.R;
 public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
         extends SyncOper<ProviderClientT>
 {
-    private final String itsTag;
     private String itsLocalFileName;
     private boolean itsIsDownloaded = false;
 
     /** Constructor */
     protected AbstractRemoteToLocalSyncOper(DbFile dbfile, String tag)
     {
-        super(dbfile);
-        itsTag = tag;
+        super(dbfile, tag);
     }
 
     @Override

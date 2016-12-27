@@ -25,16 +25,14 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
         extends SyncOper<ProviderClientT>
 {
     private final boolean itsIsInsert;
-    private final String itsTag;
     private File itsLocalFile;
     private ProviderRemoteFile itsUpdatedFile;
 
     /** Constructor */
     protected AbstractLocalToRemoteSyncOper(DbFile file, String tag)
     {
-        super(file);
+        super(file, tag);
         itsIsInsert = TextUtils.isEmpty(itsFile.itsRemoteId);
-        itsTag = tag;
     }
 
 

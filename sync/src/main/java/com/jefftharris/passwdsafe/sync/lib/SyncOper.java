@@ -19,11 +19,13 @@ import android.database.sqlite.SQLiteDatabase;
 public abstract class SyncOper<ProviderClientT>
 {
     protected final DbFile itsFile;
+    protected final String itsTag;
 
     /** Constructor */
-    protected SyncOper(DbFile file)
+    protected SyncOper(DbFile file, String tag)
     {
         itsFile = file;
+        itsTag = tag;
     }
 
     /** Get the sync database file */
