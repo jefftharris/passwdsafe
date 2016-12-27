@@ -8,12 +8,14 @@
 package com.jefftharris.passwdsafe.sync.lib;
 
 import java.io.File;
+import java.io.IOException;
 
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
 
 /**
@@ -23,13 +25,16 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
         extends SyncOper<ProviderClientT>
 {
     private final boolean itsIsInsert;
+    private final String itsTag;
     private File itsLocalFile;
+    private ProviderRemoteFile itsUpdatedFile;
 
     /** Constructor */
-    protected AbstractLocalToRemoteSyncOper(DbFile file)
+    protected AbstractLocalToRemoteSyncOper(DbFile file, String tag)
     {
         super(file);
         itsIsInsert = TextUtils.isEmpty(itsFile.itsRemoteId);
+        itsTag = tag;
     }
 
 
@@ -44,17 +49,20 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
     }
 
 
-    /** Update local items after the operation is complete */
-    protected final void doPostOperFileUpdates(String remId,
-                                               String title,
-                                               String folders,
-                                               long modDate,
-                                               String remHash,
-                                               SQLiteDatabase db)
-            throws SQLException
+    /** Perform the database update after the sync operation */
+    @Override
+    public final void doPostOperUpdate(SQLiteDatabase db, Context ctx)
+            throws IOException, SQLException
     {
-        SyncDb.updateRemoteFile(itsFile.itsId, remId, title, folders, modDate,
-                                remHash, db);
+        if (itsUpdatedFile == null) {
+            return;
+        }
+        String title = itsUpdatedFile.getTitle();
+        String folders = itsUpdatedFile.getFolder();
+        long modDate = itsUpdatedFile.getModTime();
+        SyncDb.updateRemoteFile(itsFile.itsId, itsUpdatedFile.getRemoteId(),
+                                title, folders, modDate,
+                                itsUpdatedFile.getHash(), db);
         SyncDb.updateLocalFile(itsFile.itsId, itsFile.itsLocalFile,
                                title, folders, modDate, db);
         clearFileChanges(db);
@@ -83,5 +91,14 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
     protected final void setLocalFile(File file)
     {
         itsLocalFile = file;
+    }
+
+
+    /** Set the updated remote file */
+    protected final void setUpdatedFile(ProviderRemoteFile updatedFile)
+    {
+        PasswdSafeUtil.dbginfo(itsTag, "updated file: %s",
+                               updatedFile.toDebugString());
+        itsUpdatedFile = updatedFile;
     }
 }

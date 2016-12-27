@@ -8,11 +8,8 @@
 package com.jefftharris.passwdsafe.sync.owncloud;
 
 import java.io.File;
-import java.io.IOException;
 
 import android.content.Context;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -32,12 +29,10 @@ public class OwncloudLocalToRemoteOper extends
 {
     private static final String TAG = "OwncloudLocalToRemoteOp";
 
-    private OwncloudProviderFile itsUpdatedFile = null;
-
     /** Constructor */
     public OwncloudLocalToRemoteOper(DbFile file)
     {
-        super(file);
+        super(file, TAG);
     }
 
     /* (non-Javadoc)
@@ -79,8 +74,8 @@ public class OwncloudLocalToRemoteOper extends
                     new ReadRemoteFileOperation(remotePath);
             res = fileOper.execute(providerClient);
             OwncloudSyncer.checkOperationResult(res, ctx);
-            itsUpdatedFile =
-                    new OwncloudProviderFile((RemoteFile)res.getData().get(0));
+            setUpdatedFile(
+                    new OwncloudProviderFile((RemoteFile)res.getData().get(0)));
         } finally {
             if (tmpFile != null) {
                 if (!tmpFile.delete()) {
@@ -88,19 +83,5 @@ public class OwncloudLocalToRemoteOper extends
                 }
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.SyncOper#doPostOperUpdate(android.database.sqlite.SQLiteDatabase, android.content.Context)
-     */
-    @Override
-    public void doPostOperUpdate(SQLiteDatabase db, Context ctx)
-            throws IOException, SQLException
-    {
-        doPostOperFileUpdates(itsUpdatedFile.getRemoteId(),
-                              itsUpdatedFile.getTitle(),
-                              itsUpdatedFile.getFolder(),
-                              itsUpdatedFile.getModTime(),
-                              itsUpdatedFile.getHash(), db);
     }
 }

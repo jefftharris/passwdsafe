@@ -8,19 +8,15 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.content.Context;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
 import com.microsoft.onedriveaccess.IOneDriveService;
 import com.microsoft.onedriveaccess.model.Item;
 
 import java.io.File;
-import java.io.IOException;
 
 import retrofit.mime.TypedFile;
 
@@ -32,12 +28,10 @@ public class OnedriveLocalToRemoteOper
 {
     private static final String TAG = "OnedriveLocalToRemoteOp";
 
-    private ProviderRemoteFile itsUpdatedFile = null;
-
     /** Constructor */
     public OnedriveLocalToRemoteOper(DbFile dbfile)
     {
-        super(dbfile);
+        super(dbfile, TAG);
     }
 
     /** Perform the sync operation */
@@ -70,26 +64,11 @@ public class OnedriveLocalToRemoteOper
             Item updatedItem = providerClient.uploadItemByPath(
                     remotePath,
                     new TypedFile("application/psafe3", uploadFile));
-            itsUpdatedFile = new OnedriveProviderFile(updatedItem);
-            PasswdSafeUtil.dbginfo(TAG, "updated file: %s", itsUpdatedFile);
-
+            setUpdatedFile(new OnedriveProviderFile(updatedItem));
         } finally {
             if ((tmpFile != null) && !tmpFile.delete()) {
                 Log.e(TAG, "Can't delete temp file " + tmpFile);
             }
-
         }
-    }
-
-    /** Perform the database update after the sync operation */
-    @Override
-    public void doPostOperUpdate(SQLiteDatabase db,
-                                 Context ctx) throws IOException, SQLException
-    {
-        doPostOperFileUpdates(itsUpdatedFile.getRemoteId(),
-                              itsUpdatedFile.getTitle(),
-                              itsUpdatedFile.getFolder(),
-                              itsUpdatedFile.getModTime(),
-                              itsUpdatedFile.getHash(), db);
     }
 }
