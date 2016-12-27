@@ -17,6 +17,8 @@ import java.util.Set;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -66,7 +68,11 @@ public abstract class ProviderSyncer<ProviderClientT>
                 itsLogrec.checkSyncInterrupted();
                 itsDb.beginTransaction();
                 syncDisplayName();
-                opers = performSync();
+                SyncRemoteFiles remoteFiles = getSyncRemoteFiles();
+                if (remoteFiles != null) {
+                    updateDbFiles(remoteFiles);
+                    opers = resolveSyncOpers();
+                }
                 itsDb.setTransactionSuccessful();
             } catch (Exception e) {
                 throw updateSyncException(e);
@@ -105,8 +111,8 @@ public abstract class ProviderSyncer<ProviderClientT>
     }
 
 
-    /** Perform a sync of the files */
-    protected abstract List<AbstractSyncOper<ProviderClientT>> performSync()
+    /** Get the remote files to sync */
+    protected abstract @Nullable SyncRemoteFiles getSyncRemoteFiles()
             throws Exception;
 
 
@@ -125,8 +131,15 @@ public abstract class ProviderSyncer<ProviderClientT>
     createRmFileOper(DbFile dbfile);
 
 
+    /** Update an exception thrown during syncing */
+    protected Exception updateSyncException(Exception e)
+    {
+        return e;
+    }
+
+
     /** Update database files from the remote files */
-    protected void updateDbFiles(SyncRemoteFiles remoteFiles)
+    private void updateDbFiles(@NonNull SyncRemoteFiles remoteFiles)
     {
         List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
         Set<String> processedRemoteFiles = new HashSet<>();
@@ -178,7 +191,7 @@ public abstract class ProviderSyncer<ProviderClientT>
 
 
     /** Resolve the sync operations after the database files are updated */
-    protected List<AbstractSyncOper<ProviderClientT>> resolveSyncOpers()
+    private List<AbstractSyncOper<ProviderClientT>> resolveSyncOpers()
     {
         List<AbstractSyncOper<ProviderClientT>> opers = new ArrayList<>();
         List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
@@ -186,13 +199,6 @@ public abstract class ProviderSyncer<ProviderClientT>
             resolveSyncOper(dbfile, opers);
         }
         return opers;
-    }
-
-
-    /** Update an exception thrown during syncing */
-    protected Exception updateSyncException(Exception e)
-    {
-        return e;
     }
 
 

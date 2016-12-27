@@ -7,13 +7,7 @@
  */
 package com.jefftharris.passwdsafe.sync.gdrive;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import android.content.Context;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -27,7 +21,6 @@ import com.jefftharris.passwdsafe.sync.SyncUpdateHandler;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
-import com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
@@ -36,6 +29,11 @@ import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.jefftharris.passwdsafe.sync.lib.SyncRemoteFiles;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * The Syncer class encapsulates a sync operation
@@ -79,42 +77,14 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
     }
 
     @Override
-    protected List<AbstractSyncOper<Drive>> performSync()
-            throws IOException, SQLException
+    protected SyncRemoteFiles getSyncRemoteFiles()
+            throws IOException
     {
         if (itsProviderClient == null) {
             itsSyncState = SyncUpdateHandler.GDriveState.PENDING_AUTH;
             return null;
         }
 
-        updateDbFiles(getDriveFiles());
-        return resolveSyncOpers();
-    }
-
-    @Override
-    protected AbstractLocalToRemoteSyncOper<Drive> createLocalToRemoteOper(
-            DbFile dbfile)
-    {
-        return new GDriveLocalToRemoteOper(dbfile, itsFileFolders);
-    }
-
-    @Override
-    protected AbstractRemoteToLocalSyncOper<Drive> createRemoteToLocalOper(
-            DbFile dbfile)
-    {
-        return new GDriveRemoteToLocalOper(dbfile);
-    }
-
-    @Override
-    protected AbstractRmSyncOper<Drive> createRmFileOper(DbFile dbfile)
-    {
-        return new GDriveRmFileOper(dbfile);
-    }
-
-    /** Get the Google Drive files */
-    private SyncRemoteFiles getDriveFiles()
-            throws IOException
-    {
         SyncRemoteFiles driveFiles = new SyncRemoteFiles();
 
         String query =
@@ -144,6 +114,26 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
         }
 
         return driveFiles;
+    }
+
+    @Override
+    protected AbstractLocalToRemoteSyncOper<Drive> createLocalToRemoteOper(
+            DbFile dbfile)
+    {
+        return new GDriveLocalToRemoteOper(dbfile, itsFileFolders);
+    }
+
+    @Override
+    protected AbstractRemoteToLocalSyncOper<Drive> createRemoteToLocalOper(
+            DbFile dbfile)
+    {
+        return new GDriveRemoteToLocalOper(dbfile);
+    }
+
+    @Override
+    protected AbstractRmSyncOper<Drive> createRmFileOper(DbFile dbfile)
+    {
+        return new GDriveRmFileOper(dbfile);
     }
 
     /**

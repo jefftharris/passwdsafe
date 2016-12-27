@@ -15,7 +15,6 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
-import com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
@@ -138,53 +137,8 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
     }
 
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer#performSync()
-     */
     @Override
-    protected List<AbstractSyncOper<OwnCloudClient>> performSync()
-            throws Exception
-    {
-        updateDbFiles(getOwncloudFiles());
-        return resolveSyncOpers();
-    }
-
-
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer#createLocalToRemoteOper(com.jefftharris.passwdsafe.sync.lib.DbFile)
-     */
-    @Override
-    protected AbstractLocalToRemoteSyncOper<OwnCloudClient>
-    createLocalToRemoteOper(DbFile dbfile)
-    {
-        return new OwncloudLocalToRemoteOper(dbfile);
-    }
-
-
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer#createRemoteToLocalOper(com.jefftharris.passwdsafe.sync.lib.DbFile)
-     */
-    @Override
-    protected AbstractRemoteToLocalSyncOper<OwnCloudClient>
-    createRemoteToLocalOper(DbFile dbfile)
-    {
-        return new OwncloudRemoteToLocalOper(dbfile);
-    }
-
-
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer#createRmFileOper(com.jefftharris.passwdsafe.sync.lib.DbFile)
-     */
-    @Override
-    protected AbstractRmSyncOper<OwnCloudClient>
-    createRmFileOper(DbFile dbfile)
-    {
-        return new OwncloudRmFileOper(dbfile);
-    }
-
-
-    /** Get the remote ownCloud files to sync */
-    private SyncRemoteFiles getOwncloudFiles()
+    protected SyncRemoteFiles getSyncRemoteFiles()
             throws IOException
     {
         SyncRemoteFiles files = new SyncRemoteFiles();
@@ -224,6 +178,39 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
 
         return files;
     }
+
+    /* (non-Javadoc)
+     * @see com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer#createLocalToRemoteOper(com.jefftharris.passwdsafe.sync.lib.DbFile)
+     */
+    @Override
+    protected AbstractLocalToRemoteSyncOper<OwnCloudClient>
+    createLocalToRemoteOper(DbFile dbfile)
+    {
+        return new OwncloudLocalToRemoteOper(dbfile);
+    }
+
+
+    /* (non-Javadoc)
+     * @see com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer#createRemoteToLocalOper(com.jefftharris.passwdsafe.sync.lib.DbFile)
+     */
+    @Override
+    protected AbstractRemoteToLocalSyncOper<OwnCloudClient>
+    createRemoteToLocalOper(DbFile dbfile)
+    {
+        return new OwncloudRemoteToLocalOper(dbfile);
+    }
+
+
+    /* (non-Javadoc)
+     * @see com.jefftharris.passwdsafe.sync.lib.AbstractProviderSyncer#createRmFileOper(com.jefftharris.passwdsafe.sync.lib.DbFile)
+     */
+    @Override
+    protected AbstractRmSyncOper<OwnCloudClient>
+    createRmFileOper(DbFile dbfile)
+    {
+        return new OwncloudRmFileOper(dbfile);
+    }
+
 
     /**
      * Get a remote file ownCloud

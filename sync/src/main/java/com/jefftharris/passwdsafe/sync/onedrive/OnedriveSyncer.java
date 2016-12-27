@@ -14,7 +14,6 @@ import android.net.Uri;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
-import com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
@@ -26,8 +25,6 @@ import com.jefftharris.passwdsafe.sync.lib.SyncRemoteFiles;
 import com.microsoft.onedriveaccess.IOneDriveService;
 import com.microsoft.onedriveaccess.model.Drive;
 import com.microsoft.onedriveaccess.model.Item;
-
-import java.util.List;
 
 import retrofit.RetrofitError;
 
@@ -83,15 +80,35 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
     }
 
 
-    /**
-     * Perform a sync of the files
-     */
     @Override
-    protected List<AbstractSyncOper<IOneDriveService>> performSync()
-            throws Exception
+    protected SyncRemoteFiles getSyncRemoteFiles()
     {
-        updateDbFiles(getOnedriveFiles());
-        return resolveSyncOpers();
+        SyncRemoteFiles files = new SyncRemoteFiles();
+        for (DbFile dbfile: SyncDb.getFiles(itsProvider.itsId, itsDb)) {
+            if (dbfile.itsRemoteId == null) {
+                Item item = getRemoteFile(createRemoteIdFromLocal(dbfile));
+                if (item != null) {
+                    files.addRemoteFileForNew(dbfile.itsId,
+                                              new OnedriveProviderFile(item));
+                }
+            } else {
+                switch (dbfile.itsRemoteChange) {
+                case NO_CHANGE:
+                case ADDED:
+                case MODIFIED: {
+                    Item item = getRemoteFile(dbfile.itsRemoteId);
+                    if (item != null) {
+                        files.addRemoteFile(new OnedriveProviderFile(item));
+                    }
+                    break;
+                }
+                case REMOVED: {
+                    break;
+                }
+                }
+            }
+        }
+        return files;
     }
 
 
@@ -125,40 +142,6 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
     createRmFileOper(DbFile dbfile)
     {
         return new OnedriveRmFileOper(dbfile);
-    }
-
-
-    /**
-     * Get the remote OneDrive files to sync
-     */
-    private SyncRemoteFiles getOnedriveFiles()
-    {
-        SyncRemoteFiles files = new SyncRemoteFiles();
-        for (DbFile dbfile: SyncDb.getFiles(itsProvider.itsId, itsDb)) {
-            if (dbfile.itsRemoteId == null) {
-                Item item = getRemoteFile(createRemoteIdFromLocal(dbfile));
-                if (item != null) {
-                    files.addRemoteFileForNew(dbfile.itsId,
-                                              new OnedriveProviderFile(item));
-                }
-            } else {
-                switch (dbfile.itsRemoteChange) {
-                case NO_CHANGE:
-                case ADDED:
-                case MODIFIED: {
-                    Item item = getRemoteFile(dbfile.itsRemoteId);
-                    if (item != null) {
-                        files.addRemoteFile(new OnedriveProviderFile(item));
-                    }
-                    break;
-                }
-                case REMOVED: {
-                    break;
-                }
-                }
-            }
-        }
-        return files;
     }
 
 

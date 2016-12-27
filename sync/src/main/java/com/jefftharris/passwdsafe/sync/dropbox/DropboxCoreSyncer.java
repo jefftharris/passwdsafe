@@ -21,7 +21,6 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
-import com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
@@ -30,8 +29,6 @@ import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.jefftharris.passwdsafe.sync.lib.SyncRemoteFiles;
-
-import java.util.List;
 
 /**
  * The DropboxCoreSyncer class encapsulates a Dropbox sync operation
@@ -66,44 +63,9 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
         return acct.getName().getDisplayName();
     }
 
-    /** Perform a sync of the files */
+
     @Override
-    protected List<AbstractSyncOper<DbxClientV2>> performSync() throws Exception
-    {
-        updateDbFiles(getDropboxFiles());
-        return resolveSyncOpers();
-    }
-
-
-    /** Create an operation to sync local to remote */
-    @Override
-    protected AbstractLocalToRemoteSyncOper<DbxClientV2>
-    createLocalToRemoteOper(DbFile dbfile)
-    {
-        return new DropboxCoreLocalToRemoteOper(dbfile);
-    }
-
-
-    /** Create an operation to sync remote to local */
-    @Override
-    protected AbstractRemoteToLocalSyncOper<DbxClientV2>
-    createRemoteToLocalOper(DbFile dbfile)
-    {
-        return new DropboxCoreRemoteToLocalOper(dbfile);
-    }
-
-
-    /** Create an operation to remove a file */
-    @Override
-    protected AbstractRmSyncOper<DbxClientV2>
-    createRmFileOper(DbFile dbfile)
-    {
-        return new DropboxCoreRmFileOper(dbfile);
-    }
-
-
-    /** Get the remote Dropbox files to sync */
-    private SyncRemoteFiles getDropboxFiles()
+    protected SyncRemoteFiles getSyncRemoteFiles()
             throws DbxException
     {
         SyncRemoteFiles files = new SyncRemoteFiles();
@@ -139,6 +101,34 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
         }
         return files;
     }
+
+
+    /** Create an operation to sync local to remote */
+    @Override
+    protected AbstractLocalToRemoteSyncOper<DbxClientV2>
+    createLocalToRemoteOper(DbFile dbfile)
+    {
+        return new DropboxCoreLocalToRemoteOper(dbfile);
+    }
+
+
+    /** Create an operation to sync remote to local */
+    @Override
+    protected AbstractRemoteToLocalSyncOper<DbxClientV2>
+    createRemoteToLocalOper(DbFile dbfile)
+    {
+        return new DropboxCoreRemoteToLocalOper(dbfile);
+    }
+
+
+    /** Create an operation to remove a file */
+    @Override
+    protected AbstractRmSyncOper<DbxClientV2>
+    createRmFileOper(DbFile dbfile)
+    {
+        return new DropboxCoreRmFileOper(dbfile);
+    }
+
 
     /**
      * Get a remote file's metadata from Dropbox

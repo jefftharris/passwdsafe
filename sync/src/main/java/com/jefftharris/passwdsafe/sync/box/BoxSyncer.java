@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.box;
 
-import java.util.List;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -32,7 +30,6 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
-import com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
@@ -90,58 +87,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
         return folderStr.toString();
     }
 
-    /** Perform a sync of the files */
     @Override
-    protected List<AbstractSyncOper<BoxSession>> performSync()
-            throws Exception
-    {
-        updateDbFiles(getBoxFiles());
-        return resolveSyncOpers();
-    }
-
-    @Override
-    protected AbstractLocalToRemoteSyncOper<BoxSession>
-    createLocalToRemoteOper(DbFile dbfile)
-    {
-        return new BoxLocalToRemoteOper(dbfile);
-    }
-
-    @Override
-    protected AbstractRemoteToLocalSyncOper<BoxSession>
-    createRemoteToLocalOper(DbFile dbfile)
-    {
-        return new BoxRemoteToLocalOper(dbfile);
-    }
-
-    @Override
-    protected AbstractRmSyncOper<BoxSession>
-    createRmFileOper(DbFile dbfile)
-    {
-        return new BoxRmFileOper(dbfile);
-    }
-
-
-    /** Update an exception thrown during syncing */
-    @Override
-    protected Exception updateSyncException(Exception e)
-    {
-        if (e instanceof BoxException) {
-            BoxException boxExcept = (BoxException)e;
-            // Massage server exceptions to get the error
-            BoxError serverError = boxExcept.getAsBoxError();
-            if (serverError != null) {
-                String msg = boxExcept.getMessage();
-                if (TextUtils.isEmpty(msg)) {
-                    msg = "Box server error";
-                }
-                e = new Exception(msg + ": " + boxToString(serverError), e);
-            }
-        }
-        return e;
-    }
-
-    /** Get the files from Box */
-    private SyncRemoteFiles getBoxFiles()
+    protected SyncRemoteFiles getSyncRemoteFiles()
             throws BoxException
     {
         BoxApiFolder folderApi = new BoxApiFolder(itsProviderClient);
@@ -189,6 +136,48 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
 
         return boxfiles;
     }
+
+    @Override
+    protected AbstractLocalToRemoteSyncOper<BoxSession>
+    createLocalToRemoteOper(DbFile dbfile)
+    {
+        return new BoxLocalToRemoteOper(dbfile);
+    }
+
+    @Override
+    protected AbstractRemoteToLocalSyncOper<BoxSession>
+    createRemoteToLocalOper(DbFile dbfile)
+    {
+        return new BoxRemoteToLocalOper(dbfile);
+    }
+
+    @Override
+    protected AbstractRmSyncOper<BoxSession>
+    createRmFileOper(DbFile dbfile)
+    {
+        return new BoxRmFileOper(dbfile);
+    }
+
+
+    /** Update an exception thrown during syncing */
+    @Override
+    protected Exception updateSyncException(Exception e)
+    {
+        if (e instanceof BoxException) {
+            BoxException boxExcept = (BoxException)e;
+            // Massage server exceptions to get the error
+            BoxError serverError = boxExcept.getAsBoxError();
+            if (serverError != null) {
+                String msg = boxExcept.getMessage();
+                if (TextUtils.isEmpty(msg)) {
+                    msg = "Box server error";
+                }
+                e = new Exception(msg + ": " + boxToString(serverError), e);
+            }
+        }
+        return e;
+    }
+
 
     /** Retrieve the files in the given folder */
     @SuppressWarnings("SameParameterValue")
