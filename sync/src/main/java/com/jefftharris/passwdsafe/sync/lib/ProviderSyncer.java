@@ -128,6 +128,8 @@ public abstract class ProviderSyncer<ProviderClientT>
                         Log.e(itsTag, "Sync error for file " + oper.getFile(),
                               e);
                         itsLogrec.addFailure(e);
+                    } finally {
+                        oper.finish();
                     }
                 }
             }

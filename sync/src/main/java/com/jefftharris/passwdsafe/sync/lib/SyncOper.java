@@ -43,6 +43,11 @@ public abstract class SyncOper<ProviderClientT>
     public abstract void doPostOperUpdate(SQLiteDatabase db, Context ctx)
             throws IOException, SQLException;
 
+    /** Finish the operation */
+    public void finish()
+    {
+    }
+
     /** Get a description of the operation */
     public abstract String getDescription(Context ctx);
 
