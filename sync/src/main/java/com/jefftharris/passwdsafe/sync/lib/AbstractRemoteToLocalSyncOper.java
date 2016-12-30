@@ -24,8 +24,7 @@ import com.jefftharris.passwdsafe.sync.R;
 public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
         extends SyncOper<ProviderClientT>
 {
-    private String itsLocalFileName;
-    private boolean itsIsDownloaded = false;
+    private File itsDownloadFile;
 
     /** Constructor */
     protected AbstractRemoteToLocalSyncOper(DbFile dbfile, String tag)
@@ -38,53 +37,46 @@ public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
         throws Exception
     {
         PasswdSafeUtil.dbginfo(itsTag, "syncRemoteToLocal %s", itsFile);
-        itsLocalFileName = SyncHelper.getLocalFileName(itsFile.itsId);
-
-        File tmpfile = File.createTempFile("tmp", "psafe", ctx.getFilesDir());
-        try {
-            doDownload(tmpfile, providerClient, ctx);
-
-            File localFile = ctx.getFileStreamPath(itsLocalFileName);
-            if (!tmpfile.renameTo(localFile)) {
-                throw new IOException("Error renaming to " + localFile);
-            }
-            tmpfile = null;
-
-            if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
-                Log.e(itsTag, "Can't set mod time on " + itsFile);
-            }
-            itsIsDownloaded = true;
-        } finally {
-            if ((tmpfile != null) && !tmpfile.delete()) {
-                Log.e(itsTag, "Can't delete tmp file " + tmpfile);
-            }
-        }
+        itsDownloadFile = File.createTempFile("passwd", ".tmp",
+                                              ctx.getFilesDir());
+        doDownload(itsDownloadFile, providerClient, ctx);
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.SyncOper#doPostOperUpdate(android.database.sqlite.SQLiteDatabase, android.content.Context)
-     */
     @Override
     public final void doPostOperUpdate(SQLiteDatabase db, Context ctx)
             throws IOException, SQLException
     {
-        if (itsIsDownloaded && (itsLocalFileName != null)) {
-            try {
-                SyncDb.updateLocalFile(itsFile.itsId, itsLocalFileName,
-                                       itsFile.itsRemoteTitle,
-                                       itsFile.itsRemoteFolder,
-                                       itsFile.itsRemoteModDate, db);
-                clearFileChanges(db);
-            } catch (SQLException e) {
-                ctx.deleteFile(itsLocalFileName);
-                throw e;
-            }
+        String localFileName = SyncHelper.getLocalFileName(itsFile.itsId);
+        File localFile = ctx.getFileStreamPath(localFileName);
+        if (!itsDownloadFile.renameTo(localFile)) {
+            throw new IOException("Error renaming to " + localFile);
+        }
+        itsDownloadFile = null;
+
+        if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
+            Log.e(itsTag, "Can't set mod time on " + itsFile);
+        }
+
+        try {
+            SyncDb.updateLocalFile(itsFile.itsId, localFileName,
+                                   itsFile.itsRemoteTitle,
+                                   itsFile.itsRemoteFolder,
+                                   itsFile.itsRemoteModDate, db);
+            clearFileChanges(db);
+        } catch (SQLException e) {
+            ctx.deleteFile(localFileName);
+            throw e;
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.SyncOper#getDescription(android.content.Context)
-     */
+    @Override
+    public final void finish()
+    {
+        if ((itsDownloadFile != null) && !itsDownloadFile.delete()) {
+            Log.e(itsTag, "Can't delete tmp file " + itsDownloadFile);
+        }
+    }
+
     @Override
     public final String getDescription(Context ctx)
     {
@@ -98,5 +90,4 @@ public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
     protected abstract void doDownload(File destFile,
                                        ProviderClientT providerClient,
                                        Context ctx) throws Exception;
-
 }
