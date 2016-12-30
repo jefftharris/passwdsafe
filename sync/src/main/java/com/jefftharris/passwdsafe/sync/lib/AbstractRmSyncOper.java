@@ -34,35 +34,31 @@ public abstract class AbstractRmSyncOper<ProviderClientT>
                 (itsFile.itsRemoteId != null));
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.AbstractSyncOper#doOper(java.lang.Object, android.content.Context)
-     */
     @Override
     public final void doOper(ProviderClientT providerClient, Context ctx)
             throws Exception
     {
         PasswdSafeUtil.dbginfo(itsTag, "removeFile %s", itsFile);
-        if (itsIsRmLocal) {
-            ctx.deleteFile(itsFile.itsLocalFile);
-        }
-
         if (itsIsRmRemote) {
             doRemoteRemove(providerClient, ctx);
         }
     }
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.SyncOper#doPostOperUpdate(android.database.sqlite.SQLiteDatabase, android.content.Context)
-     */
+
     @Override
-    public final void doPostOperUpdate(SQLiteDatabase db, Context ctx)
+    public final void doPostOperUpdate(boolean updateLocal,
+                                       SQLiteDatabase db, Context ctx)
             throws IOException, SQLException
     {
-        SyncDb.removeFile(itsFile.itsId, db);
+        if (updateLocal) {
+            if (itsIsRmLocal) {
+                ctx.deleteFile(itsFile.itsLocalFile);
+            }
+            SyncDb.removeFile(itsFile.itsId, db);
+        } else {
+            SyncDb.updateRemoteFileDeleted(itsFile.itsId, db);
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.SyncOper#getDescription(android.content.Context)
-     */
     @Override
     public String getDescription(Context ctx)
     {

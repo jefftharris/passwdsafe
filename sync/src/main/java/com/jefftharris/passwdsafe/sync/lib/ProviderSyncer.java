@@ -120,7 +120,7 @@ public abstract class ProviderSyncer<ProviderClientT>
                             @Override
                             public void useDb() throws Exception
                             {
-                                oper.doPostOperUpdate(itsDb, itsContext);
+                                oper.doPostOperUpdate(true, itsDb, itsContext);
                             }
                         });
                     } catch (Exception e) {

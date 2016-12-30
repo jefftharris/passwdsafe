@@ -43,26 +43,31 @@ public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
     }
 
     @Override
-    public final void doPostOperUpdate(SQLiteDatabase db, Context ctx)
+    public final void doPostOperUpdate(boolean updateLocal,
+                                       SQLiteDatabase db, Context ctx)
             throws IOException, SQLException
     {
         String localFileName = SyncHelper.getLocalFileName(itsFile.itsId);
-        File localFile = ctx.getFileStreamPath(localFileName);
-        if (!itsDownloadFile.renameTo(localFile)) {
-            throw new IOException("Error renaming to " + localFile);
-        }
-        itsDownloadFile = null;
+        if (updateLocal) {
+            File localFile = ctx.getFileStreamPath(localFileName);
+            if (!itsDownloadFile.renameTo(localFile)) {
+                throw new IOException("Error renaming to " + localFile);
+            }
+            itsDownloadFile = null;
 
-        if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
-            Log.e(itsTag, "Can't set mod time on " + itsFile);
+            if (!localFile.setLastModified(itsFile.itsRemoteModDate)) {
+                Log.e(itsTag, "Can't set mod time on " + itsFile);
+            }
         }
 
         try {
-            SyncDb.updateLocalFile(itsFile.itsId, localFileName,
-                                   itsFile.itsRemoteTitle,
-                                   itsFile.itsRemoteFolder,
-                                   itsFile.itsRemoteModDate, db);
-            clearFileChanges(db);
+            if (updateLocal) {
+                SyncDb.updateLocalFile(itsFile.itsId, localFileName,
+                                       itsFile.itsRemoteTitle,
+                                       itsFile.itsRemoteFolder,
+                                       itsFile.itsRemoteModDate, db);
+            }
+            clearFileChanges(updateLocal, db);
         } catch (SQLException e) {
             ctx.deleteFile(localFileName);
             throw e;

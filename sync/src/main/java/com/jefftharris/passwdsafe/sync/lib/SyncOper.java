@@ -40,7 +40,8 @@ public abstract class SyncOper<ProviderClientT>
 
     /** Perform the database update after the sync operation */
     @SuppressWarnings("RedundantThrows")
-    public abstract void doPostOperUpdate(SQLiteDatabase db, Context ctx)
+    public abstract void doPostOperUpdate(boolean updateLocal,
+                                          SQLiteDatabase db, Context ctx)
             throws IOException, SQLException;
 
     /** Finish the operation */
@@ -52,12 +53,14 @@ public abstract class SyncOper<ProviderClientT>
     public abstract String getDescription(Context ctx);
 
     /** Clear the file change indications */
-    protected void clearFileChanges(SQLiteDatabase db)
+    protected void clearFileChanges(boolean updateLocal, SQLiteDatabase db)
             throws SQLException
     {
         SyncDb.updateRemoteFileChange(itsFile.itsId,
                                       DbFile.FileChange.NO_CHANGE, db);
-        SyncDb.updateLocalFileChange(itsFile.itsId,
-                                     DbFile.FileChange.NO_CHANGE, db);
+        if (updateLocal) {
+            SyncDb.updateLocalFileChange(itsFile.itsId,
+                                         DbFile.FileChange.NO_CHANGE, db);
+        }
     }
 }

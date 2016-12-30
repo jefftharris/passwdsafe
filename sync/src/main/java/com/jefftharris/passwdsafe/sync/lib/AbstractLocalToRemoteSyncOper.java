@@ -14,6 +14,7 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
@@ -36,9 +37,6 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
     }
 
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.GDriveSyncOper#getDescription(android.content.Context)
-     */
     @Override
     public final String getDescription(Context ctx)
     {
@@ -47,9 +45,9 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
     }
 
 
-    /** Perform the database update after the sync operation */
     @Override
-    public final void doPostOperUpdate(SQLiteDatabase db, Context ctx)
+    public final void doPostOperUpdate(boolean updateLocal,
+                                       SQLiteDatabase db, Context ctx)
             throws IOException, SQLException
     {
         if (itsUpdatedFile == null) {
@@ -61,13 +59,15 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
         SyncDb.updateRemoteFile(itsFile.itsId, itsUpdatedFile.getRemoteId(),
                                 title, folders, modDate,
                                 itsUpdatedFile.getHash(), db);
-        SyncDb.updateLocalFile(itsFile.itsId, itsFile.itsLocalFile,
-                               title, folders, modDate, db);
-        clearFileChanges(db);
-        if (itsLocalFile != null) {
-            //noinspection ResultOfMethodCallIgnored
-            itsLocalFile.setLastModified(modDate);
+        if (updateLocal) {
+            SyncDb.updateLocalFile(itsFile.itsId, itsFile.itsLocalFile,
+                                   title, folders, modDate, db);
+            if ((itsLocalFile != null) &&
+                !itsLocalFile.setLastModified(modDate)) {
+                Log.e(itsTag, "Can't set mod time on " + itsFile);
+            }
         }
+        clearFileChanges(updateLocal, db);
     }
 
 
