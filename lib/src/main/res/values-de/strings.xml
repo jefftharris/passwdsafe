@@ -33,6 +33,7 @@
     <string name="owncloud">ownCloud</string>
     <string name="parent_directory">Übergeordneter Ordner</string>
     <string name="preferences">Einstellungen</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
     <string name="release_notes_title">Versionshinweise</string>
     <string name="release_notes">(Platzhalter)</string>
     <string name="reload">Neu laden</string>

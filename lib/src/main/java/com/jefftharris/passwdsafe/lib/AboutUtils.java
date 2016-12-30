@@ -48,6 +48,8 @@ public class AboutUtils
 {
     private static final String TAG = "AboutUtils";
     private static final String PREF_RELEASE_NOTES = "releaseNotes";
+    private static final String PRIVACY_POLICY_URL =
+            "https://sourceforge.net/p/passwdsafe/wiki/PrivacyPolicy/";
 
     private static String itsAppVersion;
 
@@ -105,6 +107,23 @@ public class AboutUtils
             public void onClick(View v)
             {
                 sendLog(act, (pkgInfo != null) ? pkgInfo.packageName : null);
+            }
+        });
+
+        View privacyPolicyBtn = detailsView.findViewById(R.id.privacy_policy);
+        privacyPolicyBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent policyIntent = new Intent(Intent.ACTION_VIEW,
+                                                 Uri.parse(PRIVACY_POLICY_URL));
+                if (policyIntent.resolveActivity(act.getPackageManager()) !=
+                    null) {
+                    act.startActivity(Intent.createChooser(
+                            policyIntent,
+                            act.getString(R.string.privacy_policy)));
+                }
             }
         });
         return name;

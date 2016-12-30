@@ -54,18 +54,26 @@
               android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="wrap_content">
-        <ToggleButton android:id="@+id/toggle_license"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:textOff="@string/licenses"
-                      android:textOn="@string/licenses"/>
-
+                  android:layout_height="wrap_content"
+                  android:gravity="center_vertical">
         <Button android:id="@+id/send_log"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/send_log"/>
+
+        <Button android:id="@+id/privacy_policy"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_policy"/>
     </LinearLayout>
+
+    <ToggleButton android:id="@+id/toggle_license"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textOff="@string/licenses"
+                  android:textOn="@string/licenses"/>
 
     <TextView android:id="@+id/license"
               android:layout_width="match_parent"

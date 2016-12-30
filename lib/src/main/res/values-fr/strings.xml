@@ -35,6 +35,7 @@
     <string name="owncloud">ownCloud</string>
     <string name="parent_directory">Répertoire parent</string>
     <string name="preferences">Préférences</string>
+    <string name="privacy_policy">Règles de Confidentialité</string>
     <string name="release_notes_title">Notes de version</string>
     <string name="release_notes">(placeholder)</string>
     <string name="reload">Recharger</string>
