@@ -77,6 +77,8 @@
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.3.4&lt;/b&gt; - Verhalten bei Zeitüberschreitung verbessert
+        \n\n
         &lt;b&gt;3.3.3&lt;/b&gt; - Fehler bei der Synchronisierung mit
         geteilten Google-Drive-Dateien behoben
         \n\n
