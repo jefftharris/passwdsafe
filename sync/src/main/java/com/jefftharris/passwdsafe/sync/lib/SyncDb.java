@@ -86,7 +86,10 @@ public class SyncDb
     private static final String DB_MATCH_SYNC_LOGS_START_BEFORE =
             DB_COL_SYNC_LOGS_START + " < ?";
 
+    public static final long INVALID_UPDATE_COUNT = -1;
+
     private static SyncDb itsDb = null;
+    private static long itsUpdateCount = 0;
 
     private final DbHelper itsDbHelper;
     private final ReentrantLock itsMutex = new ReentrantLock();
@@ -179,7 +182,7 @@ public class SyncDb
         values.put(DB_COL_PROVIDERS_ACCT, name);
         values.put(DB_COL_PROVIDERS_SYNC_CHANGE, -1);
         values.put(DB_COL_PROVIDERS_SYNC_FREQ, freq);
-        return db.insertOrThrow(DB_TABLE_PROVIDERS, null, values);
+        return doInsert(db, DB_TABLE_PROVIDERS, values);
     }
 
     /** Delete a provider */
@@ -187,8 +190,8 @@ public class SyncDb
         throws SQLException
     {
         String[] idargs = new String[] { Long.toString(id) };
-        db.delete(DB_TABLE_FILES, DB_MATCH_FILES_PROVIDER_ID, idargs);
-        db.delete(DB_TABLE_PROVIDERS, DB_MATCH_PROVIDERS_ID, idargs);
+        doDelete(db, DB_TABLE_FILES, DB_MATCH_FILES_PROVIDER_ID, idargs);
+        doDelete(db, DB_TABLE_PROVIDERS, DB_MATCH_PROVIDERS_ID, idargs);
     }
 
     /** Update a provider display name */
@@ -307,7 +310,7 @@ public class SyncDb
                    DbFile.FileChange.toDbStr(DbFile.FileChange.ADDED));
         values.put(DB_COL_FILES_REMOTE_MOD_DATE, -1);
         values.put(DB_COL_FILES_REMOTE_DELETED, false);
-        return db.insertOrThrow(DB_TABLE_FILES, null, values);
+        return doInsert(db, DB_TABLE_FILES, values);
     }
 
 
@@ -330,7 +333,7 @@ public class SyncDb
         values.put(DB_COL_FILES_REMOTE_FOLDER, remFolder);
         values.put(DB_COL_FILES_REMOTE_CHANGE,
                    DbFile.FileChange.toDbStr(DbFile.FileChange.ADDED));
-        return db.insertOrThrow(DB_TABLE_FILES, null, values);
+        return doInsert(db, DB_TABLE_FILES, values);
     }
 
 
@@ -346,8 +349,8 @@ public class SyncDb
         values.put(DB_COL_FILES_LOCAL_MOD_DATE, locModDate);
         values.put(DB_COL_FILES_LOCAL_DELETED, false);
         values.put(DB_COL_FILES_LOCAL_FOLDER, locFolder);
-        db.update(DB_TABLE_FILES, values,
-                  DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
+        doUpdate(db, DB_TABLE_FILES, values,
+                 DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
     }
 
 
@@ -360,8 +363,8 @@ public class SyncDb
         ContentValues values = new ContentValues();
         values.put(DB_COL_FILES_LOCAL_CHANGE,
                    DbFile.FileChange.toDbStr(change));
-        db.update(DB_TABLE_FILES, values,
-                  DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
+        doUpdate(db, DB_TABLE_FILES, values,
+                 DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
     }
 
 
@@ -379,8 +382,8 @@ public class SyncDb
         values.put(DB_COL_FILES_REMOTE_HASH, remHash);
         values.put(DB_COL_FILES_REMOTE_DELETED, false);
         values.put(DB_COL_FILES_REMOTE_FOLDER, remFolder);
-        db.update(DB_TABLE_FILES, values,
-                  DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
+        doUpdate(db, DB_TABLE_FILES, values,
+                 DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
     }
 
 
@@ -407,8 +410,8 @@ public class SyncDb
             break;
         }
         }
-        db.update(DB_TABLE_FILES, values,
-                  DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
+        doUpdate(db, DB_TABLE_FILES, values,
+                 DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
     }
 
 
@@ -420,8 +423,8 @@ public class SyncDb
         values.put(DB_COL_FILES_REMOTE_DELETED, true);
         values.put(DB_COL_FILES_REMOTE_CHANGE,
                 DbFile.FileChange.toDbStr(DbFile.FileChange.REMOVED));
-        db.update(DB_TABLE_FILES, values,
-                  DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
+        doUpdate(db, DB_TABLE_FILES, values,
+                 DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
     }
 
 
@@ -433,8 +436,8 @@ public class SyncDb
         values.put(DB_COL_FILES_LOCAL_DELETED, true);
         values.put(DB_COL_FILES_LOCAL_CHANGE,
                    DbFile.FileChange.toDbStr(DbFile.FileChange.REMOVED));
-        db.update(DB_TABLE_FILES, values,
-                  DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
+        doUpdate(db, DB_TABLE_FILES, values,
+                 DB_MATCH_FILES_ID, new String[] { Long.toString(fileId) });
     }
 
 
@@ -442,8 +445,8 @@ public class SyncDb
     public static void removeFile(long fileId, SQLiteDatabase db)
         throws SQLException
     {
-        db.delete(DB_TABLE_FILES, DB_MATCH_FILES_ID,
-                  new String[] { Long.toString(fileId) });
+        doDelete(db, DB_TABLE_FILES, DB_MATCH_FILES_ID,
+                 new String[] { Long.toString(fileId) });
     }
 
 
@@ -468,7 +471,7 @@ public class SyncDb
         }
         values.put(DB_COL_SYNC_LOGS_FLAGS, flags);
 
-        db.insertOrThrow(DB_TABLE_SYNC_LOGS, null, values);
+        doInsert(db, DB_TABLE_SYNC_LOGS, values);
     }
 
 
@@ -476,10 +479,26 @@ public class SyncDb
     public static void deleteSyncLogs(long removeBefore, SQLiteDatabase db)
         throws SQLException
     {
-        db.delete(DB_TABLE_SYNC_LOGS, DB_MATCH_SYNC_LOGS_START_BEFORE,
-                  new String[] { Long.toString(removeBefore) });
+        doDelete(db, DB_TABLE_SYNC_LOGS, DB_MATCH_SYNC_LOGS_START_BEFORE,
+                 new String[] { Long.toString(removeBefore) });
     }
 
+    /**
+     * Check whether the DB update count matches the passed value
+     */
+    public static synchronized boolean checkUpdateCount(long updateCount)
+    {
+        return (updateCount == INVALID_UPDATE_COUNT) ||
+               (updateCount == itsUpdateCount);
+    }
+
+    /**
+     * Get the DB update count
+     */
+    public static synchronized long getUpdateCount()
+    {
+        return itsUpdateCount;
+    }
 
     /** Get a provider */
     private static DbProvider getProvider(String match, String[] matchArgs,
@@ -505,8 +524,7 @@ public class SyncDb
         throws SQLException
     {
         String[] idargs = new String[] { Long.toString(providerId) };
-        db.update(DB_TABLE_PROVIDERS, values,
-                  DB_MATCH_PROVIDERS_ID, idargs);
+        doUpdate(db, DB_TABLE_PROVIDERS, values, DB_MATCH_PROVIDERS_ID, idargs);
     }
 
 
@@ -528,6 +546,45 @@ public class SyncDb
         return null;
     }
 
+    /**
+     * Insert into the database
+     */
+    private static long doInsert(SQLiteDatabase db, String table,
+                                 ContentValues values) throws SQLException
+    {
+        long id = db.insertOrThrow(table, null, values);
+        incrUpdateCount();
+        return id;
+    }
+
+    /**
+     * Update the database
+     */
+    private static void doUpdate(SQLiteDatabase db, String table,
+                                 ContentValues values,
+                                 String where, String[] args)
+    {
+        db.update(table, values, where, args);
+        incrUpdateCount();
+    }
+
+    /**
+     * Delete from the database
+     */
+    private static void doDelete(SQLiteDatabase db, String table, String where,
+                                 String[] args)
+    {
+        db.delete(table, where, args);
+        incrUpdateCount();
+    }
+
+    /**
+     * Increment the DB update count
+     */
+    private static synchronized void incrUpdateCount()
+    {
+        ++itsUpdateCount;
+    }
 
     /** Database helper class to manage the tables */
     private static final class DbHelper extends SQLiteOpenHelper
