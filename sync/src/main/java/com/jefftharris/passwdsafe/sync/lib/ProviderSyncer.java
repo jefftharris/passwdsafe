@@ -173,6 +173,7 @@ public abstract class ProviderSyncer<ProviderClientT>
      */
     private void useDb(DbUser user) throws Exception
     {
+        itsLogrec.checkSyncInterrupted();
         try {
             itsDb.beginTransaction();
             user.useDb();

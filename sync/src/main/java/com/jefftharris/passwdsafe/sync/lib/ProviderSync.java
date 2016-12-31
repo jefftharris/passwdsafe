@@ -44,6 +44,7 @@ public class ProviderSync
             new HashSet<>();
     private static final Handler itsUIHandler =
             new Handler(Looper.getMainLooper());
+    private static final Object itsLock = new Object();
 
     private static final String TAG = "ProviderSync";
 
@@ -78,25 +79,27 @@ public class ProviderSync
      */
     public void sync(boolean manual)
     {
-        BackgroundSync sync = new BackgroundSync(manual);
+        synchronized (itsLock) {
+            BackgroundSync sync = new BackgroundSync(manual);
 
-        PowerManager powerMgr = (PowerManager)
-                itsContext.getSystemService(Context.POWER_SERVICE);
-        itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                                           "sync");
-        itsWakeLock.acquire();
-        try {
-            FutureTask<Void> task = new FutureTask<>(sync, null);
+            PowerManager powerMgr = (PowerManager)
+                    itsContext.getSystemService(Context.POWER_SERVICE);
+            itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                                               "sync");
+            itsWakeLock.acquire();
             try {
-                Thread t = new Thread(task);
-                t.start();
-                task.get(60, TimeUnit.SECONDS);
-            } catch (Exception e) {
-                sync.setTaskException(e);
-                task.cancel(true);
+                FutureTask<Void> task = new FutureTask<>(sync, null);
+                try {
+                    Thread t = new Thread(task);
+                    t.start();
+                    task.get(60, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    sync.setTaskException(e);
+                    task.cancel(true);
+                }
+            } finally {
+                itsWakeLock.release();
             }
-        } finally {
-            itsWakeLock.release();
         }
     }
 
