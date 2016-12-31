@@ -39,6 +39,7 @@ public abstract class ProviderSyncer<ProviderClientT>
     private final SQLiteDatabase itsDb;
     private final SyncLogRecord itsLogrec;
     private final String itsTag;
+    private long itsDbUpdateCount = SyncDb.INVALID_UPDATE_COUNT;
 
     /**
      * Interface for a user of the database
@@ -48,7 +49,7 @@ public abstract class ProviderSyncer<ProviderClientT>
         /**
          * Use the database
          */
-        void useDb() throws Exception;
+        void useDb(boolean dbOk) throws Exception;
     }
 
     /** Constructor */
@@ -79,7 +80,7 @@ public abstract class ProviderSyncer<ProviderClientT>
         try {
             final ObjectHolder<List<DbFile>> dbfiles = new ObjectHolder<>();
             try {
-                useDb(new DbUser()
+                useDb(new CheckedDbUser()
                 {
                     @Override
                     public void useDb() throws Exception
@@ -91,7 +92,7 @@ public abstract class ProviderSyncer<ProviderClientT>
 
                 final SyncRemoteFiles remoteFiles =
                         getSyncRemoteFiles(dbfiles.get());
-                useDb(new DbUser()
+                useDb(new CheckedDbUser()
                 {
                     @Override
                     public void useDb() throws Exception
@@ -118,9 +119,10 @@ public abstract class ProviderSyncer<ProviderClientT>
                         useDb(new DbUser()
                         {
                             @Override
-                            public void useDb() throws Exception
+                            public void useDb(boolean dbOk)
+                                    throws Exception
                             {
-                                oper.doPostOperUpdate(true, itsDb, itsContext);
+                                oper.doPostOperUpdate(dbOk, itsDb, itsContext);
                             }
                         });
                     } catch (Exception e) {
@@ -176,9 +178,10 @@ public abstract class ProviderSyncer<ProviderClientT>
         itsLogrec.checkSyncInterrupted();
         try {
             itsDb.beginTransaction();
-            user.useDb();
+            user.useDb(SyncDb.checkUpdateCount(itsDbUpdateCount));
             itsDb.setTransactionSuccessful();
         } finally {
+            itsDbUpdateCount = SyncDb.getUpdateCount();
             itsDb.endTransaction();
         }
     }
@@ -511,5 +514,25 @@ public abstract class ProviderSyncer<ProviderClientT>
                 R.string.sync_conflict_log,
                 filename, dbfile.itsLocalChange, dbfile.itsRemoteChange);
         itsLogrec.addEntry(log);
+    }
+
+    /**
+     * A user of the database that checks for an ok state
+     */
+    private static abstract class CheckedDbUser implements DbUser
+    {
+        @Override
+        public final void useDb(boolean dbOk) throws Exception
+        {
+            if (!dbOk) {
+                throw new IllegalStateException("DB updated during sync");
+            }
+            useDb();
+        }
+
+        /**
+         * Use the database
+         */
+        public abstract void useDb() throws Exception;
     }
 }
