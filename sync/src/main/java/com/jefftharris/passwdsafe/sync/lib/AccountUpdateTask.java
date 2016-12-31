@@ -1,7 +1,8 @@
 /*
- * Copyright (©) 2013-2015 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync.lib;
@@ -46,6 +47,15 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
         execute();
     }
 
+    /**
+     * Cancel the task
+     */
+    public void cancelTask()
+    {
+        cancel(true);
+        onPostExecute(null);
+    }
+
     /** Constructor */
     protected AccountUpdateTask(Uri accountUri, String progressMsg)
     {
@@ -53,9 +63,6 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
         itsProgressMsg = progressMsg;
     }
 
-    /* (non-Javadoc)
-     * @see android.os.AsyncTask#onPreExecute()
-     */
     @Override
     protected void onPreExecute()
     {
@@ -65,9 +72,6 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
         itsProgressFrag.show(itsActivity.getSupportFragmentManager(), null);
     }
 
-    /* (non-Javadoc)
-     * @see android.os.AsyncTask#doInBackground(java.lang.Object[])
-     */
     @Override
     protected final Void doInBackground(Void... params)
     {
@@ -84,14 +88,12 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
     /** Do the account update in the background */
     protected abstract void doAccountUpdate(ContentResolver cr);
 
-    /* (non-Javadoc)
-     * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-     */
     @Override
     protected void onPostExecute(Void arg)
     {
-        super.onPostExecute(arg);
-        itsProgressFrag.dismissAllowingStateLoss();
+        if (itsProgressFrag != null) {
+            itsProgressFrag.dismissAllowingStateLoss();
+        }
         itsListener.notifyUpdateFinished(this);
     }
 

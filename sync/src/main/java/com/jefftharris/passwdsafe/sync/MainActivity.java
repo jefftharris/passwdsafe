@@ -155,19 +155,6 @@ public class MainActivity extends AppCompatActivity
         lm.initLoader(LOADER_PROVIDERS, null, this);
     }
 
-    /**
-     * Destroy all fragments and loaders.
-     */
-    @Override
-    protected void onDestroy()
-    {
-        for (AccountUpdateTask task: itsUpdateTasks) {
-            task.cancel(true);
-        }
-        itsUpdateTasks.clear();
-        super.onDestroy();
-    }
-
     /* (non-Javadoc)
      * @see android.support.v4.app.FragmentActivity#onStart()
      */
@@ -187,6 +174,10 @@ public class MainActivity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
+        for (AccountUpdateTask task: new ArrayList<>(itsUpdateTasks)) {
+            task.cancelTask();
+        }
+        itsUpdateTasks.clear();
         SyncApp.get(this).setSyncUpdateHandler(null);
     }
 
