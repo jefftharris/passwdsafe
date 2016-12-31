@@ -163,7 +163,6 @@ public class SyncDb
 
     /** End a transaction and release the database */
     public void endTransactionAndRelease()
-        throws SQLException
     {
         try {
             getDb().endTransaction();
