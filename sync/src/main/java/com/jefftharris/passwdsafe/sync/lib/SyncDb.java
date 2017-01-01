@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -92,7 +91,6 @@ public class SyncDb
     private static long itsUpdateCount = 0;
 
     private final DbHelper itsDbHelper;
-    private final ReentrantLock itsMutex = new ReentrantLock();
 
     /**
      * Interface for a user of the database
@@ -125,26 +123,16 @@ public class SyncDb
      */
     public static <T> T useDb(DbUser<T> user) throws Exception
     {
-        SyncDb syncDb = acquire();
+        SyncDb syncDb = getDb();
+        SQLiteDatabase db = syncDb.itsDbHelper.getWritableDatabase();
         try {
-            SQLiteDatabase db = syncDb.beginTransaction();
+            db.beginTransaction();
             T rc = user.useDb(db);
             db.setTransactionSuccessful();
             return rc;
         } finally {
-            syncDb.endTransactionAndRelease();
+            db.endTransaction();
         }
-    }
-
-    /** Acquire the single SyncDb instance */
-    public static SyncDb acquire()
-    {
-        SyncDb db;
-        synchronized (SyncDb.class) {
-            db = itsDb;
-        }
-        db.doAcquire();
-        return db;
     }
 
     /** Constructor */
@@ -157,45 +145,6 @@ public class SyncDb
     private void close()
     {
         itsDbHelper.close();
-    }
-
-    /** Acquire a lock on the database */
-    private void doAcquire()
-    {
-        // TODO: need Mutex?
-        // perhaps use a txn everywhere instead?
-        itsMutex.lock();
-    }
-
-    /** Release the lock on the database */
-    public void release()
-    {
-        itsMutex.unlock();
-    }
-
-    /** Get the database */
-    public SQLiteDatabase getDb()
-    {
-        return itsDbHelper.getWritableDatabase();
-    }
-
-    /** Begin a transaction */
-    public SQLiteDatabase beginTransaction()
-        throws SQLException
-    {
-        SQLiteDatabase db = getDb();
-        db.beginTransaction();
-        return db;
-    }
-
-    /** End a transaction and release the database */
-    private void endTransactionAndRelease()
-    {
-        try {
-            getDb().endTransaction();
-        } finally {
-            release();
-        }
     }
 
     /** Add a provider */
@@ -602,6 +551,14 @@ public class SyncDb
     {
         db.delete(table, where, args);
         incrUpdateCount();
+    }
+
+    /**
+     * Get the SyncDb instance
+     */
+    private static synchronized SyncDb getDb()
+    {
+        return itsDb;
     }
 
     /**
