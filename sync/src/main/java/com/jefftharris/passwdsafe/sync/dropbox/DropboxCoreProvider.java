@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -12,7 +12,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -401,30 +400,38 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             editor.putBoolean(PREF_MIGRATE_TOKEN, false);
             editor.apply();
 
-            SyncDb syncDb = SyncDb.acquire();
             try {
-                SQLiteDatabase db = syncDb.getDb();
-                for (DbProvider provider: SyncDb.getProviders(db)) {
-                    if (provider.itsType != ProviderType.DROPBOX) {
-                        continue;
-                    }
+                didMigrate |= SyncDb.useDb(new SyncDb.DbUser<Boolean>()
+                {
+                    @Override
+                    public Boolean useDb(SQLiteDatabase db) throws Exception
+                    {
+                        boolean dbmigrate = false;
+                        for (DbProvider provider: SyncDb.getProviders(db)) {
+                            if (provider.itsType != ProviderType.DROPBOX) {
+                                continue;
+                            }
 
-                    didMigrate = true;
-                    String dirpfx = "/Apps/PasswdSafe Sync";
-                    for (DbFile dbfile: SyncDb.getFiles(provider.itsId, db)) {
-                        SyncDb.updateRemoteFile(
-                                dbfile.itsId,
-                                (dirpfx + dbfile.itsRemoteId).toLowerCase(),
-                                dbfile.itsRemoteTitle,
-                                dirpfx + dbfile.itsRemoteFolder,
-                                dbfile.itsRemoteModDate, dbfile.itsRemoteHash,
-                                db);
+                            dbmigrate = true;
+                            String dirpfx = "/Apps/PasswdSafe Sync";
+                            for (DbFile dbfile:
+                                    SyncDb.getFiles(provider.itsId, db)) {
+                                SyncDb.updateRemoteFile(
+                                        dbfile.itsId,
+                                        (dirpfx +
+                                         dbfile.itsRemoteId).toLowerCase(),
+                                        dbfile.itsRemoteTitle,
+                                        dirpfx + dbfile.itsRemoteFolder,
+                                        dbfile.itsRemoteModDate,
+                                        dbfile.itsRemoteHash,
+                                        db);
+                            }
+                        }
+                        return dbmigrate;
                     }
-                }
-            } catch (SQLException e) {
+                });
+            } catch (Exception e) {
                 Log.e(TAG, "Error migrating files", e);
-            } finally {
-                syncDb.release();
             }
 
             if (didMigrate) {
