@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe.sync.box;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import com.box.androidsdk.content.BoxApiFolder;
@@ -56,9 +55,9 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     /** Constructor */
     public BoxSyncer(BoxSession client, DbProvider provider,
                      SyncConnectivityResult connResult,
-                     SQLiteDatabase db, SyncLogRecord logrec, Context ctx)
+                     SyncLogRecord logrec, Context ctx)
     {
-        super(client, provider, connResult,  db, logrec, ctx, TAG);
+        super(client, provider, connResult, logrec, ctx, TAG);
     }
 
     /**

@@ -232,7 +232,6 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     public void sync(Account acct,
                      final DbProvider provider,
                      final SyncConnectivityResult connResult,
-                     final SQLiteDatabase db,
                      final SyncLogRecord logrec) throws Exception
     {
         useDropboxService(new DropboxUser()
@@ -240,7 +239,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             @Override
             public void useDropbox() throws Exception
             {
-                new DropboxCoreSyncer(itsClient, provider, connResult, db,
+                new DropboxCoreSyncer(itsClient, provider, connResult,
                                       logrec, getContext()).sync();
             }
         });

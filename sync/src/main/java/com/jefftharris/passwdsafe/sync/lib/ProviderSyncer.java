@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +23,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
@@ -36,7 +36,6 @@ public abstract class ProviderSyncer<ProviderClientT>
     protected final Context itsContext;
     private final DbProvider itsProvider;
     private final SyncConnectivityResult itsConnResult;
-    private final SQLiteDatabase itsDb;
     private final SyncLogRecord itsLogrec;
     private final String itsTag;
     private long itsDbUpdateCount = SyncDb.INVALID_UPDATE_COUNT;
@@ -44,26 +43,24 @@ public abstract class ProviderSyncer<ProviderClientT>
     /**
      * Interface for a user of the database
      */
-    private interface DbUser
+    private interface DbUser<T>
     {
         /**
          * Use the database
          */
-        void useDb(boolean dbOk) throws Exception;
+        T useDb(boolean dbOk, SQLiteDatabase db) throws Exception;
     }
 
     /** Constructor */
     protected ProviderSyncer(ProviderClientT providerClient,
                              DbProvider provider,
                              SyncConnectivityResult connResult,
-                             SQLiteDatabase db,
                              SyncLogRecord logrec, Context ctx,
                              String tag)
     {
         itsProviderClient = providerClient;
         itsProvider = provider;
         itsConnResult = connResult;
-        itsDb = db;
         itsLogrec = logrec;
         itsContext = ctx;
         itsTag = tag;
@@ -74,41 +71,42 @@ public abstract class ProviderSyncer<ProviderClientT>
     public final void sync()
             throws Exception
     {
-        final ObjectHolder<List<SyncOper<ProviderClientT>>> opers =
-                new ObjectHolder<>();
-
         try {
-            final ObjectHolder<List<DbFile>> dbfiles = new ObjectHolder<>();
+            List<SyncOper<ProviderClientT>> opers;
             try {
-                useDb(new CheckedDbUser()
+                List<DbFile> dbfiles = useDb(new CheckedDbUser<List<DbFile>>()
                 {
                     @Override
-                    public void useDb() throws Exception
+                    public List<DbFile> useDb(SQLiteDatabase db)
+                            throws Exception
                     {
-                        syncDisplayName();
-                        dbfiles.set(SyncDb.getFiles(itsProvider.itsId, itsDb));
+                        syncDisplayName(db);
+                        return SyncDb.getFiles(itsProvider.itsId, db);
                     }
                 });
 
-                final SyncRemoteFiles remoteFiles =
-                        getSyncRemoteFiles(dbfiles.get());
-                useDb(new CheckedDbUser()
-                {
-                    @Override
-                    public void useDb() throws Exception
-                    {
-                        if (remoteFiles != null) {
-                            updateDbFiles(remoteFiles);
-                            opers.set(resolveSyncOpers());
-                        }
-                    }
-                });
+                final SyncRemoteFiles remoteFiles = getSyncRemoteFiles(dbfiles);
+                opers = useDb(
+                        new CheckedDbUser<List<SyncOper<ProviderClientT>>>()
+                        {
+                            @Override
+                            public List<SyncOper<ProviderClientT>> useDb(
+                                    SQLiteDatabase db)
+                                    throws Exception
+                            {
+                                if (remoteFiles != null) {
+                                    updateDbFiles(remoteFiles, db);
+                                    return resolveSyncOpers(db);
+                                }
+                                return null;
+                            }
+                        });
             } catch (Exception e) {
                 throw updateSyncException(e);
             }
 
-            if (opers.get() != null) {
-                for (final SyncOper<ProviderClientT> oper: opers.get()) {
+            if (opers != null) {
+                for (final SyncOper<ProviderClientT> oper: opers) {
                     if (oper == null) {
                         continue;
                     }
@@ -116,13 +114,14 @@ public abstract class ProviderSyncer<ProviderClientT>
                         itsLogrec.checkSyncInterrupted();
                         itsLogrec.addEntry(oper.getDescription(itsContext));
                         oper.doOper(itsProviderClient, itsContext);
-                        useDb(new DbUser()
+                        useDb(new DbUser<Void>()
                         {
                             @Override
-                            public void useDb(boolean dbOk)
+                            public Void useDb(boolean dbOk, SQLiteDatabase db)
                                     throws Exception
                             {
-                                oper.doPostOperUpdate(dbOk, itsDb, itsContext);
+                                oper.doPostOperUpdate(dbOk, db, itsContext);
+                                return null;
                             }
                         });
                     } catch (Exception e) {
@@ -173,23 +172,29 @@ public abstract class ProviderSyncer<ProviderClientT>
     /**
      * Use the database
      */
-    private void useDb(DbUser user) throws Exception
+    private <T> T useDb(final DbUser<T> user) throws Exception
     {
         itsLogrec.checkSyncInterrupted();
-        try {
-            itsDb.beginTransaction();
-            user.useDb(SyncDb.checkUpdateCount(itsDbUpdateCount));
-            itsDb.setTransactionSuccessful();
-        } finally {
-            itsDbUpdateCount = SyncDb.getUpdateCount();
-            itsDb.endTransaction();
-        }
+        return SyncDb.useDb(new SyncDb.DbUser<T>()
+        {
+            @Override
+            public T useDb(SQLiteDatabase db) throws Exception
+            {
+                try {
+                    boolean dbOk = SyncDb.checkUpdateCount(itsDbUpdateCount);
+                    return user.useDb(dbOk, db);
+                } finally {
+                    itsDbUpdateCount = SyncDb.getUpdateCount();
+                }
+            }
+        });
     }
 
     /** Update database files from the remote files */
-    private void updateDbFiles(@NonNull SyncRemoteFiles remoteFiles)
+    private void updateDbFiles(@NonNull SyncRemoteFiles remoteFiles,
+                               @NonNull SQLiteDatabase db)
     {
-        List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
+        List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, db);
         if (remoteFiles.hasUpdatedRemoteIds()) {
             boolean modified = false;
             for (DbFile dbfile: dbfiles) {
@@ -198,13 +203,12 @@ public abstract class ProviderSyncer<ProviderClientT>
                     SyncDb.updateRemoteFile(
                             dbfile.itsId, remoteId,
                             dbfile.itsRemoteTitle, dbfile.itsRemoteFolder,
-                            dbfile.itsRemoteModDate, dbfile.itsRemoteHash,
-                            itsDb);
+                            dbfile.itsRemoteModDate, dbfile.itsRemoteHash, db);
                     modified = true;
                 }
             }
             if (modified) {
-                dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
+                dbfiles = SyncDb.getFiles(itsProvider.itsId, db);
             }
         }
 
@@ -220,22 +224,22 @@ public abstract class ProviderSyncer<ProviderClientT>
                     SyncDb.updateRemoteFile(
                             dbfile.itsId, remoteId, remfile.getTitle(),
                             remfile.getFolder(), remfile.getModTime(),
-                            remfile.getHash(), itsDb);
+                            remfile.getHash(), db);
                     SyncDb.updateRemoteFileChange(
-                            dbfile.itsId, DbFile.FileChange.ADDED, itsDb);
+                            dbfile.itsId, DbFile.FileChange.ADDED, db);
                     processedRemoteFiles.add(remoteId);
                 }
             } else {
                 ProviderRemoteFile remfile =
                         remoteFiles.getRemoteFile(dbfile.itsRemoteId);
                 if (remfile != null) {
-                    checkRemoteFileChange(dbfile, remfile);
+                    checkRemoteFileChange(dbfile, remfile, db);
                     processedRemoteFiles.add(dbfile.itsRemoteId);
                 } else {
                     PasswdSafeUtil.dbginfo(itsTag,
                                            "updateDbFiles remove remote %s",
                                            dbfile.itsRemoteId);
-                    SyncDb.updateRemoteFileDeleted(dbfile.itsId, itsDb);
+                    SyncDb.updateRemoteFileDeleted(dbfile.itsId, db);
                 }
             }
         }
@@ -250,19 +254,19 @@ public abstract class ProviderSyncer<ProviderClientT>
                                    remoteId);
             SyncDb.addRemoteFile(itsProvider.itsId, remoteId,
                                  remfile.getTitle(), remfile.getFolder(),
-                                 remfile.getModTime(), remfile.getHash(),
-                                 itsDb);
+                                 remfile.getModTime(), remfile.getHash(), db);
         }
     }
 
 
     /** Resolve the sync operations after the database files are updated */
-    private List<SyncOper<ProviderClientT>> resolveSyncOpers()
+    private List<SyncOper<ProviderClientT>> resolveSyncOpers(
+            @NonNull SQLiteDatabase db)
     {
         List<SyncOper<ProviderClientT>> opers = new ArrayList<>();
-        List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, itsDb);
+        List<DbFile> dbfiles = SyncDb.getFiles(itsProvider.itsId, db);
         for (DbFile dbfile: dbfiles) {
-            resolveSyncOper(dbfile, opers);
+            resolveSyncOper(dbfile, opers, db);
         }
         return opers;
     }
@@ -271,19 +275,22 @@ public abstract class ProviderSyncer<ProviderClientT>
     /**
      * Sync the display name of the user
      */
-    private void syncDisplayName() throws SQLException
+    private void syncDisplayName(@NonNull SQLiteDatabase db) throws SQLException
     {
         String displayName = itsConnResult.getDisplayName();
         PasswdSafeUtil.dbginfo(itsTag, "syncDisplayName %s", displayName);
         if (!TextUtils.equals(itsProvider.itsDisplayName, displayName)) {
             SyncDb.updateProviderDisplayName(itsProvider.itsId, displayName,
-                                             itsDb);
+                                             db);
         }
     }
 
 
     /** Check for a remote file change and update */
-    private void checkRemoteFileChange(DbFile dbfile, ProviderRemoteFile remfile)
+    private void checkRemoteFileChange(DbFile dbfile,
+                                       ProviderRemoteFile remfile,
+                                       @NonNull SQLiteDatabase db)
+            throws SQLException
     {
         String remTitle = remfile.getTitle();
         String remFolder = remfile.getFolder();
@@ -299,8 +306,7 @@ public abstract class ProviderSyncer<ProviderClientT>
                 break;
             }
 
-            java.io.File localFile =
-                    itsContext.getFileStreamPath(dbfile.itsLocalFile);
+            File localFile = itsContext.getFileStreamPath(dbfile.itsLocalFile);
             if (!localFile.exists()) {
                 break;
             }
@@ -315,13 +321,12 @@ public abstract class ProviderSyncer<ProviderClientT>
         PasswdSafeUtil.dbginfo(itsTag, "checkRemoteFileChange update remote %s",
                                dbfile);
         SyncDb.updateRemoteFile(dbfile.itsId, dbfile.itsRemoteId,
-                                remTitle, remFolder, remModDate, remHash,
-                                itsDb);
+                                remTitle, remFolder, remModDate, remHash, db);
         switch (dbfile.itsRemoteChange) {
         case NO_CHANGE:
         case REMOVED: {
             SyncDb.updateRemoteFileChange(dbfile.itsId,
-                                          DbFile.FileChange.MODIFIED, itsDb);
+                                          DbFile.FileChange.MODIFIED, db);
             break;
         }
         case ADDED:
@@ -334,7 +339,8 @@ public abstract class ProviderSyncer<ProviderClientT>
 
     /** Resolve the sync operations for a file */
     private void resolveSyncOper(DbFile dbfile,
-                                 List<SyncOper<ProviderClientT>> opers)
+                                 List<SyncOper<ProviderClientT>> opers,
+                                 @NonNull SQLiteDatabase db)
             throws SQLException
     {
         if ((dbfile.itsLocalChange != DbFile.FileChange.NO_CHANGE) ||
@@ -348,7 +354,7 @@ public abstract class ProviderSyncer<ProviderClientT>
             case ADDED:
             case MODIFIED: {
                 logConflictFile(dbfile, true);
-                splitConflictedFile(dbfile, opers);
+                splitConflictedFile(dbfile, opers, db);
                 break;
             }
             case NO_CHANGE: {
@@ -357,7 +363,7 @@ public abstract class ProviderSyncer<ProviderClientT>
             }
             case REMOVED: {
                 logConflictFile(dbfile, true);
-                recreateRemoteRemovedFile(dbfile, opers);
+                recreateRemoteRemovedFile(dbfile, opers, db);
                 break;
             }
             }
@@ -368,7 +374,7 @@ public abstract class ProviderSyncer<ProviderClientT>
             case ADDED:
             case MODIFIED: {
                 logConflictFile(dbfile, true);
-                splitConflictedFile(dbfile, opers);
+                splitConflictedFile(dbfile, opers, db);
                 break;
             }
             case NO_CHANGE: {
@@ -377,7 +383,7 @@ public abstract class ProviderSyncer<ProviderClientT>
             }
             case REMOVED: {
                 logConflictFile(dbfile, true);
-                recreateRemoteRemovedFile(dbfile, opers);
+                recreateRemoteRemovedFile(dbfile, opers, db);
                 break;
             }
             }
@@ -406,8 +412,8 @@ public abstract class ProviderSyncer<ProviderClientT>
             case ADDED:
             case MODIFIED: {
                 logConflictFile(dbfile, false);
-                DbFile newRemfile = splitRemoteToNewFile(dbfile);
-                DbFile updatedLocalFile = SyncDb.getFile(dbfile.itsId, itsDb);
+                DbFile newRemfile = splitRemoteToNewFile(dbfile, db);
+                DbFile updatedLocalFile = SyncDb.getFile(dbfile.itsId, db);
 
                 opers.add(createRemoteToLocalOper(newRemfile));
                 opers.add(createRmFileOper(updatedLocalFile));
@@ -430,12 +436,14 @@ public abstract class ProviderSyncer<ProviderClientT>
      * a different name indicating a conflict
      */
     private void splitConflictedFile(DbFile dbfile,
-                                     List<SyncOper<ProviderClientT>> opers)
+                                     List<SyncOper<ProviderClientT>> opers,
+                                     @NonNull SQLiteDatabase db)
             throws SQLException
     {
-        DbFile newRemfile = splitRemoteToNewFile(dbfile);
+        DbFile newRemfile = splitRemoteToNewFile(dbfile, db);
         DbFile updatedLocalFile = updateFileAsLocallyAdded(
-                dbfile, itsContext.getString(R.string.conflicted_local_copy));
+                dbfile, itsContext.getString(R.string.conflicted_local_copy),
+                db);
 
         opers.add(createRemoteToLocalOper(newRemfile));
         opers.add(createLocalToRemoteOper(updatedLocalFile));
@@ -445,18 +453,22 @@ public abstract class ProviderSyncer<ProviderClientT>
     /** Recreate a remotely deleted file from local updates */
     private void recreateRemoteRemovedFile(
             DbFile dbfile,
-            List<SyncOper<ProviderClientT>> opers)
+            List<SyncOper<ProviderClientT>> opers,
+            @NonNull SQLiteDatabase db)
             throws SQLException
     {
-        resetRemoteFields(dbfile);
+        resetRemoteFields(dbfile, db);
         DbFile updatedLocalFile = updateFileAsLocallyAdded(
-                dbfile, itsContext.getString(R.string.recreated_local_copy));
+                dbfile, itsContext.getString(R.string.recreated_local_copy),
+                db);
         opers.add(createLocalToRemoteOper(updatedLocalFile));
     }
 
 
     /** Update a file to appear as a locally added file with a new name */
-    private DbFile updateFileAsLocallyAdded(DbFile dbfile, String titlePrefix)
+    private static DbFile updateFileAsLocallyAdded(DbFile dbfile,
+                                                   String titlePrefix,
+                                                   @NonNull SQLiteDatabase db)
             throws SQLException
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -466,40 +478,40 @@ public abstract class ProviderSyncer<ProviderClientT>
                 titlePrefix,
                 dateFormat.format(System.currentTimeMillis()),
                 dbfile.itsLocalTitle);
-        SyncDb.updateLocalFile(
-                dbfile.itsId, dbfile.itsLocalFile, newTitle,
-                null, dbfile.itsLocalModDate, itsDb);
-        SyncDb.updateLocalFileChange(
-                dbfile.itsId, DbFile.FileChange.ADDED, itsDb);
-        return SyncDb.getFile(dbfile.itsId, itsDb);
+        SyncDb.updateLocalFile(dbfile.itsId, dbfile.itsLocalFile, newTitle,
+                               null, dbfile.itsLocalModDate, db);
+        SyncDb.updateLocalFileChange(dbfile.itsId, DbFile.FileChange.ADDED, db);
+        return SyncDb.getFile(dbfile.itsId, db);
     }
 
 
     /** Split the remote information for the file into a new file.  The
      * remote fields for the existing file are reset. */
-    private DbFile splitRemoteToNewFile(DbFile dbfile)
+    private DbFile splitRemoteToNewFile(DbFile dbfile,
+                                        @NonNull SQLiteDatabase db)
             throws SQLException
     {
         long newRemoteId = SyncDb.addRemoteFile(
                 itsProvider.itsId, dbfile.itsRemoteId,
                 dbfile.itsRemoteTitle, dbfile.itsRemoteFolder,
-                dbfile.itsRemoteModDate, dbfile.itsRemoteHash, itsDb);
-        DbFile newRemfile = SyncDb.getFile(newRemoteId, itsDb);
+                dbfile.itsRemoteModDate, dbfile.itsRemoteHash, db);
+        DbFile newRemfile = SyncDb.getFile(newRemoteId, db);
 
-        resetRemoteFields(dbfile);
+        resetRemoteFields(dbfile, db);
 
         return newRemfile;
     }
 
 
     /** Reset the remote fields for a file to their defaults */
-    private void resetRemoteFields(DbFile dbfile)
+    private static void resetRemoteFields(DbFile dbfile,
+                                          @NonNull SQLiteDatabase db)
             throws SQLException
     {
         SyncDb.updateRemoteFile(
-                dbfile.itsId, null, null, null, -1, null, itsDb);
+                dbfile.itsId, null, null, null, -1, null, db);
         SyncDb.updateRemoteFileChange(
-                dbfile.itsId, DbFile.FileChange.NO_CHANGE, itsDb);
+                dbfile.itsId, DbFile.FileChange.NO_CHANGE, db);
     }
 
 
@@ -519,20 +531,20 @@ public abstract class ProviderSyncer<ProviderClientT>
     /**
      * A user of the database that checks for an ok state
      */
-    private static abstract class CheckedDbUser implements DbUser
+    private static abstract class CheckedDbUser<T> implements DbUser<T>
     {
         @Override
-        public final void useDb(boolean dbOk) throws Exception
+        public final T useDb(boolean dbOk, SQLiteDatabase db) throws Exception
         {
             if (!dbOk) {
                 throw new IllegalStateException("DB updated during sync");
             }
-            useDb();
+            return useDb(db);
         }
 
         /**
          * Use the database
          */
-        public abstract void useDb() throws Exception;
+        public abstract T useDb(SQLiteDatabase db) throws Exception;
     }
 }

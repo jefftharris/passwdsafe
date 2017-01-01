@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe.sync.owncloud;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -50,11 +49,10 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
     public OwncloudSyncer(OwnCloudClient client,
                           DbProvider provider,
                           SyncConnectivityResult connResult,
-                          SQLiteDatabase db,
                           SyncLogRecord logrec,
                           Context ctx)
     {
-        super(client, provider, connResult, db, logrec, ctx, TAG);
+        super(client, provider, connResult, logrec, ctx, TAG);
         itsIsAuthorized = itsProviderClient.hasCredentials();
     }
 

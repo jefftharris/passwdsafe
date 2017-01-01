@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -228,7 +228,6 @@ public class BoxProvider extends AbstractSyncTimerProvider
     public void sync(Account acct,
                      final DbProvider provider,
                      final SyncConnectivityResult connResult,
-                     final SQLiteDatabase db,
                      final SyncLogRecord logrec) throws Exception
     {
         useBoxService(new BoxUser()
@@ -236,7 +235,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
             @Override
             public void useBox() throws Exception
             {
-                new BoxSyncer(itsClient, provider, connResult, db,
+                new BoxSyncer(itsClient, provider, connResult,
                               logrec, getContext()).sync();
 
             }

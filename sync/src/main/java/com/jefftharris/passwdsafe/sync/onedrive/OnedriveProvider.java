@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -277,7 +277,6 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     public void sync(Account acct,
                      final DbProvider provider,
                      final SyncConnectivityResult connResult,
-                     final SQLiteDatabase db,
                      final SyncLogRecord logrec) throws Exception
     {
         useOneDriveService(new OneDriveUser()
@@ -285,7 +284,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             @Override
             public void useOneDrive(IOneDriveService client) throws Exception
             {
-                new OnedriveSyncer(client, provider, connResult, db, logrec,
+                new OnedriveSyncer(client, provider, connResult, logrec,
                                    getContext()).sync();
 
             }

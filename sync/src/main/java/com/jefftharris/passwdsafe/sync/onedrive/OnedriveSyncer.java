@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
@@ -42,10 +41,9 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
     public OnedriveSyncer(IOneDriveService service,
                           DbProvider provider,
                           SyncConnectivityResult connResult,
-                          SQLiteDatabase db,
                           SyncLogRecord logrec, Context ctx)
     {
-        super(service, provider, connResult, db, logrec, ctx, TAG);
+        super(service, provider, connResult, logrec, ctx, TAG);
     }
 
 

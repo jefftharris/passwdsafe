@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -294,20 +294,11 @@ public class ProviderSync
         private void sync()
         {
             addTrace("sync");
-            SyncDb syncDb = null;
             try {
                 SyncConnectivityResult connResult = checkConnectivity();
-                syncDb = SyncDb.acquire();
-                performSync(connResult, syncDb.getDb());
+                performSync(connResult);
             } finally {
-                if (syncDb == null) {
-                    syncDb = SyncDb.acquire();
-                }
-                try {
-                    finish(syncDb.getDb());
-                } finally {
-                    syncDb.release();
-                }
+                finish();
             }
         }
 
@@ -344,15 +335,14 @@ public class ProviderSync
         /**
          * Perform the sync of a provider
          */
-        private void performSync(SyncConnectivityResult connResult,
-                                 SQLiteDatabase db)
+        private void performSync(SyncConnectivityResult connResult)
         {
             addTrace("performSync");
             try {
                 if (!itsIsCanceled && !itsLogrec.isNotConnected()) {
                     itsLogrec.checkSyncInterrupted();
                     itsProviderImpl.sync(itsAccount, itsProvider,
-                                         connResult, db, itsLogrec);
+                                         connResult, itsLogrec);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Sync error", e);
@@ -364,7 +354,7 @@ public class ProviderSync
         /**
          * Finish the sync of a provider
          */
-        private void finish(SQLiteDatabase db)
+        private void finish()
         {
             addTrace("finish");
             PasswdSafeUtil.dbginfo(
@@ -380,17 +370,22 @@ public class ProviderSync
             }
 
             try {
-                db.beginTransaction();
-                Log.i(TAG, itsLogrec.toString(itsContext));
-                SyncDb.deleteSyncLogs(System.currentTimeMillis()
-                                      - 2 * DateUtils.WEEK_IN_MILLIS,
-                                      db);
-                SyncDb.addSyncLog(itsLogrec, db, itsContext);
-                db.setTransactionSuccessful();
+                SyncDb.useDb(new SyncDb.DbUser<Void>()
+                {
+                    @Override
+                    public Void useDb(SQLiteDatabase db) throws Exception
+                    {
+                        Log.i(TAG, itsLogrec.toString(itsContext));
+                        SyncDb.deleteSyncLogs(System.currentTimeMillis()
+                                              - 2 * DateUtils.WEEK_IN_MILLIS,
+                                              db);
+                        SyncDb.addSyncLog(itsLogrec, db, itsContext);
+                        return null;
+                    }
+                });
             } catch (Exception e) {
                 Log.e(TAG, "Sync write log error", e);
             } finally {
-                db.endTransaction();
                 updateUIEnd(itsLogrec);
             }
         }

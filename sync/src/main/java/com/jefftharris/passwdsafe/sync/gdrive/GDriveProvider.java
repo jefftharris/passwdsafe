@@ -234,7 +234,6 @@ public class GDriveProvider extends AbstractProvider
     @Override
     public void sync(Account acct, final DbProvider provider,
                      final SyncConnectivityResult connResult,
-                     final SQLiteDatabase db,
                      final SyncLogRecord logrec) throws Exception
     {
         useDriveService(acct, new DriveUser()
@@ -244,7 +243,7 @@ public class GDriveProvider extends AbstractProvider
                     throws Exception
             {
                 GDriveSyncer sync = new GDriveSyncer(
-                        drive, provider, connResult, db, logrec, itsContext);
+                        drive, provider, connResult, logrec, itsContext);
                 sync.sync();
                 return sync.getSyncState();
             }
