@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -94,6 +94,17 @@ public class SyncDb
     private final DbHelper itsDbHelper;
     private final ReentrantLock itsMutex = new ReentrantLock();
 
+    /**
+     * Interface for a user of the database
+     */
+    public interface DbUser<T>
+    {
+        /**
+         * Use the database
+         */
+        T useDb(SQLiteDatabase db) throws Exception;
+    }
+
     /** Initialize the single SyncDb instance */
     public static synchronized void initializeDb(Context ctx)
     {
@@ -107,6 +118,22 @@ public class SyncDb
     {
         itsDb.close();
         itsDb = null;
+    }
+
+    /**
+     * Use the database
+     */
+    public static <T> T useDb(DbUser<T> user) throws Exception
+    {
+        SyncDb syncDb = acquire();
+        try {
+            SQLiteDatabase db = syncDb.beginTransaction();
+            T rc = user.useDb(db);
+            db.setTransactionSuccessful();
+            return rc;
+        } finally {
+            syncDb.endTransactionAndRelease();
+        }
     }
 
     /** Acquire the single SyncDb instance */
@@ -162,7 +189,7 @@ public class SyncDb
     }
 
     /** End a transaction and release the database */
-    public void endTransactionAndRelease()
+    private void endTransactionAndRelease()
     {
         try {
             getDb().endTransaction();
