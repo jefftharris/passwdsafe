@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.jefftharris.passwdsafe.lib.BuildConfig;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.R;
@@ -396,7 +397,7 @@ public class ProviderSync
         private void addTrace(String trace)
         {
             // TODO: remove tracing
-            if (true) return;
+            if (!BuildConfig.DEBUG) return;
 
             long now = System.currentTimeMillis();
             if (itsTraces.size() > 0) {
