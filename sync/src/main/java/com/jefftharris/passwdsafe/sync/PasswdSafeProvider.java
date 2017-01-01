@@ -27,6 +27,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -36,6 +37,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
@@ -82,26 +84,26 @@ public class PasswdSafeProvider extends ContentProvider
                       SyncDb.DB_COL_FILES_ID);
         FILES_MAP.put(PasswdSafeContract.Files.COL_PROVIDER,
                       SyncDb.DB_COL_FILES_PROVIDER + " AS " +
-                              PasswdSafeContract.Files.COL_PROVIDER);
+                      PasswdSafeContract.Files.COL_PROVIDER);
         FILES_MAP.put(PasswdSafeContract.Files.COL_TITLE,
                       SyncDb.DB_COL_FILES_LOCAL_TITLE + " AS " +
-                              PasswdSafeContract.Files.COL_TITLE);
+                      PasswdSafeContract.Files.COL_TITLE);
         FILES_MAP.put(PasswdSafeContract.Files.COL_MOD_DATE,
                       SyncDb.DB_COL_FILES_LOCAL_MOD_DATE + " AS " +
-                              PasswdSafeContract.Files.COL_MOD_DATE);
+                      PasswdSafeContract.Files.COL_MOD_DATE);
         FILES_MAP.put(PasswdSafeContract.Files.COL_FILE,
                       SyncDb.DB_COL_FILES_LOCAL_FILE + " AS " +
-                              PasswdSafeContract.Files.COL_FILE);
+                      PasswdSafeContract.Files.COL_FILE);
         FILES_MAP.put(PasswdSafeContract.Files.COL_FOLDER,
                       SyncDb.DB_COL_FILES_LOCAL_FOLDER + " AS " +
-                              PasswdSafeContract.Files.COL_FOLDER);
+                      PasswdSafeContract.Files.COL_FOLDER);
 
         REMOTE_FILES_MAP = new HashMap<>();
         REMOTE_FILES_MAP.put(PasswdSafeContract.RemoteFiles._ID,
                              SyncDb.DB_COL_FILES_ID);
         REMOTE_FILES_MAP.put(PasswdSafeContract.RemoteFiles.COL_REMOTE_ID,
                              SyncDb.DB_COL_FILES_REMOTE_ID + " AS " +
-                                 PasswdSafeContract.RemoteFiles.COL_REMOTE_ID);
+                             PasswdSafeContract.RemoteFiles.COL_REMOTE_ID);
 
         SYNC_LOGS_MAP = new HashMap<>();
         SYNC_LOGS_MAP.put(PasswdSafeContract.SyncLogs._ID,
@@ -177,7 +179,7 @@ public class PasswdSafeProvider extends ContentProvider
                         }
 
                         DbProvider dbProvider =
-                                SyncDb .getProvider(providerId, db);
+                                SyncDb.getProvider(providerId, db);
                         Provider provider = ProviderFactory.getProvider(
                                 dbProvider.itsType, getContext());
                         provider.deleteLocalFile(file, db);
@@ -323,14 +325,16 @@ public class PasswdSafeProvider extends ContentProvider
     public boolean onCreate()
     {
         PasswdSafeUtil.dbginfo(TAG, "onCreate");
+        Context ctx = getContext();
         //noinspection ConstantConditions
-        SyncDb.initializeDb(getContext().getApplicationContext());
+        SyncDb.initializeDb(ctx.getApplicationContext());
         itsListener = new OnAccountsUpdateListener()
         {
             @Override
             public void onAccountsUpdated(Account[] accounts)
             {
-                new AsyncTask<Void, Void, Void>() {
+                new AsyncTask<Void, Void, Void>()
+                {
                     @Override
                     protected Void doInBackground(Void... params)
                     {
@@ -353,8 +357,12 @@ public class PasswdSafeProvider extends ContentProvider
                 }.execute();
             }
         };
-        AccountManager mgr = AccountManager.get(getContext());
-        mgr.addOnAccountsUpdatedListener(itsListener, null, false);
+        if (ActivityCompat.checkSelfPermission(
+                ctx, android.Manifest.permission.GET_ACCOUNTS) ==
+            PackageManager.PERMISSION_GRANTED) {
+            AccountManager mgr = AccountManager.get(ctx);
+            mgr.addOnAccountsUpdatedListener(itsListener, null, false);
+        }
 
         return true;
     }
