@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -460,6 +460,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
      * provider */
     private static class FileSyncedUpdateTask
             extends AsyncTask<Void, Void, Pair<Exception, Long>>
+            implements SyncDb.DbUser<Long>
     {
         /** Callback for when the update is complete */
         public interface Callback
@@ -486,53 +487,43 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
             itsCb = cb;
         }
 
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(java.lang.Object[])
-         */
         @Override
         protected Pair<Exception, Long> doInBackground(Void... params)
         {
-            Exception error = null;
-            long remFileId = -1;
-            SyncDb syncDb = SyncDb.acquire();
             try {
-                SQLiteDatabase db = syncDb.beginTransaction();
-
-                long providerId =
-                        PasswdSafeContract.Providers.getId(itsProviderUri);
-
-                DbFile remfile = SyncDb.getFileByRemoteId(
-                        providerId, itsFile.getRemoteId(), db);
-                if (itsIsSynced) {
-                    if (remfile != null) {
-                        SyncDb.updateRemoteFileChange(
-                                remfile.itsId, DbFile.FileChange.ADDED, db);
-                        remFileId = remfile.itsId;
-                    } else {
-                        remFileId = SyncDb.addRemoteFile(
-                                providerId, itsFile.getRemoteId(),
-                                itsFile.getTitle(), itsFile.getFolder(),
-                                itsFile.getModTime(), itsFile.getHash(), db);
-                    }
-                } else {
-                    if (remfile != null) {
-                        SyncDb.updateRemoteFileDeleted(remfile.itsId, db);
-                    }
-                }
-                db.setTransactionSuccessful();
+                return Pair.create(null, SyncDb.useDb(this));
             } catch (Exception e) {
-                error = e;
-            } finally {
-                syncDb.endTransactionAndRelease();
+                return Pair.create(e, -1L);
             }
-            return Pair.create(error, remFileId);
         }
 
+        @Override
+        public Long useDb(SQLiteDatabase db) throws Exception
+        {
+            long providerId =
+                    PasswdSafeContract.Providers.getId(itsProviderUri);
 
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
+            DbFile remfile = SyncDb.getFileByRemoteId(
+                    providerId, itsFile.getRemoteId(), db);
+            if (itsIsSynced) {
+                if (remfile != null) {
+                    SyncDb.updateRemoteFileChange(
+                            remfile.itsId, DbFile.FileChange.ADDED, db);
+                    return remfile.itsId;
+                } else {
+                    return SyncDb.addRemoteFile(
+                            providerId, itsFile.getRemoteId(),
+                            itsFile.getTitle(), itsFile.getFolder(),
+                            itsFile.getModTime(), itsFile.getHash(), db);
+                }
+            } else {
+                if (remfile != null) {
+                    SyncDb.updateRemoteFileDeleted(remfile.itsId, db);
+                }
+                return -1L;
+            }
+        }
+
         @Override
         protected void onPostExecute(Pair<Exception, Long> result)
         {
