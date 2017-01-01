@@ -1,7 +1,8 @@
 /*
- * Copyright (©) 2013 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync;
@@ -16,7 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Pair;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -33,9 +33,6 @@ public class GDriveLaunchActivity extends AppCompatActivity
 {
     private static final String TAG = "GDriveLaunchActivity";
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-     */
     @Override
     protected void onCreate(Bundle args)
     {
@@ -48,14 +45,8 @@ public class GDriveLaunchActivity extends AppCompatActivity
             String fileId = intent.getStringExtra("resourceId");
             PasswdSafeUtil.dbginfo(TAG, "Open GDrive file %s", fileId);
 
-            Pair<DbProvider, DbFile> rc = getFile(fileId);
-            if (rc != null) {
-                Uri uri = PasswdSafeContract.Providers.CONTENT_URI;
-                Uri.Builder builder = uri.buildUpon();
-                ContentUris.appendId(builder, rc.first.itsId);
-                builder.appendPath(PasswdSafeContract.Files.TABLE);
-                ContentUris.appendId(builder, rc.second.itsId);
-                uri = builder.build();
+            Uri uri = getFileUri(fileId);
+            if (uri != null) {
                 PasswdSafeUtil.dbginfo(TAG, "uri %s", uri);
                 Intent viewIntent = PasswdSafeUtil.createOpenIntent(uri, null);
                 try {
@@ -74,31 +65,41 @@ public class GDriveLaunchActivity extends AppCompatActivity
         }
     }
 
-
-    /** Get the database info for the drive file */
-    private Pair<DbProvider, DbFile> getFile(String fileId)
+    /**
+     * Get the URI for the drive file
+     */
+    private static Uri getFileUri(final String fileId)
     {
-        Pair<DbProvider, DbFile> rc = null;
-        SyncDb syncDb = SyncDb.acquire();
         try {
-            SQLiteDatabase db = syncDb.beginTransaction();
-            List<DbProvider> providers = SyncDb.getProviders(db);
-            for (DbProvider provider: providers) {
-                if (provider.itsType == ProviderType.GDRIVE) {
-                    DbFile file = SyncDb.getFileByRemoteId(provider.itsId,
-                                                           fileId, db);
-                    if (file != null) {
-                        rc = new Pair<>(provider, file);
+            return SyncDb.useDb(new SyncDb.DbUser<Uri>()
+            {
+                @Override
+                public Uri useDb(SQLiteDatabase db) throws Exception
+                {
+                    List<DbProvider> providers = SyncDb.getProviders(db);
+                    for (DbProvider provider: providers) {
+                        if (provider.itsType != ProviderType.GDRIVE) {
+                            continue;
+                        }
+                        DbFile file = SyncDb.getFileByRemoteId(provider.itsId,
+                                                               fileId, db);
+                        if (file == null) {
+                            continue;
+                        }
+
+                        Uri uri = PasswdSafeContract.Providers.CONTENT_URI;
+                        Uri.Builder builder = uri.buildUpon();
+                        ContentUris.appendId(builder, provider.itsId);
+                        builder.appendPath(PasswdSafeContract.Files.TABLE);
+                        ContentUris.appendId(builder, file.itsId);
+                        return builder.build();
                     }
-                    break;
+                    return null;
                 }
-            }
-            db.setTransactionSuccessful();
+            });
         } catch (Exception e) {
             Log.e(TAG, "Error opening Google Drive file: " + fileId, e);
-        } finally {
-            syncDb.endTransactionAndRelease();
+            return null;
         }
-        return rc;
     }
 }
