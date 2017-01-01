@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -12,7 +12,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -140,20 +139,21 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     }
 
     /** Update the sync frequency for this provider */
-    protected final void updateProviderSyncFreq(String userId)
-            throws SQLException
+    protected final void updateProviderSyncFreq(final String userId)
+            throws Exception
     {
-        SyncDb syncDb = SyncDb.acquire();
-        try {
-            SQLiteDatabase db = syncDb.beginTransaction();
-            DbProvider provider = SyncDb.getProvider(userId, itsProviderType,
-                                                     db);
-            updateSyncFreq(null,
-                           (provider != null) ? provider.itsSyncFreq : 0);
-            db.setTransactionSuccessful();
-        } finally {
-            syncDb.endTransactionAndRelease();
-        }
+        SyncDb.useDb(new SyncDb.DbUser<Void>()
+        {
+            @Override
+            public Void useDb(SQLiteDatabase db) throws Exception
+            {
+                DbProvider provider = SyncDb.getProvider(userId,
+                                                         itsProviderType, db);
+                updateSyncFreq(null,
+                               (provider != null) ? provider.itsSyncFreq : 0);
+                return null;
+            }
+        });
     }
 
     /** Check whether to start a sync */
@@ -252,14 +252,19 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
                 return null;
             }
 
-            Account account = getAccount(acctUserId);
+            final Account account = getAccount(acctUserId);
             DbProvider dbprovider;
-            SyncDb syncDb = SyncDb.acquire();
             try {
-                dbprovider = SyncHelper.getDbProviderForAcct(account,
-                                                             syncDb.getDb());
-            } finally {
-                syncDb.release();
+                dbprovider = SyncDb.useDb(new SyncDb.DbUser<DbProvider>()
+                {
+                    @Override
+                    public DbProvider useDb(SQLiteDatabase db) throws Exception
+                    {
+                        return SyncHelper.getDbProviderForAcct(account, db);
+                    }
+                });
+            } catch (Exception e) {
+                dbprovider = null;
             }
 
             if (dbprovider == null) {
