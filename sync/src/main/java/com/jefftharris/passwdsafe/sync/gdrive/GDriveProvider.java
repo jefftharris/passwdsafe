@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -14,7 +14,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -322,21 +321,22 @@ public class GDriveProvider extends AbstractProvider
 
         if (migration < MIGRATION_V3API) {
             // Set the account name from the db provider
-            SyncDb syncDb = SyncDb.acquire();
             try {
-                SQLiteDatabase db = syncDb.beginTransaction();
-                for (DbProvider provider: SyncDb.getProviders(db)) {
-                    if (provider.itsType != ProviderType.GDRIVE) {
-                        continue;
+                SyncDb.useDb(new SyncDb.DbUser<Void>()
+                {
+                    @Override
+                    public Void useDb(SQLiteDatabase db) throws Exception
+                    {
+                        for (DbProvider provider: SyncDb.getProviders(db)) {
+                            if (provider.itsType == ProviderType.GDRIVE) {
+                                setAcctName(provider.itsAcct);
+                            }
+                        }
+                        return null;
                     }
-
-                    setAcctName(provider.itsAcct);
-                }
-                db.setTransactionSuccessful();
-            } catch (SQLException e) {
+                });
+            } catch (Exception e) {
                 Log.e(TAG, "Error migrating account", e);
-            } finally {
-                syncDb.endTransactionAndRelease();
             }
 
             prefs.edit().putInt(PREF_MIGRATION, MIGRATION_V3API).apply();
