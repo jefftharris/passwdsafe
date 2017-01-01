@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
-import com.jefftharris.passwdsafe.sync.lib.Provider;
 import com.jefftharris.passwdsafe.sync.lib.ProviderSync;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncHelper;
@@ -42,7 +41,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
      * @see android.content.AbstractThreadedSyncAdapter#onPerformSync(android.accounts.Account, android.os.Bundle, java.lang.String, android.content.ContentProviderClient, android.content.SyncResult)
      */
     @Override
-    public void onPerformSync(Account account,
+    public void onPerformSync(final Account account,
                               Bundle extras,
                               String authority,
                               ContentProviderClient provider,
@@ -54,24 +53,27 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         // TODO: need a method to acquire/release providers to prevent deletes
 
         DbProvider dbprovider;
-        Provider providerImpl = null;
-        SyncDb syncDb = SyncDb.acquire();
         try {
-            SQLiteDatabase db = syncDb.getDb();
-            dbprovider = SyncHelper.getDbProviderForAcct(account, db);
-            if (dbprovider != null) {
-                providerImpl = ProviderFactory.getProvider(dbprovider.itsType,
-                                                           itsContext);
-            }
-        } finally {
-            syncDb.release();
+            dbprovider = SyncDb.useDb(new SyncDb.DbUser<DbProvider>()
+            {
+                @Override
+                public DbProvider useDb(SQLiteDatabase db) throws Exception
+                {
+                    return SyncHelper.getDbProviderForAcct(account, db);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "onPerformSync error for " + account, e);
+            dbprovider = null;
         }
 
-        if (providerImpl == null) {
+        if (dbprovider == null) {
             Log.e(TAG, "onPerformSync no provider for " + account);
             return;
         }
         new ProviderSync(account, dbprovider,
-                         providerImpl, itsContext).sync(manual);
+                         ProviderFactory.getProvider(dbprovider.itsType,
+                                                     itsContext),
+                         itsContext).sync(manual);
     }
 }
