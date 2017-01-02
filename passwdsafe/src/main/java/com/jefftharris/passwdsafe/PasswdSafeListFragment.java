@@ -240,7 +240,7 @@ public class PasswdSafeListFragment extends ListFragment
         AdapterView.AdapterContextMenuInfo info =
                 (AdapterView.AdapterContextMenuInfo)menuInfo;
         PasswdRecordListData listItem = itsAdapter.getItem(info.position);
-        if (listItem.itsIsRecord) {
+        if ((listItem != null) && listItem.itsIsRecord) {
             menu.setHeaderTitle(listItem.itsTitle);
 
             int group = itsIsContents ? PasswdSafe.CONTEXT_GROUP_LIST_CONTENTS :
@@ -266,7 +266,7 @@ public class PasswdSafeListFragment extends ListFragment
                     (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
             final PasswdRecordListData listItem =
                     itsAdapter.getItem(info.position);
-            if (listItem.itsIsRecord) {
+            if ((listItem != null) && listItem.itsIsRecord) {
                 itsSelectedRecord = listItem.itsUuid;
                 itsListener.copyField(
                         (item.getItemId() == R.id.menu_copy_password) ?
@@ -287,6 +287,9 @@ public class PasswdSafeListFragment extends ListFragment
     public void onListItemClick(ListView l, View v, int position, long id)
     {
         PasswdRecordListData item = itsAdapter.getItem(position);
+        if (item == null) {
+            return;
+        }
         if (item.itsIsRecord) {
             itsSelectedRecord = item.itsUuid;
             itsListener.changeLocation(itsLocation.selectRecord(item.itsUuid));
@@ -465,7 +468,8 @@ public class PasswdSafeListFragment extends ListFragment
                 ListView list = (ListView)parent;
                 boolean isSelected = list.isItemChecked(position);
                 itemViews.update(item, isSelected,
-                                 !itsIsContents && item.itsIsRecord);
+                                 !itsIsContents &&
+                                 (item != null) && item.itsIsRecord);
             } else {
                 itemViews.reset();
             }

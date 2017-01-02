@@ -253,6 +253,7 @@ public class SyncedFilesFragment extends ListFragment
                                itsFilesAdapter.getCount());
         for (int i = 0; i < itsFilesAdapter.getCount(); ++i) {
             ListItem item = itsFilesAdapter.getItem(i);
+            assert item != null;
             item.itsIsSelected =
                     itsListener.isSelected(item.itsFile.getRemoteId());
         }
@@ -305,6 +306,9 @@ public class SyncedFilesFragment extends ListFragment
             }
 
             ListItem item = getItem(position);
+            if (item == null) {
+                return convertView;
+            }
             ProviderRemoteFile file = item.itsFile;
             views.itsText.setText(file.getTitle());
             views.itsText.requestLayout();
