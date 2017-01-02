@@ -241,7 +241,7 @@ public class ProviderSync
                 new ArrayList<>();
         private boolean itsSaveTraces = false;
         private boolean itsIsCanceled = false;
-        private SimpleDateFormat itsDateFmt =
+        private final SimpleDateFormat itsDateFmt =
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
         /**

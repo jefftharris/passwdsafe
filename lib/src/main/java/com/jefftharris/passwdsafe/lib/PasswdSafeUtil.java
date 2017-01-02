@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -33,7 +33,7 @@ import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 @SuppressWarnings("SameParameterValue")
 public class PasswdSafeUtil
 {
-    public static final String PACKAGE = "com.jefftharris.passwdsafe";
+    private static final String PACKAGE = "com.jefftharris.passwdsafe";
     public static final String SYNC_PACKAGE = PACKAGE + ".sync";
     public static final String NEW_INTENT = PACKAGE + ".action.NEW";
     public static final String VIEW_INTENT = PACKAGE + ".action.VIEW";

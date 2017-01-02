@@ -78,7 +78,7 @@ public abstract class ProviderSyncer<ProviderClientT>
                 {
                     @Override
                     public List<DbFile> useDb(SQLiteDatabase db)
-                            throws Exception
+                            throws SQLException
                     {
                         syncDisplayName(db);
                         return SyncDb.getFiles(itsProvider.itsId, db);
@@ -92,7 +92,7 @@ public abstract class ProviderSyncer<ProviderClientT>
                             @Override
                             public List<SyncOper<ProviderClientT>> useDb(
                                     SQLiteDatabase db)
-                                    throws Exception
+                                    throws SQLException
                             {
                                 if (remoteFiles != null) {
                                     updateDbFiles(remoteFiles, db);
@@ -545,6 +545,6 @@ public abstract class ProviderSyncer<ProviderClientT>
         /**
          * Use the database
          */
-        public abstract T useDb(SQLiteDatabase db) throws Exception;
+        public abstract T useDb(SQLiteDatabase db) throws SQLException;
     }
 }
