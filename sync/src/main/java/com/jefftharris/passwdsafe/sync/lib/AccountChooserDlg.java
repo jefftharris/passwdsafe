@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -16,8 +17,10 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
@@ -46,21 +49,26 @@ public class AccountChooserDlg extends DialogFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.DialogFragment#onCreateDialog(android.os.Bundle)
-     */
     @Override
-    public @NonNull Dialog onCreateDialog(Bundle savedInstanceState)
+    @NonNull
+    public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         Bundle args = getArguments();
         String accountType = args.getString("accountType");
 
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity());
+        Activity act = getActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(act);
         builder.setTitle(R.string.choose_account);
 
-        AccountManager acctMgr = AccountManager.get(getActivity());
-        Account[] accts = acctMgr.getAccountsByType(accountType);
+        AccountManager acctMgr = AccountManager.get(act);
+        Account[] accts;
+        if (ActivityCompat.checkSelfPermission(
+                act, Manifest.permission.GET_ACCOUNTS) ==
+            PackageManager.PERMISSION_GRANTED) {
+            accts = acctMgr.getAccountsByType(accountType);
+        } else {
+            accts = new Account[0];
+        }
         if (accts.length > 0) {
             final String[] names = new String[accts.length];
             for (int i = 0; i < accts.length; ++i) {
