@@ -40,20 +40,6 @@ typedef char charT;
 #endif
 #include "PwsPlatform.h" // for afxwin.h, and endian macros
 
-// Hotkey values. Internal PWS values - need to convert to either MFC or wxWidgets
-// values in the GUI when retrieving these from the preferences and aso back to PWS
-// internal values before giving them to PWSPrefs for saving in the XML config file.
-#define PWS_HOTKEYF_ALT     0x01
-#define PWS_HOTKEYF_CONTROL 0x02
-#define PWS_HOTKEYF_SHIFT   0x04
-#define PWS_HOTKEYF_EXT     0x08
-
-// wxWidgets Only - Not used in Windows MFC
-#define PWS_HOTKEYF_ALTGR   PWS_HOTKEYF_ALT | PWS_HOTKEYF_CONTROL
-#define PWS_HOTKEYF_META    0x10
-#define PWS_HOTKEYF_WIN     0x20
-#define PWS_HOTKEYF_CMD     0x40
-
 #ifdef _WIN32
 #include "TCHAR.h"
 typedef char    int8;
@@ -107,8 +93,6 @@ typedef uint16_t uint16;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
 
-typedef int errno_t;
-
 #ifdef UNICODE
 #ifndef _T
 #define _T(x) L ## x
@@ -117,13 +101,8 @@ typedef wchar_t TCHAR;
 #else
 #define _T(x) x
 typedef char TCHAR;
-typedef wchar_t WCHAR;
 #endif /* UNICODE */
 
-// mimic Microsoft conventional typdefs:
-typedef TCHAR *LPTSTR;
-typedef const TCHAR *LPCTSTR;
-typedef bool BOOL;
 typedef unsigned char BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
@@ -145,10 +124,7 @@ typedef int32_t LONG;
 #else
 #error "One of PWS_LITTLE_ENDIAN or PWS_BIG_ENDIAN must be defined before including typedefs.h"
 #endif
-typedef int32_t LPARAM;
-typedef unsigned int UINT;
 typedef int HANDLE;
-#define INVALID_HANDLE_VALUE HANDLE(-1)
 
 // assorted conveniences:
 #define ASSERT(p) assert(p)

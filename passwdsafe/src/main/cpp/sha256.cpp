@@ -10,8 +10,6 @@
 // Tom St Denis, tomstdenis@iahu.ca, http://libtomcrypt.org
 //-----------------------------------------------------------------------------
 #include "sha256.h"
-#include "PwsPlatform.h"
-#include "Util.h"
 
 //#define LTC_CLEAN_STACK
 
@@ -217,7 +215,7 @@ void SHA256::Update(const unsigned char *in, size_t inlen)
       in             += block_size;
       inlen          -= block_size;
     } else {
-      n = MIN(inlen, (block_size - curlen));
+      n = std::min(inlen, (block_size - curlen));
       memcpy(buf + curlen, in, static_cast<size_t>(n));
       curlen += n;
       in             += n;

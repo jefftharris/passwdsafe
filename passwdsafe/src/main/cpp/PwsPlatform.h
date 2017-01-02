@@ -425,8 +425,6 @@ typedef unsigned long ulong32;
 #endif /* ENDIAN_64BITWORD */
 #endif /* ENDIAN_BIG */
 
-#define BSWAP(x)  ( ((x>>24)&0x000000FFUL) | ((x<<24)&0xFF000000UL)  | \
-  ((x>>8)&0x0000FF00UL)  | ((x<<8)&0x00FF0000UL) )
 
 
 /* 32-bit Rotates */
@@ -560,8 +558,6 @@ static inline unsigned long ROR64c(unsigned long word, const int i)
 
 #undef MAX
 #undef MIN
-#define MAX(x, y) ( ((x)>(y))?(x):(y) )
-#define MIN(x, y) ( ((x)<(y))?(x):(y) )
 
 /* extract a byte portably */
 #ifdef _MSC_VER
@@ -569,11 +565,5 @@ static inline unsigned long ROR64c(unsigned long word, const int i)
 #else
 #define byte(x, n) (((x) >> (8 * (n))) & 255)
 #endif   
-
-#define NumberOf(array) ((sizeof array) / sizeof(array[0]))
-
-#if !defined(_MFC_VER) && !defined(_WIN32)
-#define UNREFERENCED_PARAMETER(P) (void)(P)
-#endif
 
 #endif /* __PWSPLATFORM_H */
