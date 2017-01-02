@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2014 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -24,6 +24,7 @@ import android.os.CountDownTimer;
 import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.util.YubiState;
 
 
@@ -245,7 +246,7 @@ public class YubikeyMgr
 //                PasswdSafeUtil.dbginfo(TAG, "Pw: " + pwstr);
                 stopUser(pwstr, null);
             } finally {
-                isotag.close();
+                Utils.closeStreams(isotag);
             }
         } catch (Exception e) {
             PasswdSafeUtil.dbginfo(TAG, e, "handleKeyIntent");

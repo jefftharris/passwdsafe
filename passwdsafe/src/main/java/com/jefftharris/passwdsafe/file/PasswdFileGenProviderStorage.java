@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -19,6 +19,7 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 
 /** A PwsStreamStorage implementation for a generic provider */
 public class PasswdFileGenProviderStorage extends PwsStreamStorage
@@ -56,12 +57,7 @@ public class PasswdFileGenProviderStorage extends PwsStreamStorage
                                        itsUri);
                 return true;
             } finally {
-                if (fos != null) {
-                    fos.close();
-                }
-                if (pfd != null) {
-                    pfd.close();
-                }
+                Utils.closeStreams(fos, pfd);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error saving " + itsUri, e);

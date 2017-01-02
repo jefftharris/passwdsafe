@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -155,7 +155,11 @@ public class PwsFileStorage extends PwsStreamStorage
             throw e;
         } finally {
             if (outStream != null) {
-                outStream.close();
+                try {
+                    outStream.close();
+                } catch (IOException e) {
+                    LOG.error("close", e);
+                }
             }
         }
     }
