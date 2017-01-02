@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -80,6 +80,7 @@ public abstract class DialogValidator
             itsErrorMsgView.setVisibility(View.GONE);
         } else {
             itsErrorMsgView.setVisibility(View.VISIBLE);
+            //noinspection deprecation
             itsErrorMsgView.setText(
                 Html.fromHtml(String.format(itsErrorFmt, errorMsg)));
         }
