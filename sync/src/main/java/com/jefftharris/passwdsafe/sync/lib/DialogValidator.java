@@ -29,7 +29,7 @@ public abstract class DialogValidator
         /**
          * Constructor with a specific view
          */
-        public AlertValidator(AlertDialog dlg, View view)
+        protected AlertValidator(AlertDialog dlg, View view)
         {
             super(view);
             itsDialog = dlg;
@@ -55,7 +55,7 @@ public abstract class DialogValidator
     /**
      * Constructor with a specific view
      */
-    protected DialogValidator(View view)
+    private DialogValidator(View view)
     {
         itsErrorMsgView = (TextView)view.findViewById(R.id.error_msg);
         itsErrorFmt = view.getResources().getString(R.string.error_msg);

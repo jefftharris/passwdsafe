@@ -59,7 +59,7 @@ public abstract class DialogValidator
     /**
      * Constructor with a specific view and optional password fields
      */
-    protected DialogValidator(View view, Context ctx)
+    private DialogValidator(View view, Context ctx)
     {
         itsContext = ctx;
         itsErrorMsgView = (TextView)view.findViewById(R.id.error_msg);
