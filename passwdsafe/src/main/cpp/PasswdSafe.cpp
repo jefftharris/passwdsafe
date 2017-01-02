@@ -12,9 +12,6 @@
 #include "sha256.h"
 #include "Util.h"
 
-#include <vector>
-#include <string>
-
 JNIEXPORT jbyteArray JNICALL Java_org_pwsafe_lib_crypto_SHA256Pws_digestNNative
 (
     JNIEnv* env,
@@ -28,7 +25,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_pwsafe_lib_crypto_SHA256Pws_digestNNative
     unsigned char output[SHA256::HASHLEN];
 
     SHA256 H0;
-    H0.Update(reinterpret_cast<unsigned char*>(pdata), plen);
+    H0.Update(reinterpret_cast<unsigned char*>(pdata), (size_t) plen);
     H0.Final(output);
 
     for (jint i = 0; i < iter; ++i)
