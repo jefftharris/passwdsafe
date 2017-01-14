@@ -419,6 +419,7 @@ public class PasswdSafeOpenFileFragment
     @Override
     protected final void doResolveTaskFinished()
     {
+        doSetFieldsEnabled(itsOkBtn.isEnabled());
         setPhase(Phase.WAITING_PASSWORD);
     }
 
