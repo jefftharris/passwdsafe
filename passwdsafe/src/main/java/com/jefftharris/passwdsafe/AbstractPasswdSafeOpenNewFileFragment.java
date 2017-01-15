@@ -187,7 +187,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
             return;
         }
         if ((uri == null) || !isAdded()) {
-            cancelFragment(false);
+            cancelFragment(isAdded());
             return;
         }
 
