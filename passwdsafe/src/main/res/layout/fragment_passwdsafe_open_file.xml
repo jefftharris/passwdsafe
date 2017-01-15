@@ -68,6 +68,14 @@
                       android:text="@string/save_password"/>
         </LinearLayout>
 
+        <TextView android:id="@+id/read_only_msg"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginEnd="6dp"
+                  android:layout_marginLeft="6dp"
+                  android:layout_marginRight="6dp"
+                  android:layout_marginStart="6dp"/>
+
         <CheckBox android:id="@+id/yubikey"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"

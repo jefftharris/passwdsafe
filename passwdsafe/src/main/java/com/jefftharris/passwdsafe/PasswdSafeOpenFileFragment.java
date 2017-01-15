@@ -117,6 +117,7 @@ public class PasswdSafeOpenFileFragment
     private TextView itsSavedPasswordMsg;
     private int itsSavedPasswordTextColor;
     private CheckBox itsReadonlyCb;
+    private TextView itsReadonlyMsg;
     private CheckBox itsSavePasswdCb;
     private CheckBox itsYubikeyCb;
     private Button itsOkBtn;
@@ -190,6 +191,8 @@ public class PasswdSafeOpenFileFragment
         itsPasswordEdit.setEnabled(false);
 
         itsReadonlyCb = (CheckBox)rootView.findViewById(R.id.read_only);
+        itsReadonlyMsg = (TextView)rootView.findViewById(R.id.read_only_msg);
+        GuiUtils.setVisible(itsReadonlyMsg, false);
         Button cancelBtn = (Button)rootView.findViewById(R.id.cancel);
         cancelBtn.setOnClickListener(this);
         itsOkBtn = (Button)rootView.findViewById(R.id.ok);
@@ -585,9 +588,8 @@ public class PasswdSafeOpenFileFragment
             } else {
                 itsReadonlyCb.setChecked(true);
                 if (rc.second != null) {
-                    itsReadonlyCb.setText(String.format(
-                            "%s - %s", itsReadonlyCb.getText(),
-                            getString(rc.second)));
+                    itsReadonlyMsg.setText(getString(rc.second));
+                    GuiUtils.setVisible(itsReadonlyMsg, true);
                 }
             }
         }
