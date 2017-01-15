@@ -618,7 +618,7 @@ public class PasswdFileUri implements Parcelable
             itsTitle = cursor.getString(colidx);
         }
 
-        boolean writable = false;
+        boolean writable = true;
         //noinspection ConstantConditions
         if (DocumentFile.isDocumentUri(context, itsUri)) {
             colidx = cursor.getColumnIndex(
