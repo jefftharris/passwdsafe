@@ -7,16 +7,32 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.provider.OpenableColumns;
+import android.support.v4.os.EnvironmentCompat;
+import android.support.v4.provider.DocumentFile;
+import android.util.Log;
+
+import com.jefftharris.passwdsafe.Preferences;
+import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.ApiCompat;
+import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
+import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.pref.FileBackupPref;
+import com.jefftharris.passwdsafe.util.Pair;
 
 import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.InvalidPassphraseException;
@@ -29,29 +45,16 @@ import org.pwsafe.lib.file.PwsPassword;
 import org.pwsafe.lib.file.PwsStorage;
 import org.pwsafe.lib.file.PwsStreamStorage;
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Environment;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.provider.OpenableColumns;
-import android.support.v4.os.EnvironmentCompat;
-import android.util.Log;
-
-import com.jefftharris.passwdsafe.Preferences;
-import com.jefftharris.passwdsafe.R;
-import com.jefftharris.passwdsafe.lib.ApiCompat;
-import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
-import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
-import com.jefftharris.passwdsafe.lib.ProviderType;
-import com.jefftharris.passwdsafe.pref.FileBackupPref;
-import com.jefftharris.passwdsafe.util.Pair;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The PasswdFileUri class encapsulates a URI to a password file
@@ -560,31 +563,16 @@ public class PasswdFileUri implements Parcelable
     private void resolveGenericProviderUri(Context context)
     {
         ContentResolver cr = context.getContentResolver();
-        boolean writable = false;
-        boolean deletable = false;
         itsTitle = "(unknown)";
+        itsIsDeletable = false;
+        boolean writable = context.checkCallingOrSelfUriPermission(
+                itsUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION) ==
+                           PackageManager.PERMISSION_GRANTED;
+
         Cursor cursor = cr.query(itsUri, null, null, null, null);
         try {
             if ((cursor != null) && cursor.moveToFirst()) {
-                int colidx =
-                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                if (colidx != -1) {
-                    itsTitle = cursor.getString(colidx);
-                }
-
-                int flags = 0;
-                colidx = cursor.getColumnIndex(
-                        DocumentsContractCompat.COLUMN_FLAGS);
-                if (colidx != -1) {
-                    flags = cursor.getInt(colidx);
-                }
-
-                PasswdSafeUtil.dbginfo(TAG, "file %s, %x", itsTitle, flags);
-                writable =
-                    (flags & DocumentsContractCompat.FLAG_SUPPORTS_WRITE) != 0;
-                deletable =
-                        (flags & DocumentsContractCompat.FLAG_SUPPORTS_DELETE)
-                        != 0;
+                writable &= resolveGenericProviderCursor(cursor, context);
             }
         } finally {
             if (cursor != null) {
@@ -592,7 +580,42 @@ public class PasswdFileUri implements Parcelable
             }
         }
         itsWritableInfo = new Pair<>(writable, null);
-        itsIsDeletable = deletable;
+    }
+
+
+    /**
+     * Resolve fields for the cursor to a generic provider URI
+     */
+    private boolean resolveGenericProviderCursor(Cursor cursor, Context context)
+    {
+        int colidx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        if (colidx != -1) {
+            itsTitle = cursor.getString(colidx);
+        }
+
+        boolean writable = false;
+        //noinspection ConstantConditions
+        if (DocumentFile.isDocumentUri(context, itsUri)) {
+            colidx = cursor.getColumnIndex(
+                    DocumentsContractCompat.COLUMN_FLAGS);
+            if (colidx != -1) {
+                int flags = cursor.getInt(colidx);
+                writable =
+                        (flags & DocumentsContractCompat.FLAG_SUPPORTS_WRITE)
+                        != 0;
+                itsIsDeletable =
+                        (flags & DocumentsContractCompat.FLAG_SUPPORTS_DELETE)
+                        != 0;
+            }
+        } else {
+            colidx = cursor.getColumnIndex("read_only");
+            if (colidx != -1) {
+                int val = cursor.getInt(colidx);
+                writable = (val == 0);
+            }
+        }
+
+        return writable;
     }
 
 
