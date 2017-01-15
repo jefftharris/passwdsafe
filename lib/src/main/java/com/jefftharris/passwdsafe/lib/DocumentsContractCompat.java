@@ -19,6 +19,10 @@ public interface DocumentsContractCompat
     String INTENT_ACTION_CREATE_DOCUMENT =
             "android.intent.action.CREATE_DOCUMENT";
 
+    /** Column for DocumentsContract.Document.COLUMN_DOCUMENT_ID available on
+     * API 19 */
+    String COLUMN_DOCUMENT_ID = "document_id";
+
     /** Column for DocumentsContract.Document.COLUMN_FLAGS available on
      * API 19 */
     String COLUMN_FLAGS = "flags";

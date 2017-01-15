@@ -588,15 +588,21 @@ public class PasswdFileUri implements Parcelable
     {
         ContentResolver cr = context.getContentResolver();
         itsTitle = "(unknown)";
-        itsIsDeletable = false;
-        boolean writable = context.checkCallingOrSelfUriPermission(
-                itsUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION) ==
-                           PackageManager.PERMISSION_GRANTED;
-
+        boolean writable = false;
+        boolean deletable = false;
         Cursor cursor = cr.query(itsUri, null, null, null, null);
         try {
             if ((cursor != null) && cursor.moveToFirst()) {
-                writable &= resolveGenericProviderCursor(cursor, context);
+                int colidx =
+                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (colidx != -1) {
+                    itsTitle = cursor.getString(colidx);
+                }
+
+                Pair<Boolean, Boolean> rc =
+                        resolveGenericProviderFlags(cursor, context);
+                writable = rc.first;
+                deletable = rc.second;
             }
         } finally {
             if (cursor != null) {
@@ -605,42 +611,52 @@ public class PasswdFileUri implements Parcelable
         }
         itsWritableInfo = new Pair<>(
                 writable, writable ? null : R.string.read_only_provider);
+        itsIsDeletable = deletable;
     }
 
 
     /**
-     * Resolve fields for the cursor to a generic provider URI
+     * Resolve the writable and deletable flags for a generic provider URI
      */
-    private boolean resolveGenericProviderCursor(Cursor cursor, Context context)
+    private Pair<Boolean, Boolean> resolveGenericProviderFlags(Cursor cursor,
+                                                               Context ctx)
     {
-        int colidx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-        if (colidx != -1) {
-            itsTitle = cursor.getString(colidx);
+        boolean checkFlags = false;
+        //noinspection ConstantConditions
+        if (DocumentFile.isDocumentUri(ctx, itsUri)) {
+            if (ctx.checkCallingOrSelfUriPermission(
+                    itsUri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION) !=
+                PackageManager.PERMISSION_GRANTED) {
+                return new Pair<>(false, false);
+            }
+            checkFlags = true;
+        } else if (cursor.getColumnIndex(
+                DocumentsContractCompat.COLUMN_DOCUMENT_ID) != -1) {
+            checkFlags = true;
         }
 
-        boolean writable = true;
-        //noinspection ConstantConditions
-        if (DocumentFile.isDocumentUri(context, itsUri)) {
-            colidx = cursor.getColumnIndex(
+        if (checkFlags) {
+            int colidx = cursor.getColumnIndex(
                     DocumentsContractCompat.COLUMN_FLAGS);
             if (colidx != -1) {
                 int flags = cursor.getInt(colidx);
-                writable =
-                        (flags & DocumentsContractCompat.FLAG_SUPPORTS_WRITE)
-                        != 0;
-                itsIsDeletable =
-                        (flags & DocumentsContractCompat.FLAG_SUPPORTS_DELETE)
-                        != 0;
-            }
-        } else {
-            colidx = cursor.getColumnIndex("read_only");
-            if (colidx != -1) {
-                int val = cursor.getInt(colidx);
-                writable = (val == 0);
+                return new Pair<>(
+                        ((flags & DocumentsContractCompat.FLAG_SUPPORTS_WRITE)
+                         != 0),
+                        ((flags & DocumentsContractCompat.FLAG_SUPPORTS_DELETE)
+                         != 0));
             }
         }
 
-        return writable;
+        int colidx = cursor.getColumnIndex("read_only");
+        if (colidx != -1) {
+            int val = cursor.getInt(colidx);
+            boolean writable = (val == 0);
+            return new Pair<>(writable, writable);
+        }
+
+        return new Pair<>(true, true);
     }
 
 
