@@ -181,7 +181,7 @@ public class PasswdFileUri implements Parcelable
         switch (itsType) {
         case FILE: {
             itsFile = new File(uri.getPath());
-            resolveFileUri();
+            resolveFileUri(ctx);
             break;
         }
         case GENERIC_PROVIDER: {
@@ -207,12 +207,12 @@ public class PasswdFileUri implements Parcelable
 
 
     /** Constructor from a File */
-    private PasswdFileUri(File file)
+    private PasswdFileUri(File file, Context ctx)
     {
         itsUri = Uri.fromFile(file);
         itsType = Type.FILE;
         itsFile = file;
-        resolveFileUri();
+        resolveFileUri(ctx);
     }
 
 
@@ -333,7 +333,7 @@ public class PasswdFileUri implements Parcelable
         switch (itsType) {
         case FILE: {
             File file = new File(itsFile, fileName);
-            return new PasswdFileUri(file);
+            return new PasswdFileUri(file, ctx);
         }
         case SYNC_PROVIDER: {
             ContentResolver cr = ctx.getContentResolver();
@@ -534,15 +534,39 @@ public class PasswdFileUri implements Parcelable
 
 
     /** Resolve fields for a file URI */
-    private void resolveFileUri()
+    private void resolveFileUri(Context ctx)
     {
         boolean writable;
         Integer extraMsgId = null;
         do {
-            if ((itsFile == null) || !itsFile.canWrite()) {
+            if (itsFile == null) {
                 writable = false;
                 break;
             }
+
+            if (!itsFile.canWrite()) {
+                writable = false;
+
+                // Check for SD card location
+                File[] extdirs = ApiCompat.getExternalFilesDirs(ctx, null);
+                if ((extdirs != null) && (extdirs.length > 1)) {
+                    for (int i = 1; i < extdirs.length; ++i) {
+                        String path = extdirs[i].getAbsolutePath();
+                        int pos = path.indexOf("/Android/");
+                        if (pos == -1) {
+                            continue;
+                        }
+
+                        String basepath = path.substring(0, pos + 1);
+                        if (itsFile.getAbsolutePath().startsWith(basepath)) {
+                            extraMsgId = R.string.read_only_sdcard;
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+
             // Check mount state on kitkat or higher
             if (ApiCompat.SDK_VERSION < ApiCompat.SDK_KITKAT) {
                 writable = true;

@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 import android.os.IBinder;
 import android.view.inputmethod.InputMethodManager;
@@ -65,6 +67,15 @@ public final class ApiCompatKitkat
         } catch (Throwable e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * API compatible call for Context.getExternalFilesDirs
+     */
+    public static File[] getExternalFilesDirs(Context ctx, String type)
+    {
+        return ctx.getExternalFilesDirs(type);
     }
 
 

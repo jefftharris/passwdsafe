@@ -21,6 +21,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -80,6 +81,19 @@ public final class ApiCompat
             Intent startIntent = act.getIntent();
             act.finish();
             act.startActivity(startIntent);
+        }
+    }
+
+
+    /**
+     * API compatible call for Context.getExternalFilesDirs
+     */
+    public static File[] getExternalFilesDirs(Context ctx, String type)
+    {
+        if (SDK_VERSION >= SDK_KITKAT) {
+            return ApiCompatKitkat.getExternalFilesDirs(ctx, type);
+        } else {
+            return new File[] {ctx.getExternalFilesDir(type)};
         }
     }
 
