@@ -286,6 +286,10 @@
     <string name="read_only_about">Read-only</string>
     <string name="read_only_file">Read-only</string>
     <string name="read_only_media">File is located on read-only media.  This situation can occur with Kitkat and higher on removable SD cards.</string>
+    <string name="read_only_provider">
+        The provider of the file doesn\'t support writes or hasn\'t granted
+        write permission
+    </string>
     <string name="read_only_sdcard">
         File is located on a SD card, which is not writable.  Move the file to
         the internal storage, or use the newer file chooser which can be enabled

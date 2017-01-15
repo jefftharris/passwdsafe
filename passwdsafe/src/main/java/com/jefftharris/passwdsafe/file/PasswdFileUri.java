@@ -603,7 +603,8 @@ public class PasswdFileUri implements Parcelable
                 cursor.close();
             }
         }
-        itsWritableInfo = new Pair<>(writable, null);
+        itsWritableInfo = new Pair<>(
+                writable, writable ? null : R.string.read_only_provider);
     }
 
 
