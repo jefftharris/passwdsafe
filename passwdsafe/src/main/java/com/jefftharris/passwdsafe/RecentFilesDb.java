@@ -13,158 +13,171 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.provider.OpenableColumns;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Database helper class to manage the recent files list
  */
-@SuppressWarnings({"WeakerAccess", "TryFinallyCanBeTryWithResources"})
-public final class RecentFilesDb extends SQLiteOpenHelper
+@SuppressWarnings({"TryFinallyCanBeTryWithResources"})
+public final class RecentFilesDb implements Closeable
 {
-    public static final String DB_TABLE_FILES = "files";
-    public static final String DB_COL_FILES_ID = BaseColumns._ID;
-    public static final String DB_COL_FILES_TITLE = "title";
-    public static final String DB_COL_FILES_URI = "uri";
-    public static final String DB_COL_FILES_DATE = "date";
+    public static final String DB_COL_FILES_ID =
+            PasswdSafeDb.DB_COL_FILES_ID;
+    public static final String DB_COL_FILES_TITLE =
+            PasswdSafeDb.DB_COL_FILES_TITLE;
+    public static final String DB_COL_FILES_DATE =
+            PasswdSafeDb.DB_COL_FILES_DATE;
 
     private static final String[] QUERY_COLUMNS = new String[] {
             DB_COL_FILES_ID, DB_COL_FILES_TITLE,
-            DB_COL_FILES_URI, DB_COL_FILES_DATE };
+            PasswdSafeDb.DB_COL_FILES_URI, DB_COL_FILES_DATE };
 
-    public static final int QUERY_COL_ID = 0;
+    private static final int QUERY_COL_ID = 0;
     public static final int QUERY_COL_TITLE = 1;
     public static final int QUERY_COL_URI = 2;
     public static final int QUERY_COL_DATE = 3;
+
+    private static final String WHERE_BY_ID =
+            PasswdSafeDb.DB_COL_FILES_ID + " = ?";
+    private static final String WHERE_BY_URI =
+            PasswdSafeDb.DB_COL_FILES_URI + " = ?";
+    private static final String ORDER_BY_DATE =
+            PasswdSafeDb.DB_COL_FILES_DATE + " DESC";
+
 
     private static final int NUM_RECENT_FILES = 10;
 
     private static final String TAG = "RecentFilesDb";
 
-    private static final String WHERE_BY_ID = DB_COL_FILES_ID + " = ?";
-    private static final String WHERE_BY_URI = DB_COL_FILES_URI + " = ?";
-    private static final String ORDER_BY_DATE = DB_COL_FILES_DATE + " DESC";
-
-    private static final String DB_NAME = "recent_files.db";
-    private static final int DB_VERSION = 1;
+    private final PasswdSafeDb itsDb;
 
     /** Constructor */
     public RecentFilesDb(Context context)
     {
-        super(context, DB_NAME, null, DB_VERSION);
+        itsDb = new PasswdSafeDb(context);
     }
 
+    /**
+     * Close the database
+     */
+    public void close()
+    {
+        itsDb.close();
+    }
 
     /** Query files */
     public Cursor queryFiles() throws SQLException
     {
-        SQLiteDatabase db = getReadableDatabase();
         PasswdSafeUtil.dbginfo(TAG, "load recent files");
-        return db.query(DB_TABLE_FILES, QUERY_COLUMNS,
-                        null, null, null, null, ORDER_BY_DATE);
+        return itsDb.queryDb(PasswdSafeDb.DB_TABLE_FILES,
+                             QUERY_COLUMNS, ORDER_BY_DATE);
     }
 
 
     /** Insert or update the entry for the file */
-    public void insertOrUpdateFile(Uri uri, String title)
-            throws SQLException
+    public void insertOrUpdateFile(final Uri uri, final String title)
+            throws Exception
     {
-        SQLiteDatabase db = getWritableDatabase();
-        try {
-            db.beginTransaction();
-            String uristr = uri.toString();
-            long uriId = -1;
+        itsDb.useDb(new PasswdSafeDb.DbUser<Void>()
+        {
+            @Override
+            public Void useDb(SQLiteDatabase db) throws Exception
             {
-                Cursor cursor = db.query(DB_TABLE_FILES, QUERY_COLUMNS,
-                                         WHERE_BY_URI, new String[]{ uristr },
-                                         null, null, null);
+                String uristr = uri.toString();
+                long uriId = -1;
+                {
+                    Cursor cursor = db.query(PasswdSafeDb.DB_TABLE_FILES,
+                                             QUERY_COLUMNS, WHERE_BY_URI,
+                                             new String[]{uristr},
+                                             null, null, null);
+                    try {
+                        if (cursor.moveToFirst()) {
+                            uriId = cursor.getLong(QUERY_COL_ID);
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                }
+                ContentValues values = new ContentValues();
+                values.put(PasswdSafeDb.DB_COL_FILES_DATE,
+                           System.currentTimeMillis());
+                if (uriId != -1) {
+                    db.update(PasswdSafeDb.DB_TABLE_FILES, values, WHERE_BY_ID,
+                              new String[] { Long.toString(uriId) });
+                } else {
+                    values.put(PasswdSafeDb.DB_COL_FILES_TITLE, title);
+                    values.put(PasswdSafeDb.DB_COL_FILES_URI, uristr);
+                    db.insertOrThrow(PasswdSafeDb.DB_TABLE_FILES, null, values);
+                }
+
+                Cursor delCursor = db.query(PasswdSafeDb.DB_TABLE_FILES,
+                                            QUERY_COLUMNS, null, null, null,
+                                            null, ORDER_BY_DATE);
                 try {
-                    if (cursor.moveToFirst()) {
-                        uriId = cursor.getLong(QUERY_COL_ID);
+                    if (delCursor.move(NUM_RECENT_FILES)) {
+                        while (delCursor.moveToNext()) {
+                            long id = delCursor.getLong(QUERY_COL_ID);
+                            db.delete(PasswdSafeDb.DB_TABLE_FILES, WHERE_BY_ID,
+                                      new String[] { Long.toString(id) });
+                        }
                     }
                 } finally {
-                    cursor.close();
+                    delCursor.close();
                 }
+                return null;
             }
-            ContentValues values = new ContentValues();
-            values.put(DB_COL_FILES_DATE, System.currentTimeMillis());
-            if (uriId != -1) {
-                db.update(DB_TABLE_FILES, values, WHERE_BY_ID,
-                          new String[] { Long.toString(uriId) });
-            } else {
-                values.put(DB_COL_FILES_TITLE, title);
-                values.put(DB_COL_FILES_URI, uristr);
-                db.insertOrThrow(DB_TABLE_FILES, null, values);
-            }
-
-            Cursor delCursor = db.query(DB_TABLE_FILES, QUERY_COLUMNS,
-                                        null, null, null, null, ORDER_BY_DATE);
-            try {
-                if (delCursor.move(NUM_RECENT_FILES)) {
-                    while (delCursor.moveToNext()) {
-                        long id = delCursor.getLong(QUERY_COL_ID);
-                        db.delete(DB_TABLE_FILES, WHERE_BY_ID,
-                                  new String[] { Long.toString(id) });
-                    }
-                }
-            } finally {
-                delCursor.close();
-            }
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        });
     }
 
 
     /** Delete a recent file with the given uri */
-    public void removeUri(Uri permUri) throws SQLException
+    public void removeUri(final Uri permUri) throws Exception
     {
-        SQLiteDatabase db = getWritableDatabase();
-        try {
-            db.beginTransaction();
-            db.delete(DB_TABLE_FILES, WHERE_BY_URI,
-                      new String[]{ permUri.toString() });
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+        itsDb.useDb(new PasswdSafeDb.DbUser<Void>()
+        {
+            @Override
+            public Void useDb(SQLiteDatabase db) throws Exception
+            {
+                db.delete(PasswdSafeDb.DB_TABLE_FILES, WHERE_BY_URI,
+                          new String[]{ permUri.toString() });
+                return null;
+            }
+        });
     }
 
 
     /** Clear the recent files */
-    public List<Uri> clear() throws SQLException
+    public List<Uri> clear() throws Exception
     {
-        List<Uri> uris = new ArrayList<>();
-        SQLiteDatabase db = getWritableDatabase();
-        try {
-            db.beginTransaction();
-            Cursor c = db.query(DB_TABLE_FILES, QUERY_COLUMNS,
-                                null, null, null, null, null);
-            if (c != null) {
-                try {
-                    while (c.moveToNext()) {
-                        uris.add(Uri.parse(c.getString(QUERY_COL_URI)));
+        return itsDb.useDb(new PasswdSafeDb.DbUser<List<Uri>>()
+        {
+            @Override
+            public List<Uri> useDb(SQLiteDatabase db) throws Exception
+            {
+                List<Uri> uris = new ArrayList<>();
+                Cursor c = db.query(PasswdSafeDb.DB_TABLE_FILES, QUERY_COLUMNS,
+                                    null, null, null, null, null);
+                if (c != null) {
+                    try {
+                        while (c.moveToNext()) {
+                            uris.add(Uri.parse(c.getString(QUERY_COL_URI)));
+                        }
+                    } finally {
+                        c.close();
                     }
-                } finally {
-                    c.close();
                 }
+                db.delete(PasswdSafeDb.DB_TABLE_FILES, null, null);
+                return uris;
             }
-            db.delete(DB_TABLE_FILES, null, null);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-        return uris;
+        });
     }
 
 
@@ -191,22 +204,5 @@ public final class RecentFilesDb extends SQLiteOpenHelper
             }
         }
         return null;
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db)
-    {
-        PasswdSafeUtil.dbginfo(TAG, "Create DB");
-        db.execSQL("CREATE TABLE " + DB_TABLE_FILES + " (" +
-                   DB_COL_FILES_ID + " INTEGER PRIMARY KEY," +
-                   DB_COL_FILES_TITLE + " TEXT NOT NULL, " +
-                   DB_COL_FILES_URI + " TEXT NOT NULL, " +
-                   DB_COL_FILES_DATE + " INTEGER NOT NULL" +
-                   ");");
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-    {
     }
 }
