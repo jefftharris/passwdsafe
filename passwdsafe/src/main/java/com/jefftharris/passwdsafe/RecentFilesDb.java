@@ -26,7 +26,6 @@ import java.util.List;
 /**
  * Database helper class to manage the recent files list
  */
-@SuppressWarnings({"TryFinallyCanBeTryWithResources"})
 public final class RecentFilesDb implements Closeable
 {
     public static final String DB_COL_FILES_ID =

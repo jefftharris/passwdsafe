@@ -70,7 +70,6 @@ public class BoxLocalToRemoteOper
             }
         } else {
             ByteArrayInputStream is = new ByteArrayInputStream(new byte[0]);
-            //noinspection TryFinallyCanBeTryWithResources
             try {
                 updatedFile = fileApi
                         .getUploadRequest(is, itsFile.itsLocalTitle,

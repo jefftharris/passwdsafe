@@ -27,7 +27,6 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 /**
  * The SyncDb encapsulates the synchronization database
  */
-@SuppressWarnings("TryFinallyCanBeTryWithResources")
 public class SyncDb
 {
     private static final String TAG = "SyncDb";
