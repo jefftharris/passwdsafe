@@ -21,6 +21,9 @@ import android.provider.OpenableColumns;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Database helper class to manage the recent files list
@@ -139,16 +142,29 @@ public final class RecentFilesDb extends SQLiteOpenHelper
 
 
     /** Clear the recent files */
-    public void clear() throws SQLException
+    public List<Uri> clear() throws SQLException
     {
+        List<Uri> uris = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
         try {
             db.beginTransaction();
+            Cursor c = db.query(DB_TABLE_FILES, QUERY_COLUMNS,
+                                null, null, null, null, null);
+            if (c != null) {
+                try {
+                    while (c.moveToNext()) {
+                        uris.add(Uri.parse(c.getString(QUERY_COL_URI)));
+                    }
+                } finally {
+                    c.close();
+                }
+            }
             db.delete(DB_TABLE_FILES, null, null);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
+        return uris;
     }
 
 

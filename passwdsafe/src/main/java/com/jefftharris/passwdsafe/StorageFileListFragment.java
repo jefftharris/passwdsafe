@@ -231,20 +231,10 @@ public final class StorageFileListFragment extends ListFragment
                 ContentResolver cr = getActivity().getContentResolver();
                 int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                Cursor cursor = itsRecentFilesDb.queryFiles();
-                if (cursor != null) {
-                    try {
-                        while (cursor.moveToNext()) {
-                            Uri uri = Uri.parse(cursor.getString(
-                                    RecentFilesDb.QUERY_COL_URI));
-                            ApiCompat.releasePersistableUriPermission(cr, uri,
-                                                                      flags);
-                        }
-                    } finally {
-                        cursor.close();
-                    }
+                List<Uri> recentUris = itsRecentFilesDb.clear();
+                for (Uri uri: recentUris) {
+                    ApiCompat.releasePersistableUriPermission(cr, uri, flags);
                 }
-                itsRecentFilesDb.clear();
 
                 List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
                 for (Uri permUri: permUris) {
