@@ -372,10 +372,10 @@ public class PasswdSafeProvider extends ContentProvider
      */
     @Override
     public Cursor query(@NonNull Uri uri,
-                        final String[] projection,
+                        String[] projection,
                         String selection,
                         String[] selectionArgs,
-                        final String sortOrder)
+                        String sortOrder)
     {
         PasswdSafeUtil.dbginfo(TAG, "query uri: %s", uri);
 
@@ -497,24 +497,14 @@ public class PasswdSafeProvider extends ContentProvider
         }
 
         try {
-            final String selectionVal = selection;
-            final String[] selectionArgsVal = selectionArgs;
-            return SyncDb.useDb(new SyncDb.DbUser<Cursor>()
-            {
-                @Override
-                public Cursor useDb(SQLiteDatabase db) throws Exception
-                {
-                    Cursor c = qb.query(db, projection, selectionVal,
-                                        selectionArgsVal, null, null,
-                                        sortOrder);
-                    Context ctx = getContext();
-                    if ((c != null) && (ctx != null)) {
-                        c.setNotificationUri(ctx.getContentResolver(),
-                                             PasswdSafeContract.CONTENT_URI);
-                    }
-                    return c;
-                }
-            });
+            Cursor c = SyncDb.queryDb(qb, projection, selection, selectionArgs,
+                                      sortOrder);
+            Context ctx = getContext();
+            if ((c != null) && (ctx != null)) {
+                c.setNotificationUri(ctx.getContentResolver(),
+                                     PasswdSafeContract.CONTENT_URI);
+            }
+            return c;
         } catch (Exception e) {
             throw (SQLException) new SQLException().initCause(e);
         }

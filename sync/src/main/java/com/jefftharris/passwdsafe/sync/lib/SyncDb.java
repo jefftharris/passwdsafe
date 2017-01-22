@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 
@@ -119,7 +120,7 @@ public class SyncDb
     }
 
     /**
-     * Use the database
+     * Use the database with a transaction
      */
     public static <T> T useDb(DbUser<T> user) throws Exception
     {
@@ -133,6 +134,20 @@ public class SyncDb
         } finally {
             db.endTransaction();
         }
+    }
+
+    /**
+     * Query the database without a transaction
+     */
+    public static Cursor queryDb(SQLiteQueryBuilder qb,
+                                 String[] projection,
+                                 String selection, String[] selectionArgs,
+                                 String sortOrder) throws Exception
+    {
+        SyncDb syncDb = getDb();
+        SQLiteDatabase db = syncDb.itsDbHelper.getReadableDatabase();
+        return qb.query(db, projection, selection, selectionArgs,
+                        null, null, sortOrder);
     }
 
     /** Constructor */
