@@ -18,6 +18,7 @@ import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,8 @@ public class PasswdSafeNewFileFragment
     private static final String ARG_URI = "uri";
 
     private static final int CREATE_DOCUMENT_REQUEST = 0;
+
+    private static final String TAG = "PasswdSafeNewFileFrag";
 
     /**
      * Create a new instance
@@ -274,8 +277,8 @@ public class PasswdSafeNewFileFragment
                 RecentFilesDb recentFilesDb = new RecentFilesDb(ctx);
                 try {
                     recentFilesDb.insertOrUpdateFile(newUri, title);
-                } finally {
-                    recentFilesDb.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error saving recent file: " + newUri, e);
                 }
             }
             setFileUri(newUri);
