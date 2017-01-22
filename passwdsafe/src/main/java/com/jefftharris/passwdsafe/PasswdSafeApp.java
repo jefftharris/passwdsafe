@@ -23,7 +23,7 @@ import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
-public class PasswdSafeApp extends Application
+public final class PasswdSafeApp extends Application
     implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String DEBUG_AUTO_FILE =
@@ -42,6 +42,7 @@ public class PasswdSafeApp extends Application
     private PasswdPolicy itsDefaultPasswdPolicy = null;
     private NotificationMgr itsNotifyMgr;
     private boolean itsIsOpenDefault = true;
+    private PasswdSafeDb itsPasswdSafeDb;
 
     private static final String TAG = "PasswdSafeApp";
 
@@ -93,6 +94,8 @@ public class PasswdSafeApp extends Application
         setPasswordDefaultSymsPref(prefs);
         itsDefaultPasswdPolicy = Preferences.getDefPasswdPolicyPref(prefs,
                                                                     this);
+
+        itsPasswdSafeDb = new PasswdSafeDb(this);
     }
 
     /* (non-Javadoc)
@@ -168,6 +171,13 @@ public class PasswdSafeApp extends Application
         return itsNotifyMgr;
     }
 
+    /**
+     * Get the PasswdSafe database
+     */
+    public PasswdSafeDb getPasswdSafeDb()
+    {
+        return itsPasswdSafeDb;
+    }
 
     /**
      * Setup the theme on an activity

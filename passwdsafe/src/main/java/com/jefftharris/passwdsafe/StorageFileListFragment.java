@@ -170,9 +170,7 @@ public final class StorageFileListFragment extends ListFragment
     public void onDestroy()
     {
         super.onDestroy();
-        if (itsRecentFilesDb != null) {
-            itsRecentFilesDb.close();
-        }
+        itsRecentFilesDb = null;
     }
 
     /* (non-Javadoc)

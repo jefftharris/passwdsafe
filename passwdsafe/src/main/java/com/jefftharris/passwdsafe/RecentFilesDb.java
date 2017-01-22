@@ -19,14 +19,13 @@ import android.provider.OpenableColumns;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Database helper class to manage the recent files list
+ * Recent files database
  */
-public final class RecentFilesDb implements Closeable
+public final class RecentFilesDb
 {
     public static final String DB_COL_FILES_ID =
             PasswdSafeDb.DB_COL_FILES_ID;
@@ -61,15 +60,8 @@ public final class RecentFilesDb implements Closeable
     /** Constructor */
     public RecentFilesDb(Context context)
     {
-        itsDb = new PasswdSafeDb(context);
-    }
-
-    /**
-     * Close the database
-     */
-    public void close()
-    {
-        itsDb.close();
+        PasswdSafeApp app = (PasswdSafeApp)context.getApplicationContext();
+        itsDb = app.getPasswdSafeDb();
     }
 
     /** Query files */

@@ -1711,11 +1711,7 @@ public class PasswdSafe extends AppCompatActivity
         {
             Context ctx = getContext();
             RecentFilesDb recentFilesDb = new RecentFilesDb(ctx);
-            try {
-                recentFilesDb.removeUri(itsFileUri.getUri());
-            } finally {
-                recentFilesDb.close();
-            }
+            recentFilesDb.removeUri(itsFileUri.getUri());
 
             itsFileUri.delete(ctx);
         }
