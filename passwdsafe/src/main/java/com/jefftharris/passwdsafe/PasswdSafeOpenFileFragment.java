@@ -49,7 +49,6 @@ import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -140,6 +139,8 @@ public class PasswdSafeOpenFileFragment
     private static final String ARG_REC_TO_OPEN = "recToOpen";
     private static final String STATE_SLOT = "slot";
     private static final String TAG = "PasswdSafeOpenFileFragment";
+
+    // TODO: treat document provider uris as their own type different from generic
 
     /**
      * Create a new instance
@@ -1248,8 +1249,7 @@ public class PasswdSafeOpenFileFragment
                                                       itsUserPassword, cipher);
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_saved));
-            } catch (IllegalBlockSizeException | BadPaddingException |
-                    UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 String msg = "Error using cipher: " + e.getLocalizedMessage();
                 Log.e(itsTag, msg, e);
                 onAuthenticationError(0, msg);

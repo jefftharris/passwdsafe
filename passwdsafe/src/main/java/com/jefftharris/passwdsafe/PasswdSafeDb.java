@@ -27,8 +27,14 @@ public final class PasswdSafeDb extends SQLiteOpenHelper
     public static final String DB_COL_FILES_URI = "uri";
     public static final String DB_COL_FILES_DATE = "date";
 
+    public static final String DB_TABLE_SAVED_PASSWORDS = "saved_passwords";
+    private static final String DB_COL_SAVED_PASSWORDS_ID = BaseColumns._ID;
+    public static final String DB_COL_SAVED_PASSWORDS_URI = "uri";
+    public static final String DB_COL_SAVED_PASSWORDS_IV = "iv";
+    public static final String DB_COL_SAVED_PASSWORDS_ENC_PASSWD = "enc_passwd";
+
     private static final String DB_NAME = "recent_files.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static final String TAG = "PasswdSafeDb";
 
@@ -87,10 +93,21 @@ public final class PasswdSafeDb extends SQLiteOpenHelper
                    DB_COL_FILES_URI + " TEXT NOT NULL, " +
                    DB_COL_FILES_DATE + " INTEGER NOT NULL" +
                    ");");
+
+        onUpgrade(db, 1, DB_VERSION);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
+        if (oldVersion < 2) {
+            PasswdSafeUtil.dbginfo(TAG, "Upgrade to v2");
+            db.execSQL("CREATE TABLE " + DB_TABLE_SAVED_PASSWORDS + " (" +
+                       DB_COL_SAVED_PASSWORDS_ID + " INTEGER PRIMARY KEY," +
+                       DB_COL_SAVED_PASSWORDS_URI + " TEXT NOT NULL UNIQUE, " +
+                       DB_COL_SAVED_PASSWORDS_IV + " TEXT NOT NULL," +
+                       DB_COL_SAVED_PASSWORDS_ENC_PASSWD + " TEXT NOT NULL" +
+                       ");");
+        }
     }
 }
