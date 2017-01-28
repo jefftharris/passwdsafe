@@ -466,13 +466,13 @@ public class PasswdSafeOpenFileFragment
             readonlyEnabled = rc.first;
 
             switch (passwdFileUri.getType()) {
-            case EMAIL:
-            case GENERIC_PROVIDER: {
+            case EMAIL: {
                 savePasswdEnabled = false;
                 break;
             }
             case FILE:
-            case SYNC_PROVIDER: {
+            case SYNC_PROVIDER:
+            case GENERIC_PROVIDER: {
                 break;
             }
             }
@@ -617,12 +617,13 @@ public class PasswdSafeOpenFileFragment
         itsIsPasswordSaved = false;
         switch (getPasswdFileUri().getType()) {
         case FILE:
-        case SYNC_PROVIDER: {
-            itsIsPasswordSaved = itsSavedPasswordsMgr.isAvailable() &&
-                                 itsSavedPasswordsMgr.isSaved(getFileUri());
-        }
-        case EMAIL:
+        case SYNC_PROVIDER:
         case GENERIC_PROVIDER: {
+            itsIsPasswordSaved =
+                    itsSavedPasswordsMgr.isAvailable() &&
+                    itsSavedPasswordsMgr.isSaved(getPasswdFileUri());
+        }
+        case EMAIL: {
             break;
         }
         }
@@ -635,7 +636,7 @@ public class PasswdSafeOpenFileFragment
             setProgressVisible(true, false);
             itsLoadSavedPasswordUser = new LoadSavedPasswordUser();
             itsIsPasswordSaved = itsSavedPasswordsMgr.startPasswordAccess(
-                    getFileUri(), itsLoadSavedPasswordUser);
+                    getPasswdFileUri(), itsLoadSavedPasswordUser);
         } else {
             itsPasswordEdit.requestFocus();
             checkOpenDefaultFile();
@@ -704,12 +705,12 @@ public class PasswdSafeOpenFileFragment
                 cancelSavedPasswordUsers();
                 itsAddSavedPasswordUser = new AddSavedPasswordUser(result);
                 itsSavedPasswordsMgr.startPasswordAccess(
-                        getFileUri(), itsAddSavedPasswordUser);
+                        getPasswdFileUri(), itsAddSavedPasswordUser);
                 setPhase(Phase.SAVING_PASSWORD);
                 break;
             }
             case REMOVE: {
-                itsSavedPasswordsMgr.removeSavedPassword(getFileUri());
+                itsSavedPasswordsMgr.removeSavedPassword(getPasswdFileUri());
                 finishFileOpen(result.itsFileData);
                 break;
             }
@@ -868,7 +869,7 @@ public class PasswdSafeOpenFileFragment
             switch (itsSaveChange) {
             case ADD: {
                 try {
-                    itsSavedPasswordsMgr.generateKey(getFileUri());
+                    itsSavedPasswordsMgr.generateKey(getPasswdFileUri());
                 } catch (InvalidAlgorithmParameterException |
                         NoSuchAlgorithmException | NoSuchProviderException |
                         IOException e) {
@@ -1172,7 +1173,7 @@ public class PasswdSafeOpenFileFragment
             Cipher cipher = result.getCryptoObject().getCipher();
             try {
                 String password = itsSavedPasswordsMgr.loadSavedPassword(
-                        getFileUri(), cipher);
+                        getPasswdFileUri(), cipher);
                 itsPasswordEdit.setText(password);
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_loaded));

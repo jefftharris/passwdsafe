@@ -966,10 +966,9 @@ public class PasswdSafe extends AppCompatActivity
             @Override
             public void useFileData(@NonNull PasswdFileData fileData)
             {
-                Uri fileUri = fileData.getUri().getUri();
                 SavedPasswordsMgr savedMgr =
                         new SavedPasswordsMgr(PasswdSafe.this);
-                savedMgr.removeSavedPassword(fileUri);
+                savedMgr.removeSavedPassword(fileData.getUri());
             }
         });
 

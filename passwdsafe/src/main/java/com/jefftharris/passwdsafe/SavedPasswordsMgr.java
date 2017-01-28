@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
@@ -125,12 +126,12 @@ public final class SavedPasswordsMgr
     /**
      * Is there a saved password for a file
      */
-    public synchronized boolean isSaved(Uri uri)
+    public synchronized boolean isSaved(PasswdFileUri fileUri)
     {
         try {
-            return itsDb.isSaved(uri);
+            return getSavedPassword(fileUri) != null;
         } catch (Exception e) {
-            Log.e(TAG, "Error checking saved for " + uri, e);
+            Log.e(TAG, "Error checking saved for " + fileUri, e);
             return false;
         }
     }
@@ -139,7 +140,7 @@ public final class SavedPasswordsMgr
      * Generate a saved password key for a file
      */
     @TargetApi(Build.VERSION_CODES.M)
-    public synchronized void generateKey(Uri fileUri)
+    public synchronized void generateKey(PasswdFileUri fileUri)
             throws InvalidAlgorithmParameterException, NoSuchAlgorithmException,
             NoSuchProviderException, IOException
     {
@@ -150,7 +151,7 @@ public final class SavedPasswordsMgr
                     itsContext.getString(R.string.no_fingerprints_registered));
         }
 
-        String keyName = getUriAlias(fileUri);
+        String keyName = getUriAlias(fileUri.getUri());
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance(
                     KeyProperties.KEY_ALGORITHM_AES, KEYSTORE);
@@ -177,7 +178,7 @@ public final class SavedPasswordsMgr
     /**
      * Start access to the key protecting the saved password for a file
      */
-    public boolean startPasswordAccess(Uri fileUri, User user)
+    public boolean startPasswordAccess(PasswdFileUri fileUri, User user)
     {
         try {
             Cipher cipher = getKeyCipher(fileUri, user.isEncrypt());
@@ -202,24 +203,24 @@ public final class SavedPasswordsMgr
     /**
      * Load a saved password for a file
      */
-    public String loadSavedPassword(Uri fileUri, Cipher cipher)
+    public String loadSavedPassword(PasswdFileUri fileUri, Cipher cipher)
             throws IOException, BadPaddingException, IllegalBlockSizeException
     {
-        Pair<String, String> saved = null;
+        SavedPassword saved = null;
         Exception exc = null;
         try {
-            saved = itsDb.getSavedPassword(fileUri);
+            saved = getSavedPassword(fileUri);
         } catch (Exception e) {
             exc = e;
         }
 
-        if ((saved == null) || TextUtils.isEmpty(saved.second)) {
+        if ((saved == null) || TextUtils.isEmpty(saved.itsEncPasswd)) {
             throw new IOException(
                     itsContext.getString(R.string.password_not_found, fileUri),
                     exc);
         }
 
-        byte[] enc = Base64.decode(saved.second, Base64.NO_WRAP);
+        byte[] enc = Base64.decode(saved.itsEncPasswd, Base64.NO_WRAP);
         byte[] decPassword = cipher.doFinal(enc);
         return new String(decPassword, "UTF-8");
     }
@@ -231,25 +232,29 @@ public final class SavedPasswordsMgr
                                  String password, Cipher cipher)
             throws Exception
     {
-        Uri uri = fileUri.getUri();
-        String providerUri = uri.buildUpon().path(null).query(null).toString();
-        String displayName = fileUri.getIdentifier(itsContext, true);
+        Pair<String, String> providerDisplay = getProviderAndDisplay(fileUri);
 
         byte[] enc = cipher.doFinal(password.getBytes("UTF-8"));
         String encStr = Base64.encodeToString(enc, Base64.NO_WRAP);
         String ivStr = Base64.encodeToString(cipher.getIV(), Base64.NO_WRAP);
 
-        itsDb.addSavedPassword(fileUri.toString(), providerUri, displayName,
+        itsDb.addSavedPassword(fileUri.toString(),
+                               providerDisplay.first, providerDisplay.second,
                                ivStr, encStr);
     }
 
     /**
      * Removed the saved password and key for a file
      */
-    public synchronized void removeSavedPassword(Uri fileUri)
+    public synchronized void removeSavedPassword(PasswdFileUri fileUri)
     {
+        Uri uri = fileUri.getUri();
         try {
-            itsDb.removeSavedPassword(fileUri);
+            SavedPassword saved = getSavedPassword(fileUri);
+            if (saved != null) {
+                uri = saved.itsUri;
+            }
+            itsDb.removeSavedPassword(uri);
         } catch (Exception e) {
             Log.e(TAG, "Error removing " + fileUri, e);
         }
@@ -257,7 +262,7 @@ public final class SavedPasswordsMgr
             PasswdSafeUtil.dbginfo(TAG, "removeSavedPassword: %s", fileUri);
             try {
                 KeyStore keyStore = getKeystore();
-                String keyName = getUriAlias(fileUri);
+                String keyName = getUriAlias(uri);
                 keyStore.deleteEntry(keyName);
             } catch (KeyStoreException | CertificateException |
                     IOException | NoSuchAlgorithmException e) {
@@ -295,18 +300,32 @@ public final class SavedPasswordsMgr
      * Get the cipher for the key protecting the saved password for a file
      */
     @TargetApi(Build.VERSION_CODES.M)
-    private Cipher getKeyCipher(Uri fileUri, boolean encrypt)
+    private Cipher getKeyCipher(PasswdFileUri fileUri, boolean encrypt)
             throws CertificateException, NoSuchAlgorithmException,
                    KeyStoreException, IOException, UnrecoverableKeyException,
                    NoSuchPaddingException, InvalidKeyException,
                    InvalidAlgorithmParameterException
     {
-        String keyName = getUriAlias(fileUri);
+        Uri uri = fileUri.getUri();
+        SavedPassword saved = null;
+        Exception exc = null;
+        if (!encrypt) {
+            try {
+                saved = getSavedPassword(fileUri);
+                if (saved != null) {
+                    uri = saved.itsUri;
+                }
+            } catch (Exception e) {
+                exc = e;
+            }
+        }
+
+        String keyName = getUriAlias(uri);
         KeyStore keystore = getKeystore();
         Key key = keystore.getKey(keyName, null);
         if (key == null) {
             throw new IOException(itsContext.getString(R.string.key_not_found,
-                                                       fileUri));
+                                                       uri));
         }
 
         Cipher ciph = Cipher.getInstance(
@@ -316,18 +335,10 @@ public final class SavedPasswordsMgr
         if (encrypt) {
             ciph.init(Cipher.ENCRYPT_MODE, key);
         } else {
-            Pair<String, String> saved = null;
-            Exception exc = null;
-            try {
-                saved = itsDb.getSavedPassword(fileUri);
-            } catch (Exception e) {
-                exc = e;
-            }
-
-            if ((saved == null) || TextUtils.isEmpty(saved.first)) {
+            if ((saved == null) || TextUtils.isEmpty(saved.itsIv)) {
                 throw new IOException("Key IV not found for " + fileUri, exc);
             }
-            byte[] iv = Base64.decode(saved.first, Base64.NO_WRAP);
+            byte[] iv = Base64.decode(saved.itsIv, Base64.NO_WRAP);
             ciph.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
         }
         return ciph;
@@ -354,20 +365,69 @@ public final class SavedPasswordsMgr
     }
 
     /**
+     * Get the saved password for a file URI
+     */
+    private SavedPassword getSavedPassword(PasswdFileUri fileUri)
+            throws Exception
+    {
+        Pair<String, String> provdisp = getProviderAndDisplay(fileUri);
+        return itsDb.getSavedPassword(fileUri.getUri(),
+                                      provdisp.first, provdisp.second);
+    }
+
+    /**
+     * Get the provider URI and display name for a file URI
+     */
+    private Pair<String, String> getProviderAndDisplay(PasswdFileUri fileUri)
+    {
+        Uri uri = fileUri.getUri();
+        String providerUri = uri.buildUpon().path(null).query(null).toString();
+        String displayName = fileUri.getIdentifier(itsContext, true);
+        return new Pair<>(providerUri, displayName);
+    }
+
+    /**
+     * Saved password entry
+     */
+    private static class SavedPassword
+    {
+        public final Uri itsUri;
+        public final String itsIv;
+        public final String itsEncPasswd;
+
+        /**
+         * Constructor
+         */
+        public SavedPassword(String uri, String iv, String encPasswd)
+        {
+            itsUri = Uri.parse(uri);
+            itsIv = iv;
+            itsEncPasswd = encPasswd;
+        }
+    }
+
+    /**
      * Saved passwords database
      */
     private static class SavedPasswordsDb
     {
         private static final String[] QUERY_COLUMNS = new String[] {
                 PasswdSafeDb.DB_COL_SAVED_PASSWORDS_URI,
+                PasswdSafeDb.DB_COL_SAVED_PASSWORDS_PROVIDER_URI,
+                PasswdSafeDb.DB_COL_SAVED_PASSWORDS_DISPLAY_NAME,
                 PasswdSafeDb.DB_COL_SAVED_PASSWORDS_IV,
                 PasswdSafeDb.DB_COL_SAVED_PASSWORDS_ENC_PASSWD};
 
-        private static final int QUERY_COL_IV = 1;
-        private static final int QUERY_COL_ENC_PASSWD = 2;
+        private static final int QUERY_COL_URI = 0;
+        private static final int QUERY_COL_IV = 3;
+        private static final int QUERY_COL_ENC_PASSWD = 4;
 
         private static final String WHERE_BY_URI =
                 PasswdSafeDb.DB_COL_SAVED_PASSWORDS_URI + " = ?";
+        private static final String WHERE_BY_PROVDISP =
+                PasswdSafeDb.DB_COL_SAVED_PASSWORDS_PROVIDER_URI +
+                " = ? AND " +
+                PasswdSafeDb.DB_COL_SAVED_PASSWORDS_DISPLAY_NAME + " = ?";
 
         private final PasswdSafeDb itsDb;
 
@@ -382,49 +442,43 @@ public final class SavedPasswordsMgr
         }
 
         /**
-         * Is there a saved password for a URI
-         */
-        public boolean isSaved(final Uri uri) throws Exception
-        {
-            return itsDb.useDb(new PasswdSafeDb.DbUser<Boolean>()
-            {
-                @Override
-                public Boolean useDb(SQLiteDatabase db) throws Exception
-                {
-                    Cursor c = db.query(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                                        QUERY_COLUMNS,
-                                        WHERE_BY_URI,
-                                        new String[] {uri.toString()},
-                                        null, null, null);
-                    try {
-                        return c.moveToFirst();
-                    } finally {
-                        c.close();
-                    }
-                }
-            });
-        }
-
-        /**
          * Get the IV and encrypted saved password for a URI
          */
-        public Pair<String, String> getSavedPassword(final Uri uri)
+        public SavedPassword getSavedPassword(final Uri uri,
+                                              final String providerUri,
+                                              final String displayName)
                 throws Exception
         {
-            return itsDb.useDb(new PasswdSafeDb.DbUser<Pair<String, String>>()
+            return itsDb.useDb(new PasswdSafeDb.DbUser<SavedPassword>()
             {
                 @Override
-                public Pair<String, String> useDb(SQLiteDatabase db)
+                public SavedPassword useDb(SQLiteDatabase db)
                         throws Exception
                 {
+                    SavedPassword saved = getByQuery(
+                            db, WHERE_BY_URI, new String[]{ uri.toString() });
+                    if (saved != null) {
+                        return saved;
+                    }
+                    // TODO: only use prov/disp if a generic/document provider type
+                    return getByQuery(db, WHERE_BY_PROVDISP,
+                                      new String[]{ providerUri, displayName });
+                }
+
+                /**
+                 * Get an entry by a query
+                 */
+                private SavedPassword getByQuery(SQLiteDatabase db,
+                                                 String sel, String[] selArgs)
+                        throws SQLException
+                {
                     Cursor c = db.query(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                                        QUERY_COLUMNS,
-                                        WHERE_BY_URI,
-                                        new String[] {uri.toString()},
+                                        QUERY_COLUMNS, sel, selArgs,
                                         null, null, null);
                     try {
                         if (c.moveToFirst()) {
-                            return new Pair<>(
+                            return new SavedPassword(
+                                    c.getString(QUERY_COL_URI),
                                     c.getString(QUERY_COL_IV),
                                     c.getString(QUERY_COL_ENC_PASSWD));
                         }
