@@ -166,7 +166,7 @@
     <string name="invalid_option_length">Longueur d\'option invalide</string>
     <string name="invalid_password">"Mot de passe incorrect"</string>
     <string name="key_error">Erreur clé pour %1$s: %2$s</string>
-    <string name="key_not_found">Clé non trouvée pour $1%s</string>
+    <string name="key_not_found">Clé non trouvée pour %1$s</string>
     <string name="kitkat_sdcard_warning">
         %1$s
         \n\nSur Android KitKat et plus, les applications sont empêchés 

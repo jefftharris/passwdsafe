@@ -161,7 +161,7 @@
     <string name="invalid_option_length">Invalid option length</string>
     <string name="invalid_password">Invalid password</string>
     <string name="key_error">Key error for %1$s: %2$s</string>
-    <string name="key_not_found">Key not found for $1%s</string>
+    <string name="key_not_found">Key not found for %1$s</string>
     <string name="kitkat_sdcard_warning">
         %1$s
         \n\nOn Android KitKat and higher, apps are prevented from writing to

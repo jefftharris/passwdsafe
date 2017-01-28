@@ -161,7 +161,7 @@
     <string name="invalid_option_length">Ungültige Optionslänge</string>
     <string name="invalid_password">Ungültiges Passwort</string>
     <string name="key_error">Schlüsselfehler für %1$s: %2$s</string>
-    <string name="key_not_found">Schlüssel nicht gefunden: $1%s</string>
+    <string name="key_not_found">Schlüssel nicht gefunden: %1$s</string>
     <string name="kitkat_sdcard_warning">
         %1$s
         \n\nAuf Android KitKat und höher können Apps nicht auf 
