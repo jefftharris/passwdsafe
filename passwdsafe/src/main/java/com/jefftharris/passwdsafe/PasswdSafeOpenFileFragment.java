@@ -122,6 +122,7 @@ public class PasswdSafeOpenFileFragment
     private Button itsOkBtn;
     private OpenTask itsOpenTask;
     private SavedPasswordsMgr itsSavedPasswordsMgr;
+    private boolean itsIsPasswordSaved = false;
     private SavePasswordChange itsSaveChange = SavePasswordChange.NONE;
     private LoadSavedPasswordUser itsLoadSavedPasswordUser;
     private AddSavedPasswordUser itsAddSavedPasswordUser;
@@ -613,12 +614,12 @@ public class PasswdSafeOpenFileFragment
      */
     private void enterWaitingPasswordPhase()
     {
-        boolean isSaved = false;
+        itsIsPasswordSaved = false;
         switch (getPasswdFileUri().getType()) {
         case FILE:
         case SYNC_PROVIDER: {
-            isSaved = itsSavedPasswordsMgr.isAvailable() &&
-                      itsSavedPasswordsMgr.isSaved(getFileUri());
+            itsIsPasswordSaved = itsSavedPasswordsMgr.isAvailable() &&
+                                 itsSavedPasswordsMgr.isSaved(getFileUri());
         }
         case EMAIL:
         case GENERIC_PROVIDER: {
@@ -626,20 +627,20 @@ public class PasswdSafeOpenFileFragment
         }
         }
 
-        GuiUtils.setupFormKeyboard(isSaved ? null : itsPasswordEdit,
+        GuiUtils.setupFormKeyboard(itsIsPasswordSaved ? null : itsPasswordEdit,
                                    itsPasswordEdit, itsOkBtn, getContext());
-        GuiUtils.setVisible(itsSavedPasswordMsg, isSaved);
-        if (isSaved) {
+        GuiUtils.setVisible(itsSavedPasswordMsg, itsIsPasswordSaved);
+        if (itsIsPasswordSaved) {
             cancelSavedPasswordUsers();
             setProgressVisible(true, false);
             itsLoadSavedPasswordUser = new LoadSavedPasswordUser();
-            itsSavedPasswordsMgr.startPasswordAccess(
+            itsIsPasswordSaved = itsSavedPasswordsMgr.startPasswordAccess(
                     getFileUri(), itsLoadSavedPasswordUser);
         } else {
             itsPasswordEdit.requestFocus();
             checkOpenDefaultFile();
         }
-        itsSavePasswdCb.setChecked(isSaved);
+        itsSavePasswdCb.setChecked(itsIsPasswordSaved);
     }
 
     /**
@@ -655,11 +656,10 @@ public class PasswdSafeOpenFileFragment
         Preferences.setFileOpenReadOnlyPref(readonly, prefs);
         Preferences.setFileOpenYubikeyPref(itsYubikeyCb.isChecked(), prefs);
 
-        boolean isSaved = itsSavedPasswordsMgr.isSaved(getFileUri());
         boolean doSave = itsSavePasswdCb.isChecked();
-        if (isSaved && !doSave) {
+        if (itsIsPasswordSaved && !doSave) {
             itsSaveChange = SavePasswordChange.REMOVE;
-        } else if (!isSaved && doSave) {
+        } else if (!itsIsPasswordSaved && doSave) {
             itsSaveChange = SavePasswordChange.ADD;
         } else {
             itsSaveChange = SavePasswordChange.NONE;
