@@ -30,6 +30,10 @@ public final class PasswdSafeDb extends SQLiteOpenHelper
     public static final String DB_TABLE_SAVED_PASSWORDS = "saved_passwords";
     private static final String DB_COL_SAVED_PASSWORDS_ID = BaseColumns._ID;
     public static final String DB_COL_SAVED_PASSWORDS_URI = "uri";
+    public static final String DB_COL_SAVED_PASSWORDS_PROVIDER_URI =
+            "provider_uri";
+    public static final String DB_COL_SAVED_PASSWORDS_DISPLAY_NAME =
+            "display_name";
     public static final String DB_COL_SAVED_PASSWORDS_IV = "iv";
     public static final String DB_COL_SAVED_PASSWORDS_ENC_PASSWD = "enc_passwd";
 
@@ -105,6 +109,8 @@ public final class PasswdSafeDb extends SQLiteOpenHelper
             db.execSQL("CREATE TABLE " + DB_TABLE_SAVED_PASSWORDS + " (" +
                        DB_COL_SAVED_PASSWORDS_ID + " INTEGER PRIMARY KEY," +
                        DB_COL_SAVED_PASSWORDS_URI + " TEXT NOT NULL UNIQUE, " +
+                       DB_COL_SAVED_PASSWORDS_PROVIDER_URI + " TEXT NOT NULL," +
+                       DB_COL_SAVED_PASSWORDS_DISPLAY_NAME + " TEXT NOT NULL," +
                        DB_COL_SAVED_PASSWORDS_IV + " TEXT NOT NULL," +
                        DB_COL_SAVED_PASSWORDS_ENC_PASSWD + " TEXT NOT NULL" +
                        ");");

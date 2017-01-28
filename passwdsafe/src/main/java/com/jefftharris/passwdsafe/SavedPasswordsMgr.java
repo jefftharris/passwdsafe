@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
 
@@ -176,7 +177,7 @@ public final class SavedPasswordsMgr
     /**
      * Start access to the key protecting the saved password for a file
      */
-    public void startPasswordAccess(Uri fileUri, User user)
+    public boolean startPasswordAccess(Uri fileUri, User user)
     {
         try {
             Cipher cipher = getKeyCipher(fileUri, user.isEncrypt());
@@ -185,6 +186,7 @@ public final class SavedPasswordsMgr
             itsFingerprintMgr.authenticate(cryptoObj, 0, user.getCancelSignal(),
                                            user, null);
             user.onStart();
+            return true;
         } catch (CertificateException | NoSuchAlgorithmException |
                 KeyStoreException | UnrecoverableKeyException |
                 NoSuchPaddingException | InvalidKeyException |
@@ -193,6 +195,7 @@ public final class SavedPasswordsMgr
                                               e.getLocalizedMessage());
             Log.e(TAG, msg, e);
             user.onAuthenticationError(0, msg);
+            return false;
         }
     }
 
@@ -224,14 +227,20 @@ public final class SavedPasswordsMgr
     /**
      * Add a saved password for a file
      */
-    public void addSavedPassword(Uri fileUri, String password, Cipher cipher)
+    public void addSavedPassword(PasswdFileUri fileUri,
+                                 String password, Cipher cipher)
             throws Exception
     {
+        Uri uri = fileUri.getUri();
+        String providerUri = uri.buildUpon().path(null).query(null).toString();
+        String displayName = fileUri.getIdentifier(itsContext, true);
+
         byte[] enc = cipher.doFinal(password.getBytes("UTF-8"));
         String encStr = Base64.encodeToString(enc, Base64.NO_WRAP);
         String ivStr = Base64.encodeToString(cipher.getIV(), Base64.NO_WRAP);
 
-        itsDb.addSavedPassword(fileUri.toString(), ivStr, encStr);
+        itsDb.addSavedPassword(fileUri.toString(), providerUri, displayName,
+                               ivStr, encStr);
     }
 
     /**
@@ -430,11 +439,17 @@ public final class SavedPasswordsMgr
         /**
          * Add the saved password to the database
          */
-        public void addSavedPassword(String uri, String iv, String encPasswd)
+        public void addSavedPassword(String uri,
+                                     String providerUri, String displayName,
+                                     String iv, String encPasswd)
                 throws Exception
         {
             final ContentValues values = new ContentValues();
             values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_URI, uri);
+            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_PROVIDER_URI,
+                       providerUri);
+            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_DISPLAY_NAME,
+                       displayName);
             values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_IV, iv);
             values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_ENC_PASSWD,
                        encPasswd);
@@ -503,7 +518,7 @@ public final class SavedPasswordsMgr
                     continue;
                 }
                 try {
-                    addSavedPassword(uri, iv, encPasswd);
+                    addSavedPassword(uri, "", "", iv, encPasswd);
                 } catch (Exception e) {
                     Log.e(TAG, "Error upgrading keys", e);
                 }

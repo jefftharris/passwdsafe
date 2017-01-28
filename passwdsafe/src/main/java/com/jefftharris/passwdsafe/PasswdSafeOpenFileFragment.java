@@ -1245,7 +1245,7 @@ public class PasswdSafeOpenFileFragment
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
             try {
-                itsSavedPasswordsMgr.addSavedPassword(getFileUri(),
+                itsSavedPasswordsMgr.addSavedPassword(getPasswdFileUri(),
                                                       itsUserPassword, cipher);
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_saved));
