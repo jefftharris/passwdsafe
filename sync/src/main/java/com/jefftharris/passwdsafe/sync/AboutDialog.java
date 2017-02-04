@@ -54,6 +54,7 @@ public class AboutDialog extends AppCompatDialogFragment
                 AboutUtils.getLicenses(getContext(), "license-PasswdSafe.txt",
                                        "license-android.txt",
                                        "license-AndroidAssetStudio.txt",
+                                       "license-MaterialIcons.txt",
                                        "license-box.txt",
                                        "license-onedrive.txt",
                                        "license-owncloud.txt") +
