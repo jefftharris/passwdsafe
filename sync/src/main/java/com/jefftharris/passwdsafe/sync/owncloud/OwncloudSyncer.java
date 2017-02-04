@@ -128,6 +128,7 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
     }
 
     /** Get whether the sync is authorized */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public final boolean isAuthorized()
     {
         return itsIsAuthorized;
