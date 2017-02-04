@@ -88,6 +88,7 @@ public final class ApiCompat
     /**
      * API compatible call for Context.getExternalFilesDirs
      */
+    @SuppressWarnings("SameParameterValue")
     public static File[] getExternalFilesDirs(Context ctx, String type)
     {
         if (SDK_VERSION >= SDK_KITKAT) {

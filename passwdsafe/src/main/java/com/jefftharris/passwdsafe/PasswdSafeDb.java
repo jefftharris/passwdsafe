@@ -65,6 +65,7 @@ public final class PasswdSafeDb extends SQLiteOpenHelper
     /**
      * Query a database
      */
+    @SuppressWarnings("SameParameterValue")
     public Cursor queryDb(String table, String[] columns, String sortOrder)
             throws SQLException
     {
