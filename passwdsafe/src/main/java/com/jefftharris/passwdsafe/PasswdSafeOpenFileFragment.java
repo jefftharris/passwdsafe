@@ -141,7 +141,6 @@ public class PasswdSafeOpenFileFragment
     private static final String STATE_SLOT = "slot";
     private static final String TAG = "PasswdSafeOpenFileFragment";
 
-    // TODO: treat document provider uris as their own type different from generic
 
     /**
      * Create a new instance
