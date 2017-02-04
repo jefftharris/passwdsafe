@@ -50,6 +50,7 @@ public final class PasswdSafeDb extends SQLiteOpenHelper
         /**
          * Use the database
          */
+        @SuppressWarnings("RedundantThrows")
         T useDb(SQLiteDatabase db) throws Exception;
     }
 
