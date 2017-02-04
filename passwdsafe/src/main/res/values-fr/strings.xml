@@ -293,6 +293,15 @@
     <string name="read_only_about">Lecture seule</string>
     <string name="read_only_file">Lecture seule</string>
     <string name="read_only_media">Le fichier se trouve sur support en lecture seule. Cette situation peut se produire avec Kitkat et plus sur des cartes SD amovibles.</string>
+    <string name="read_only_provider">
+        Le fournisseur du fichier ne supporte pas les écritures ou n\'a pas
+        autorisé l\'écriture
+    </string>
+    <string name="read_only_sdcard">
+        Le fichier est sur une carte SD qui ne peux être écrite.  Déplacez le
+        fichier sur la mémoire interne ou utilisez la nouveau selectionneur de
+        fichier qui peut être activé dans les préférences.
+    </string>
     <string name="read_write">Lecture-écriture</string>
     <string name="references_label">RÉFÉRENCES</string>
     <string name="regular_expression">Expression régulière</string>
