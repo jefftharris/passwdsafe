@@ -141,7 +141,7 @@ public class SyncDb
     public static Cursor queryDb(SQLiteQueryBuilder qb,
                                  String[] projection,
                                  String selection, String[] selectionArgs,
-                                 String sortOrder) throws Exception
+                                 String sortOrder) throws SQLException
     {
         SyncDb syncDb = getDb();
         SQLiteDatabase db = syncDb.itsDbHelper.getReadableDatabase();
