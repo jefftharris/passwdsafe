@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.util.ProviderSyncTask;
 
@@ -51,7 +52,6 @@ public class SyncProviderFragment extends ListFragment
     }
 
     private SimpleCursorAdapter itsProviderAdapter;
-    private boolean itsHasProvider = true;
     private Listener itsListener;
     private final ProviderSyncTask itsSyncTask = new ProviderSyncTask();
 
@@ -88,6 +88,7 @@ public class SyncProviderFragment extends ListFragment
             }
         });
 
+        GuiUtils.setVisible(rootView, checkProvider());
         return rootView;
     }
 
@@ -147,7 +148,6 @@ public class SyncProviderFragment extends ListFragment
         });
         setListAdapter(itsProviderAdapter);
 
-        itsHasProvider = checkProvider();
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -221,15 +221,6 @@ public class SyncProviderFragment extends ListFragment
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
-        View v = getView();
-        if (v == null) {
-            return null;
-        }
-        if (!itsHasProvider) {
-            v.setVisibility(View.GONE);
-            return null;
-        }
-        v.setVisibility(View.VISIBLE);
         Uri uri = PasswdSafeContract.Providers.CONTENT_URI;
         return new PasswdCursorLoader(
                  getActivity(), uri, PasswdSafeContract.Providers.PROJECTION,
