@@ -232,15 +232,11 @@ public final class SavedPasswordsMgr
                                  String password, Cipher cipher)
             throws Exception
     {
-        Pair<String, String> providerDisplay = getProviderAndDisplay(fileUri);
-
         byte[] enc = cipher.doFinal(password.getBytes("UTF-8"));
         String encStr = Base64.encodeToString(enc, Base64.NO_WRAP);
         String ivStr = Base64.encodeToString(cipher.getIV(), Base64.NO_WRAP);
 
-        itsDb.addSavedPassword(fileUri.toString(),
-                               providerDisplay.first, providerDisplay.second,
-                               ivStr, encStr);
+        itsDb.addSavedPassword(fileUri, ivStr, encStr, itsContext);
     }
 
     /**
@@ -370,20 +366,7 @@ public final class SavedPasswordsMgr
     private SavedPassword getSavedPassword(PasswdFileUri fileUri)
             throws Exception
     {
-        Pair<String, String> provdisp = getProviderAndDisplay(fileUri);
-        return itsDb.getSavedPassword(fileUri.getUri(),
-                                      provdisp.first, provdisp.second);
-    }
-
-    /**
-     * Get the provider URI and display name for a file URI
-     */
-    private Pair<String, String> getProviderAndDisplay(PasswdFileUri fileUri)
-    {
-        Uri uri = fileUri.getUri();
-        String providerUri = uri.buildUpon().path(null).query(null).toString();
-        String displayName = fileUri.getIdentifier(itsContext, true);
-        return new Pair<>(providerUri, displayName);
+        return itsDb.getSavedPassword(fileUri, itsContext);
     }
 
     /**
@@ -444,9 +427,8 @@ public final class SavedPasswordsMgr
         /**
          * Get the IV and encrypted saved password for a URI
          */
-        public SavedPassword getSavedPassword(final Uri uri,
-                                              final String providerUri,
-                                              final String displayName)
+        public SavedPassword getSavedPassword(final PasswdFileUri uri,
+                                              final Context ctx)
                 throws Exception
         {
             return itsDb.useDb(new PasswdSafeDb.DbUser<SavedPassword>()
@@ -460,9 +442,22 @@ public final class SavedPasswordsMgr
                     if (saved != null) {
                         return saved;
                     }
-                    // TODO: only use prov/disp if a generic/document provider type
-                    return getByQuery(db, WHERE_BY_PROVDISP,
-                                      new String[]{ providerUri, displayName });
+
+                    switch (uri.getType()) {
+                    case GENERIC_PROVIDER: {
+                        Pair<String, String> provdisp =
+                                getProviderAndDisplay(uri, ctx);
+                        return getByQuery(db, WHERE_BY_PROVDISP,
+                                          new String[]{ provdisp.first,
+                                                        provdisp.second });
+                    }
+                    case EMAIL:
+                    case FILE:
+                    case SYNC_PROVIDER: {
+                        break;
+                    }
+                    }
+                    return null;
                 }
 
                 /**
@@ -493,30 +488,13 @@ public final class SavedPasswordsMgr
         /**
          * Add the saved password to the database
          */
-        public void addSavedPassword(String uri,
-                                     String providerUri, String displayName,
-                                     String iv, String encPasswd)
+        public void addSavedPassword(PasswdFileUri uri,
+                                     String iv, String encPasswd, Context ctx)
                 throws Exception
         {
-            final ContentValues values = new ContentValues();
-            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_URI, uri);
-            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_PROVIDER_URI,
-                       providerUri);
-            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_DISPLAY_NAME,
-                       displayName);
-            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_IV, iv);
-            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_ENC_PASSWD,
-                       encPasswd);
-            itsDb.useDb(new PasswdSafeDb.DbUser<Void>()
-            {
-                @Override
-                public Void useDb(SQLiteDatabase db) throws Exception
-                {
-                    db.replaceOrThrow(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                                      null, values);
-                    return null;
-                }
-            });
+            Pair<String, String> provdisp = getProviderAndDisplay(uri, ctx);
+            addSavedPassword(uri.toString(), provdisp.first, provdisp.second,
+                             iv, encPasswd);
         }
 
         /**
@@ -548,6 +526,49 @@ public final class SavedPasswordsMgr
                 {
                     db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
                               null, null);
+                    return null;
+                }
+            });
+        }
+
+        /**
+         * Get the provider URI and display name for a file URI
+         */
+        private static Pair<String, String> getProviderAndDisplay(
+                PasswdFileUri fileUri,
+                Context ctx)
+        {
+            Uri uri = fileUri.getUri();
+            String providerUri = uri.buildUpon().path(null)
+                                    .query(null).toString();
+            String displayName = fileUri.getIdentifier(ctx, true);
+            return new Pair<>(providerUri, displayName);
+        }
+
+        /**
+         * Add the saved password to the database
+         */
+        private void addSavedPassword(String uri,
+                                     String providerUri, String displayName,
+                                     String iv, String encPasswd)
+                throws Exception
+        {
+            final ContentValues values = new ContentValues();
+            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_URI, uri);
+            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_PROVIDER_URI,
+                       providerUri);
+            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_DISPLAY_NAME,
+                       displayName);
+            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_IV, iv);
+            values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_ENC_PASSWD,
+                       encPasswd);
+            itsDb.useDb(new PasswdSafeDb.DbUser<Void>()
+            {
+                @Override
+                public Void useDb(SQLiteDatabase db) throws Exception
+                {
+                    db.replaceOrThrow(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
+                                      null, values);
                     return null;
                 }
             });
