@@ -17,6 +17,7 @@ android {
         targetSdkVersion 25
         versionCode 30305
         versionName "3.3.5"
+        vectorDrawables.useSupportLibrary = true
 
         ndk {
             moduleName "DropboxSync"
