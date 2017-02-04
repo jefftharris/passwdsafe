@@ -16,9 +16,6 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public abstract class AbstractProvider implements Provider
 {
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#insertLocalFile(long, java.lang.String, android.database.sqlite.SQLiteDatabase)
-     */
     @Override
     public long insertLocalFile(long providerId,
                                 String title,
@@ -31,9 +28,6 @@ public abstract class AbstractProvider implements Provider
         return id;
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#updateLocalFile(com.jefftharris.passwdsafe.sync.lib.DbFile, java.lang.String, java.io.File, android.database.sqlite.SQLiteDatabase)
-     */
     @Override
     public void updateLocalFile(DbFile file,
                                 String localFileName,
@@ -58,9 +52,6 @@ public abstract class AbstractProvider implements Provider
         requestSync(false);
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#deleteLocalFile(com.jefftharris.passwdsafe.sync.lib.DbFile, android.database.sqlite.SQLiteDatabase)
-     */
     @Override
     public void deleteLocalFile(DbFile file, SQLiteDatabase db)
     {
