@@ -16,8 +16,10 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.support.annotation.NonNull;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.os.CancellationSignal;
 import android.text.TextUtils;
@@ -25,6 +27,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
 
@@ -56,7 +59,7 @@ public final class SavedPasswordsMgr
     private static final String KEYSTORE = "AndroidKeyStore";
     private static final String TAG = "SavedPasswordsMgr";
 
-    private final FingerprintManagerCompat itsFingerprintMgr;
+    private final @NonNull FingerprintMgr itsFingerprintMgr;
     private final SavedPasswordsDb itsDb;
     private final Context itsContext;
 
@@ -106,11 +109,52 @@ public final class SavedPasswordsMgr
     }
 
     /**
+     * A fingerprint manager.  The base class returns no fingerprint support.
+     */
+    public static class FingerprintMgr
+    {
+        /**
+         * Is fingerprint hardware present
+         */
+        public boolean isHardwareDetected()
+        {
+            return false;
+        }
+
+        /**
+         * Are there any enrolled fingerprints
+         */
+        public boolean hasEnrolledFingerprints()
+        {
+            return false;
+        }
+
+        /**
+         * Request authentication via a fingerprint
+         */
+        public void authenticate(
+                FingerprintManagerCompat.CryptoObject crypto,
+                int flags,
+                CancellationSignal cancel,
+                FingerprintManagerCompat.AuthenticationCallback callback,
+                Handler handler)
+                throws IllegalArgumentException, IllegalStateException
+        {
+            throw new IllegalStateException("Not implemented");
+        }
+    }
+
+    /**
      * Constructor
      */
     public SavedPasswordsMgr(Context ctx)
     {
-        itsFingerprintMgr = FingerprintManagerCompat.from(ctx);
+        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_MARSHMALLOW) {
+            itsFingerprintMgr =
+                    SavedPasswordsMgrMarshmallow.getFingerprintMgr(ctx);
+        } else {
+            itsFingerprintMgr = new FingerprintMgr();
+        }
         itsDb = new SavedPasswordsDb(ctx);
         itsContext = ctx;
     }
