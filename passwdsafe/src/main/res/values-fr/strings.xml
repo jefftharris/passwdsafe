@@ -363,6 +363,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.7.0&lt;/b&gt; - Amélioration support empreinte digitale pour
+        les fichiers synchronisés ou externes.  Correction de bugs.
+        \n\n
         &lt;b&gt;6.6.0&lt;/b&gt; - Addition quelques options de tri
         \n\n
         &lt;b&gt;6.5.0&lt;/b&gt; - Ajout possibilité de montrer uniquement des

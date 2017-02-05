@@ -16,8 +16,8 @@ android {
         minSdkVersion 10
         resConfigs "de", "fr"
         targetSdkVersion 25
-        versionCode 60600
-        versionName "6.6.0"
+        versionCode 60700
+        versionName "6.7.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
