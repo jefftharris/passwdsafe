@@ -82,5 +82,5 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     compile 'com.google.guava:guava-jdk5:17.0'
-    compile 'com.dropbox.core:dropbox-core-sdk:2.0.6'
+    compile 'com.dropbox.core:dropbox-core-sdk:2.1.2'
 }
