@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
+import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -301,7 +302,12 @@ public class PasswdSafeIME extends InputMethodService
                     case PASSWORD_KEY: {
                         showPasswordWarning(!itsAllowPassword);
                         if (itsAllowPassword) {
-                            keyStr.set(fileData.getPassword(rec));
+                            PasswdRecord pwsrec = fileData.getPasswdRecord(rec);
+                            if (pwsrec != null) {
+                                keyStr.set(pwsrec.getPassword(fileData));
+                            } else {
+                                keyStr.set(fileData.getPassword(rec));
+                            }
                             itsAllowPassword = itsIsPasswordField;
                         } else {
                             itsAllowPassword = true;
