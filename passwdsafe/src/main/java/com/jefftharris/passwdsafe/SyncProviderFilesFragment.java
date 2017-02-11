@@ -51,7 +51,7 @@ public class SyncProviderFilesFragment extends ListFragment
         void createNewFile(Uri dirUri);
 
         /** Update the view for a list of sync files */
-        void updateViewSyncFiles();
+        void updateViewSyncFiles(Uri syncFilesUri);
     }
 
     private static final String TAG = "SyncProviderFilesFrag";
@@ -191,8 +191,7 @@ public class SyncProviderFilesFragment extends ListFragment
                             Log.e(TAG, "Unknown provider type", e);
                         }
                     } else {
-                        str = getString(R.string.none);
-                        icon.setImageDrawable(null);
+                        str = getString(R.string.sync_account_deleted);
                     }
                     TextView tv = (TextView)view.findViewById(R.id.title);
                     tv.setText(str);
@@ -238,7 +237,7 @@ public class SyncProviderFilesFragment extends ListFragment
     public void onResume()
     {
         super.onResume();
-        itsListener.updateViewSyncFiles();
+        itsListener.updateViewSyncFiles(itsProviderUri);
     }
 
     @Override

@@ -77,6 +77,8 @@ public class FileListActivity extends AppCompatActivity
         VIEW_ABOUT,
         /** Viewing files */
         VIEW_FILES,
+        /** Viewing sync files */
+        VIEW_SYNC_FILES,
         /** Viewing preferences */
         VIEW_PREFERENCES
     }
@@ -266,7 +268,9 @@ public class FileListActivity extends AppCompatActivity
                 SyncProviderFilesFragment.newInstance(uri);
 
         FragmentTransaction txn = fragMgr.beginTransaction();
-        txn.remove(syncFrag);
+        if (syncFrag != null) {
+            txn.remove(syncFrag);
+        }
         txn.replace(R.id.files, syncFilesFrag);
         txn.addToBackStack(null);
         txn.commit();
@@ -315,13 +319,13 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public void updateViewFiles()
     {
-        doUpdateView(ViewMode.VIEW_FILES);
+        doUpdateView(ViewMode.VIEW_FILES, null);
     }
 
     @Override
-    public void updateViewSyncFiles()
+    public void updateViewSyncFiles(Uri syncFilesUri)
     {
-        doUpdateView(ViewMode.VIEW_FILES);
+        doUpdateView(ViewMode.VIEW_SYNC_FILES, syncFilesUri);
     }
 
     @Override
@@ -339,13 +343,13 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public void updateViewAbout()
     {
-        doUpdateView(ViewMode.VIEW_ABOUT);
+        doUpdateView(ViewMode.VIEW_ABOUT, null);
     }
 
     @Override
     public void updateViewPreferences()
     {
-        doUpdateView(ViewMode.VIEW_PREFERENCES);
+        doUpdateView(ViewMode.VIEW_PREFERENCES, null);
     }
 
     @Override
@@ -383,7 +387,7 @@ public class FileListActivity extends AppCompatActivity
 
             doChangeView(initial ?
                          ChangeMode.VIEW_FILES_INIT : ChangeMode.VIEW_FILES,
-                         filesFrag, new SyncProviderFragment());
+                         filesFrag, null);
         } else {
             itsTitle = savedState.getCharSequence(STATE_TITLE);
         }
@@ -452,7 +456,7 @@ public class FileListActivity extends AppCompatActivity
     /**
      * Update the view mode
      */
-    private void doUpdateView(ViewMode mode)
+    private void doUpdateView(ViewMode mode, Uri syncFilesUri)
     {
         PasswdSafeUtil.dbginfo(TAG, "doUpdateView mode: %s", mode);
 
@@ -472,6 +476,11 @@ public class FileListActivity extends AppCompatActivity
             hasPermission = itsPermissionMgr.hasPerms();
             break;
         }
+        case VIEW_SYNC_FILES: {
+            drawerMode = FileListNavDrawerFragment.Mode.SYNC_FILES;
+            itsTitle = getString(R.string.app_name);
+            break;
+        }
         case VIEW_PREFERENCES: {
             drawerMode = FileListNavDrawerFragment.Mode.PREFERENCES;
             itsTitle = PasswdSafeApp.getAppTitle(
@@ -481,7 +490,7 @@ public class FileListActivity extends AppCompatActivity
         }
 
         GuiUtils.invalidateOptionsMenu(this);
-        itsNavDrawerFrag.updateView(drawerMode);
+        itsNavDrawerFrag.updateView(drawerMode, syncFilesUri);
         GuiUtils.setVisible(itsNoPermGroup, !hasPermission);
         GuiUtils.setVisible(itsFiles, hasPermission);
         GuiUtils.setVisible(itsSync, hasPermission);
