@@ -113,7 +113,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
         Intent intent = new Intent();
         itsAcctLinkIntent = activity.createPendingResult(
                 requestCode, intent, PendingIntent.FLAG_ONE_SHOT);
-        itsClient.authenticate();
+        itsClient.authenticate(getContext());
     }
 
     @Override

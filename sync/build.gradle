@@ -12,16 +12,12 @@ android {
     buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
-        minSdkVersion 10
+        minSdkVersion 14
         resConfigs "de", "fr"
         targetSdkVersion 25
         versionCode 30305
         versionName "3.3.5"
         vectorDrawables.useSupportLibrary = true
-
-        ndk {
-            moduleName "DropboxSync"
-        }
     }
     buildTypes {
         debug {
@@ -58,7 +54,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     debugCompile project(path: ':lib', configuration: 'debug')
     releaseCompile project(path: ':lib', configuration: 'release')
-    compile project(':lib-box')
+
     compile project(':lib-owncloud')
     compile project(':lib-onedrive:authenticate')
     compile project(':lib-onedrive:onedriveaccess')
@@ -82,5 +78,10 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     compile 'com.google.guava:guava-jdk5:17.0'
+
+    // Dropbox
     compile 'com.dropbox.core:dropbox-core-sdk:2.1.2'
+
+    // Box
+    compile 'com.box:box-android-sdk:4.0.5'
 }

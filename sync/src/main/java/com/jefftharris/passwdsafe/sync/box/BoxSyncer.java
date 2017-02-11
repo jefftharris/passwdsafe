@@ -19,8 +19,8 @@ import com.box.androidsdk.content.models.BoxError;
 import com.box.androidsdk.content.models.BoxFile;
 import com.box.androidsdk.content.models.BoxFolder;
 import com.box.androidsdk.content.models.BoxItem;
+import com.box.androidsdk.content.models.BoxIteratorItems;
 import com.box.androidsdk.content.models.BoxJsonObject;
-import com.box.androidsdk.content.models.BoxListItems;
 import com.box.androidsdk.content.models.BoxSession;
 import com.box.androidsdk.content.models.BoxUser;
 import com.box.androidsdk.content.requests.BoxRequestsFolder;
@@ -119,9 +119,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
         int offset = 0;
         boolean hasMoreFiles = true;
         while (hasMoreFiles) {
-            searchReq.setLimit(100);
-            searchReq.setOffset(0);
-            BoxListItems items = searchReq.send();
+            searchReq.setOffset(offset);
+            BoxIteratorItems items = searchReq.send();
             for (BoxItem item: items) {
                 PasswdSafeUtil.dbginfo(TAG, "search item %s",
                                        boxToString(item));
@@ -130,8 +129,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
                                            boxfiles);
                 }
             }
-            offset += items.size();
-            hasMoreFiles = (offset < items.fullSize()) && !items.isEmpty();
+            offset += items.limit();
+            hasMoreFiles = (offset < items.fullSize());
         }
 
         return boxfiles;
@@ -195,9 +194,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
         int offset = 0;
         boolean hasMoreItems = true;
         while (hasMoreItems) {
-            req.setLimit(100);
-            req.setOffset(0);
-            BoxListItems items = req.send();
+            req.setOffset(offset);
+            BoxIteratorItems items = req.send();
             for (BoxItem item: items) {
                 PasswdSafeUtil.dbginfo(TAG, "item %s", boxToString(item));
                 if (item instanceof BoxFile) {
@@ -207,8 +205,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
                     }
                 }
             }
-            offset += items.size();
-            hasMoreItems = (offset < items.fullSize()) && !items.isEmpty();
+            offset += items.limit();
+            hasMoreItems = (offset < items.fullSize());
         }
     }
 
