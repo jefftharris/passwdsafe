@@ -82,10 +82,8 @@ public class FileListNavDrawerFragment
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        // TODO: FileListActivity to not use sync fragment
         // TODO: check file launcher activity
         // TODO: on upgrade, show drawer to show new location for providers
-        // TODO: remove sync fragment from FileListActivity
         // TODO: remember last nav item to restore on startup
         //LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(1, null, this);
