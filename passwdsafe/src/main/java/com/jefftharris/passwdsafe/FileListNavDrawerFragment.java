@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 
@@ -67,6 +68,7 @@ public class FileListNavDrawerFragment
 
     private int itsSelNavItem = -1;
     private SparseArray<Uri> itsProviders = new SparseArray<>();
+    private int itsNoProvidersNavItem = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,7 +82,6 @@ public class FileListNavDrawerFragment
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        // TODO: has provider check
         // TODO: FileListActivity to not use sync fragment
         // TODO: check file launcher activity
         // TODO: on upgrade, show drawer to show new location for providers
@@ -174,11 +175,16 @@ public class FileListNavDrawerFragment
             }
             case R.id.menu_drawer_preferences: {
                 listener.showPreferences();
+                break;
             }
             default: {
                 Uri providerUri = itsProviders.get(navItem);
                 if (providerUri != null) {
                     listener.showSyncProviderFiles(providerUri);
+                } else if (itsNoProvidersNavItem != -1) {
+                    PasswdSafeUtil.startMainActivity(
+                            PasswdSafeUtil.SYNC_PACKAGE, getContext());
+
                 }
                 break;
             }
@@ -228,6 +234,10 @@ public class FileListNavDrawerFragment
             menu.removeItem(itsProviders.keyAt(i));
         }
         itsProviders.clear();
+        if (itsNoProvidersNavItem != -1) {
+            menu.removeItem(itsNoProvidersNavItem);
+            itsNoProvidersNavItem = -1;
+        }
 
         if (cursor != null)
         {
@@ -242,9 +252,7 @@ public class FileListNavDrawerFragment
                 MenuItem item = menu.add(R.id.menu_group_main,
                                          nextProviderId, 10, acct);
                 type.setIcon(item);
-                Drawable d = item.getIcon().mutate();
-                d.setAlpha(138 /*54%*/);
-                item.setIcon(d);
+                updateMenuIcon(item);
                 item.setCheckable(true);
 
                 long id = cursor.getLong(
@@ -257,6 +265,26 @@ public class FileListNavDrawerFragment
                 }
                 itsProviders.put(nextProviderId++, uri);
             }
+
+            if ((nextProviderId == Menu.FIRST) &&
+                SyncProviderFragment.checkProvider(getContext())) {
+                MenuItem item = menu.add(R.id.menu_group_main,
+                                         nextProviderId, 10,
+                                         R.string.select_accounts);
+                item.setIcon(R.mipmap.ic_launcher_sync);
+                updateMenuIcon(item);
+                itsNoProvidersNavItem = nextProviderId;
+            }
         }
+    }
+
+    /**
+     * Update the look of a menu item icon to match static items
+     */
+    private static void updateMenuIcon(MenuItem item)
+    {
+        Drawable d = item.getIcon().mutate();
+        d.setAlpha(138 /*54%*/);
+        item.setIcon(d);
     }
 }
