@@ -7,21 +7,20 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
-import com.jefftharris.passwdsafe.R;
-import com.jefftharris.passwdsafe.util.Pair;
-
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.util.Pair;
+
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * The PasswdPolicy class represents a password policy for a file or record
@@ -147,12 +146,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     private static final Random itsRandom = getRandom();
     private static Random getRandom()
     {
-        Random random;
-        try {
-            random = SecureRandom.getInstance("SHA1PRNG");
-        } catch (NoSuchAlgorithmException e) {
-            random = new SecureRandom();
-        }
+        Random random = new SecureRandom();
         random.nextBytes(new byte[32]);
         return random;
     }
