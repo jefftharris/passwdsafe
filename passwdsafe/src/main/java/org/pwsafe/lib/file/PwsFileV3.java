@@ -205,7 +205,7 @@ public final class PwsFileV3 extends PwsFile
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new IOException("Error reading encrypted fields");
+            throw new IOException("Error reading encrypted fields", e);
         }
         twofishCbc = new TwofishPws(decryptedRecordKey, false,
                                     theHeaderV3.getIV());
