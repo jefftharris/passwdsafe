@@ -289,7 +289,6 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     /** Set account settings */
     public final void setSettings(String url)
     {
-        // TODO: test deadlock with this update and gdrive on startup
         if (!TextUtils.equals(itsUrl.toString(), url)) {
             saveAuthData(itsAccountName, url);
             updateOwncloudAcct();
