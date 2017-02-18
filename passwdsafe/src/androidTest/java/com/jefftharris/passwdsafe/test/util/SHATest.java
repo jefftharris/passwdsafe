@@ -57,8 +57,8 @@ public final class SHATest
     private static void sha1Test(String msgstr, String mdstr)
             throws NoSuchAlgorithmException
     {
-        byte[] msg = hexToBytes(msgstr);
-        byte[] md = hexToBytes(mdstr);
+        byte[] msg = TestUtils.hexToBytes(msgstr);
+        byte[] md = TestUtils.hexToBytes(mdstr);
         byte[] msgmd;
 
         SHA1 sha = new SHA1();
@@ -71,9 +71,9 @@ public final class SHATest
                                    String md1000str)
             throws NoSuchAlgorithmException
     {
-        byte[] msg = hexToBytes(msgstr);
-        byte[] md = hexToBytes(mdstr);
-        byte[] md1000 = hexToBytes(md1000str);
+        byte[] msg = TestUtils.hexToBytes(msgstr);
+        byte[] md = TestUtils.hexToBytes(mdstr);
+        byte[] md1000 = TestUtils.hexToBytes(md1000str);
 
         byte[] msgmd = SHA256Pws.digest(msg);
         assertArrayEquals(md, msgmd);
@@ -88,13 +88,4 @@ public final class SHATest
         assertArrayEquals(md1000, msgmd);
     }
 
-    private static byte[] hexToBytes(String s)
-    {
-        byte[] bytes = new byte[s.length() / 2];
-        for (int i = 0; i < bytes.length; ++i) {
-            bytes[i] = (byte)((Character.digit(s.charAt(i*2), 16) << 4) |
-                              Character.digit(s.charAt(i*2+1), 16));
-        }
-        return bytes;
-    }
 }
