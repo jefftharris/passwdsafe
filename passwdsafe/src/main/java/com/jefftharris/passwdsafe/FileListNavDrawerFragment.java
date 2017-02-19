@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe;
 
 import android.content.ContentUris;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -66,9 +67,14 @@ public class FileListNavDrawerFragment
         PREFERENCES
     }
 
+    private static final String PREF_SHOWN_DRAWER =
+            "passwdsafe_navigation_drawer_shown";
+    private static final int SHOWN_DRAWER_PROVIDERS = 1;
+
     private int itsSelNavItem = -1;
     private SparseArray<Uri> itsProviders = new SparseArray<>();
     private int itsNoProvidersNavItem = -1;
+    private boolean itsIsShowDrawer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,7 +89,6 @@ public class FileListNavDrawerFragment
     {
         super.onActivityCreated(savedInstanceState);
         // TODO: check file launcher activity
-        // TODO: on upgrade, show drawer to show new location for providers
         // TODO: remember last nav item to restore on startup
         //LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(1, null, this);
@@ -98,6 +103,15 @@ public class FileListNavDrawerFragment
     public void setUp(DrawerLayout drawerLayout)
     {
         super.setUp(drawerLayout);
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+        int shown = prefs.getInt(PREF_SHOWN_DRAWER, 0);
+        if (shown < SHOWN_DRAWER_PROVIDERS) {
+            prefs.edit().putInt(PREF_SHOWN_DRAWER, SHOWN_DRAWER_PROVIDERS)
+                 .apply();
+            itsIsShowDrawer = true;
+        }
+
         updateView(Mode.INIT, null);
     }
 
@@ -215,6 +229,16 @@ public class FileListNavDrawerFragment
         if (PasswdCursorLoader.checkResult(loader)) {
             updateProviders(null);
         }
+    }
+
+    @Override
+    protected boolean shouldOpenDrawer()
+    {
+        if (itsIsShowDrawer) {
+            itsIsShowDrawer = false;
+            return true;
+        }
+        return super.shouldOpenDrawer();
     }
 
     /**
