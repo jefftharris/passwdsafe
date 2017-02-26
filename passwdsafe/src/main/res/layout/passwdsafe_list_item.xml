@@ -9,20 +9,31 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
+              android:baselineAligned="false"
               android:mode="twoLine"
               android:orientation="horizontal"
               android:paddingBottom="2dip"
               android:paddingTop="2dip">
 
-    <ImageView android:id="@+id/icon"
-               android:layout_width="wrap_content"
-               android:layout_height="fill_parent"
-               android:layout_weight="0"
-               android:adjustViewBounds="false"
-               android:contentDescription="@string/record_type"
-               android:minWidth="48dp"
-               android:scaleType="center"
-               android:src="?attr/drawableFolder"/>
+    <FrameLayout android:layout_width="wrap_content"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="0">
+
+        <ImageView android:id="@+id/icon"
+                   android:layout_width="wrap_content"
+                   android:layout_height="fill_parent"
+                   android:adjustViewBounds="false"
+                   android:contentDescription="@string/record_type"
+                   android:minWidth="48dp"
+                   android:scaleType="center"
+                   android:src="?attr/drawableFolder"/>
+
+        <View android:id="@+id/selection"
+              android:layout_width="4dp"
+              android:layout_height="fill_parent"
+              android:background="@color/accent"/>
+
+    </FrameLayout>
 
     <RelativeLayout android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -54,12 +65,5 @@
                   android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     </RelativeLayout>
-
-    <CheckBox android:id="@+id/selection"
-              android:layout_width="wrap_content"
-              android:layout_height="fill_parent"
-              android:button="?android:attr/listChoiceIndicatorSingle"
-              android:clickable="false"
-              android:focusable="false"/>
 
 </LinearLayout>

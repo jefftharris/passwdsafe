@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -523,7 +522,7 @@ public class PasswdSafeListFragment extends ListFragment
             private final TextView itsUser;
             private final TextView itsMatch;
             private final ImageView itsIcon;
-            private final CheckBox itsSelection;
+            private final View itsSelection;
             private int itsLastIconImage;
 
             /** Constructor */
@@ -533,7 +532,7 @@ public class PasswdSafeListFragment extends ListFragment
                 itsUser = (TextView)view.findViewById(android.R.id.text2);
                 itsMatch = (TextView)view.findViewById(R.id.match);
                 itsIcon = (ImageView)view.findViewById(R.id.icon);
-                itsSelection = (CheckBox)view.findViewById(R.id.selection);
+                itsSelection = view.findViewById(R.id.selection);
                 itsLastIconImage = -1;
             }
 
@@ -549,8 +548,7 @@ public class PasswdSafeListFragment extends ListFragment
                     itsIcon.setImageResource(item.itsIcon);
                     itsLastIconImage = item.itsIcon;
                 }
-                itsSelection.setChecked(selected);
-                GuiUtils.setVisible(itsSelection, isLeftListRecord);
+                GuiUtils.setVisible(itsSelection, isLeftListRecord && selected);
 
                 itsTitle.requestLayout();
             }
@@ -563,7 +561,6 @@ public class PasswdSafeListFragment extends ListFragment
                 setText(itsMatch, null);
                 itsIcon.setImageDrawable(null);
                 itsLastIconImage = -1;
-                itsSelection.setChecked(false);
                 itsTitle.requestLayout();
             }
 
