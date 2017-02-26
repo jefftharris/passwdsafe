@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -82,6 +83,7 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     private static final String STATE_SELECTED_RECORD = "selectedRecord";
+    private static final String STATE_SELECTED_POS = "selectedPos";
 
     private Mode itsMode = Mode.NONE;
     private PasswdLocation itsLocation;
@@ -92,6 +94,7 @@ public class PasswdSafeListFragment extends ListFragment
     private TextView itsEmptyText;
     private ItemListAdapter itsAdapter;
     private String itsSelectedRecord;
+    private int itsSelectedPos = -1;
 
     /** Create a new instance */
     public static PasswdSafeListFragment newInstance(
@@ -126,11 +129,6 @@ public class PasswdSafeListFragment extends ListFragment
         }
         itsLocation = location;
         itsIsContents = isContents;
-
-        if (savedInstanceState != null) {
-            itsSelectedRecord =
-                    savedInstanceState.getString(STATE_SELECTED_RECORD);
-        }
     }
 
 
@@ -178,10 +176,18 @@ public class PasswdSafeListFragment extends ListFragment
         setListAdapter(itsAdapter);
     }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState)
+    {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            itsSelectedRecord =
+                    savedInstanceState.getString(STATE_SELECTED_RECORD);
+            itsSelectedPos =
+                    savedInstanceState.getInt(STATE_SELECTED_POS, -1);
+        }
+    }
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onResume()
-     */
     @Override
     public void onResume()
     {
@@ -197,6 +203,7 @@ public class PasswdSafeListFragment extends ListFragment
     {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_SELECTED_RECORD, itsSelectedRecord);
+        outState.putInt(STATE_SELECTED_POS, itsSelectedPos);
     }
 
     @Override
@@ -292,6 +299,7 @@ public class PasswdSafeListFragment extends ListFragment
         }
         if (item.itsIsRecord) {
             itsSelectedRecord = item.itsUuid;
+            itsSelectedPos = position;
             itsListener.changeLocation(itsLocation.selectRecord(item.itsUuid));
         } else {
             itsListener.changeLocation(itsLocation.selectGroup(item.itsTitle));
@@ -331,7 +339,11 @@ public class PasswdSafeListFragment extends ListFragment
         }
 
         LoaderManager lm = getLoaderManager();
-        lm.destroyLoader(0);
+        if (lm.hasRunningLoaders()) {
+            // Trash loader if running.  See
+            // https://code.google.com/p/android/issues/detail?id=56464
+            lm.destroyLoader(0);
+        }
         lm.restartLoader(0, null, this);
 
         boolean groupVisible = false;
@@ -378,22 +390,48 @@ public class PasswdSafeListFragment extends ListFragment
     public void onLoadFinished(Loader<List<PasswdRecordListData>> loader,
                                List<PasswdRecordListData> data)
     {
+        if (!isResumed()) {
+            return;
+        }
+
+        ListView list = getListView();
+        int firstPos = list.getFirstVisiblePosition();
+        int lastPos = list.getLastVisiblePosition();
+        View topView = list.getChildAt(0);
+        int top = (topView == null) ?
+                  0 : (topView.getTop() - list.getPaddingTop());
+
         int selPos = itsAdapter.setData(
                 data,
                 itsIsContents ? itsSelectedRecord : itsLocation.getRecord());
-        if (isResumed()) {
-            ListView list = getListView();
-            if (selPos != -1) {
+
+        if (selPos != -1) {
+            if (itsIsContents) {
+                // List typically takes care of position unless it changes
+                if (selPos != itsSelectedPos) {
+                    list.setSelection(selPos);
+                    itsSelectedPos = selPos;
+                }
+            } else {
+                // If item is outside previous visible range, update selection.
+                // Otherwise don't scroll to reduce jumpy UI
+                if ((selPos <= firstPos) ||
+                    ((lastPos > firstPos) && (selPos > lastPos))) {
+                    list.setSelection(selPos);
+                } else {
+                    list.setSelectionFromTop(firstPos, top);
+                }
                 list.setItemChecked(selPos, true);
                 list.smoothScrollToPosition(selPos);
-            } else {
-                list.clearChoices();
             }
+        } else {
+            itsSelectedPos = -1;
+            list.clearChoices();
+        }
 
-            if (itsEmptyText.getText().length() == 0) {
-                itsEmptyText.setText(itsIsContents ? R.string.no_records :
-                                             R.string.no_groups);
-            }
+        if (itsEmptyText.getText().length() == 0) {
+            itsEmptyText.setText(itsIsContents ? R.string.no_records :
+                                 R.string.no_groups);
         }
     }
 
