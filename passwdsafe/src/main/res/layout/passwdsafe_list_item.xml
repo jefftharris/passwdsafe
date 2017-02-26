@@ -5,65 +5,64 @@
   ~ distributed with this code, or available from
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?attr/listPreferredItemHeightSmall">
+
+    <View android:id="@+id/selection"
+          android:layout_width="4dp"
+          android:layout_height="fill_parent"
+          android:layout_alignBottom="@id/icon"
+          android:layout_alignParentLeft="true"
+          android:layout_alignParentStart="true"
+          android:layout_alignTop="@id/icon"
+          android:background="@color/accent"/>
+
+    <ImageView android:id="@+id/icon"
+               android:layout_width="wrap_content"
+               android:layout_height="fill_parent"
+               android:layout_alignBottom="@android:id/text2"
+               android:layout_alignParentLeft="true"
+               android:layout_alignParentStart="true"
+               android:layout_alignTop="@android:id/text1"
+               android:adjustViewBounds="false"
+               android:contentDescription="@string/record_type"
+               android:minWidth="48dp"
+               android:scaleType="center"
+               android:src="?attr/drawableFolder"/>
+
+    <TextView android:id="@android:id/text1"
+              android:layout_width="0dp"
               android:layout_height="wrap_content"
-              android:baselineAligned="false"
-              android:mode="twoLine"
-              android:orientation="horizontal"
-              android:paddingBottom="2dip"
-              android:paddingTop="2dip">
+              android:layout_alignParentEnd="true"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentTop="true"
+              android:layout_toEndOf="@+id/icon"
+              android:layout_toRightOf="@+id/icon"
+              android:textAppearance="?android:attr/textAppearanceLarge"/>
 
-    <FrameLayout android:layout_width="wrap_content"
-                 android:layout_height="fill_parent"
-                 android:layout_weight="0">
+    <TextView android:id="@android:id/text2"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignLeft="@android:id/text1"
+              android:layout_alignStart="@android:id/text1"
+              android:layout_below="@android:id/text1"
+              android:maxLines="1"
+              android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-        <ImageView android:id="@+id/icon"
-                   android:layout_width="wrap_content"
-                   android:layout_height="fill_parent"
-                   android:adjustViewBounds="false"
-                   android:contentDescription="@string/record_type"
-                   android:minWidth="48dp"
-                   android:scaleType="center"
-                   android:src="?attr/drawableFolder"/>
+    <TextView android:id="@+id/match"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_alignParentEnd="true"
+              android:layout_alignParentRight="true"
+              android:layout_below="@android:id/text1"
+              android:layout_toEndOf="@android:id/text2"
+              android:layout_toRightOf="@android:id/text2"
+              android:ellipsize="end"
+              android:gravity="end"
+              android:maxLines="1"
+              android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-        <View android:id="@+id/selection"
-              android:layout_width="4dp"
-              android:layout_height="fill_parent"
-              android:background="@color/accent"/>
-
-    </FrameLayout>
-
-    <RelativeLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1">
-
-        <TextView android:id="@android:id/text1"
-                  android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-        <TextView android:id="@android:id/text2"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_alignLeft="@android:id/text1"
-                  android:layout_alignStart="@android:id/text1"
-                  android:layout_below="@android:id/text1"
-                  android:maxLines="1"
-                  android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-        <TextView android:id="@+id/match"
-                  android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_below="@android:id/text1"
-                  android:layout_toEndOf="@android:id/text2"
-                  android:layout_toRightOf="@android:id/text2"
-                  android:ellipsize="end"
-                  android:gravity="end"
-                  android:maxLines="1"
-                  android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-    </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>
