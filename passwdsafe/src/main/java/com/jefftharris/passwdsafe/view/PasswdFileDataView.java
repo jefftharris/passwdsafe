@@ -268,6 +268,14 @@ public final class PasswdFileDataView
     }
 
     /**
+     * Is the view grouping records
+     */
+    public boolean isGroupingRecords()
+    {
+        return itsRecordOptions.itsIsGroupRecords;
+    }
+
+    /**
      * Get the record filter
      */
     public synchronized PasswdRecordFilter getRecordFilter()

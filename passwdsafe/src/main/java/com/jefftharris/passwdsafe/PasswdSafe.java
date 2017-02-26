@@ -1226,12 +1226,14 @@ public class PasswdSafe extends AppCompatActivity
                     return false;
                 }
 
-                if (!newLocation.equalGroups(itsLocation)) {
-                    return true;
-                }
-
                 PasswdFileDataView dataView = itsFileDataFrag.getFileDataView();
-                return !dataView.hasGroup(newLocation.getRecordGroup());
+                //noinspection SimplifiableIfStatement
+                if (!dataView.isGroupingRecords()) {
+                    return false;
+                } else {
+                    return !newLocation.equalGroups(itsLocation) ||
+                           !dataView.hasGroup(newLocation.getRecordGroup());
+                }
             }
         };
 
