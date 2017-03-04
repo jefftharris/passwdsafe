@@ -58,7 +58,7 @@ public enum ProviderType
             break;
         }
         case DROPBOX: {
-            item.setIcon(R.drawable.dropbox);
+            item.setIcon(R.drawable.dropbox_trace);
             break;
         }
         case BOX: {
