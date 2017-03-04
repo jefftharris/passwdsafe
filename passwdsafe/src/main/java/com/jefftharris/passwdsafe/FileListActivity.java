@@ -66,6 +66,8 @@ public class FileListActivity extends AppCompatActivity
         VIEW_FILES,
         /** Initial view of files */
         VIEW_FILES_INIT,
+        /** View sync files */
+        VIEW_SYNC_FILES,
         /** View preferences */
         VIEW_PREFERENCES
     }
@@ -256,20 +258,6 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
-    public void showSyncProviderFiles(Uri uri)
-    {
-        FragmentManager fragMgr = getSupportFragmentManager();
-
-        SyncProviderFilesFragment syncFilesFrag =
-                SyncProviderFilesFragment.newInstance(uri);
-
-        FragmentTransaction txn = fragMgr.beginTransaction();
-        txn.replace(R.id.files, syncFilesFrag);
-        txn.addToBackStack(null);
-        txn.commit();
-    }
-
-    @Override
     public void openFile(Uri uri, String fileName)
     {
         try {
@@ -358,6 +346,13 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
+    public void showSyncProviderFiles(Uri uri)
+    {
+        doChangeView(ChangeMode.VIEW_SYNC_FILES,
+                     SyncProviderFilesFragment.newInstance(uri));
+    }
+
+    @Override
     public void showPreferences()
     {
         doChangeView(ChangeMode.VIEW_PREFERENCES,
@@ -402,7 +397,8 @@ public class FileListActivity extends AppCompatActivity
         }
         case VIEW_ABOUT:
         case VIEW_FILES:
-        case VIEW_PREFERENCES: {
+        case VIEW_PREFERENCES:
+        case VIEW_SYNC_FILES: {
             supportsBack = true;
             break;
         }
