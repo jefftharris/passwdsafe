@@ -328,6 +328,7 @@
     <string name="sort_ascending">Aufsteigend sortieren</string>
     <string name="symbols_used_by_default">Standardsymbole in der Passwortregel: %1$s</string>
     <string name="sync">Synchronisieren</string>
+    <string name="sync_account_deleted">Konto gelöscht. Bitte andere Option im Menü wählen.</string>
     <string name="times_header">ZEITEN</string>
     <string name="title">Titel</string>
     <string name="touch_sensor_to_save_the_password">Sensor berühren um das Passwort zu speichern</string>
