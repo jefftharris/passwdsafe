@@ -58,30 +58,30 @@ public class FileListActivity extends AppCompatActivity
 
     private static final String TAG = "FileListActivity";
 
-    private enum ChangeMode
+    private enum ViewChange
     {
         /** View about info */
-        VIEW_ABOUT,
+        ABOUT,
         /** View files */
-        VIEW_FILES,
+        FILES,
         /** Initial view of files */
-        VIEW_FILES_INIT,
+        FILES_INIT,
         /** View sync files */
-        VIEW_SYNC_FILES,
+        SYNC_FILES,
         /** View preferences */
-        VIEW_PREFERENCES
+        PREFERENCES
     }
 
     private enum ViewMode
     {
         /** Viewing about info */
-        VIEW_ABOUT,
+        ABOUT,
         /** Viewing files */
-        VIEW_FILES,
+        FILES,
         /** Viewing sync files */
-        VIEW_SYNC_FILES,
+        SYNC_FILES,
         /** Viewing preferences */
-        VIEW_PREFERENCES
+        PREFERENCES
     }
 
     private FileListNavDrawerFragment itsNavDrawerFrag;
@@ -252,7 +252,7 @@ public class FileListActivity extends AppCompatActivity
     public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller,
                                            PreferenceScreen pref)
     {
-        doChangeView(ChangeMode.VIEW_PREFERENCES,
+        doChangeView(ViewChange.PREFERENCES,
                      PreferencesFragment.newInstance(pref.getKey()));
         return true;
     }
@@ -300,13 +300,13 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public void updateViewFiles()
     {
-        doUpdateView(ViewMode.VIEW_FILES, null);
+        doUpdateView(ViewMode.FILES, null);
     }
 
     @Override
     public void updateViewSyncFiles(Uri syncFilesUri)
     {
-        doUpdateView(ViewMode.VIEW_SYNC_FILES, syncFilesUri);
+        doUpdateView(ViewMode.SYNC_FILES, syncFilesUri);
     }
 
     @Override
@@ -324,19 +324,19 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public void updateViewAbout()
     {
-        doUpdateView(ViewMode.VIEW_ABOUT, null);
+        doUpdateView(ViewMode.ABOUT, null);
     }
 
     @Override
     public void updateViewPreferences()
     {
-        doUpdateView(ViewMode.VIEW_PREFERENCES, null);
+        doUpdateView(ViewMode.PREFERENCES, null);
     }
 
     @Override
     public void showAbout()
     {
-        doChangeView(ChangeMode.VIEW_ABOUT, AboutFragment.newInstance());
+        doChangeView(ViewChange.ABOUT, AboutFragment.newInstance());
     }
 
     @Override
@@ -348,14 +348,14 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public void showSyncProviderFiles(Uri uri)
     {
-        doChangeView(ChangeMode.VIEW_SYNC_FILES,
+        doChangeView(ViewChange.SYNC_FILES,
                      SyncProviderFilesFragment.newInstance(uri));
     }
 
     @Override
     public void showPreferences()
     {
-        doChangeView(ChangeMode.VIEW_PREFERENCES,
+        doChangeView(ViewChange.PREFERENCES,
                      PreferencesFragment.newInstance(null));
     }
 
@@ -373,8 +373,7 @@ public class FileListActivity extends AppCompatActivity
                 filesFrag = new StorageFileListFragment();
             }
 
-            doChangeView(initial ?
-                         ChangeMode.VIEW_FILES_INIT : ChangeMode.VIEW_FILES,
+            doChangeView(initial ? ViewChange.FILES_INIT : ViewChange.FILES,
                          filesFrag);
         } else {
             itsTitle = savedState.getCharSequence(STATE_TITLE);
@@ -386,19 +385,19 @@ public class FileListActivity extends AppCompatActivity
     /**
      * Change the view of the activity
      */
-    private void doChangeView(ChangeMode mode, Fragment filesFrag)
+    private void doChangeView(ViewChange mode, Fragment filesFrag)
     {
         boolean clearBackStack = false;
         boolean supportsBack = false;
         switch (mode) {
-        case VIEW_FILES_INIT: {
+        case FILES_INIT: {
             clearBackStack = true;
             break;
         }
-        case VIEW_ABOUT:
-        case VIEW_FILES:
-        case VIEW_PREFERENCES:
-        case VIEW_SYNC_FILES: {
+        case ABOUT:
+        case FILES:
+        case PREFERENCES:
+        case SYNC_FILES: {
             supportsBack = true;
             break;
         }
@@ -442,24 +441,24 @@ public class FileListActivity extends AppCompatActivity
                 FileListNavDrawerFragment.Mode.INIT;
         boolean hasPermission = true;
         switch (mode) {
-        case VIEW_ABOUT: {
+        case ABOUT: {
             drawerMode = FileListNavDrawerFragment.Mode.ABOUT;
             itsTitle = PasswdSafeApp.getAppTitle(getString(R.string.about),
                                                  this);
             break;
         }
-        case VIEW_FILES: {
+        case FILES: {
             drawerMode = FileListNavDrawerFragment.Mode.FILES;
             itsTitle = getString(R.string.app_name);
             hasPermission = itsPermissionMgr.hasPerms();
             break;
         }
-        case VIEW_SYNC_FILES: {
+        case SYNC_FILES: {
             drawerMode = FileListNavDrawerFragment.Mode.SYNC_FILES;
             itsTitle = getString(R.string.app_name);
             break;
         }
-        case VIEW_PREFERENCES: {
+        case PREFERENCES: {
             drawerMode = FileListNavDrawerFragment.Mode.PREFERENCES;
             itsTitle = PasswdSafeApp.getAppTitle(
                     getString(R.string.preferences), this);
