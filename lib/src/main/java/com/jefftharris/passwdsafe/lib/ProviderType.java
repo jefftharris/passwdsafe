@@ -7,6 +7,7 @@
 package com.jefftharris.passwdsafe.lib;
 
 import android.content.Context;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +44,33 @@ public enum ProviderType
         }
         case OWNCLOUD: {
             iv.setImageResource(R.drawable.owncloud);
+            break;
+        }
+        }
+    }
+
+    /** Set the ImageView to the icon of the provider type */
+    public void setIcon(MenuItem item)
+    {
+        switch (this) {
+        case GDRIVE: {
+            item.setIcon(R.drawable.google_drive);
+            break;
+        }
+        case DROPBOX: {
+            item.setIcon(R.drawable.dropbox);
+            break;
+        }
+        case BOX: {
+            item.setIcon(R.drawable.box);
+            break;
+        }
+        case ONEDRIVE: {
+            item.setIcon(R.drawable.onedrive);
+            break;
+        }
+        case OWNCLOUD: {
+            item.setIcon(R.drawable.owncloud);
             break;
         }
         }

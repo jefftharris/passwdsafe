@@ -88,7 +88,7 @@ public class SyncProviderFragment extends ListFragment
             }
         });
 
-        GuiUtils.setVisible(rootView, checkProvider());
+        GuiUtils.setVisible(rootView, checkProvider(getContext()));
         return rootView;
     }
 
@@ -251,11 +251,12 @@ public class SyncProviderFragment extends ListFragment
         }
     }
 
-
-    /** Check whether the sync provider is present */
-    private boolean checkProvider()
+    /**
+     * Check whether the sync provider is present
+     */
+    public static boolean checkProvider(Context ctx)
     {
-        ContentResolver res = getActivity().getContentResolver();
+        ContentResolver res = ctx.getContentResolver();
         String type = res.getType(PasswdSafeContract.Providers.CONTENT_URI);
         return (type != null);
     }

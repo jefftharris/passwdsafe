@@ -149,7 +149,7 @@ public class LauncherFileShortcuts extends AppCompatActivity
     }
 
     @Override
-    public void updateViewSyncFiles()
+    public void updateViewSyncFiles(Uri syncFilesUri)
     {
     }
 
