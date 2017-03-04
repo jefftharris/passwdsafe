@@ -314,7 +314,7 @@
     <string name="search">Suchen</string>
     <string name="search_hint">In PasswdSafe suchen</string>
     <string name="select_accounts">Konto auswählen</string>
-    <string name="select_file_label">Datei auswählen:</string>
+    <string name="select_file_label">Datei auswählen</string>
     <string name="send">Senden</string>
     <string name="set_password">Passwort wieder verwenden</string>
     <string name="shortcut_base_record_header">VERKNÜPFUNG</string>
