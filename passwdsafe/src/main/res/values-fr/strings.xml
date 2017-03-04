@@ -363,6 +363,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.8.0&lt;/b&gt; - Montre les fournisseurs de compte de
+        synchronisation dans le menu de navigation.   Correction clavier des
+        mot de passe pour les raccourcis ou alias.
+        \n\n
         &lt;b&gt;6.7.1&lt;/b&gt; - Correction de bugs.
         \n\n
         &lt;b&gt;6.7.0&lt;/b&gt; - Amélioration support empreinte digitale pour
