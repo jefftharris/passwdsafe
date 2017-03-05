@@ -55,7 +55,6 @@ public final class SHATest
     }
 
     private static void sha1Test(String msgstr, String mdstr)
-            throws NoSuchAlgorithmException
     {
         byte[] msg = TestUtils.hexToBytes(msgstr);
         byte[] md = TestUtils.hexToBytes(mdstr);
@@ -69,7 +68,6 @@ public final class SHATest
 
     private static void sha256Test(String msgstr, String mdstr,
                                    String md1000str)
-            throws NoSuchAlgorithmException
     {
         byte[] msg = TestUtils.hexToBytes(msgstr);
         byte[] md = TestUtils.hexToBytes(mdstr);
