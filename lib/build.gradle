@@ -9,11 +9,11 @@ import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.library'
 
-def hgId() {
+static def hgId() {
     return 'hg id'.execute().text.trim();
 }
 
-def buildTime() {
+static def buildTime() {
     def df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z");
     return df.format(new Date());
 }
