@@ -7,32 +7,35 @@
  */
 package com.jefftharris.passwdsafe.test.file;
 
+import android.annotation.SuppressLint;
+
+import com.jefftharris.passwdsafe.file.PasswdPolicy;
+
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import android.annotation.SuppressLint;
-import android.test.AndroidTestCase;
-import android.test.MoreAsserts;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
-import com.jefftharris.passwdsafe.file.PasswdPolicy;
-//import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
 /**
  * Tests for the PasswdPolicy class
  */
 @SuppressWarnings("unused")
-public class PasswdPolicyTest extends AndroidTestCase
+public class PasswdPolicyTest
 {
     //private static final String TAG = "PasswdPolicyTest";
 
-    /** Constructor */
-    public PasswdPolicyTest()
-    {
-        super();
-    }
-
     /** Test an empty header policy */
+    @Test
     public void testHdrEmpty()
     {
         List<PasswdPolicy> policies;
@@ -47,12 +50,13 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test zero header policies */
+    @Test
     public void testHdrZero()
     {
         doTestBadHdrPolicy("0", "Policies length (1) too short: 2");
 
         List<PasswdPolicy> policies = PasswdPolicy.parseHdrPolicies("00");
-        MoreAsserts.assertEmpty(policies);
+        assertThat(policies, is(empty()));
         String str = PasswdPolicy.hdrPoliciesToString(policies);
         assertEquals("00", str);
 
@@ -61,6 +65,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test one valid header policy */
+    @Test
     public void testHdrOneValid()
     {
         String policiesStr = "0107Policy1fe00abc111aaa000fff03!@#";
@@ -88,6 +93,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test one valid header policy with zero min lengths */
+    @Test
     public void testHdrOneValidZeros()
     {
         String policiesStr = "0107Policy1fe00abc00000000000003!@#";
@@ -115,6 +121,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test a default header policy */
+    @Test
     public void testHdrDefault()
     {
         PasswdPolicy policy = new PasswdPolicy("policy1",
@@ -139,6 +146,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test multiple valid header policies */
+    @Test
     public void testHdrMultiValid()
     {
         String policiesStr = "060ceasy to readb40000a0010010010010008hex only08000140010010010010008policy 1f00000f0040020050030009pronounced200008001001001001000dspecial charsf00000d0030010040020a!@#$%^&*()05zerosf00000e00000000000000";
@@ -236,6 +244,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test max valid header policies */
+    @Test
     @SuppressLint("DefaultLocale")
     public void testHdrMaxValid()
     {
@@ -274,6 +283,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test an invalid header policy */
+    @Test
     public void testHdrOneInvalid()
     {
         doTestBadHdrPolicy("01",
@@ -335,6 +345,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test multiple invalid header policies */
+    @Test
     public void testHdrMultiInvalid()
     {
         doTestBadHdrPolicy("0207Policy1fe00abc111aaa000fff03!@#",
@@ -396,6 +407,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test a record without a policy */
+    @Test
     public void testRecNone()
     {
         PasswdPolicy policy = PasswdPolicy.parseRecordPolicy(null, null, null);
@@ -408,6 +420,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test a record with a policy name */
+    @Test
     public void testRecPolicyName()
     {
         doTestRecordPolicyName("policy1", null, null);
@@ -417,6 +430,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test a record with its own policy */
+    @Test
     public void testRecPolicy()
     {
         // easy to read
@@ -466,6 +480,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test an invalid record policy */
+    @Test
     public void testRecPolicyInvalid()
     {
         doTestBadRecPolicy("",
@@ -507,6 +522,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test default password generation */
+    @Test
     public void testPasswdGenDefault()
     {
         PasswdPolicy policy =
@@ -516,18 +532,21 @@ public class PasswdPolicyTest extends AndroidTestCase
 
 
     /** Test normal type password generation */
+    @Test
     public void testPasswdGenNormal()
     {
         doTestPasswdGen(PasswdPolicy.Type.NORMAL);
     }
 
     /** Test easy-to-read type password generation */
+    @Test
     public void testPasswdGenEasy()
     {
         doTestPasswdGen(PasswdPolicy.Type.EASY_TO_READ);
     }
 
     /** Test easy-to-read type password generation */
+    @Test
     public void testPasswdGenHex()
     {
         for (int len = 0; len < 100; ++len) {
@@ -541,6 +560,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     }
 
     /** Test pronounceable type password generation */
+    @Test
     public void testPasswdGenPronounceable()
     {
         doTestPasswdGen(PasswdPolicy.Type.PRONOUNCEABLE);
@@ -551,7 +571,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     {
         try {
             PasswdPolicy.parseHdrPolicies(policyStr);
-            fail();
+            assertTrue(false);
         } catch (Throwable t) {
             assertTrue(t instanceof IllegalArgumentException);
             assertEquals(exMsg, t.getMessage());
@@ -563,7 +583,7 @@ public class PasswdPolicyTest extends AndroidTestCase
     {
         try {
             PasswdPolicy.parseRecordPolicy(null, policyStr, null);
-            fail();
+            assertTrue(false);
         } catch (Throwable t) {
             assertTrue(t instanceof IllegalArgumentException);
             assertEquals(exMsg, t.getMessage());
