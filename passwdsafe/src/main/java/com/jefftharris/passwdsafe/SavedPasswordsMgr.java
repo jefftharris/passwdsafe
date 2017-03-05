@@ -132,6 +132,7 @@ public final class SavedPasswordsMgr
         /**
          * Request authentication via a fingerprint
          */
+        @SuppressWarnings("SameParameterValue")
         public void authenticate(
                 FingerprintManagerCompat.CryptoObject crypto,
                 int flags,
