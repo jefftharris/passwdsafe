@@ -48,6 +48,7 @@ public class SyncProviderFragment extends ListFragment
         void showSyncProviderFiles(Uri uri);
 
         /** Does the activity have a menu */
+        @SuppressWarnings("SameReturnValue")
         boolean activityHasMenu();
     }
 
