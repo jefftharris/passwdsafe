@@ -355,7 +355,7 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        &lt;b&gt;6.8.1&lt;b&gt; - Fehlerbehebungen für v1/v2 Dateien
+        &lt;b&gt;6.8.1&lt;/b&gt; - Fehlerbehebungen für v1/v2 Dateien
         \n\n
         &lt;b&gt;6.8.0&lt;/b&gt; - Sync-Konten im Menü anzeigen.  Korrigiere
         Tastaturpasswörter für Aliase oder Verweise
