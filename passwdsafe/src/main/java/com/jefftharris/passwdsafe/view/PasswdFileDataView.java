@@ -270,6 +270,7 @@ public final class PasswdFileDataView
     /**
      * Is the view grouping records
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isGroupingRecords()
     {
         return itsRecordOptions.itsIsGroupRecords;
