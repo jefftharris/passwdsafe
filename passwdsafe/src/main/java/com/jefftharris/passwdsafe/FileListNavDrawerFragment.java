@@ -72,7 +72,7 @@ public class FileListNavDrawerFragment
     private static final int SHOWN_DRAWER_PROVIDERS = 1;
 
     private int itsSelNavItem = -1;
-    private SparseArray<Uri> itsProviders = new SparseArray<>();
+    private final SparseArray<Uri> itsProviders = new SparseArray<>();
     private int itsNoProvidersNavItem = -1;
     private boolean itsIsShowDrawer;
 
