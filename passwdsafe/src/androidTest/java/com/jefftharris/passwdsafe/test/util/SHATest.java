@@ -62,6 +62,7 @@ public final class SHATest
 
         SHA1 sha = new SHA1();
         sha.update(msg, 0, msg.length);
+        sha.finish();
         msgmd = sha.getDigest();
         assertArrayEquals(md, msgmd);
     }
@@ -85,5 +86,4 @@ public final class SHATest
         msgmd = SHA256Pws.digestNNative(msg, 1000);
         assertArrayEquals(md1000, msgmd);
     }
-
 }
