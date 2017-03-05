@@ -58,12 +58,14 @@ public final class SavedPasswordsMgrMarshmallow
         @Override
         public boolean isHardwareDetected()
         {
+            //noinspection MissingPermission
             return (itsMgr != null) && itsMgr.isHardwareDetected();
         }
 
         @Override
         public boolean hasEnrolledFingerprints()
         {
+            //noinspection MissingPermission
             return (itsMgr != null) && itsMgr.hasEnrolledFingerprints();
         }
 
@@ -89,6 +91,7 @@ public final class SavedPasswordsMgrMarshmallow
                         cancel.getCancellationSignalObject();
             }
 
+            //noinspection MissingPermission
             itsMgr.authenticate(cryptoObj, cancelObj, flags,
                                 new AuthenticationCallback(callback), handler);
         }
