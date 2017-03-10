@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.test.util;
 
 import android.support.design.widget.TextInputLayout;
 import android.support.test.espresso.matcher.BoundedMatcher;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -18,6 +19,8 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import static android.support.test.espresso.core.deps.guava.base.Preconditions.checkNotNull;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 
 /**
@@ -73,16 +76,24 @@ public class TestUtils
     /**
      * Match with a TextInputLayout's error text
      */
-    public static Matcher<View> withTextInputError(
-            final Matcher<String> errorMatcher)
+    public static Matcher<View> withTextInputError(String error)
     {
+        final Matcher<String> errorMatcher =
+                TextUtils.isEmpty(error) ?
+                isEmptyOrNullString() : equalTo(error);
         checkNotNull(errorMatcher);
         return new BoundedMatcher<View, TextInputLayout>(TextInputLayout.class)
         {
             @Override
             protected boolean matchesSafely(TextInputLayout item)
             {
-                return (item != null) && errorMatcher.matches(item.getError());
+                if (item == null) {
+                    return false;
+                }
+
+                CharSequence error = item.getError();
+                return errorMatcher.matches(error) &&
+                       (!item.isErrorEnabled() == TextUtils.isEmpty(error));
             }
 
             @Override

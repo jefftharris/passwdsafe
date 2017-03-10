@@ -35,8 +35,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.jefftharris.passwdsafe.test.util.TestUtils.withTextInputError;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 
@@ -66,17 +64,17 @@ public class NewFileTest
         onFileNameView()
                 .check(matches(allOf(withText(".psafe3"), hasFocus())));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(equalTo("Empty file name"))));
+                .check(matches(withTextInputError("Empty file name")));
 
         onView(withId(R.id.password))
                 .check(matches(withText(isEmptyString())));
         onView(withId(R.id.password_input))
-                .check(matches(withTextInputError(equalTo("Empty password"))));
+                .check(matches(withTextInputError("Empty password")));
 
         onView(withId(R.id.password_confirm))
                 .check(matches(withText(isEmptyString())));
         onView(withId(R.id.password_confirm_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
 
         onView(withId(R.id.cancel))
                 .check(matches(isEnabled()));
@@ -93,13 +91,13 @@ public class NewFileTest
         onFileNameView()
                 .perform(replaceText("ZZZtest.psafe3"));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
 
         onView(allOf(withId(R.id.file_name),
                      withParent(withParent(withId(R.id.file_name_input)))))
                 .perform(replaceText("test.psafe3"));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(equalTo("File exists"))));
+                .check(matches(withTextInputError("File exists")));
     }
 
     @Test
@@ -108,25 +106,24 @@ public class NewFileTest
         onFileNameView()
                 .check(matches(withText(".psafe3")));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(equalTo("Empty file name"))));
+                .check(matches(withTextInputError("Empty file name")));
 
         onFileNameView()
                 .perform(replaceText("ZZZtest.psafe3"));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
 
         for (char c: "1234567890abcxyzABCXYZ".toCharArray()) {
             onFileNameView().perform(replaceText("ZZZ" + c + "test.psafe3"));
             onView(withId(R.id.file_name_input))
-                    .check(matches(withTextInputError(isEmptyOrNullString())));
+                    .check(matches(withTextInputError(null)));
         }
 
         for (char c: "`~!@#$%^&*()_+-={}[]|\\;:'\"<>,./?".toCharArray()) {
             onFileNameView()
                     .perform(replaceText("ZZZ" + c + "test.psafe3"));
             onView(withId(R.id.file_name_input))
-                    .check(matches(
-                            withTextInputError(equalTo("Invalid file name"))));
+                    .check(matches(withTextInputError("Invalid file name")));
         }
     }
 
@@ -136,7 +133,7 @@ public class NewFileTest
         onFileNameView()
                 .check(matches(withText(".psafe3")));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(equalTo("Empty file name"))));
+                .check(matches(withTextInputError("Empty file name")));
 
         onView(allOf(withId(R.id.file_name),
                      withParent(withParent(withId(R.id.file_name_input)))))
@@ -146,7 +143,7 @@ public class NewFileTest
                      withParent(withParent(withId(R.id.file_name_input)))))
                 .check(matches(withText(".psafe3")));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(equalTo("Empty file name"))));
+                .check(matches(withTextInputError("Empty file name")));
     }
 
     @Test
@@ -157,65 +154,62 @@ public class NewFileTest
         onFileNameView()
                 .perform(replaceText("ZZZtest.psafe3"));
         onView(withId(R.id.file_name_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.password))
                 .check(matches(withText(isEmptyString())));
         onView(withId(R.id.password_input))
-                .check(matches(withTextInputError(equalTo("Empty password"))));
+                .check(matches(withTextInputError("Empty password")));
         onView(withId(R.id.password_confirm))
                 .check(matches(withText(isEmptyString())));
         onView(withId(R.id.password_confirm_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.ok))
                 .check(matches(not(isEnabled())));
 
         onView(withId(R.id.password))
                 .perform(replaceText("test123"));
         onView(withId(R.id.password_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.password_confirm))
                 .check(matches(withText(isEmptyString())));
         onView(withId(R.id.password_confirm_input))
-                .check(matches(
-                        withTextInputError(equalTo("Passwords do not match"))));
+                .check(matches(withTextInputError("Passwords do not match")));
         onView(withId(R.id.ok))
                 .check(matches(not(isEnabled())));
 
         onView(withId(R.id.password_confirm))
                 .perform(replaceText("test123"));
         onView(withId(R.id.password_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.password_confirm_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.ok))
                 .check(matches(isEnabled()));
 
         onView(withId(R.id.password_confirm))
                 .perform(replaceText("test1234"));
         onView(withId(R.id.password_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.password_confirm_input))
-                .check(matches(
-                        withTextInputError(equalTo("Passwords do not match"))));
+                .check(matches(withTextInputError("Passwords do not match")));
         onView(withId(R.id.ok))
                 .check(matches(not(isEnabled())));
 
         onView(withId(R.id.password))
                 .perform(replaceText("test1234"));
         onView(withId(R.id.password_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.password_confirm_input))
-                .check(matches(withTextInputError(isEmptyOrNullString())));
+                .check(matches(withTextInputError(null)));
         onView(withId(R.id.ok))
                 .check(matches(isEnabled()));
 
         onView(withId(R.id.password))
                 .perform(replaceText(""));
         onView(withId(R.id.password_input))
-                .check(matches(withTextInputError(equalTo("Empty password"))));
+                .check(matches(withTextInputError("Empty password")));
         onView(withId(R.id.password_confirm_input))
-                .check(matches(
-                        withTextInputError(equalTo("Passwords do not match"))));
+                .check(matches(withTextInputError("Passwords do not match")));
         onView(withId(R.id.ok))
                 .check(matches(not(isEnabled())));
     }
