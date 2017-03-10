@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.test;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -28,7 +29,6 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasFocus;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
@@ -38,6 +38,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 
 /**
  * UI test for creating a new file
@@ -62,10 +63,8 @@ public class NewFileTest
     @Test
     public void testInitialState()
     {
-        onView(allOf(withId(R.id.file_name),
-                     withParent(withParent(withId(R.id.file_name_input)))))
-                .check(matches(allOf(withText(".psafe3"),
-                                     hasFocus())));
+        onFileNameView()
+                .check(matches(allOf(withText(".psafe3"), hasFocus())));
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError(equalTo("Empty file name"))));
 
@@ -82,18 +81,17 @@ public class NewFileTest
         onView(withId(R.id.cancel))
                 .check(matches(isEnabled()));
         onView(withId(R.id.ok))
-                .check(matches(isDisplayed()));
+                .check(matches(not(isEnabled())));
     }
 
     @Test
     public void testExistingFile()
     {
         Assert.assertTrue(new File(DIR, "test.psafe3").exists());
-        Assert.assertTrue(!new File(DIR, "tes.psafe3").exists());
+        Assert.assertTrue(!new File(DIR, "ZZZtest.psafe3").exists());
 
-        onView(allOf(withId(R.id.file_name),
-                     withParent(withParent(withId(R.id.file_name_input)))))
-                .perform(replaceText("tes.psafe3"));
+        onFileNameView()
+                .perform(replaceText("ZZZtest.psafe3"));
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError(isEmptyOrNullString())));
 
@@ -105,10 +103,37 @@ public class NewFileTest
     }
 
     @Test
+    public void testFileName()
+    {
+        onFileNameView()
+                .check(matches(withText(".psafe3")));
+        onView(withId(R.id.file_name_input))
+                .check(matches(withTextInputError(equalTo("Empty file name"))));
+
+        onFileNameView()
+                .perform(replaceText("ZZZtest.psafe3"));
+        onView(withId(R.id.file_name_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+
+        for (char c: "1234567890abcxyzABCXYZ".toCharArray()) {
+            onFileNameView().perform(replaceText("ZZZ" + c + "test.psafe3"));
+            onView(withId(R.id.file_name_input))
+                    .check(matches(withTextInputError(isEmptyOrNullString())));
+        }
+
+        for (char c: "`~!@#$%^&*()_+-={}[]|\\;:'\"<>,./?".toCharArray()) {
+            onFileNameView()
+                    .perform(replaceText("ZZZ" + c + "test.psafe3"));
+            onView(withId(R.id.file_name_input))
+                    .check(matches(
+                            withTextInputError(equalTo("Invalid file name"))));
+        }
+    }
+
+    @Test
     public void testFileNameSuffix()
     {
-        onView(allOf(withId(R.id.file_name),
-                     withParent(withParent(withId(R.id.file_name_input)))))
+        onFileNameView()
                 .check(matches(withText(".psafe3")));
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError(equalTo("Empty file name"))));
@@ -122,5 +147,86 @@ public class NewFileTest
                 .check(matches(withText(".psafe3")));
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError(equalTo("Empty file name"))));
+    }
+
+    @Test
+    public void testPassword()
+    {
+        // Check initial with valid file name
+        Assert.assertTrue(!new File(DIR, "ZZZtest.psafe3").exists());
+        onFileNameView()
+                .perform(replaceText("ZZZtest.psafe3"));
+        onView(withId(R.id.file_name_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.password))
+                .check(matches(withText(isEmptyString())));
+        onView(withId(R.id.password_input))
+                .check(matches(withTextInputError(equalTo("Empty password"))));
+        onView(withId(R.id.password_confirm))
+                .check(matches(withText(isEmptyString())));
+        onView(withId(R.id.password_confirm_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.ok))
+                .check(matches(not(isEnabled())));
+
+        onView(withId(R.id.password))
+                .perform(replaceText("test123"));
+        onView(withId(R.id.password_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.password_confirm))
+                .check(matches(withText(isEmptyString())));
+        onView(withId(R.id.password_confirm_input))
+                .check(matches(
+                        withTextInputError(equalTo("Passwords do not match"))));
+        onView(withId(R.id.ok))
+                .check(matches(not(isEnabled())));
+
+        onView(withId(R.id.password_confirm))
+                .perform(replaceText("test123"));
+        onView(withId(R.id.password_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.password_confirm_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.ok))
+                .check(matches(isEnabled()));
+
+        onView(withId(R.id.password_confirm))
+                .perform(replaceText("test1234"));
+        onView(withId(R.id.password_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.password_confirm_input))
+                .check(matches(
+                        withTextInputError(equalTo("Passwords do not match"))));
+        onView(withId(R.id.ok))
+                .check(matches(not(isEnabled())));
+
+        onView(withId(R.id.password))
+                .perform(replaceText("test1234"));
+        onView(withId(R.id.password_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.password_confirm_input))
+                .check(matches(withTextInputError(isEmptyOrNullString())));
+        onView(withId(R.id.ok))
+                .check(matches(isEnabled()));
+
+        onView(withId(R.id.password))
+                .perform(replaceText(""));
+        onView(withId(R.id.password_input))
+                .check(matches(withTextInputError(equalTo("Empty password"))));
+        onView(withId(R.id.password_confirm_input))
+                .check(matches(
+                        withTextInputError(equalTo("Passwords do not match"))));
+        onView(withId(R.id.ok))
+                .check(matches(not(isEnabled())));
+    }
+
+    /**
+     * Test with the file name text view
+     */
+    private static ViewInteraction onFileNameView()
+    {
+        return onView(allOf(
+                withId(R.id.file_name),
+                withParent(withParent(withId(R.id.file_name_input)))));
     }
 }
