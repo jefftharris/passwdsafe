@@ -39,10 +39,10 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 
 /**
- * UI test for creating a new file
+ * UI test for PasswdSafeNewFileFragment
  */
 @RunWith(AndroidJUnit4.class)
-public class NewFileTest
+public class PasswdSafeNewFileFragmentTest
 {
     private static final File DIR = new File("/storage/emulated/0");
 
