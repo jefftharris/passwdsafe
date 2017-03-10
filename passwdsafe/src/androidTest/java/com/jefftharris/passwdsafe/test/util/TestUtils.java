@@ -7,11 +7,27 @@
  */
 package com.jefftharris.passwdsafe.test.util;
 
+import android.support.design.widget.TextInputLayout;
+import android.support.test.espresso.matcher.BoundedMatcher;
+import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
+import static android.support.test.espresso.core.deps.guava.base.Preconditions.checkNotNull;
+
+
 /**
  * Test utilities
  */
 public class TestUtils
 {
+    /**
+     * Convert a string of hex digits to bytes
+     */
     public static byte[] hexToBytes(String s)
     {
         byte[] bytes = new byte[s.length() / 2];
@@ -20,5 +36,61 @@ public class TestUtils
                               Character.digit(s.charAt(i*2+1), 16));
         }
         return bytes;
+    }
+
+    /**
+     * Match with data in a view adapter
+     */
+    public static Matcher<View> withAdaptedData(
+            final Matcher<Object> dataMatcher)
+    {
+        checkNotNull(dataMatcher);
+        return new TypeSafeMatcher<View>()
+        {
+            @Override
+            public void describeTo(Description description)
+            {
+                description.appendText("with class name: ");
+                dataMatcher.describeTo(description);
+            }
+            @Override
+            public boolean matchesSafely(View view)
+            {
+                if (!(view instanceof AdapterView)) {
+                    return false;
+                }
+                Adapter adapter = ((AdapterView) view).getAdapter();
+                for (int i = 0; i < adapter.getCount(); i++) {
+                    if (dataMatcher.matches(adapter.getItem(i))) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+    }
+
+    /**
+     * Match with a TextInputLayout's error text
+     */
+    public static Matcher<View> withTextInputError(
+            final Matcher<String> errorMatcher)
+    {
+        checkNotNull(errorMatcher);
+        return new BoundedMatcher<View, TextInputLayout>(TextInputLayout.class)
+        {
+            @Override
+            protected boolean matchesSafely(TextInputLayout item)
+            {
+                return (item != null) && errorMatcher.matches(item.getError());
+            }
+
+            @Override
+            public void describeTo(Description description)
+            {
+                description.appendText("with error: ");
+                errorMatcher.describeTo(description);
+            }
+        };
     }
 }

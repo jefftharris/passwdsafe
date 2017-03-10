@@ -56,4 +56,5 @@ dependencies {
         exclude module: 'design'
         exclude module: 'recyclerview-v7'
     }
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
 }
