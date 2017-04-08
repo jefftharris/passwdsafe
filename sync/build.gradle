@@ -15,8 +15,8 @@ android {
         minSdkVersion 14
         resConfigs "de", "fr"
         targetSdkVersion 25
-        versionCode 30305
-        versionName "3.3.5"
+        versionCode 30400
+        versionName "3.4.0"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
