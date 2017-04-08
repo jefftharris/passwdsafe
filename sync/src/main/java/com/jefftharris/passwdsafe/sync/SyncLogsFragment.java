@@ -174,7 +174,7 @@ public class SyncLogsFragment extends ListFragment
             public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
             {
                 if (PasswdCursorLoader.checkResult(loader)) {
-                    itsLogsAdapter.swapCursor(cursor);
+                    itsLogsAdapter.changeCursor(cursor);
                 }
             }
 
@@ -182,7 +182,7 @@ public class SyncLogsFragment extends ListFragment
             public void onLoaderReset(Loader<Cursor> loader)
             {
                 if (PasswdCursorLoader.checkResult(loader)) {
-                    itsLogsAdapter.swapCursor(null);
+                    itsLogsAdapter.changeCursor(null);
                 }
             }
         };

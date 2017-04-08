@@ -236,7 +236,7 @@ public class SyncProviderFragment extends ListFragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
     {
         if (PasswdCursorLoader.checkResult(loader)) {
-            itsProviderAdapter.swapCursor(cursor);
+            itsProviderAdapter.changeCursor(cursor);
         }
     }
 
@@ -248,7 +248,7 @@ public class SyncProviderFragment extends ListFragment
     public void onLoaderReset(Loader<Cursor> loader)
     {
         if (PasswdCursorLoader.checkResult(loader)) {
-            itsProviderAdapter.swapCursor(null);
+            itsProviderAdapter.changeCursor(null);
         }
     }
 

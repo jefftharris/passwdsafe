@@ -327,13 +327,13 @@ public final class StorageFileListFragment extends ListFragment
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor)
     {
-        itsFilesAdapter.swapCursor(cursor);
+        itsFilesAdapter.changeCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader)
     {
-        itsFilesAdapter.swapCursor(null);
+        itsFilesAdapter.changeCursor(null);
     }
 
     /** Start the intent to open a file */
