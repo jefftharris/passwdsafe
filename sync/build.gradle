@@ -70,7 +70,7 @@ dependencies {
     }
 
     // Dropbox
-    compile 'com.dropbox.core:dropbox-core-sdk:2.1.2'
+    compile 'com.dropbox.core:dropbox-core-sdk:3.0.1'
 
     // Box
     compile 'com.box:box-android-sdk:4.0.8'
