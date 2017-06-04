@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity
     private Uri itsOnedriveUri = null;
     private Uri itsOwncloudUri = null;
     private int itsOwncloudSyncFreq = 0;
+    private boolean itsIsRunning = false;
 
     private NewAccountTask itsNewAccountTask = null;
     private final List<AccountUpdateTask> itsUpdateTasks = new ArrayList<>();
@@ -98,6 +99,11 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id)
             {
+                if (!itsIsRunning) {
+                    PasswdSafeUtil.dbginfo(TAG, "not running");
+                    return;
+                }
+
                 switch (parent.getId()) {
                 case R.id.gdrive_interval: {
                     onGdriveFreqChanged(position);
@@ -167,6 +173,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        itsIsRunning = true;
+    }
+
     /* (non-Javadoc)
      * @see android.support.v4.app.FragmentActivity#onPause()
      */
@@ -174,6 +187,7 @@ public class MainActivity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
+        itsIsRunning = false;
         for (AccountUpdateTask task: new ArrayList<>(itsUpdateTasks)) {
             task.cancelTask();
         }
