@@ -345,6 +345,7 @@
     <string name="use_symbols">Symbole</string>
     <string name="use_uppercase">Großbuchstaben</string>
     <string name="username_header">BENUTZERNAME</string>
+    <string name="vibrate_keyboard_on_press">Vibrieren bei Tastendruck</string>
     <string name="view_password_expirations">Passwortlaufzeiten anzeigen</string>
     <string name="word_wrap">Zeilenumbruch</string>
     <string name="yes">Ja</string>

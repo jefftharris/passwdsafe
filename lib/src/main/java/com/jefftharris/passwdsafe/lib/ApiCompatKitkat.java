@@ -18,6 +18,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.view.inputmethod.InputMethodManager;
 
 /**
@@ -159,5 +160,13 @@ public final class ApiCompatKitkat
                                                   boolean onlyCurrentIme)
     {
         return imm.switchToNextInputMethod(imeToken, onlyCurrentIme);
+    }
+
+    /**
+     * Does the device have a system vibrator
+     */
+    public static boolean hasVibrator(Vibrator vib)
+    {
+        return (vib != null) && vib.hasVibrator();
     }
 }

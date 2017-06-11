@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.text.ClipboardManager;
 import android.view.Window;
 import android.view.WindowManager;
@@ -203,5 +204,15 @@ public final class ApiCompat
         return (SDK_VERSION >= SDK_KITKAT) &&
                ApiCompatKitkat.switchToNextInputMethod(imm, imeToken,
                                                        onlyCurrentIme);
+    }
+
+    /**
+     * Does the device have a system vibrator
+     */
+    public static boolean hasVibrator(Context ctx)
+    {
+        Vibrator vib = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
+        return (vib != null) &&
+               ((SDK_VERSION < SDK_KITKAT) || ApiCompatKitkat.hasVibrator(vib));
     }
 }

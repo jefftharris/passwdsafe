@@ -345,6 +345,7 @@
     <string name="use_symbols">Symbols</string>
     <string name="use_uppercase">Uppercase</string>
     <string name="username_header">USER NAME</string>
+    <string name="vibrate_keyboard_on_press">Vibrate keyboard on press</string>
     <string name="view_password_expirations">View password expirations</string>
     <string name="word_wrap">Word Wrap</string>
     <string name="yes">Yes</string>

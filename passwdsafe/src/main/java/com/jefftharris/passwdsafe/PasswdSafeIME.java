@@ -7,11 +7,10 @@
  */
 package com.jefftharris.passwdsafe;
 
-import org.pwsafe.lib.file.PwsRecord;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
@@ -21,6 +20,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.InputType;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
@@ -32,10 +32,12 @@ import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
+import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.util.Pair;
+
+import org.pwsafe.lib.file.PwsRecord;
 
 /**
  *  Input method for selecting fields from a record
@@ -73,6 +75,7 @@ public class PasswdSafeIME extends InputMethodService
     private boolean itsIsPasswordField = false;
     private long itsLastShiftTime = Long.MIN_VALUE;
     private boolean itsCapsLock = false;
+    private boolean itsIsVibrate = false;
 
     /**
      * Reset the keyboard shown when next visible
@@ -182,6 +185,9 @@ public class PasswdSafeIME extends InputMethodService
         setKeyboard(keyboard);
         itsKeyboardView.closing();
         itsKeyboardView.invalidateAllKeys();
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(this);
+        itsIsVibrate = Preferences.getDisplayVibrateKeyboard(prefs);
     }
 
     @Override
@@ -275,6 +281,12 @@ public class PasswdSafeIME extends InputMethodService
             showPasswordWarning(false);
             break;
         }
+        }
+
+        if (itsIsVibrate) {
+            itsKeyboardView.performHapticFeedback(
+                    HapticFeedbackConstants.VIRTUAL_KEY,
+                    HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
         }
 
         switch (keycode) {

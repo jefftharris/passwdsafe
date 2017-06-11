@@ -49,6 +49,7 @@
         android:id="@+id/keyboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hapticFeedbackEnabled="true"
         android:keyBackground="@drawable/btn_keyboard_key_ics"/>
 
 </LinearLayout>
