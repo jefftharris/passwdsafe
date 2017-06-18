@@ -199,6 +199,10 @@ public final class PasswdFileDataView
         if ((itsCurrGroupNode == null) || (itsContext == null)) {
             return records;
         }
+        Resources res = itsContext.getResources();
+        if (res == null) {
+            return records;
+        }
 
         if (incGroups) {
             Map<String, GroupNode> entryGroups = itsCurrGroupNode.getGroups();
@@ -206,8 +210,8 @@ public final class PasswdFileDataView
                 for (Map.Entry<String, GroupNode> entry:
                         entryGroups.entrySet()) {
                     int items = entry.getValue().getNumRecords();
-                    String str = itsContext.getResources().getQuantityString(
-                            R.plurals.group_items, items, items);
+                    String str = res.getQuantityString(R.plurals.group_items,
+                                                       items, items);
 
                     records.add(new PasswdRecordListData(
                             entry.getKey(), str, null, null, null,
