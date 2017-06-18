@@ -1196,115 +1196,15 @@ public class PasswdSafe extends AppCompatActivity
     /**
      * Finish editing the file
      */
-    private void finishEdit(final EditFinish task, final String popTag,
-                            final PasswdLocation newLocation,
-                            final Runnable postSaveRun)
+    private void finishEdit(EditFinish task,
+                            String popTag,
+                            PasswdLocation newLocation,
+                            Runnable postSaveRun)
     {
-        final ObjectHolder<Boolean> save = new ObjectHolder<>(false);
-        switch (task) {
-        case ADD_RECORD:
-        case CHANGE_PASSWORD:
-        case DELETE_RECORD:
-        case EDIT_SAVE_RECORD:
-        case POLICY_EDIT:
-        case PROTECT_RECORD: {
-            save.set(true);
-            break;
-        }
-        case EDIT_NOSAVE_RECORD: {
-            save.set(false);
-            break;
-        }
-        }
+        FinishSaveRunnable saveRun =
+                new FinishSaveRunnable(task, popTag, newLocation, postSaveRun);
 
-        Runnable saveRun = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                boolean popBack = false;
-                boolean addRecord = false;
-                switch (task) {
-                case ADD_RECORD: {
-                    popBack = true;
-                    addRecord = true;
-                    break;
-                }
-                case CHANGE_PASSWORD:
-                case DELETE_RECORD:
-                case EDIT_NOSAVE_RECORD:
-                case EDIT_SAVE_RECORD: {
-                    popBack = true;
-                    break;
-                }
-                case POLICY_EDIT:
-                case PROTECT_RECORD: {
-                    popBack = false;
-                    break;
-                }
-                }
-
-                if (save.get()) {
-                    itsFileDataFrag.refreshFileData();
-                }
-                boolean resetLoc = shouldResetLoc();
-
-                FragmentManager fragMgr = getSupportFragmentManager();
-                if (popBack) {
-                    fragMgr.popBackStackImmediate();
-
-                    if (popTag != null) {
-                        //noinspection StatementWithEmptyBody
-                        while(fragMgr.popBackStackImmediate(
-                                popTag,
-                                FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
-                            // Pop all fragments up to the first use of the
-                            // given tag
-                        }
-                    }
-                }
-
-                if (addRecord) {
-                    if (itsIsTwoPane) {
-                        changeOpenView(newLocation, false);
-                    } else {
-                        Fragment contentsFrag =
-                                fragMgr.findFragmentById(R.id.content);
-                        if (contentsFrag instanceof PasswdSafeListFragment) {
-                            ((PasswdSafeListFragment)contentsFrag)
-                                    .updateSelection(newLocation);
-                        }
-                    }
-                } else if (resetLoc) {
-                    changeOpenView(new PasswdLocation(), true);
-                }
-
-                if (postSaveRun != null) {
-                    postSaveRun.run();
-                }
-            }
-
-            /**
-             * Should the location be reset
-             */
-            private boolean shouldResetLoc()
-            {
-                if (!save.get() || (newLocation == null)) {
-                    return false;
-                }
-
-                PasswdFileDataView dataView = itsFileDataFrag.getFileDataView();
-                //noinspection SimplifiableIfStatement
-                if (!dataView.isGroupingRecords()) {
-                    return false;
-                } else {
-                    return !newLocation.equalGroups(itsLocation) ||
-                           !dataView.hasGroup(newLocation.getRecordGroup());
-                }
-            }
-        };
-
-        if (save.get()) {
+        if (saveRun.isSave()) {
             final ObjectHolder<String> fileId = new ObjectHolder<>("");
             itsFileDataFrag.useFileData(new PasswdFileDataUser()
             {
@@ -1695,6 +1595,131 @@ public class PasswdSafe extends AppCompatActivity
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setTitle(itsTitle);
+        }
+    }
+
+    /**
+     * Runnable for finishing the save of the file
+     */
+    private final class FinishSaveRunnable implements Runnable
+    {
+        private boolean itsIsAddRecord;
+        private boolean itsIsSave;
+        private boolean itsIsPopBack;
+        private final String itsPopTag;
+        private final PasswdLocation itsNewLocation;
+        private final Runnable itsPostSaveRun;
+
+        /**
+         * Constructor
+         */
+        public FinishSaveRunnable(EditFinish task,
+                                  String popTag,
+                                  PasswdLocation newLocation,
+                                  Runnable postSaveRun)
+        {
+            switch (task) {
+            case ADD_RECORD: {
+                itsIsAddRecord = true;
+                itsIsSave = true;
+                itsIsPopBack = true;
+                break;
+            }
+            case CHANGE_PASSWORD:
+            case DELETE_RECORD:
+            case EDIT_SAVE_RECORD: {
+                itsIsAddRecord = false;
+                itsIsSave = true;
+                itsIsPopBack = true;
+                break;
+            }
+            case EDIT_NOSAVE_RECORD: {
+                itsIsAddRecord = false;
+                itsIsSave = false;
+                itsIsPopBack = true;
+                break;
+            }
+            case POLICY_EDIT:
+            case PROTECT_RECORD: {
+                itsIsAddRecord = false;
+                itsIsSave = true;
+                itsIsPopBack = false;
+                break;
+            }
+            }
+            itsPopTag = popTag;
+            itsNewLocation = newLocation;
+            itsPostSaveRun = postSaveRun;
+        }
+
+        /**
+         * Get whether to save
+         */
+        public boolean isSave()
+        {
+            return itsIsSave;
+        }
+
+        @Override
+        public void run()
+        {
+            if (itsIsSave) {
+                itsFileDataFrag.refreshFileData();
+            }
+            boolean resetLoc = shouldResetLoc();
+
+            FragmentManager fragMgr = getSupportFragmentManager();
+            if (itsIsPopBack) {
+                fragMgr.popBackStackImmediate();
+
+                if (itsPopTag != null) {
+                    //noinspection StatementWithEmptyBody
+                    while(fragMgr.popBackStackImmediate(
+                            itsPopTag,
+                            FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
+                        // Pop all fragments up to the first use of the
+                        // given tag
+                    }
+                }
+            }
+
+            if (itsIsAddRecord) {
+                if (itsIsTwoPane) {
+                    changeOpenView(itsNewLocation, false);
+                } else {
+                    Fragment contentsFrag =
+                            fragMgr.findFragmentById(R.id.content);
+                    if (contentsFrag instanceof PasswdSafeListFragment) {
+                        ((PasswdSafeListFragment)contentsFrag)
+                                .updateSelection(itsNewLocation);
+                    }
+                }
+            } else if (resetLoc) {
+                changeOpenView(new PasswdLocation(), true);
+            }
+
+            if (itsPostSaveRun != null) {
+                itsPostSaveRun.run();
+            }
+        }
+
+        /**
+         * Should the location be reset
+         */
+        private boolean shouldResetLoc()
+        {
+            if (!itsIsSave || (itsNewLocation == null)) {
+                return false;
+            }
+
+            PasswdFileDataView dataView = itsFileDataFrag.getFileDataView();
+            //noinspection SimplifiableIfStatement
+            if (!dataView.isGroupingRecords()) {
+                return false;
+            } else {
+                return !itsNewLocation.equalGroups(itsLocation) ||
+                       !dataView.hasGroup(itsNewLocation.getRecordGroup());
+            }
         }
     }
 
