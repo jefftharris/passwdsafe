@@ -356,6 +356,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.8.2&lt;/b&gt; - Add preference to vibrate keyboard.  Scroll
+        to show new entry.  Bug fixes.
+        \n\n
         &lt;b&gt;6.8.1&lt;/b&gt; - Bug fix for opening v1/v2 files
         \n\n
         &lt;b&gt;6.8.0&lt;/b&gt; - Show sync provider accounts in navigation
