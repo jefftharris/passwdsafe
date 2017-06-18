@@ -613,8 +613,13 @@ public class PasswdSafeOpenFileFragment
      */
     private void enterWaitingPasswordPhase()
     {
+        PasswdFileUri fileUri = getPasswdFileUri();
+        if (fileUri == null) {
+            cancelFragment(false);
+            return;
+        }
         itsIsPasswordSaved = false;
-        switch (getPasswdFileUri().getType()) {
+        switch (fileUri.getType()) {
         case FILE:
         case SYNC_PROVIDER:
         case GENERIC_PROVIDER: {
