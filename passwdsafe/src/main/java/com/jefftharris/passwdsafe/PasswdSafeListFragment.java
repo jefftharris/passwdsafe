@@ -329,6 +329,17 @@ public class PasswdSafeListFragment extends ListFragment
         refreshList();
     }
 
+    /**
+     * Update the record which is selected by the list
+     */
+    public void updateSelection(PasswdLocation location)
+    {
+        if (location.isRecord()) {
+            itsSelectedPos = -1;
+            itsSelectedRecord = location.getRecord();
+            refreshList();
+        }
+    }
 
     /** Refresh the list due to file changes */
     private void refreshList()
@@ -405,13 +416,16 @@ public class PasswdSafeListFragment extends ListFragment
                 itsIsContents ? itsSelectedRecord : itsLocation.getRecord());
 
         if (selPos != -1) {
+            boolean setpos = false;
             if (itsIsContents) {
                 // List typically takes care of position unless it changes
                 if (selPos != itsSelectedPos) {
-                    list.setSelection(selPos);
-                    itsSelectedPos = selPos;
+                    setpos = true;
                 }
             } else {
+                setpos = true;
+            }
+            if (setpos) {
                 // If item is outside previous visible range, update selection.
                 // Otherwise don't scroll to reduce jumpy UI
                 if ((selPos <= firstPos) ||
@@ -420,8 +434,11 @@ public class PasswdSafeListFragment extends ListFragment
                 } else {
                     list.setSelectionFromTop(firstPos, top);
                 }
-                list.setItemChecked(selPos, true);
                 list.smoothScrollToPosition(selPos);
+                if (!itsIsContents) {
+                    list.setItemChecked(selPos, true);
+                }
+                itsSelectedPos = selPos;
             }
         } else {
             itsSelectedPos = -1;

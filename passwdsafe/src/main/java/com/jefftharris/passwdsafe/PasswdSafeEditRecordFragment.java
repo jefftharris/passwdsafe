@@ -50,6 +50,7 @@ import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
+import com.jefftharris.passwdsafe.view.EditRecordResult;
 import com.jefftharris.passwdsafe.view.NewGroupDialog;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.view.PasswdPolicyEditDialog;
@@ -94,7 +95,7 @@ public class PasswdSafeEditRecordFragment
         void updateViewEditRecord(PasswdLocation location);
 
         /** Finish editing a record */
-        void finishEditRecord(boolean save, PasswdLocation newLocation);
+        void finishEditRecord(EditRecordResult result);
     }
 
     private final Validator itsValidator = new Validator();
@@ -1268,8 +1269,7 @@ public class PasswdSafeEditRecordFragment
      */
     private void saveRecord()
     {
-        final ObjectHolder<Pair<Boolean, PasswdLocation>> rc =
-                new ObjectHolder<>();
+        final ObjectHolder<EditRecordResult> rc = new ObjectHolder<>();
         useRecordFile(new RecordFileUser()
         {
             @Override
@@ -1280,16 +1280,15 @@ public class PasswdSafeEditRecordFragment
             }
         });
         if (rc.get() != null) {
-            getListener().finishEditRecord(rc.get().first, rc.get().second);
+            getListener().finishEditRecord(rc.get());
         }
     }
 
     /**
      * Save the updated fields in the record
      */
-    private Pair<Boolean, PasswdLocation>
-    updateSaveRecord(@Nullable RecordInfo info,
-                     @NonNull PasswdFileData fileData)
+    private EditRecordResult updateSaveRecord(@Nullable RecordInfo info,
+                                              @NonNull PasswdFileData fileData)
     {
         PwsRecord record;
         boolean newRecord;
@@ -1420,8 +1419,8 @@ public class PasswdSafeEditRecordFragment
 
         GuiUtils.setKeyboardVisible(itsTitle, getContext(), false);
 
-        return new Pair<>(newRecord || record.isModified(),
-                          new PasswdLocation(record, fileData));
+        return new EditRecordResult(newRecord, newRecord || record.isModified(),
+                                    new PasswdLocation(record, fileData));
     }
 
     /**

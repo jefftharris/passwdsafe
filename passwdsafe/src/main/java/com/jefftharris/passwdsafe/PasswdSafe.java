@@ -47,6 +47,7 @@ import com.jefftharris.passwdsafe.lib.view.ProgressFragment;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import com.jefftharris.passwdsafe.view.CopyField;
+import com.jefftharris.passwdsafe.view.EditRecordResult;
 import com.jefftharris.passwdsafe.view.PasswdFileDataView;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.view.PasswdRecordListData;
@@ -145,6 +146,18 @@ public class PasswdSafe extends AppCompatActivity
         DELETE_FILE,
         /** Delete a record */
         DELETE_RECORD
+    }
+
+    /** Method for finishing the edit of the file */
+    private enum EditFinish
+    {
+        ADD_RECORD,
+        CHANGE_PASSWORD,
+        DELETE_RECORD,
+        EDIT_NOSAVE_RECORD,
+        EDIT_SAVE_RECORD,
+        POLICY_EDIT,
+        PROTECT_RECORD
     }
 
     /** Fragment holding the open file data */
@@ -947,9 +960,14 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public void finishEditRecord(boolean save, PasswdLocation newLocation)
+    public void finishEditRecord(EditRecordResult result)
     {
-        finishEdit(save, true, null, newLocation, null);
+        finishEdit(result.itsIsNewRecord ?
+                   EditFinish.ADD_RECORD :
+                   (result.itsIsSave ?
+                    EditFinish.EDIT_SAVE_RECORD :
+                    EditFinish.EDIT_NOSAVE_RECORD),
+                   null, result.itsNewLocation, null);
     }
 
     @Override
@@ -972,7 +990,7 @@ public class PasswdSafe extends AppCompatActivity
             }
         });
 
-        finishEdit(true, true, null, null, null);
+        finishEdit(EditFinish.CHANGE_PASSWORD, null, null, null);
     }
 
     @Override
@@ -1006,7 +1024,7 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void finishPolicyEdit(Runnable postSaveRun)
     {
-        finishEdit(true, false, null, null, postSaveRun);
+        finishEdit(EditFinish.POLICY_EDIT, null, null, postSaveRun);
     }
 
     @Override
@@ -1072,7 +1090,7 @@ public class PasswdSafe extends AppCompatActivity
                 }
             });
             if (removed.get()) {
-                finishEdit(true, true, location.getRecord(),
+                finishEdit(EditFinish.DELETE_RECORD, location.getRecord(),
                            location.selectRecord(null), null);
             }
             break;
@@ -1171,30 +1189,68 @@ public class PasswdSafe extends AppCompatActivity
         });
 
         if (doSave.get()) {
-            finishEdit(true, false, null, null, null);
+            finishEdit(EditFinish.PROTECT_RECORD, null, null, null);
         }
     }
 
     /**
      * Finish editing the file
      */
-    private void finishEdit(final boolean save,
-                            final boolean popBack, final String popTag,
+    private void finishEdit(final EditFinish task, final String popTag,
                             final PasswdLocation newLocation,
                             final Runnable postSaveRun)
     {
+        final ObjectHolder<Boolean> save = new ObjectHolder<>(false);
+        switch (task) {
+        case ADD_RECORD:
+        case CHANGE_PASSWORD:
+        case DELETE_RECORD:
+        case EDIT_SAVE_RECORD:
+        case POLICY_EDIT:
+        case PROTECT_RECORD: {
+            save.set(true);
+            break;
+        }
+        case EDIT_NOSAVE_RECORD: {
+            save.set(false);
+            break;
+        }
+        }
+
         Runnable saveRun = new Runnable()
         {
             @Override
             public void run()
             {
-                if (save) {
+                boolean popBack = false;
+                boolean addRecord = false;
+                switch (task) {
+                case ADD_RECORD: {
+                    popBack = true;
+                    addRecord = true;
+                    break;
+                }
+                case CHANGE_PASSWORD:
+                case DELETE_RECORD:
+                case EDIT_NOSAVE_RECORD:
+                case EDIT_SAVE_RECORD: {
+                    popBack = true;
+                    break;
+                }
+                case POLICY_EDIT:
+                case PROTECT_RECORD: {
+                    popBack = false;
+                    break;
+                }
+                }
+
+                if (save.get()) {
                     itsFileDataFrag.refreshFileData();
                 }
                 boolean resetLoc = shouldResetLoc();
 
+                FragmentManager fragMgr = getSupportFragmentManager();
                 if (popBack) {
-                    FragmentManager fragMgr = getSupportFragmentManager();
                     fragMgr.popBackStackImmediate();
 
                     if (popTag != null) {
@@ -1208,7 +1264,18 @@ public class PasswdSafe extends AppCompatActivity
                     }
                 }
 
-                if (resetLoc) {
+                if (addRecord) {
+                    if (itsIsTwoPane) {
+                        changeOpenView(newLocation, false);
+                    } else {
+                        Fragment contentsFrag =
+                                fragMgr.findFragmentById(R.id.content);
+                        if (contentsFrag instanceof PasswdSafeListFragment) {
+                            ((PasswdSafeListFragment)contentsFrag)
+                                    .updateSelection(newLocation);
+                        }
+                    }
+                } else if (resetLoc) {
                     changeOpenView(new PasswdLocation(), true);
                 }
 
@@ -1222,7 +1289,7 @@ public class PasswdSafe extends AppCompatActivity
              */
             private boolean shouldResetLoc()
             {
-                if (!save || (newLocation == null)) {
+                if (!save.get() || (newLocation == null)) {
                     return false;
                 }
 
@@ -1237,7 +1304,7 @@ public class PasswdSafe extends AppCompatActivity
             }
         };
 
-        if (save) {
+        if (save.get()) {
             final ObjectHolder<String> fileId = new ObjectHolder<>("");
             itsFileDataFrag.useFileData(new PasswdFileDataUser()
             {
