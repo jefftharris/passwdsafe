@@ -72,6 +72,7 @@ public class FileListNavDrawerFragment
     private static final int SHOWN_DRAWER_PROVIDERS = 1;
 
     private int itsSelNavItem = -1;
+    private Uri itsSelSyncFilesUri = null;
     private final SparseArray<Uri> itsProviders = new SparseArray<>();
     private int itsNoProvidersNavItem = -1;
     private boolean itsIsShowDrawer;
@@ -89,7 +90,6 @@ public class FileListNavDrawerFragment
     {
         super.onActivityCreated(savedInstanceState);
         // TODO: check file launcher activity
-        // TODO: remember last nav item to restore on startup
         //LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(1, null, this);
     }
@@ -123,6 +123,7 @@ public class FileListNavDrawerFragment
         Menu menu = getNavView().getMenu();
         boolean openDrawer = false;
         int selNavItem = -1;
+        Uri selSyncFilesUri = null;
         switch (mode) {
         case INIT: {
             break;
@@ -138,6 +139,7 @@ public class FileListNavDrawerFragment
             break;
         }
         case SYNC_FILES: {
+            selSyncFilesUri = syncFilesUri;
             for (int i = 0; i < itsProviders.size(); ++i) {
                 if (itsProviders.valueAt(i).equals(syncFilesUri)) {
                     selNavItem = itsProviders.keyAt(i);
@@ -164,6 +166,7 @@ public class FileListNavDrawerFragment
             }
         }
         itsSelNavItem = selNavItem;
+        itsSelSyncFilesUri = selSyncFilesUri;
 
         openDrawer(openDrawer);
     }
@@ -249,6 +252,9 @@ public class FileListNavDrawerFragment
         Menu menu = getNavView().getMenu();
 
         Uri currUri = itsProviders.get(itsSelNavItem);
+        if (currUri == null) {
+            currUri = itsSelSyncFilesUri;
+        }
         if (currUri != null) {
             itsSelNavItem = -1;
         }
