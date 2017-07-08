@@ -7,8 +7,10 @@
  */
 package com.jefftharris.passwdsafe.file;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +20,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.Utils;
@@ -29,8 +34,14 @@ public final class PasswdRecordFilter implements Parcelable
     public enum Type
     {
         QUERY,
-        EXPIRATION
+        EXPIRATION,
+        SIMILAR
     }
+
+    // TODO: remove Parcelable
+    // TODO: split out ExpiryFilter
+    // TODO: check password history
+    // TODO: i18n for similar_to, find_similar
 
     /** Expiration filter type */
     public enum ExpiryFilter
@@ -143,12 +154,16 @@ public final class PasswdRecordFilter implements Parcelable
     /** The expiration time to match on a record's expiration */
     private final long itsExpiryAtMillis;
 
+    /** Matcher for records with similar fields */
+    private final RecordSimilarFields itsSimilarFields;
+
     /** Filter options */
     private final int itsOptions;
 
     public static final String QUERY_MATCH = "";
     private String QUERY_MATCH_TITLE;
     private String QUERY_MATCH_USERNAME;
+    private String QUERY_MATCH_PASSWORD;
     private String QUERY_MATCH_URL;
     private String QUERY_MATCH_EMAIL;
     private String QUERY_MATCH_NOTES;
@@ -160,6 +175,7 @@ public final class PasswdRecordFilter implements Parcelable
         itsSearchQuery = query;
         itsExpiryFilter = ExpiryFilter.ANY;
         itsExpiryAtMillis = 0;
+        itsSimilarFields = null;
         itsOptions = opts;
     }
 
@@ -170,7 +186,19 @@ public final class PasswdRecordFilter implements Parcelable
         itsSearchQuery = null;
         itsExpiryFilter = filter;
         itsExpiryAtMillis = itsExpiryFilter.getExpiryFromNow(customDate);
+        itsSimilarFields = null;
         itsOptions = opts;
+    }
+
+    /** Constructor for similar record */
+    public PasswdRecordFilter(RecordSimilarFields similarFields)
+    {
+        itsType = Type.SIMILAR;
+        itsSearchQuery = null;
+        itsExpiryFilter = null;
+        itsExpiryAtMillis = 0;
+        itsSimilarFields = similarFields;
+        itsOptions = OPTS_DEFAULT;
     }
 
     /** Serializable constructor for expiration */
@@ -180,6 +208,7 @@ public final class PasswdRecordFilter implements Parcelable
         itsSearchQuery = null;
         itsExpiryFilter = filter;
         itsExpiryAtMillis = expiryMillis;
+        itsSimilarFields = null;
         itsOptions = opts;
     }
 
@@ -208,6 +237,9 @@ public final class PasswdRecordFilter implements Parcelable
             dest.writeLong(itsExpiryAtMillis);
             break;
         }
+        case SIMILAR: {
+            break;
+        }
         }
     }
 
@@ -231,6 +263,9 @@ public final class PasswdRecordFilter implements Parcelable
                     return new PasswdRecordFilter(expFilter, expMillis,
                                                   options);
                 }
+                case SIMILAR: {
+                    return null;
+                }
                 }
                 return null;
             }
@@ -250,18 +285,20 @@ public final class PasswdRecordFilter implements Parcelable
                                      PasswdFileData fileData,
                                      Context ctx)
     {
+        if (QUERY_MATCH_TITLE == null) {
+            QUERY_MATCH_TITLE = ctx.getString(R.string.title);
+            QUERY_MATCH_USERNAME = ctx.getString(R.string.username);
+            QUERY_MATCH_PASSWORD = ctx.getString(R.string.password);
+            QUERY_MATCH_URL = ctx.getString(R.string.url);
+            QUERY_MATCH_EMAIL = ctx.getString(R.string.email);
+            QUERY_MATCH_NOTES = ctx.getString(R.string.notes);
+        }
+
+        PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
         String queryMatch = null;
         switch (itsType) {
         case QUERY: {
             if (itsSearchQuery != null) {
-                if (QUERY_MATCH_TITLE == null) {
-                    QUERY_MATCH_TITLE = ctx.getString(R.string.title);
-                    QUERY_MATCH_USERNAME = ctx.getString(R.string.username);
-                    QUERY_MATCH_URL = ctx.getString(R.string.url);
-                    QUERY_MATCH_EMAIL = ctx.getString(R.string.email);
-                    QUERY_MATCH_NOTES = ctx.getString(R.string.notes);
-                }
-
                 if (filterField(fileData.getTitle(rec))) {
                     queryMatch = QUERY_MATCH_TITLE;
                 } else if (filterField(fileData.getUsername(rec))) {
@@ -289,11 +326,38 @@ public final class PasswdRecordFilter implements Parcelable
             }
             break;
         }
+        case SIMILAR: {
+            if (itsSimilarFields.isRecord(passwdRec)) {
+                break;
+            }
+
+            List<String> matches = null;
+            if (itsSimilarFields.matchTitle(fileData.getTitle(rec))) {
+                //noinspection ConstantConditions
+                matches = addMatch(matches, QUERY_MATCH_TITLE);
+            }
+            if (itsSimilarFields.matchUserName(fileData.getUsername(rec))) {
+                matches = addMatch(matches, QUERY_MATCH_USERNAME);
+            }
+            if (itsSimilarFields.matchPassword(
+                    passwdRec.getPassword(fileData))) {
+                matches = addMatch(matches, QUERY_MATCH_PASSWORD);
+            }
+            if (itsSimilarFields.matchUrl(fileData.getURL(rec))) {
+                matches = addMatch(matches, QUERY_MATCH_URL);
+            }
+            if (itsSimilarFields.matchEmail(fileData.getEmail(rec))) {
+                matches = addMatch(matches, QUERY_MATCH_EMAIL);
+            }
+            if (matches != null) {
+                queryMatch = TextUtils.join(", ", matches);
+            }
+            break;
+        }
         }
 
         if ((queryMatch != null) &&
             (itsOptions != PasswdRecordFilter.OPTS_DEFAULT)) {
-            PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
             if (passwdRec != null) {
                 for (PwsRecord ref: passwdRec.getRefsToRecord()) {
                     PasswdRecord passwdRef = fileData.getPasswdRecord(ref);
@@ -337,7 +401,8 @@ public final class PasswdRecordFilter implements Parcelable
         case QUERY: {
             return true;
         }
-        case EXPIRATION: {
+        case EXPIRATION:
+        case SIMILAR: {
             return false;
         }
         }
@@ -377,6 +442,10 @@ public final class PasswdRecordFilter implements Parcelable
             }
             }
         }
+        case SIMILAR: {
+            return ctx.getString(R.string.similar_to,
+                                 itsSimilarFields.getDescription());
+        }
         }
         return "";
     }
@@ -407,6 +476,9 @@ public final class PasswdRecordFilter implements Parcelable
                 ((itsExpiryFilter == obj.itsExpiryFilter) &&
                  (itsExpiryAtMillis == obj.itsExpiryAtMillis));
         }
+        case SIMILAR: {
+            return itsSimilarFields.equals(obj.itsSimilarFields);
+        }
         }
         return false;
     }
@@ -430,4 +502,17 @@ public final class PasswdRecordFilter implements Parcelable
         }
     }
 
+    /**
+     * Add a match to the list, creating the list if needed
+     */
+    private static @NonNull List<String> addMatch(
+            @Nullable List<String> matches,
+            String match)
+    {
+        if (matches == null) {
+            matches = new ArrayList<>();
+        }
+        matches.add(match);
+        return matches;
+    }
 }

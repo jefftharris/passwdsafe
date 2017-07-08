@@ -904,6 +904,28 @@ public class PasswdSafe extends AppCompatActivity
         dialog.show(getSupportFragmentManager(), "Delete record");
     }
 
+    @Override
+    public void filterSimilarRecords(final PasswdLocation location)
+    {
+        if (!isFileOpen() || !location.isRecord()) {
+            return;
+        }
+        final ObjectHolder<PasswdRecordFilter> filter = new ObjectHolder<>();
+        itsFileDataFrag.useFileData(new PasswdFileDataUser()
+        {
+            @Override
+            public void useFileData(@NonNull PasswdFileData fileData)
+            {
+                PasswdFileDataView dataView = itsFileDataFrag.getFileDataView();
+                String recordUuid = location.getRecord();
+                filter.set(dataView.createSimilarRecordFilter(recordUuid,
+                                                              fileData));
+            }
+        });
+
+        setRecordFilter(filter.get());
+    }
+
     /**
      * Update the view for opening a file
      */

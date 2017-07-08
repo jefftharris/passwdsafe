@@ -20,6 +20,7 @@ import com.jefftharris.passwdsafe.file.PasswdExpiration;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
+import com.jefftharris.passwdsafe.file.RecordSimilarFields;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
 
@@ -318,6 +319,30 @@ public final class PasswdFileDataView
         return filter;
     }
 
+    /**
+     * Create a record filter which matches records similar to the given one
+     */
+    public PasswdRecordFilter createSimilarRecordFilter(String recUuid,
+                                                        PasswdFileData fileData)
+    {
+        PwsRecord rec = fileData.getRecord(recUuid);
+        if (rec == null) {
+            return null;
+        }
+
+        PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
+        if (passwdRec == null) {
+            return null;
+        }
+
+        return new PasswdRecordFilter(
+                new RecordSimilarFields(
+                        passwdRec, fileData, itsIsSearchCaseSensitive));
+    }
+
+    /**
+     * Set the record filter
+     */
     public synchronized void setRecordFilter(PasswdRecordFilter filter)
     {
         itsFilter = filter;

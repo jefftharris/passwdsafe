@@ -51,6 +51,9 @@ public class PasswdSafeRecordFragment
 
         /** Update the view for a record */
         void updateViewRecord(PasswdLocation location);
+
+        /** Find similar records */
+        void filterSimilarRecords(PasswdLocation location);
     }
 
     private boolean itsCanEdit = false;
@@ -186,6 +189,13 @@ public class PasswdSafeRecordFragment
             Listener listener = getListener();
             if (listener != null) {
                 listener.editRecord(getLocation());
+            }
+            return true;
+        }
+        case R.id.menu_find_similar: {
+            Listener listener = getListener();
+            if (listener != null) {
+                listener.filterSimilarRecords(getLocation());
             }
             return true;
         }

@@ -136,6 +136,7 @@
     <string name="file_operations">File Operations…</string>
     <string name="file_password_encoding">File password encoding</string>
     <string name="files">Files</string>
+    <string name="find_similar">Find Similar</string>
     <string name="fingerprint_not_recognized">Fingerprint not recognized</string>
     <string name="generate">Generate</string>
     <string name="generate_password">Generate Password</string>
@@ -324,6 +325,7 @@
     <string name="show_backup_files">Show backup files</string>
     <string name="show_password">Show Password</string>
     <string name="show_passwords">Show Passwords</string>
+    <string name="similar_to">Similar to %1$s</string>
     <string name="sort">Sort</string>
     <string name="sort_ascending">Sort ascending</string>
     <string name="symbols_used_by_default">Symbols used by default in a password policy: %1$s</string>
