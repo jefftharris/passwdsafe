@@ -36,7 +36,6 @@ public final class PasswdRecordFilter
 
     // TODO: check password history
     // TODO: i18n for similar_to, find_similar
-    // TODO: add checks for username and email being similar
 
     /** Default options to match */
     public static final int OPTS_DEFAULT =          0;
@@ -166,7 +165,9 @@ public final class PasswdRecordFilter
                 //noinspection ConstantConditions
                 matches = addMatch(matches, QUERY_MATCH_TITLE);
             }
-            if (itsSimilarFields.matchUserName(fileData.getUsername(rec))) {
+            String username = fileData.getUsername(rec);
+            if (itsSimilarFields.matchUserName(username) ||
+                    itsSimilarFields.matchEmail(username)) {
                 matches = addMatch(matches, QUERY_MATCH_USERNAME);
             }
             if (itsSimilarFields.matchPassword(
@@ -176,7 +177,9 @@ public final class PasswdRecordFilter
             if (itsSimilarFields.matchUrl(fileData.getURL(rec))) {
                 matches = addMatch(matches, QUERY_MATCH_URL);
             }
-            if (itsSimilarFields.matchEmail(fileData.getEmail(rec))) {
+            String email = fileData.getEmail(rec);
+            if (itsSimilarFields.matchEmail(email) ||
+                    itsSimilarFields.matchUserName(email)) {
                 matches = addMatch(matches, QUERY_MATCH_EMAIL);
             }
             if (matches != null) {
