@@ -98,16 +98,6 @@ public final class RecordSimilarFields
         return PasswdRecord.getRecordId(null, itsTitle, itsUserName);
     }
 
-    @Override
-    public final boolean equals(Object o)
-    {
-        if (!(o instanceof RecordSimilarFields)) {
-            return false;
-        }
-        RecordSimilarFields obj = (RecordSimilarFields)o;
-        return TextUtils.equals(getDescription(), obj.getDescription());
-    }
-
     /**
      * Does the similar field value match the value from a record
      */

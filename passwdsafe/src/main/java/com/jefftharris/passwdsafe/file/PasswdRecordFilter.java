@@ -16,8 +16,6 @@ import java.util.regex.Pattern;
 import org.pwsafe.lib.file.PwsRecord;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -26,7 +24,7 @@ import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.Utils;
 
 /** A filter for records */
-public final class PasswdRecordFilter implements Parcelable
+public final class PasswdRecordFilter
 {
     /** Type of filter */
     public enum Type
@@ -36,7 +34,6 @@ public final class PasswdRecordFilter implements Parcelable
         SIMILAR
     }
 
-    // TODO: remove Parcelable
     // TODO: check password history
     // TODO: i18n for similar_to, find_similar
     // TODO: add checks for username and email being similar
@@ -108,83 +105,6 @@ public final class PasswdRecordFilter implements Parcelable
         itsSimilarFields = similarFields;
         itsOptions = OPTS_DEFAULT;
     }
-
-    /** Serializable constructor for expiration */
-    private PasswdRecordFilter(PasswdExpiryFilter filter,
-                               long expiryMillis,
-                               int opts)
-    {
-        itsType = Type.EXPIRATION;
-        itsSearchQuery = null;
-        itsExpiryFilter = filter;
-        itsExpiryAtMillis = expiryMillis;
-        itsSimilarFields = null;
-        itsOptions = opts;
-    }
-
-    /* (non-Javadoc)
-     * @see android.os.Parcelable#describeContents()
-     */
-    public int describeContents()
-    {
-        return 0;
-    }
-
-    /* (non-Javadoc)
-     * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
-     */
-    public void writeToParcel(Parcel dest, int flags)
-    {
-        dest.writeString(itsType.name());
-        dest.writeInt(itsOptions);
-        switch (itsType) {
-        case QUERY: {
-            dest.writeSerializable(itsSearchQuery);
-            break;
-        }
-        case EXPIRATION: {
-            dest.writeString(itsExpiryFilter.name());
-            dest.writeLong(itsExpiryAtMillis);
-            break;
-        }
-        case SIMILAR: {
-            break;
-        }
-        }
-    }
-
-    public static final Parcelable.Creator<PasswdRecordFilter> CREATOR =
-        new Parcelable.Creator<PasswdRecordFilter>()
-        {
-            public PasswdRecordFilter createFromParcel(Parcel source)
-            {
-                String typeStr = source.readString();
-                Type type = Type.valueOf(typeStr);
-                int options = source.readInt();
-                switch (type) {
-                case QUERY: {
-                    Pattern query = (Pattern) source.readSerializable();
-                    return new PasswdRecordFilter(query, options);
-                }
-                case EXPIRATION: {
-                    PasswdExpiryFilter expFilter =
-                        PasswdExpiryFilter.valueOf(source.readString());
-                    long expMillis = source.readLong();
-                    return new PasswdRecordFilter(expFilter, expMillis,
-                                                  options);
-                }
-                case SIMILAR: {
-                    return null;
-                }
-                }
-                return null;
-            }
-
-            public PasswdRecordFilter[] newArray(int size)
-            {
-                return new PasswdRecordFilter[size];
-            }
-        };
 
     /**
      * Filter a record
@@ -358,39 +278,6 @@ public final class PasswdRecordFilter implements Parcelable
         }
         }
         return "";
-    }
-
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public final boolean equals(Object o)
-    {
-        if (!(o instanceof PasswdRecordFilter)) {
-            return false;
-        }
-        PasswdRecordFilter obj = (PasswdRecordFilter)o;
-        if ((itsType != obj.itsType) ||
-            (itsOptions != obj.itsOptions)) {
-            return false;
-        }
-        switch (itsType) {
-        case QUERY: {
-            return
-                itsSearchQuery.pattern().equals(obj.itsSearchQuery.pattern()) &&
-                (itsSearchQuery.flags() == obj.itsSearchQuery.flags());
-        }
-        case EXPIRATION: {
-            return
-                ((itsExpiryFilter == obj.itsExpiryFilter) &&
-                 (itsExpiryAtMillis == obj.itsExpiryAtMillis));
-        }
-        case SIMILAR: {
-            return itsSimilarFields.equals(obj.itsSimilarFields);
-        }
-        }
-        return false;
     }
 
 
