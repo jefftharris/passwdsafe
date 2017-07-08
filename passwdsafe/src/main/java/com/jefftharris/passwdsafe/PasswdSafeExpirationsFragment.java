@@ -19,10 +19,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
-import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.util.Pair;
@@ -53,8 +53,7 @@ public class PasswdSafeExpirationsFragment
         void updateViewExpirations();
 
         /** Set the expiration record filter */
-        void setRecordExpiryFilter(PasswdRecordFilter.ExpiryFilter filter,
-                                   Date customDate);
+        void setRecordExpiryFilter(PasswdExpiryFilter filter, Date customDate);
     }
 
     private static final String TAG = "PasswdSafeExpirationsFragment";
@@ -96,8 +95,7 @@ public class PasswdSafeExpirationsFragment
     @Override
     public void onItemClick(AdapterView<?> list, View view, int pos, long id)
     {
-        PasswdRecordFilter.ExpiryFilter filter =
-                PasswdRecordFilter.ExpiryFilter.fromIdx(pos);
+        PasswdExpiryFilter filter = PasswdExpiryFilter.fromIdx(pos);
         PasswdSafeUtil.dbginfo(TAG, "Filter %s", filter);
         switch (filter) {
         case EXPIRED:
@@ -156,8 +154,8 @@ public class PasswdSafeExpirationsFragment
         date.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
         date.set(Calendar.MILLISECOND, 0);
         date.add(Calendar.DAY_OF_MONTH, 1);
-        listener.setRecordExpiryFilter(
-                PasswdRecordFilter.ExpiryFilter.CUSTOM, date.getTime());
+        listener.setRecordExpiryFilter(PasswdExpiryFilter.CUSTOM,
+                                       date.getTime());
     }
 
     @Override

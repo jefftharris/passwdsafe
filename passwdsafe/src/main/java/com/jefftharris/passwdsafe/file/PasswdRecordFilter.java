@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe.file;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,7 +16,6 @@ import java.util.regex.Pattern;
 import org.pwsafe.lib.file.PwsRecord;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -39,101 +37,9 @@ public final class PasswdRecordFilter implements Parcelable
     }
 
     // TODO: remove Parcelable
-    // TODO: split out ExpiryFilter
     // TODO: check password history
     // TODO: i18n for similar_to, find_similar
-
-    /** Expiration filter type */
-    public enum ExpiryFilter
-    {
-        // Order must match expire_filters string array
-        EXPIRED         (0),
-        TODAY           (1),
-        IN_A_WEEK       (2),
-        IN_TWO_WEEKS    (3),
-        IN_A_MONTH      (4),
-        IN_A_YEAR       (5),
-        ANY             (-1),
-        CUSTOM          (-1);
-
-        private final int itsExpireRecordsIdx;
-
-        /** Constructor */
-        ExpiryFilter(int expireRecordsIdx)
-        {
-            itsExpireRecordsIdx = expireRecordsIdx;
-        }
-
-        /** Get the filter value from its value index */
-        public static ExpiryFilter fromIdx(int idx)
-        {
-            if ((idx >= 0) && (idx < values().length)) {
-                return values()[idx];
-            }
-            return ANY;
-        }
-
-        /**
-         * Get a string indicating how many records expire based on the filter
-         * type
-         */
-        public String getRecordsExpireStr(int numRecords, Resources res)
-        {
-            if (itsExpireRecordsIdx == -1) {
-                throw new IllegalArgumentException("No str");
-            }
-            String[] strs = res.getStringArray((numRecords == 1) ?
-                                               R.array.expire_filter_record :
-                                               R.array.expire_filter_records);
-            return String.format(strs[itsExpireRecordsIdx], numRecords);
-        }
-
-        /** Get the expiration date from now based on the filter type */
-        public long getExpiryFromNow(Date customDate)
-        {
-            Calendar expiry = Calendar.getInstance();
-            switch (this) {
-            case EXPIRED: {
-                break;
-            }
-            case TODAY: {
-                expiry.add(Calendar.DAY_OF_MONTH, 1);
-                expiry.set(Calendar.HOUR_OF_DAY, 0);
-                expiry.set(Calendar.MINUTE, 0);
-                expiry.set(Calendar.SECOND, 0);
-                expiry.set(Calendar.MILLISECOND, 0);
-                break;
-            }
-            case IN_A_WEEK: {
-                expiry.add(Calendar.WEEK_OF_YEAR, 1);
-                break;
-            }
-            case IN_TWO_WEEKS: {
-                expiry.add(Calendar.WEEK_OF_YEAR, 2);
-                break;
-            }
-            case IN_A_MONTH: {
-                expiry.add(Calendar.MONTH, 1);
-                break;
-            }
-            case IN_A_YEAR: {
-                expiry.add(Calendar.YEAR, 1);
-                break;
-            }
-            case ANY: {
-                expiry.setTimeInMillis(Long.MAX_VALUE);
-                break;
-            }
-            case CUSTOM: {
-                if (customDate != null) {
-                    expiry.setTime(customDate);
-                }
-                break;
-            }
-            }
-            return expiry.getTimeInMillis();
-        }
-    }
+    // TODO: add checks for username and email being similar
 
     /** Default options to match */
     public static final int OPTS_DEFAULT =          0;
@@ -149,7 +55,7 @@ public final class PasswdRecordFilter implements Parcelable
     private final Pattern itsSearchQuery;
 
     /** Expiration filter type */
-    private final ExpiryFilter itsExpiryFilter;
+    private final PasswdExpiryFilter itsExpiryFilter;
 
     /** The expiration time to match on a record's expiration */
     private final long itsExpiryAtMillis;
@@ -173,14 +79,16 @@ public final class PasswdRecordFilter implements Parcelable
     {
         itsType = Type.QUERY;
         itsSearchQuery = query;
-        itsExpiryFilter = ExpiryFilter.ANY;
+        itsExpiryFilter = PasswdExpiryFilter.ANY;
         itsExpiryAtMillis = 0;
         itsSimilarFields = null;
         itsOptions = opts;
     }
 
     /** Constructor for expiration */
-    public PasswdRecordFilter(ExpiryFilter filter, Date customDate, int opts)
+    public PasswdRecordFilter(PasswdExpiryFilter filter,
+                              Date customDate,
+                              int opts)
     {
         itsType = Type.EXPIRATION;
         itsSearchQuery = null;
@@ -202,7 +110,9 @@ public final class PasswdRecordFilter implements Parcelable
     }
 
     /** Serializable constructor for expiration */
-    private PasswdRecordFilter(ExpiryFilter filter, long expiryMillis, int opts)
+    private PasswdRecordFilter(PasswdExpiryFilter filter,
+                               long expiryMillis,
+                               int opts)
     {
         itsType = Type.EXPIRATION;
         itsSearchQuery = null;
@@ -257,8 +167,8 @@ public final class PasswdRecordFilter implements Parcelable
                     return new PasswdRecordFilter(query, options);
                 }
                 case EXPIRATION: {
-                    ExpiryFilter expFilter =
-                        ExpiryFilter.valueOf(source.readString());
+                    PasswdExpiryFilter expFilter =
+                        PasswdExpiryFilter.valueOf(source.readString());
                     long expMillis = source.readLong();
                     return new PasswdRecordFilter(expFilter, expMillis,
                                                   options);

@@ -530,7 +530,7 @@
         <item>Verknüpfung</item>
     </string-array>
 
-    <!-- Order must match values of PasswdRecordFilter.ExpiryFilter -->
+    <!-- Order must match values of PasswdExpiryFilter -->
     <string-array name="expire_filters">
         <item>Abgelaufen</item>
         <item>Heute</item>
@@ -542,7 +542,7 @@
         <item>Eigener Zeitraum</item>
     </string-array>
 
-    <!-- Indexes must match PasswdRecordFilter.ExpiryFilter -->
+    <!-- Indexes must match PasswdExpiryFilter -->
     <string-array name="expire_filter_record">
         <item>1 Passwort ist abgelaufen</item>
         <item>1 Passwort läuft heute ab</item>
@@ -552,7 +552,7 @@
         <item>1 Passwort läuft innerhalb 1 Jahr ab</item>
     </string-array>
 
-    <!-- Indexes must match PasswdRecordFilter.ExpiryFilter -->
+    <!-- Indexes must match PasswdExpiryFilter -->
     <string-array name="expire_filter_records">
         <item>%1$s Passwörter ist abgelaufen</item>
         <item>%1$s Passwörter läuft heute ab</item>

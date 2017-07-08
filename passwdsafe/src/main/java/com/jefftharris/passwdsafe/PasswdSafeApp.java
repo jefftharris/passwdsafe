@@ -18,9 +18,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
-import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
 public final class PasswdSafeApp extends Application
@@ -236,8 +236,8 @@ public final class PasswdSafeApp extends Application
 
     /** Get the password expiration filter for notifications from a
      * preference */
-    private static PasswdRecordFilter.ExpiryFilter
-        getPasswdExpiryNotifPref(SharedPreferences prefs)
+    private static PasswdExpiryFilter getPasswdExpiryNotifPref(
+            SharedPreferences prefs)
     {
         return Preferences.getPasswdExpiryNotifPref(prefs).getFilter();
     }

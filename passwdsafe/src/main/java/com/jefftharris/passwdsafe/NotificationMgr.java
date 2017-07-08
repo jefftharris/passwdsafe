@@ -35,12 +35,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdExpiration;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataObserver;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
-import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -79,13 +79,13 @@ public class NotificationMgr implements PasswdFileDataObserver
     private final HashMap<Long, UriNotifInfo> itsUriNotifs = new HashMap<>();
     private final HashSet<Uri> itsNotifUris = new HashSet<>();
     private int itsNextNotifId = 1;
-    private PasswdRecordFilter.ExpiryFilter itsExpiryFilter = null;
+    private PasswdExpiryFilter itsExpiryFilter = null;
     private PendingIntent itsTimerIntent;
 
     /** Constructor */
     public NotificationMgr(Context ctx,
                            AlarmManager alarmMgr,
-                           PasswdRecordFilter.ExpiryFilter expiryFilter)
+                           PasswdExpiryFilter expiryFilter)
     {
         itsCtx = ctx;
         itsAlarmMgr = alarmMgr;
@@ -211,7 +211,7 @@ public class NotificationMgr implements PasswdFileDataObserver
 
 
     /** Set the password expiration filter */
-    public void setPasswdExpiryFilter(PasswdRecordFilter.ExpiryFilter filter)
+    public void setPasswdExpiryFilter(PasswdExpiryFilter filter)
     {
         itsExpiryFilter = filter;
         loadEntries();

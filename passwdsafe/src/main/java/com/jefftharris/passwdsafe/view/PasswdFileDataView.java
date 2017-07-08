@@ -16,6 +16,7 @@ import android.util.TypedValue;
 
 import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdExpiration;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
@@ -388,7 +389,7 @@ public final class PasswdFileDataView
     public String getExpiredRecordsStr(Context ctx)
     {
         String str = null;
-        PasswdRecordFilter.ExpiryFilter filter = itsExpiryNotifPref.getFilter();
+        PasswdExpiryFilter filter = itsExpiryNotifPref.getFilter();
         if (filter != null) {
             str = filter.getRecordsExpireStr(itsNumExpired, ctx.getResources());
         }
@@ -398,7 +399,7 @@ public final class PasswdFileDataView
     /**
      * Get the filter for expired records
      */
-    public PasswdRecordFilter.ExpiryFilter getExpiredRecordsFilter()
+    public PasswdExpiryFilter getExpiredRecordsFilter()
     {
         return itsExpiryNotifPref.getFilter();
     }
@@ -466,7 +467,7 @@ public final class PasswdFileDataView
         }
         updateCurrentGroup();
 
-        PasswdRecordFilter.ExpiryFilter filter = itsExpiryNotifPref.getFilter();
+        PasswdExpiryFilter filter = itsExpiryNotifPref.getFilter();
         if (filter != null) {
             long expiration = filter.getExpiryFromNow(null);
             for (PasswdRecord rec : fileData.getPasswdRecords()) {

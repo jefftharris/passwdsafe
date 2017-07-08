@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.test.file;
 
 import android.os.Parcel;
 
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.Utils;
 
@@ -43,7 +44,7 @@ public class PasswdRecordFilterTest
     public void testExpiryParcel()
     {
         PasswdRecordFilter filter =
-            new PasswdRecordFilter(PasswdRecordFilter.ExpiryFilter.TODAY, null,
+            new PasswdRecordFilter(PasswdExpiryFilter.TODAY, null,
                                    PasswdRecordFilter.OPTS_NO_ALIAS);
         doParcelTest(filter, "Password expires today");
     }
@@ -55,7 +56,7 @@ public class PasswdRecordFilterTest
     {
         Date now = new Date();
         PasswdRecordFilter filter =
-            new PasswdRecordFilter(PasswdRecordFilter.ExpiryFilter.CUSTOM,
+            new PasswdRecordFilter(PasswdExpiryFilter.CUSTOM,
                                    now,
                                    PasswdRecordFilter.OPTS_NO_SHORTCUT);
         doParcelTest(filter, "Password expires before " +

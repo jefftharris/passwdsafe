@@ -35,6 +35,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
@@ -626,7 +627,7 @@ public class PasswdSafe extends AppCompatActivity
             break;
         }
         case R.id.expiry_panel: {
-            PasswdRecordFilter.ExpiryFilter filter =
+            PasswdExpiryFilter filter =
                     itsFileDataFrag.getFileDataView().getExpiredRecordsFilter();
             if (filter != null) {
                 setRecordExpiryFilter(filter, null);
@@ -1028,7 +1029,7 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public void setRecordExpiryFilter(PasswdRecordFilter.ExpiryFilter filter,
+    public void setRecordExpiryFilter(PasswdExpiryFilter filter,
                                       Date customDate)
     {
         PasswdRecordFilter recFilter =
