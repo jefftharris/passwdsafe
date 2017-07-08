@@ -72,6 +72,7 @@ public class PasswdSafeFileDataFragment extends Fragment
 
         // Called when app is being finalized but not when rotated
         PasswdSafeUtil.dbginfo(TAG, "onDestroy");
+        itsFileDataView.onDestroy();
         setFileData(null);
     }
 

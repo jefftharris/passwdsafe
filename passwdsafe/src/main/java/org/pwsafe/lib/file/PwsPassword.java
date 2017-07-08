@@ -94,6 +94,24 @@ public class PwsPassword implements Closeable
     }
 
     /**
+     * Does the password equals the passed password
+     */
+    public boolean equals(String password)
+    {
+        if ((password == null) || (itsPasswd.length != password.length())) {
+            return false;
+        }
+
+        for (int i = 0; i < itsPasswd.length; ++i) {
+            if (itsPasswd[i] != password.charAt(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Close the password and clear any stored values
      */
     @Override

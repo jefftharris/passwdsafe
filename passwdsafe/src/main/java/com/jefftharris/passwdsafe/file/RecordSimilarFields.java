@@ -11,19 +11,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.pwsafe.lib.file.PwsPassword;
 import org.pwsafe.lib.file.PwsRecord;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  *  Matcher for records with similar fields
  */
-public final class RecordSimilarFields
+public final class RecordSimilarFields implements Closeable
 {
     private final String itsTitle;
     private final String itsUserName;
-    private final List<String> itsPasswords;
+    private final List<PwsPassword> itsPasswords;
     private final String itsUrl;
     private final String itsEmail;
     private final String itsRecUuid;
@@ -44,8 +46,8 @@ public final class RecordSimilarFields
         itsRecUuid = passwdRec.getUUID();
         itsIsCaseSensitive = caseSensitive;
 
-        List<String> passwords = addPassword(null,
-                                             passwdRec.getPassword(fileData));
+        List<PwsPassword> passwords =
+                addPassword(null, passwdRec.getPassword(fileData));
         PasswdHistory history = fileData.getPasswdHistory(rec);
         if (history != null) {
             for (PasswdHistory.Entry entry: history.getPasswds()) {
@@ -125,6 +127,16 @@ public final class RecordSimilarFields
         return PasswdRecord.getRecordId(null, itsTitle, itsUserName);
     }
 
+    @Override
+    public void close()
+    {
+        if (itsPasswords != null) {
+            for (PwsPassword password: itsPasswords) {
+                password.close();
+            }
+        }
+    }
+
     /**
      * Does the similar field value match the value from a record
      */
@@ -149,8 +161,8 @@ public final class RecordSimilarFields
      */
     private boolean matchPassword(@NonNull String recPassword)
     {
-        for (String password: itsPasswords) {
-            if (recPassword.equals(password)) {
+        for (PwsPassword password: itsPasswords) {
+            if (password.equals(recPassword)) {
                 return true;
             }
         }
@@ -160,8 +172,8 @@ public final class RecordSimilarFields
     /**
      * Add a password to the list, creating the list if needed
      */
-    private static List<String> addPassword(List<String> passwords,
-                                            @Nullable String password)
+    private static List<PwsPassword> addPassword(List<PwsPassword> passwords,
+                                                 @Nullable String password)
     {
         if (TextUtils.isEmpty(password)) {
             return passwords;
@@ -170,7 +182,7 @@ public final class RecordSimilarFields
         if (passwords == null) {
             passwords = new ArrayList<>();
         }
-        passwords.add(password);
+        passwords.add(new PwsPassword(password));
         return passwords;
     }
 }

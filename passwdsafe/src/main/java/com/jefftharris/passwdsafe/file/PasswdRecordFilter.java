@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.file;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +25,7 @@ import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.Utils;
 
 /** A filter for records */
-public final class PasswdRecordFilter
+public final class PasswdRecordFilter implements Closeable
 {
     /** Type of filter */
     public enum Type
@@ -35,7 +36,6 @@ public final class PasswdRecordFilter
     }
 
     // TODO: i18n for similar_to, find_similar
-    // TODO: Use PwsPassword for similar
 
     /** Default options to match */
     public static final int OPTS_DEFAULT =          0;
@@ -284,6 +284,13 @@ public final class PasswdRecordFilter
         return "";
     }
 
+    @Override
+    public void close()
+    {
+        if (itsSimilarFields != null) {
+            itsSimilarFields.close();
+        }
+    }
 
     /** Does the filter have the given options */
     private boolean hasOptions(int opts)
