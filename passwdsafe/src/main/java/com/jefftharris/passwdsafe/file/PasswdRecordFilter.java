@@ -34,8 +34,8 @@ public final class PasswdRecordFilter
         SIMILAR
     }
 
-    // TODO: check password history
     // TODO: i18n for similar_to, find_similar
+    // TODO: Use PwsPassword for similar
 
     /** Default options to match */
     public static final int OPTS_DEFAULT =          0;
@@ -171,7 +171,8 @@ public final class PasswdRecordFilter
                 matches = addMatch(matches, QUERY_MATCH_USERNAME);
             }
             if (itsSimilarFields.matchPassword(
-                    passwdRec.getPassword(fileData))) {
+                    passwdRec.getPassword(fileData),
+                    fileData.getPasswdHistory(rec))) {
                 matches = addMatch(matches, QUERY_MATCH_PASSWORD);
             }
             if (itsSimilarFields.matchUrl(fileData.getURL(rec))) {

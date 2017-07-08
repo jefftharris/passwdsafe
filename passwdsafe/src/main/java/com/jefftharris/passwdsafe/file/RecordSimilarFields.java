@@ -8,9 +8,13 @@
 package com.jefftharris.passwdsafe.file;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.pwsafe.lib.file.PwsRecord;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  Matcher for records with similar fields
@@ -19,7 +23,7 @@ public final class RecordSimilarFields
 {
     private final String itsTitle;
     private final String itsUserName;
-    private final String itsPassword;
+    private final List<String> itsPasswords;
     private final String itsUrl;
     private final String itsEmail;
     private final String itsRecUuid;
@@ -35,11 +39,20 @@ public final class RecordSimilarFields
         PwsRecord rec = passwdRec.getRecord();
         itsTitle = getField(fileData.getTitle(rec));
         itsUserName = getField(fileData.getUsername(rec));
-        itsPassword = getField(passwdRec.getPassword(fileData));
         itsUrl = getField(fileData.getURL(rec));
         itsEmail = getField(fileData.getEmail(rec));
         itsRecUuid = passwdRec.getUUID();
         itsIsCaseSensitive = caseSensitive;
+
+        List<String> passwords = addPassword(null,
+                                             passwdRec.getPassword(fileData));
+        PasswdHistory history = fileData.getPasswdHistory(rec);
+        if (history != null) {
+            for (PasswdHistory.Entry entry: history.getPasswds()) {
+                passwords = addPassword(passwords, entry.getPasswd());
+            }
+        }
+        itsPasswords = passwords;
     }
 
     /**
@@ -67,11 +80,25 @@ public final class RecordSimilarFields
     }
 
     /**
-     * Does the password match
+     * Does the password or history match
      */
-    public boolean matchPassword(String recPassword)
+    public boolean matchPassword(String recPassword, PasswdHistory history)
     {
-        return matchField(itsPassword, recPassword);
+        if ((recPassword == null) || (history == null) ||
+            (itsPasswords == null)) {
+            return false;
+        }
+
+        if (matchPassword(recPassword)) {
+            return true;
+        }
+        for (PasswdHistory.Entry entry: history.getPasswds()) {
+            if (matchPassword(entry.getPasswd())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -115,5 +142,35 @@ public final class RecordSimilarFields
     private static String getField(String value)
     {
         return TextUtils.isEmpty(value) ? null : value;
+    }
+
+    /**
+     * Does the password match
+     */
+    private boolean matchPassword(@NonNull String recPassword)
+    {
+        for (String password: itsPasswords) {
+            if (recPassword.equals(password)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Add a password to the list, creating the list if needed
+     */
+    private static List<String> addPassword(List<String> passwords,
+                                            @Nullable String password)
+    {
+        if (TextUtils.isEmpty(password)) {
+            return passwords;
+        }
+
+        if (passwords == null) {
+            passwords = new ArrayList<>();
+        }
+        passwords.add(password);
+        return passwords;
     }
 }
