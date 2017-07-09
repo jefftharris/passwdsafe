@@ -223,10 +223,10 @@ public class PasswdSafeRecordFragment
      */
     private void refresh()
     {
-        useRecordInfo(new RecordInfoUser()
+        useRecordInfo(new RecordInfoUser<Void>()
         {
             @Override
-            public void useRecordInfo(@NonNull RecordInfo info)
+            public Void useRecordInfo(@NonNull RecordInfo info)
             {
                 itsCanEdit = info.itsFileData.canEdit();
                 itsTitle = info.itsFileData.getTitle(info.itsRec);
@@ -247,6 +247,7 @@ public class PasswdSafeRecordFragment
                     break;
                 }
                 }
+                return null;
             }
         });
         updateNotesTab();

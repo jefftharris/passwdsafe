@@ -111,13 +111,14 @@ public class PasswdSafeChangePasswordFragment
     public void onResume()
     {
         super.onResume();
-        useFileData(new PasswdFileDataUser()
+        useFileData(new PasswdFileDataUser<Void>()
         {
             @Override
-            public void useFileData(@NonNull PasswdFileData fileData)
+            public Void useFileData(@NonNull PasswdFileData fileData)
             {
                 itsTitle.setText(fileData.getUri().getIdentifier(getContext(),
                                                                  true));
+                return null;
             }
         });
         getListener().updateViewChangingPassword();
@@ -174,12 +175,13 @@ public class PasswdSafeChangePasswordFragment
         final Owner<PwsPassword> passwd =
                 new Owner<>(new PwsPassword(itsPassword.getText()));
         try {
-            useFileData(new PasswdFileDataUser()
+            useFileData(new PasswdFileDataUser<Void>()
             {
                 @Override
-                public void useFileData(@NonNull PasswdFileData fileData)
+                public Void useFileData(@NonNull PasswdFileData fileData)
                 {
                     fileData.changePasswd(passwd.pass());
+                    return null;
                 }
             });
         } finally {

@@ -467,11 +467,13 @@ public class PasswdSafeIME extends InputMethodService
      */
     private void refresh(@Nullable final RefreshUser user)
     {
-        final ObjectHolder<Pair<String, String>> labels = new ObjectHolder<>();
-        PasswdSafeFileDataFragment.useOpenFileData(new PasswdFileDataUser()
+        Pair<String, String> labels =
+                PasswdSafeFileDataFragment.useOpenFileData(
+                        new PasswdFileDataUser<Pair<String, String>>()
         {
             @Override
-            public void useFileData(@NonNull PasswdFileData fileData)
+            public Pair<String, String> useFileData(
+                    @NonNull PasswdFileData fileData)
             {
                 String fileLabel = fileData.getUri().getIdentifier(
                         PasswdSafeIME.this, true);
@@ -489,19 +491,20 @@ public class PasswdSafeIME extends InputMethodService
                     recLabel = getString(R.string.none_selected_open);
                 }
 
-                labels.set(new Pair<>(fileLabel, recLabel));
+                Pair<String, String> labels = new Pair<>(fileLabel, recLabel);
                 if (user != null) {
                     user.refresh(fileData, rec);
                 }
+                return labels;
             }
         });
 
         StringBuilder label = new StringBuilder();
-        if (labels.get() != null) {
+        if (labels != null) {
             label.append(getString(R.string.record)).append(": ");
-            label.append(labels.get().first);
+            label.append(labels.first);
             label.append(" - ");
-            label.append(labels.get().second);
+            label.append(labels.second);
         } else {
             label.append(getString(R.string.file)).append(": ")
                     .append(getString(R.string.none_selected_open));

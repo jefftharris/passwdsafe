@@ -27,7 +27,7 @@ public abstract class AbstractPasswdSafeFileDataFragment
     public interface Listener
     {
         /** Use the file data */
-        void useFileData(PasswdFileDataUser user);
+        <RetT> RetT useFileData(PasswdFileDataUser<RetT> user);
 
         /** Is the navigation drawer closed */
         boolean isNavDrawerClosed();
@@ -76,10 +76,11 @@ public abstract class AbstractPasswdSafeFileDataFragment
     /**
      * Use the file data
      */
-    protected final void useFileData(PasswdFileDataUser user)
+    protected final <RetT> RetT useFileData(PasswdFileDataUser<RetT> user)
     {
         if (isAdded() && itsListener != null) {
-            itsListener.useFileData(user);
+            return itsListener.useFileData(user);
         }
+        return null;
     }
 }

@@ -23,7 +23,6 @@ import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdFileDataView;
@@ -121,22 +120,19 @@ public class LauncherRecordShortcuts extends AppCompatActivity
         super.onResume();
 
         itsFileDataView.clearFileData();
-        final ObjectHolder<String> fileTitle = new ObjectHolder<>();
-        PasswdSafeFileDataFragment.useOpenFileData(
-                new PasswdFileDataUser()
+        String fileTitle = PasswdSafeFileDataFragment.useOpenFileData(
+                new PasswdFileDataUser<String>()
                 {
                     @Override
-                    public void useFileData(
-                            @NonNull PasswdFileData fileData)
+                    public String useFileData(@NonNull PasswdFileData fileData)
                     {
                         itsFileDataView.setFileData(fileData);
-                        fileTitle.set(fileData.getUri().getIdentifier(
-                                LauncherRecordShortcuts.this, true));
+                        return fileData.getUri().getIdentifier(
+                                LauncherRecordShortcuts.this, true);
                     }
                 });
-        String fileTitleVal = fileTitle.get();
-        if (fileTitleVal != null) {
-            itsFile.setText(fileTitleVal);
+        if (fileTitle != null) {
+            itsFile.setText(fileTitle);
         } else {
             itsFile.setText(R.string.no_records_open_file);
             GuiUtils.setVisible(findViewById(R.id.contents), false);
@@ -163,14 +159,17 @@ public class LauncherRecordShortcuts extends AppCompatActivity
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
     {
         if (itsFileDataView.handleSharedPreferenceChanged(prefs, key)) {
-            PasswdSafeFileDataFragment.useOpenFileData(new PasswdFileDataUser()
-            {
-                @Override
-                public void useFileData(@NonNull PasswdFileData fileData)
-                {
-                    itsFileDataView.refreshFileData(fileData);
-                }
-            });
+            PasswdSafeFileDataFragment.useOpenFileData(
+                    new PasswdFileDataUser<Void>()
+                    {
+                        @Override
+                        public Void useFileData(
+                                @NonNull PasswdFileData fileData)
+                        {
+                            itsFileDataView.refreshFileData(fileData);
+                            return null;
+                        }
+                    });
         }
     }
 
@@ -249,28 +248,26 @@ public class LauncherRecordShortcuts extends AppCompatActivity
     {
         switch (itsMode) {
         case SHORTCUT: {
-            final ObjectHolder<Pair<Uri, String>> rc = new ObjectHolder<>();
-            PasswdSafeFileDataFragment.useOpenFileData(
-                    new PasswdFileDataUser()
+            Pair<Uri, String> rc = PasswdSafeFileDataFragment.useOpenFileData(
+                    new PasswdFileDataUser<Pair<Uri, String>>()
                     {
                         @Override
-                        public void useFileData(
+                        public Pair<Uri, String> useFileData(
                                 @NonNull PasswdFileData fileData)
                         {
                             PwsRecord rec = fileData.getRecord(uuid);
                             String title = fileData.getTitle(rec);
-                            rc.set(new Pair<>(fileData.getUri().getUri(),
-                                              title));
+                            return new Pair<>(fileData.getUri().getUri(),
+                                              title);
                         }
                     });
-            Pair<Uri, String> rcval = rc.get();
-            if (rcval != null) {
+            if (rc != null) {
                 Intent shortcutIntent = PasswdSafeUtil.createOpenIntent(
-                        rcval.first, uuid);
+                        rc.first, uuid);
 
                 Intent intent = new Intent();
                 intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, rcval.second);
+                intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, rc.second);
                 intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
                                 Intent.ShortcutIconResource.fromContext(
                                         this, R.mipmap.ic_launcher_passwdsafe));

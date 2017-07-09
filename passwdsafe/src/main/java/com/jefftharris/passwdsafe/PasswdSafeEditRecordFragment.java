@@ -47,7 +47,6 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
 import com.jefftharris.passwdsafe.view.EditRecordResult;
@@ -709,10 +708,10 @@ public class PasswdSafeEditRecordFragment
      */
     private void initialize()
     {
-        useRecordFile(new RecordFileUser()
+        useRecordFile(new RecordFileUser<Void>()
         {
             @Override
-            public void useFile(@Nullable RecordInfo info,
+            public Void useFile(@Nullable RecordInfo info,
                                 @NonNull PasswdFileData fileData)
             {
                 PwsRecord record;
@@ -747,6 +746,7 @@ public class PasswdSafeEditRecordFragment
                 initTypeAndPassword(info);
                 initPasswdPolicy(info, fileData);
                 initPasswdExpiry(info);
+                return null;
             }
         });
         updateProtected();
@@ -1114,13 +1114,14 @@ public class PasswdSafeEditRecordFragment
      */
     private void setLinkRefUuid(final String refUuid)
     {
-        useRecordFile(new RecordFileUser()
+        useRecordFile(new RecordFileUser<Void>()
         {
             @Override
-            public void useFile(@Nullable RecordInfo info,
+            public Void useFile(@Nullable RecordInfo info,
                                 @NonNull PasswdFileData fileData)
             {
                 setLinkRef(fileData.getRecord(refUuid), fileData);
+                return null;
             }
         });
     }
@@ -1269,18 +1270,19 @@ public class PasswdSafeEditRecordFragment
      */
     private void saveRecord()
     {
-        final ObjectHolder<EditRecordResult> rc = new ObjectHolder<>();
-        useRecordFile(new RecordFileUser()
-        {
-            @Override
-            public void useFile(@Nullable RecordInfo info,
-                                @NonNull PasswdFileData fileData)
-            {
-                rc.set(updateSaveRecord(info, fileData));
-            }
-        });
-        if (rc.get() != null) {
-            getListener().finishEditRecord(rc.get());
+        EditRecordResult rc = useRecordFile(
+                new RecordFileUser<EditRecordResult>()
+                {
+                    @Override
+                    public EditRecordResult useFile(
+                            @Nullable RecordInfo info,
+                            @NonNull PasswdFileData fileData)
+                    {
+                        return updateSaveRecord(info, fileData);
+                    }
+                });
+        if (rc != null) {
+            getListener().finishEditRecord(rc);
         }
     }
 

@@ -33,7 +33,6 @@ import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
@@ -451,31 +450,33 @@ public class PasswdSafeRecordBasicFragment
      */
     private void showRefRec(final boolean baseRef, final int referencingPos)
     {
-        final ObjectHolder<PasswdLocation> location = new ObjectHolder<>();
-        useRecordInfo(new RecordInfoUser()
-        {
-            @Override
-            public void useRecordInfo(@NonNull RecordInfo info)
-            {
-                PwsRecord refRec = null;
-                if (baseRef) {
-                    refRec = info.itsPasswdRec.getRef();
-                } else {
-                    List<PwsRecord> refs = info.itsPasswdRec.getRefsToRecord();
-                    if ((referencingPos >= 0) &&
-                        (referencingPos < refs.size())) {
-                        refRec = refs.get(referencingPos);
-                    }
-                }
-                if (refRec == null) {
-                    return;
-                }
+        PasswdLocation location = useRecordInfo(
+                new RecordInfoUser<PasswdLocation>()
+                {
+                    @Override
+                    public PasswdLocation useRecordInfo(
+                            @NonNull RecordInfo info)
+                    {
+                        PwsRecord refRec = null;
+                        if (baseRef) {
+                            refRec = info.itsPasswdRec.getRef();
+                        } else {
+                            List<PwsRecord> refs =
+                                    info.itsPasswdRec.getRefsToRecord();
+                            if ((referencingPos >= 0) &&
+                                (referencingPos < refs.size())) {
+                                refRec = refs.get(referencingPos);
+                            }
+                        }
+                        if (refRec == null) {
+                            return null;
+                        }
 
-                location.set(new PasswdLocation(refRec, info.itsFileData));
-            }
-        });
-        if (location.get() != null) {
-            getListener().changeLocation(location.get());
+                        return new PasswdLocation(refRec, info.itsFileData);
+                    }
+                });
+        if (location != null) {
+            getListener().changeLocation(location);
         }
     }
 
@@ -628,15 +629,13 @@ public class PasswdSafeRecordBasicFragment
      */
     private String getPassword()
     {
-        final ObjectHolder<String> password = new ObjectHolder<>();
-        useRecordInfo(new RecordInfoUser()
+        return useRecordInfo(new RecordInfoUser<String>()
         {
             @Override
-            public void useRecordInfo(@NonNull RecordInfo info)
+            public String useRecordInfo(@NonNull RecordInfo info)
             {
-                password.set(info.itsPasswdRec.getPassword(info.itsFileData));
+                return info.itsPasswdRec.getPassword(info.itsFileData);
             }
         });
-        return password.get();
     }
 }
