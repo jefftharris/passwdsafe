@@ -141,6 +141,7 @@
     <string name="file_operations">Réglage sauvegarde</string>
     <string name="file_password_encoding">Encodage fichier mots de passe</string>
     <string name="files">Fichiers</string>
+    <string name="find_similar">Chercher similaire</string>
     <string name="fingerprint_not_recognized">Empreinte digitale non reconnue</string>
     <string name="generate">Générer</string>
     <string name="generate_password">Générer un mot de passe</string>
@@ -331,6 +332,7 @@
     <string name="show_backup_files">Afficher les sauvegardes</string>
     <string name="show_password">Afficher mot de passe</string>
     <string name="show_passwords">Afficher mots de passe</string>
+    <string name="similar_to">Similaire à %1$s</string>
     <string name="sort">Trier</string>
     <string name="sort_ascending">Tri ascendant</string>
     <string name="symbols_used_by_default">Les symboles utilisés par défaut dans de mot de passe stratégie: %1$s</string>

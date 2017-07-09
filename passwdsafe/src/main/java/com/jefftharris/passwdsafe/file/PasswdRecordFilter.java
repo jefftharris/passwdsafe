@@ -35,8 +35,6 @@ public final class PasswdRecordFilter implements Closeable
         SIMILAR
     }
 
-    // TODO: i18n for similar_to, find_similar
-
     /** Default options to match */
     public static final int OPTS_DEFAULT =          0;
     /** Record can not have an alias referencing it */

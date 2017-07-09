@@ -136,6 +136,7 @@
     <string name="file_operations">Datei …</string>
     <string name="file_password_encoding">Passwortkodierung</string>
     <string name="files">Dateien</string>
+    <string name="find_similar">Finde ähnliche Einträge</string>
     <string name="fingerprint_not_recognized">Fingerabdruck nicht erkannt</string>
     <string name="generate">Erzeugen</string>
     <string name="generate_password">Passwort erzeugen</string>
@@ -324,6 +325,7 @@
     <string name="show_backup_files">Zeige Sicherungen an</string>
     <string name="show_password">Passwort anzeigen</string>
     <string name="show_passwords">Passwörter anzeigen</string>
+    <string name="similar_to">Ähnlicher Eintrag wie %1$s</string>
     <string name="sort">Sortieren</string>
     <string name="sort_ascending">Aufsteigend sortieren</string>
     <string name="symbols_used_by_default">Standardsymbole in der Passwortregel: %1$s</string>
