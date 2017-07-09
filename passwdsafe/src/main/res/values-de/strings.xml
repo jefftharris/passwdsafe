@@ -358,6 +358,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.9.0&lt;/b&gt; - Auffinden von ähnlichen Einträgen
+        hinzugefügt.  Fehlerbehebungen.
+        \n\n
         &lt;b&gt;6.8.2&lt;/b&gt; - Einstellung zu Tastaturvibration hinzugefügt.
         Scrollen, um neuen Eintrag anzuzeigen.  Fehlerbehebungen.
         \n\n

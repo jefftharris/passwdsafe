@@ -358,6 +358,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.9.0&lt;/b&gt; - Add action to find records similar to the
+        selected record.  Bug fixes.
+        \n\n
         &lt;b&gt;6.8.2&lt;/b&gt; - Add preference to vibrate keyboard.  Scroll
         to show new entry.  Bug fixes.
         \n\n
