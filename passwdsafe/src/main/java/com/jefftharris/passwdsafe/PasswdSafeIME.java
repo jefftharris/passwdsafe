@@ -32,7 +32,6 @@ import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.Pair;
@@ -223,42 +222,45 @@ public class PasswdSafeIME extends InputMethodService
      */
     private void openPasswdSafe()
     {
-        final ObjectHolder<Pair<Intent, Boolean>> rc = new ObjectHolder<>();
-        refresh(new RefreshUser()
-        {
-            @Override
-            public void refresh(@Nullable PasswdFileData fileData,
-                                @Nullable PwsRecord rec)
-            {
-                Intent intent;
-                if (fileData == null) {
-                    intent = PasswdSafeUtil.getMainActivityIntent(
-                            "com.jefftharris.passwdsafe", PasswdSafeIME.this);
-                    if (intent == null) {
-                        return;
-                    }
-                    intent.putExtra(FileListActivity.INTENT_EXTRA_CLOSE_ON_OPEN,
+        Pair<Intent, Boolean> rc =
+                refresh(new RefreshUser<Pair<Intent, Boolean>>()
+                {
+                    @Override
+                    public Pair<Intent, Boolean> refresh(
+                            @Nullable PasswdFileData fileData,
+                            @Nullable PwsRecord rec)
+                    {
+                        Intent intent;
+                        if (fileData == null) {
+                            intent = PasswdSafeUtil.getMainActivityIntent(
+                                    "com.jefftharris.passwdsafe",
+                                    PasswdSafeIME.this);
+                            if (intent == null) {
+                                return null;
+                            }
+                            intent.putExtra(
+                                    FileListActivity.INTENT_EXTRA_CLOSE_ON_OPEN,
                                     true);
-                } else {
-                    String uuid = null;
-                    if (rec != null) {
-                        uuid = fileData.getUUID(rec);
+                        } else {
+                            String uuid = null;
+                            if (rec != null) {
+                                uuid = fileData.getUUID(rec);
+                            }
+                            intent = PasswdSafeUtil.createOpenIntent(
+                                    fileData.getUri().getUri(), uuid);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        }
+                        return new Pair<>(intent, (fileData != null));
                     }
-                    intent = PasswdSafeUtil.createOpenIntent(
-                            fileData.getUri().getUri(), uuid);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                }
-                rc.set(new Pair<>(intent, (fileData != null)));
-            }
-        });
-        if (rc.get() != null) {
-            if (rc.get().second) {
+                });
+        if (rc != null) {
+            if (rc.second) {
                 setKeyboard(itsPasswdSafeKeyboard);
             } else {
                 setKeyboard(itsQwertyKeyboard);
             }
-            startActivity(rc.get().first);
+            startActivity(rc.first);
         }
     }
 
@@ -296,58 +298,52 @@ public class PasswdSafeIME extends InputMethodService
         case URL_KEY:
         case EMAIL_KEY:
         case NOTES_KEY: {
-            final ObjectHolder<String> keyStr = new ObjectHolder<>();
-            refresh(new RefreshUser()
+            String keyStr = refresh(new RefreshUser<String>()
             {
                 @Override
-                public void refresh(@Nullable PasswdFileData fileData,
-                                    @Nullable PwsRecord rec)
+                public String refresh(@Nullable PasswdFileData fileData,
+                                      @Nullable PwsRecord rec)
                 {
                     if ((fileData == null) || (rec == null)) {
-                        return;
+                        return null;
                     }
                     switch (keycode) {
                     case USER_KEY: {
-                        keyStr.set(fileData.getUsername(rec));
-                        break;
+                        return fileData.getUsername(rec);
                     }
                     case PASSWORD_KEY: {
                         showPasswordWarning(!itsAllowPassword);
                         if (itsAllowPassword) {
+                            itsAllowPassword = itsIsPasswordField;
                             PasswdRecord pwsrec = fileData.getPasswdRecord(rec);
                             if (pwsrec != null) {
-                                keyStr.set(pwsrec.getPassword(fileData));
+                                return pwsrec.getPassword(fileData);
                             } else {
-                                keyStr.set(fileData.getPassword(rec));
+                                return fileData.getPassword(rec);
                             }
-                            itsAllowPassword = itsIsPasswordField;
                         } else {
                             itsAllowPassword = true;
                         }
                         break;
                     }
                     case TITLE_KEY: {
-                        keyStr.set(fileData.getTitle(rec));
-                        break;
+                        return fileData.getTitle(rec);
                     }
                     case URL_KEY: {
-                        keyStr.set(fileData.getURL(rec));
-                        break;
+                        return fileData.getURL(rec);
                     }
                     case EMAIL_KEY: {
-                        keyStr.set(fileData.getEmail(rec));
-                        break;
+                        return fileData.getEmail(rec);
                     }
                     case NOTES_KEY: {
-                        keyStr.set(fileData.getNotes(rec));
-                        break;
+                        return fileData.getNotes(rec);
                     }
                     }
+                    return null;
                 }
             });
-            String str = keyStr.get();
-            if (str != null) {
-                conn.commitText(str, 1);
+            if (keyStr != null) {
+                conn.commitText(keyStr, 1);
             }
             break;
         }
@@ -465,54 +461,54 @@ public class PasswdSafeIME extends InputMethodService
      * @param user The user callback to handle the refresh.  Called even if
      *             there is no file data
      */
-    private void refresh(@Nullable final RefreshUser user)
+    private <RetT> RetT refresh(@Nullable final RefreshUser<RetT> user)
     {
-        Pair<String, String> labels =
-                PasswdSafeFileDataFragment.useOpenFileData(
-                        new PasswdFileDataUser<Pair<String, String>>()
-        {
-            @Override
-            public Pair<String, String> useFileData(
-                    @NonNull PasswdFileData fileData)
-            {
-                String fileLabel = fileData.getUri().getIdentifier(
-                        PasswdSafeIME.this, true);
+        RefreshResult<RetT> rc = PasswdSafeFileDataFragment.useOpenFileData(
+                new PasswdFileDataUser<RefreshResult<RetT>>()
+                {
+                    @Override
+                    public RefreshResult<RetT> useFileData(
+                            @NonNull PasswdFileData fileData)
+                    {
+                        String fileLabel = fileData.getUri().getIdentifier(
+                                PasswdSafeIME.this, true);
 
-                PwsRecord rec = null;
-                String uuid = PasswdSafeFileDataFragment.getLastViewedRecord();
-                if (uuid != null) {
-                    rec = fileData.getRecord(uuid);
-                }
+                        PwsRecord rec = null;
+                        String uuid =
+                                PasswdSafeFileDataFragment
+                                        .getLastViewedRecord();
+                        if (uuid != null) {
+                            rec = fileData.getRecord(uuid);
+                        }
 
-                String recLabel;
-                if (rec != null) {
-                    recLabel = fileData.getId(rec);
-                } else {
-                    recLabel = getString(R.string.none_selected_open);
-                }
+                        String recLabel;
+                        if (rec != null) {
+                            recLabel = fileData.getId(rec);
+                        } else {
+                            recLabel = getString(R.string.none_selected_open);
+                        }
 
-                Pair<String, String> labels = new Pair<>(fileLabel, recLabel);
-                if (user != null) {
-                    user.refresh(fileData, rec);
-                }
-                return labels;
-            }
-        });
+                        RetT ret = (user != null) ?
+                                   user.refresh(fileData, rec) : null;
+                        return new RefreshResult<>(fileLabel, recLabel, ret);
+                    }
+                });
 
         StringBuilder label = new StringBuilder();
-        if (labels != null) {
+        RetT ret;
+        if (rc != null) {
             label.append(getString(R.string.record)).append(": ");
-            label.append(labels.first);
+            label.append(rc.itsFileLabel);
             label.append(" - ");
-            label.append(labels.second);
+            label.append(rc.itsRecordLabel);
+            ret = rc.itsResult;
         } else {
             label.append(getString(R.string.file)).append(": ")
                     .append(getString(R.string.none_selected_open));
-            if (user != null) {
-                user.refresh(null, null);
-            }
+            ret = (user != null) ? user.refresh(null, null) : null;
         }
         itsRecord.setText(label.toString());
+        return ret;
     }
 
     /**
@@ -542,13 +538,33 @@ public class PasswdSafeIME extends InputMethodService
     /**
      * User for the refresh call
      */
-    private interface RefreshUser
+    private interface RefreshUser<RetT>
     {
         /**
          * Callback to refresh with the optional file data and record
          */
-        void refresh(@Nullable PasswdFileData fileData,
+        RetT refresh(@Nullable PasswdFileData fileData,
                      @Nullable PwsRecord rec);
+    }
+
+    /**
+     * Result of a refresh
+     */
+    private static class RefreshResult<RetT>
+    {
+        public final String itsFileLabel;
+        public final String itsRecordLabel;
+        public final RetT itsResult;
+
+        /**
+         * Constructor
+         */
+        public RefreshResult(String fileLabel, String recLabel, RetT result)
+        {
+            itsFileLabel = fileLabel;
+            itsRecordLabel = recLabel;
+            itsResult = result;
+        }
     }
 
     /**
