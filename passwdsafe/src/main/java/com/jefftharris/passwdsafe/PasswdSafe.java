@@ -203,6 +203,9 @@ public class PasswdSafe extends AppCompatActivity
     /** Whether to confirm a back operation if it will close the file */
     private boolean itsIsConfirmBackClosed = true;
 
+    /** Has the activity been resumed */
+    private boolean itsIsResumed = false;
+
     private static final String FRAG_DATA = "data";
     private static final String STATE_TITLE = "title";
     private static final String STATE_QUERY = "query";
@@ -347,6 +350,13 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
+    protected void onPostResume()
+    {
+        super.onPostResume();
+        itsIsResumed = true;
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
@@ -360,6 +370,7 @@ public class PasswdSafe extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
+        itsIsResumed = false;
         if (itsCurrTask != null) {
             itsCurrTask.cancelTask();
             itsCurrTask = null;
@@ -507,6 +518,9 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        if (!itsIsResumed) {
+            return super.onOptionsItemSelected(item);
+        }
         switch (item.getItemId()) {
         case android.R.id.home: {
             if (itsNavDrawerFrag.isDrawerEnabled()) {
