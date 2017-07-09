@@ -63,12 +63,12 @@ public final class PasswdRecordFilter implements Closeable
     private final int itsOptions;
 
     public static final String QUERY_MATCH = "";
-    private String QUERY_MATCH_TITLE;
-    private String QUERY_MATCH_USERNAME;
-    private String QUERY_MATCH_PASSWORD;
-    private String QUERY_MATCH_URL;
-    private String QUERY_MATCH_EMAIL;
-    private String QUERY_MATCH_NOTES;
+    private static String QUERY_MATCH_TITLE;
+    private static String QUERY_MATCH_USERNAME;
+    private static String QUERY_MATCH_PASSWORD;
+    private static String QUERY_MATCH_URL;
+    private static String QUERY_MATCH_EMAIL;
+    private static String QUERY_MATCH_NOTES;
 
     /** Constructor for a query */
     public PasswdRecordFilter(Pattern query, int opts)
@@ -106,13 +106,9 @@ public final class PasswdRecordFilter implements Closeable
     }
 
     /**
-     * Filter a record
-     * @return A non-null string if the record matches the filter; null if it
-     * does not
+     * Initialize the query matches
      */
-    public final String filterRecord(PwsRecord rec,
-                                     PasswdFileData fileData,
-                                     Context ctx)
+    public static void initMatches(Context ctx)
     {
         if (QUERY_MATCH_TITLE == null) {
             QUERY_MATCH_TITLE = ctx.getString(R.string.title);
@@ -122,7 +118,17 @@ public final class PasswdRecordFilter implements Closeable
             QUERY_MATCH_EMAIL = ctx.getString(R.string.email);
             QUERY_MATCH_NOTES = ctx.getString(R.string.notes);
         }
+    }
 
+    /**
+     * Filter a record
+     * @return A non-null string if the record matches the filter; null if it
+     * does not
+     */
+    public final String filterRecord(PwsRecord rec,
+                                     PasswdFileData fileData,
+                                     Context ctx)
+    {
         PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
         String queryMatch = null;
         switch (itsType) {
