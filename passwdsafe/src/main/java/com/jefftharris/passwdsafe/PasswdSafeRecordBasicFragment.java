@@ -11,6 +11,7 @@ package com.jefftharris.passwdsafe;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.InputType;
@@ -555,6 +556,10 @@ public class PasswdSafeRecordBasicFragment
     {
         String subset = itsPasswordSubset.getText().toString();
         String password = getPassword();
+        if (password == null) {
+            itsPassword.setText("");
+            return;
+        }
         int passwordLen = password.length();
         StringBuilder passwordSubset = new StringBuilder();
         boolean error = false;
@@ -627,7 +632,8 @@ public class PasswdSafeRecordBasicFragment
     /**
      * Get the password
      */
-    private String getPassword()
+    private @Nullable
+    String getPassword()
     {
         return useRecordInfo(new RecordInfoUser<String>()
         {
