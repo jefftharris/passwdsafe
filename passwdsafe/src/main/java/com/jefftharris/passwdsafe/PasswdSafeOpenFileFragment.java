@@ -1173,6 +1173,10 @@ public class PasswdSafeOpenFileFragment
         public void onAuthenticationSucceeded(
                 FingerprintManagerCompat.AuthenticationResult result)
         {
+            if (itsSavedPasswordsMgr == null) {
+                onCancel();
+                return;
+            }
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
             try {
@@ -1247,6 +1251,10 @@ public class PasswdSafeOpenFileFragment
         public void onAuthenticationSucceeded(
                 FingerprintManagerCompat.AuthenticationResult result)
         {
+            if (itsSavedPasswordsMgr == null) {
+                onCancel();
+                return;
+            }
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
             try {
