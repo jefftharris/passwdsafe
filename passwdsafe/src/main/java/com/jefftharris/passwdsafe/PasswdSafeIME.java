@@ -449,8 +449,10 @@ public class PasswdSafeIME extends InputMethodService
             int caps = 0;
             EditorInfo ei = getCurrentInputEditorInfo();
             if ((ei != null) && (ei.inputType != InputType.TYPE_NULL)) {
-                caps = getCurrentInputConnection().getCursorCapsMode(
-                        ei.inputType);
+                InputConnection conn = getCurrentInputConnection();
+                if (conn != null) {
+                    caps = conn.getCursorCapsMode(ei.inputType);
+                }
             }
             itsKeyboardView.setShifted(itsCapsLock || (caps != 0));
         }
