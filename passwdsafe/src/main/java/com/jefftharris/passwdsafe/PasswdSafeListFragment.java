@@ -292,6 +292,9 @@ public class PasswdSafeListFragment extends ListFragment
     @Override
     public void onListItemClick(ListView l, View v, int position, long id)
     {
+        if (!isResumed()) {
+            return;
+        }
         PasswdRecordListData item = itsAdapter.getItem(position);
         if (item == null) {
             return;
