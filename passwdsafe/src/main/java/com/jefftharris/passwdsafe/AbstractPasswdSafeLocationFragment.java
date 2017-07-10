@@ -133,13 +133,11 @@ public abstract class AbstractPasswdSafeLocationFragment
             {
                 PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
                 if (rec == null) {
-                    user.useFile(null, fileData);
-                    return null;
+                    return user.useFile(null, fileData);
                 }
                 PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
                 if (passwdRec == null) {
-                    user.useFile(null, fileData);
-                    return null;
+                    return user.useFile(null, fileData);
                 }
 
                 return user.useFile(new RecordInfo(rec, passwdRec, fileData),
