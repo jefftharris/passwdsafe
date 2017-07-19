@@ -15,8 +15,8 @@ android {
         minSdkVersion 14
         resConfigs "de", "fr"
         targetSdkVersion 25
-        versionCode 30400
-        versionName "3.4.0"
+        versionCode 30401
+        versionName "3.4.1"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -70,7 +70,7 @@ dependencies {
     }
 
     // Dropbox
-    compile 'com.dropbox.core:dropbox-core-sdk:3.0.1'
+    compile 'com.dropbox.core:dropbox-core-sdk:3.0.3'
 
     // Box
     compile 'com.box:box-android-sdk:4.0.8'

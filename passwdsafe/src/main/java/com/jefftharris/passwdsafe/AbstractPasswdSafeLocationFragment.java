@@ -50,23 +50,23 @@ public abstract class AbstractPasswdSafeLocationFragment
     /**
      * Interface for users of a file data record
      */
-    protected interface RecordInfoUser
+    protected interface RecordInfoUser<RetT>
     {
         /**
          * Callback to use the file data record
          */
-        void useRecordInfo(@NonNull RecordInfo info);
+        RetT useRecordInfo(@NonNull RecordInfo info);
     }
 
     /**
      * Interfaces for users of file data with an optional record
      */
-    protected interface RecordFileUser
+    protected interface RecordFileUser<RetT>
     {
         /**
          * Callback to use the file data and record
          */
-        void useFile(@Nullable RecordInfo info,
+        RetT useFile(@Nullable RecordInfo info,
                      @NonNull PasswdFileData fileData);
     }
 
@@ -105,17 +105,18 @@ public abstract class AbstractPasswdSafeLocationFragment
     /**
      * Use the file data record at the current location
      */
-    protected final void useRecordInfo(final RecordInfoUser user)
+    protected final <RetT> RetT useRecordInfo(final RecordInfoUser<RetT> user)
     {
-        useRecordFile(new RecordFileUser()
+        return useRecordFile(new RecordFileUser<RetT>()
         {
             @Override
-            public void useFile(@Nullable RecordInfo info,
+            public RetT useFile(@Nullable RecordInfo info,
                                 @NonNull PasswdFileData fileData)
             {
                 if (info != null) {
-                    user.useRecordInfo(info);
+                    return user.useRecordInfo(info);
                 }
+                return null;
             }
         });
     }
@@ -123,26 +124,24 @@ public abstract class AbstractPasswdSafeLocationFragment
     /**
      * Use the file data with an optional record at the current location
      */
-    protected final void useRecordFile(final RecordFileUser user)
+    protected final <RetT> RetT useRecordFile(final RecordFileUser<RetT> user)
     {
-        useFileData(new PasswdFileDataUser()
+        return useFileData(new PasswdFileDataUser<RetT>()
         {
             @Override
-            public void useFileData(@NonNull PasswdFileData fileData)
+            public RetT useFileData(@NonNull PasswdFileData fileData)
             {
                 PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
                 if (rec == null) {
-                    user.useFile(null, fileData);
-                    return;
+                    return user.useFile(null, fileData);
                 }
                 PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
                 if (passwdRec == null) {
-                    user.useFile(null, fileData);
-                    return;
+                    return user.useFile(null, fileData);
                 }
 
-                user.useFile(new RecordInfo(rec, passwdRec, fileData),
-                             fileData);
+                return user.useFile(new RecordInfo(rec, passwdRec, fileData),
+                                    fileData);
             }
         });
     }

@@ -81,12 +81,13 @@ public abstract class AbstractPasswdSafeRecordFragment
      */
     private void refresh()
     {
-        useRecordInfo(new RecordInfoUser()
+        useRecordInfo(new RecordInfoUser<Void>()
         {
             @Override
-            public void useRecordInfo(@NonNull RecordInfo info)
+            public Void useRecordInfo(@NonNull RecordInfo info)
             {
                 doRefresh(info);
+                return null;
             }
         });
 

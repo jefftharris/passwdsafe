@@ -208,6 +208,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          */
         public RootScreen()
         {
+            Preference pref =
+                    findPreference(Preferences.PREF_DISPLAY_VIBRATE_KEYBOARD);
+            if (pref != null) {
+                pref.setVisible(ApiCompat.hasVibrator(getContext()));
+            }
         }
 
         @Override

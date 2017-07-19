@@ -141,6 +141,7 @@
     <string name="file_operations">Réglage sauvegarde</string>
     <string name="file_password_encoding">Encodage fichier mots de passe</string>
     <string name="files">Fichiers</string>
+    <string name="find_similar">Chercher similaire</string>
     <string name="fingerprint_not_recognized">Empreinte digitale non reconnue</string>
     <string name="generate">Générer</string>
     <string name="generate_password">Générer un mot de passe</string>
@@ -331,6 +332,7 @@
     <string name="show_backup_files">Afficher les sauvegardes</string>
     <string name="show_password">Afficher mot de passe</string>
     <string name="show_passwords">Afficher mots de passe</string>
+    <string name="similar_to">Similaire à %1$s</string>
     <string name="sort">Trier</string>
     <string name="sort_ascending">Tri ascendant</string>
     <string name="symbols_used_by_default">Les symboles utilisés par défaut dans de mot de passe stratégie: %1$s</string>
@@ -354,6 +356,7 @@
     <string name="use_symbols">Symboles</string>
     <string name="use_uppercase">Majuscules</string>
     <string name="username_header">NOM UTILISATEUR</string>
+    <string name="vibrate_keyboard_on_press">Faire vibrer le clavier au toucher</string>
     <string name="view_password_expirations">Voir les expirations de mot de passe</string>
     <string name="word_wrap">Adapter les retours-chariot</string>
     <string name="yes">Oui</string>
@@ -364,6 +367,15 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.9.1&lt;/b&gt; - Correction de bugs.
+        \n\n
+        &lt;b&gt;6.9.0&lt;/b&gt; - Ajout action recherche entrées similaires à
+        celle selectionnée.  Correction de bugs.
+        \n\n
+        &lt;b&gt;6.8.2&lt;/b&gt; - Ajout préférence pour faire vibrer le
+        clavier.  Défilement pour montrer le nouvel enregistrement.  Correction
+        de bugs.
+        \n\n
         &lt;b&gt;6.8.1&lt;/b&gt; - Correction de bugs pour les fichiers v1/v2
         \n\n
         &lt;b&gt;6.8.0&lt;/b&gt; - Montre les fournisseurs de compte de
@@ -548,7 +560,7 @@
         <item>Raccourci</item>
     </string-array>
 
-    <!-- Order must match values of PasswdRecordFilter.ExpiryFilter -->
+    <!-- Order must match values of PasswdExpiryFilter -->
     <string-array name="expire_filters">
         <item>Expiré</item>
         <item>Aujourd\'hui</item>
@@ -560,7 +572,7 @@
         <item>Personnalisée</item>
     </string-array>
 
-    <!-- Indexes must match PasswdRecordFilter.ExpiryFilter -->
+    <!-- Indexes must match PasswdExpiryFilter -->
     <string-array name="expire_filter_record">
         <item>Un mot de passe a expiré</item>
         <item>Un mot de passe expire aujourd\'hui</item>
@@ -570,7 +582,7 @@
         <item>Un mot de passe expire dans un an</item>
     </string-array>
 
-    <!-- Indexes must match PasswdRecordFilter.ExpiryFilter -->
+    <!-- Indexes must match PasswdExpiryFilter -->
     <string-array name="expire_filter_records">
         <item>%1$s mots de passe ont expiré</item>
         <item>%1$s mots de passe expirent aujourd\'hui</item>

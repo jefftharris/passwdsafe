@@ -613,8 +613,13 @@ public class PasswdSafeOpenFileFragment
      */
     private void enterWaitingPasswordPhase()
     {
+        PasswdFileUri fileUri = getPasswdFileUri();
+        if (fileUri == null) {
+            cancelFragment(false);
+            return;
+        }
         itsIsPasswordSaved = false;
-        switch (getPasswdFileUri().getType()) {
+        switch (fileUri.getType()) {
         case FILE:
         case SYNC_PROVIDER:
         case GENERIC_PROVIDER: {
@@ -1168,6 +1173,10 @@ public class PasswdSafeOpenFileFragment
         public void onAuthenticationSucceeded(
                 FingerprintManagerCompat.AuthenticationResult result)
         {
+            if (itsSavedPasswordsMgr == null) {
+                onCancel();
+                return;
+            }
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
             try {
@@ -1242,6 +1251,10 @@ public class PasswdSafeOpenFileFragment
         public void onAuthenticationSucceeded(
                 FingerprintManagerCompat.AuthenticationResult result)
         {
+            if (itsSavedPasswordsMgr == null) {
+                onCancel();
+                return;
+            }
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
             try {

@@ -319,9 +319,10 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
-    public void useFileData(PasswdFileDataUser user)
+    public <RetT> RetT useFileData(PasswdFileDataUser<RetT> user)
     {
         // No file data for about fragment
+        return null;
     }
 
     @Override

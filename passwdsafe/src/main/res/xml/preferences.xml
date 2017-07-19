@@ -171,6 +171,13 @@
             android:key="displayThemeLightPref"
             android:title="@string/use_light_theme"/>
 
+        <!--suppress AndroidElementNotAllowed -->
+        <com.jefftharris.passwdsafe.lib.view.LongSwitchPreference
+            android:name="displayVibrateKeyboard Pref"
+            android:defaultValue="false"
+            android:key="displayVibrateKeyboard"
+            android:title="@string/vibrate_keyboard_on_press"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

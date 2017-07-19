@@ -136,6 +136,7 @@
     <string name="file_operations">File Operations…</string>
     <string name="file_password_encoding">File password encoding</string>
     <string name="files">Files</string>
+    <string name="find_similar">Find Similar</string>
     <string name="fingerprint_not_recognized">Fingerprint not recognized</string>
     <string name="generate">Generate</string>
     <string name="generate_password">Generate Password</string>
@@ -324,6 +325,7 @@
     <string name="show_backup_files">Show backup files</string>
     <string name="show_password">Show Password</string>
     <string name="show_passwords">Show Passwords</string>
+    <string name="similar_to">Similar to %1$s</string>
     <string name="sort">Sort</string>
     <string name="sort_ascending">Sort ascending</string>
     <string name="symbols_used_by_default">Symbols used by default in a password policy: %1$s</string>
@@ -345,6 +347,7 @@
     <string name="use_symbols">Symbols</string>
     <string name="use_uppercase">Uppercase</string>
     <string name="username_header">USER NAME</string>
+    <string name="vibrate_keyboard_on_press">Vibrate keyboard on press</string>
     <string name="view_password_expirations">View password expirations</string>
     <string name="word_wrap">Word Wrap</string>
     <string name="yes">Yes</string>
@@ -355,6 +358,14 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.9.1&lt;/b&gt; - Bug fixes.
+        \n\n
+        &lt;b&gt;6.9.0&lt;/b&gt; - Add action to find records similar to the
+        selected record.  Bug fixes.
+        \n\n
+        &lt;b&gt;6.8.2&lt;/b&gt; - Add preference to vibrate keyboard.  Scroll
+        to show new entry.  Bug fixes.
+        \n\n
         &lt;b&gt;6.8.1&lt;/b&gt; - Bug fix for opening v1/v2 files
         \n\n
         &lt;b&gt;6.8.0&lt;/b&gt; - Show sync provider accounts in navigation
@@ -525,7 +536,7 @@
         <item>Shortcut</item>
     </string-array>
 
-    <!-- Order must match values of PasswdRecordFilter.ExpiryFilter -->
+    <!-- Order must match values of PasswdExpiryFilter -->
     <string-array name="expire_filters">
         <item>Expired</item>
         <item>Today</item>
@@ -537,7 +548,7 @@
         <item>Custom</item>
     </string-array>
 
-    <!-- Indexes must match PasswdRecordFilter.ExpiryFilter -->
+    <!-- Indexes must match PasswdExpiryFilter -->
     <string-array name="expire_filter_record">
         <item>One password has expired</item>
         <item>One password expires today</item>
@@ -547,7 +558,7 @@
         <item>One password expires within a year</item>
     </string-array>
 
-    <!-- Indexes must match PasswdRecordFilter.ExpiryFilter -->
+    <!-- Indexes must match PasswdExpiryFilter -->
     <string-array name="expire_filter_records">
         <item>%1$s passwords have expired</item>
         <item>%1$s passwords expire today</item>

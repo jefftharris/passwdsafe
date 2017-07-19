@@ -16,13 +16,16 @@ import android.util.TypedValue;
 
 import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdExpiration;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
+import com.jefftharris.passwdsafe.file.RecordSimilarFields;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
 
+import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsRecord;
 
 import java.util.ArrayList;
@@ -52,7 +55,7 @@ public final class PasswdFileDataView
     private GroupNode itsRootNode;
     private GroupNode itsCurrGroupNode;
     private final ArrayList<String> itsCurrGroups = new ArrayList<>();
-    private PasswdRecordFilter itsFilter;
+    private Owner<PasswdRecordFilter> itsFilter;
     private int itsNumExpired = 0;
     private boolean itsIsExpiryChanged = true;
     private PasswdRecordDisplayOptions itsRecordOptions =
@@ -106,6 +109,16 @@ public final class PasswdFileDataView
     }
 
     /**
+     * Handle when the owning fragment is destroyed
+     */
+    public void onDestroy()
+    {
+        if (itsFilter != null) {
+            itsFilter.close();
+        }
+    }
+
+    /**
      * Handle a shared preference change
      * @return Whether the file data should be refreshed
      */
@@ -144,10 +157,10 @@ public final class PasswdFileDataView
         }
 
         if (rebuildSearch &&
-            (itsFilter != null) && itsFilter.isQueryType()) {
+            (itsFilter != null) && itsFilter.get().isQueryType()) {
             try {
-                PasswdRecordFilter filter =
-                        createRecordFilter(itsFilter.toString(itsContext));
+                PasswdRecordFilter filter = createRecordFilter(
+                        itsFilter.get().toString(itsContext));
                 setRecordFilter(filter);
             } catch (Exception e) {
                 String msg = e.getMessage();
@@ -199,6 +212,10 @@ public final class PasswdFileDataView
         if ((itsCurrGroupNode == null) || (itsContext == null)) {
             return records;
         }
+        Resources res = itsContext.getResources();
+        if (res == null) {
+            return records;
+        }
 
         if (incGroups) {
             Map<String, GroupNode> entryGroups = itsCurrGroupNode.getGroups();
@@ -206,8 +223,8 @@ public final class PasswdFileDataView
                 for (Map.Entry<String, GroupNode> entry:
                         entryGroups.entrySet()) {
                     int items = entry.getValue().getNumRecords();
-                    String str = itsContext.getResources().getQuantityString(
-                            R.plurals.group_items, items, items);
+                    String str = res.getQuantityString(R.plurals.group_items,
+                                                       items, items);
 
                     records.add(new PasswdRecordListData(
                             entry.getKey(), str, null, null, null,
@@ -281,7 +298,7 @@ public final class PasswdFileDataView
      */
     public synchronized PasswdRecordFilter getRecordFilter()
     {
-        return itsFilter;
+        return (itsFilter != null) ? itsFilter.get() : null;
     }
 
     /**
@@ -314,9 +331,40 @@ public final class PasswdFileDataView
         return filter;
     }
 
+    /**
+     * Create a record filter which matches records similar to the given one
+     */
+    public PasswdRecordFilter createSimilarRecordFilter(String recUuid,
+                                                        PasswdFileData fileData)
+    {
+        PwsRecord rec = fileData.getRecord(recUuid);
+        if (rec == null) {
+            return null;
+        }
+
+        PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
+        if (passwdRec == null) {
+            return null;
+        }
+
+        return new PasswdRecordFilter(
+                new RecordSimilarFields(
+                        passwdRec, fileData, itsIsSearchCaseSensitive));
+    }
+
+    /**
+     * Set the record filter
+     */
     public synchronized void setRecordFilter(PasswdRecordFilter filter)
     {
-        itsFilter = filter;
+        if (itsFilter != null) {
+            itsFilter.close();
+            itsFilter = null;
+        }
+        if (filter != null) {
+            PasswdRecordFilter.initMatches(itsContext);
+            itsFilter = new Owner<>(filter);
+        }
     }
 
     /**
@@ -359,7 +407,7 @@ public final class PasswdFileDataView
     public String getExpiredRecordsStr(Context ctx)
     {
         String str = null;
-        PasswdRecordFilter.ExpiryFilter filter = itsExpiryNotifPref.getFilter();
+        PasswdExpiryFilter filter = itsExpiryNotifPref.getFilter();
         if (filter != null) {
             str = filter.getRecordsExpireStr(itsNumExpired, ctx.getResources());
         }
@@ -369,7 +417,7 @@ public final class PasswdFileDataView
     /**
      * Get the filter for expired records
      */
-    public PasswdRecordFilter.ExpiryFilter getExpiredRecordsFilter()
+    public PasswdExpiryFilter getExpiredRecordsFilter()
     {
         return itsExpiryNotifPref.getFilter();
     }
@@ -437,7 +485,7 @@ public final class PasswdFileDataView
         }
         updateCurrentGroup();
 
-        PasswdRecordFilter.ExpiryFilter filter = itsExpiryNotifPref.getFilter();
+        PasswdExpiryFilter filter = itsExpiryNotifPref.getFilter();
         if (filter != null) {
             long expiration = filter.getExpiryFromNow(null);
             for (PasswdRecord rec : fileData.getPasswdRecords()) {
@@ -478,7 +526,7 @@ public final class PasswdFileDataView
         if (itsFilter == null) {
             return PasswdRecordFilter.QUERY_MATCH;
         }
-        return itsFilter.filterRecord(rec, fileData, itsContext);
+        return itsFilter.get().filterRecord(rec, fileData, itsContext);
     }
 
     /**

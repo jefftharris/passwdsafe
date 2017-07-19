@@ -115,6 +115,10 @@ public class Preferences
     public static final String PREF_DISPLAY_THEME_LIGHT = "displayThemeLightPref";
     private static final boolean PREF_DISPLAY_THEME_LIGHT_DEF = true;
 
+    public static final String PREF_DISPLAY_VIBRATE_KEYBOARD =
+            "displayVibrateKeyboard";
+    private static final boolean PREF_DISPLAY_VIBRATE_KEYBOARD_DEF = false;
+
     private static final String PREF_COPY_PASSWORD_CONFIRM =
             "copyPasswordConfirm";
     private static final boolean PREF_COPY_PASSWORD_CONFIRM_DEF = false;
@@ -467,6 +471,15 @@ public class Preferences
     {
         return prefs.getBoolean(PREF_DISPLAY_THEME_LIGHT,
                                 PREF_DISPLAY_THEME_LIGHT_DEF);
+    }
+
+    /**
+     * Get whether to vibrate the keyboard
+     */
+    public static boolean getDisplayVibrateKeyboard(SharedPreferences prefs)
+    {
+        return prefs.getBoolean(PREF_DISPLAY_VIBRATE_KEYBOARD,
+                                PREF_DISPLAY_VIBRATE_KEYBOARD_DEF);
     }
 
     /**

@@ -257,14 +257,15 @@ public class PasswdSafePolicyListFragment extends ListFragment
         PasswdSafeUtil.dbginfo(TAG, "savePolicies: %s, rename: %s",
                                newPolicies, policyRename);
 
-        itsListener.useFileData(new PasswdFileDataUser()
+        itsListener.useFileData(new PasswdFileDataUser<Void>()
         {
             @Override
-            public void useFileData(@NonNull PasswdFileData fileData)
+            public Void useFileData(@NonNull PasswdFileData fileData)
             {
                 fileData.setHdrPasswdPolicies(
                         newPolicies.isEmpty() ? null : newPolicies,
                         policyRename.get());
+                return null;
             }
         });
         itsListener.finishPolicyEdit(new Runnable()
@@ -286,13 +287,14 @@ public class PasswdSafePolicyListFragment extends ListFragment
 
         itsHdrPolicies = null;
         itsIsFileReadonly = true;
-        itsListener.useFileData(new PasswdFileDataUser()
+        itsListener.useFileData(new PasswdFileDataUser<Void>()
         {
             @Override
-            public void useFileData(@NonNull PasswdFileData fileData)
+            public Void useFileData(@NonNull PasswdFileData fileData)
             {
                 itsHdrPolicies = fileData.getHdrPasswdPolicies();
                 itsIsFileReadonly = !fileData.isV3() || !fileData.canEdit();
+                return null;
             }
         });
 

@@ -72,6 +72,7 @@ public class PasswdSafeFileDataFragment extends Fragment
 
         // Called when app is being finalized but not when rotated
         PasswdSafeUtil.dbginfo(TAG, "onDestroy");
+        itsFileDataView.onDestroy();
         setFileData(null);
     }
 
@@ -110,9 +111,9 @@ public class PasswdSafeFileDataFragment extends Fragment
     /**
      * Use the password file data.  Only one thread will use the data at a time.
      */
-    public void useFileData(PasswdFileDataUser user)
+    public <RetT> RetT useFileData(PasswdFileDataUser<RetT> user)
     {
-        useOpenFileData(user);
+        return useOpenFileData(user);
     }
 
     /** Get the view of the password file data */
@@ -164,14 +165,15 @@ public class PasswdSafeFileDataFragment extends Fragment
     /**
      * Use the global open password file data
      */
-    public static void useOpenFileData(PasswdFileDataUser user)
+    public static <RetT> RetT useOpenFileData(PasswdFileDataUser<RetT> user)
     {
         PasswdFileToken token = acquireFileData();
         try {
             PasswdFileData fileData = token.getFileData();
             if (fileData != null) {
-                user.useFileData(fileData);
+                return user.useFileData(fileData);
             }
+            return null;
         } finally {
             token.release();
         }

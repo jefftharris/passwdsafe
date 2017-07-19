@@ -21,7 +21,6 @@ import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.lib.AboutUtils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 
 import java.util.Locale;
 
@@ -101,48 +100,51 @@ public class AboutFragment extends Fragment
         super.onResume();
         itsListener.updateViewAbout();
 
-        final ObjectHolder<Boolean> called = new ObjectHolder<>(false);
-        itsListener.useFileData(new PasswdFileDataUser()
-        {
-            @Override
-            public void useFileData(@NonNull PasswdFileData fileData)
-            {
-                called.set(true);
-                itsFile.setText(fileData.getUri().toString());
-                itsPermissions.setText(
-                        fileData.canEdit() ?
-                        R.string.read_write : R.string.read_only_about);
-                itsNumRecords.setText(String.format(
-                        Locale.getDefault(), "%d",
-                        fileData.getRecords().size()));
-                itsPasswordEnc.setText(fileData.getOpenPasswordEncoding());
-                if (fileData.isV3()) {
-                    StringBuilder build = new StringBuilder();
-                    String str = fileData.getHdrLastSaveUser();
-                    if (!TextUtils.isEmpty(str)) {
-                        build.append(str);
-                    }
-                    str = fileData.getHdrLastSaveHost();
-                    if (!TextUtils.isEmpty(str)) {
-                        if (build.length() > 0) {
-                            build.append(" on ");
-                        }
-                        build.append(str);
-                    }
+        Boolean called = itsListener.useFileData(
+                new PasswdFileDataUser<Boolean>()
+                {
+                    @Override
+                    public Boolean useFileData(@NonNull PasswdFileData fileData)
+                    {
+                        itsFile.setText(fileData.getUri().toString());
+                        itsPermissions.setText(
+                                fileData.canEdit() ?
+                                R.string.read_write : R.string.read_only_about);
+                        itsNumRecords.setText(String.format(
+                                Locale.getDefault(), "%d",
+                                fileData.getRecords().size()));
+                        itsPasswordEnc.setText(
+                                fileData.getOpenPasswordEncoding());
+                        if (fileData.isV3()) {
+                            StringBuilder build = new StringBuilder();
+                            String str = fileData.getHdrLastSaveUser();
+                            if (!TextUtils.isEmpty(str)) {
+                                build.append(str);
+                            }
+                            str = fileData.getHdrLastSaveHost();
+                            if (!TextUtils.isEmpty(str)) {
+                                if (build.length() > 0) {
+                                    build.append(" on ");
+                                }
+                                build.append(str);
+                            }
 
-                    itsDatabaseVer.setText(fileData.getHdrVersion());
-                    itsLastSaveBy.setText(build);
-                    itsLastSaveApp.setText(fileData.getHdrLastSaveApp());
-                    itsLastSaveTime.setText(fileData.getHdrLastSaveTime());
-                } else {
-                    itsDatabaseVer.setText(null);
-                    itsLastSaveBy.setText(null);
-                    itsLastSaveApp.setText(null);
-                    itsLastSaveTime.setText(null);
-                }
-            }
-        });
-        GuiUtils.setVisible(itsFileDetailsGroup, called.get());
+                            itsDatabaseVer.setText(fileData.getHdrVersion());
+                            itsLastSaveBy.setText(build);
+                            itsLastSaveApp.setText(
+                                    fileData.getHdrLastSaveApp());
+                            itsLastSaveTime.setText(
+                                    fileData.getHdrLastSaveTime());
+                        } else {
+                            itsDatabaseVer.setText(null);
+                            itsLastSaveBy.setText(null);
+                            itsLastSaveApp.setText(null);
+                            itsLastSaveTime.setText(null);
+                        }
+                        return true;
+                    }
+                });
+        GuiUtils.setVisible(itsFileDetailsGroup, (called != null) && called);
     }
 
     @Override
