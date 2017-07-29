@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.jefftharris.passwdsafe.PasswdSafeFileDataFragment;
 import com.jefftharris.passwdsafe.Preferences;
@@ -188,6 +189,16 @@ public class PasswdClientProvider extends ContentProvider
                 return null;
             }
 
+            int limit = -1;
+            try {
+                String limitStr = uri.getQueryParameter("limit");
+                if (!TextUtils.isEmpty(limitStr)) {
+                    limit = Integer.valueOf(limitStr);
+                }
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+
             PasswdSafeUtil.dbginfo(TAG, "query suggestions: %s", query);
             Pattern queryPattern;
             MatchComparator comparator;
@@ -198,7 +209,8 @@ public class PasswdClientProvider extends ContentProvider
             PasswdRecordFilter filter = new PasswdRecordFilter(
                     queryPattern, PasswdRecordFilter.OPTS_DEFAULT);
             return PasswdSafeFileDataFragment.useOpenFileData(
-                    new SuggestionsUser(filter, comparator, getContext()));
+                    new SuggestionsUser(filter, limit,
+                                        comparator, getContext()));
         }
         }
         throw new IllegalArgumentException("query unknown: " + uri);
@@ -254,6 +266,7 @@ public class PasswdClientProvider extends ContentProvider
     private static class SuggestionsUser implements PasswdFileDataUser<Cursor>
     {
         private final PasswdRecordFilter itsFilter;
+        private final int itsLimit;
         private final MatchComparator itsComparator;
         private final Context itsContext;
 
@@ -261,10 +274,12 @@ public class PasswdClientProvider extends ContentProvider
          * Constructor
          */
         public SuggestionsUser(PasswdRecordFilter filter,
+                               int limit,
                                MatchComparator comparator,
                                Context ctx)
         {
             itsFilter = filter;
+            itsLimit = limit;
             itsComparator = comparator;
             itsContext = ctx;
         }
@@ -272,13 +287,15 @@ public class PasswdClientProvider extends ContentProvider
         @Override
         public Cursor useFileData(@NonNull PasswdFileData fileData)
         {
-            // TODO: limit number
             ArrayList<RecordMatch> recs = new ArrayList<>();
             for (PwsRecord rec: fileData.getRecords()) {
                 String match = itsFilter.filterRecord(rec, fileData,
                                                       itsContext);
                 if (match != null) {
                     recs.add(new RecordMatch(rec, match, fileData));
+                    if (recs.size() >= itsLimit) {
+                        break;
+                    }
                 }
             }
             Collections.sort(recs, itsComparator);
