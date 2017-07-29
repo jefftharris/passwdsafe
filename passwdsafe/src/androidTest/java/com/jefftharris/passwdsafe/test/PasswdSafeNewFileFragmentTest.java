@@ -259,7 +259,7 @@ public class PasswdSafeNewFileFragmentTest
             onView(withId(R.id.drawer_layout))
                     .check(matches(isOpen(Gravity.START)))
                     .perform(close());
-            Thread.sleep(500); // Wait for menu to be refreshed
+            Thread.sleep(1000); // Wait for menu to be refreshed
 
             onView(withId(R.id.menu_search))
                     .check(matches(isEnabled()));
