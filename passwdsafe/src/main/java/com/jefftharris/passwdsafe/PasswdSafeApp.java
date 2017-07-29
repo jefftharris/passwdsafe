@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
+import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
 public final class PasswdSafeApp extends Application
@@ -61,6 +62,7 @@ public final class PasswdSafeApp extends Application
     public void onCreate()
     {
         super.onCreate();
+        PasswdRecordFilter.initMatches(getApplicationContext());
         SharedPreferences prefs = Preferences.getSharedPrefs(this);
 
         AlarmManager alarmMgr =

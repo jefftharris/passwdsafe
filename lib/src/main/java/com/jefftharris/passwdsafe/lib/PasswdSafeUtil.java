@@ -37,6 +37,8 @@ public class PasswdSafeUtil
     public static final String SYNC_PACKAGE = PACKAGE + ".sync";
     public static final String NEW_INTENT = PACKAGE + ".action.NEW";
     public static final String VIEW_INTENT = PACKAGE + ".action.VIEW";
+    public static final String SEARCH_VIEW_INTENT =
+            PACKAGE + ".action.SEARCH_VIEW";
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
 

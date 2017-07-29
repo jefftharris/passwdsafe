@@ -362,7 +362,6 @@ public final class PasswdFileDataView
             itsFilter = null;
         }
         if (filter != null) {
-            PasswdRecordFilter.initMatches(itsContext);
             itsFilter = new Owner<>(filter);
         }
     }

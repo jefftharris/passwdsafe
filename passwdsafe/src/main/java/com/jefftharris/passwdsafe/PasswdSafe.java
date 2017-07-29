@@ -331,6 +331,29 @@ public class PasswdSafe extends AppCompatActivity
             setRecordQueryFilter(intent.getStringExtra(SearchManager.QUERY));
             break;
         }
+        case PasswdSafeUtil.SEARCH_VIEW_INTENT: {
+            MenuItemCompat.collapseActionView(itsSearchItem);
+            final String uuid =
+                    intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
+            PasswdLocation loc =
+                    useFileData(new PasswdFileDataUser<PasswdLocation>()
+                    {
+                        @Override
+                        public PasswdLocation useFileData(
+                                @NonNull PasswdFileData fileData)
+                        {
+                            PwsRecord rec = fileData.getRecord(uuid);
+                            if (rec == null) {
+                                return null;
+                            }
+                            return new PasswdLocation(rec, fileData);
+                        }
+                    });
+            if (loc != null) {
+                changeLocation(loc);
+            }
+            break;
+        }
         default: {
             FragmentManager fragMgr = getSupportFragmentManager();
             Fragment frag = fragMgr.findFragmentById(R.id.content);

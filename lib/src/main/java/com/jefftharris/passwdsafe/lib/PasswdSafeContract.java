@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -276,5 +277,9 @@ public final class PasswdSafeContract
     {
         public static final String TABLE = "files";
     }
+
+    /** The client file search suggestions */
+    public static final String CLIENT_SEARCH_SUGGESTIONS =
+            SearchManager.SUGGEST_URI_PATH_QUERY;
 }
 

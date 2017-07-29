@@ -10,16 +10,25 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
+import com.jefftharris.passwdsafe.PasswdSafeFileDataFragment;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+
+import org.pwsafe.lib.file.PwsRecord;
 
 /**
  *  The PasswdClientProvider class is a content provider for the PasswdSafe
@@ -29,6 +38,9 @@ public class PasswdClientProvider extends ContentProvider
 {
     private static final UriMatcher MATCHER;
     private static final int MATCH_FILES = 1;
+    private static final int MATCH_SEARCH_SUGGESTIONS = 2;
+
+    private static final String TAG = "PasswdClientProvider";
 
     private static PasswdClientProvider itsProvider = null;
     private static final Object itsProviderLock = new Object();
@@ -39,6 +51,9 @@ public class PasswdClientProvider extends ContentProvider
         MATCHER.addURI(PasswdSafeContract.CLIENT_AUTHORITY,
                        PasswdSafeContract.ClientFiles.TABLE + "/*",
                        MATCH_FILES);
+        MATCHER.addURI(PasswdSafeContract.CLIENT_AUTHORITY,
+                       PasswdSafeContract.CLIENT_SEARCH_SUGGESTIONS,
+                       MATCH_SEARCH_SUGGESTIONS);
     }
 
     /** Add a file to those provided and return the URI to access it */
@@ -86,10 +101,11 @@ public class PasswdClientProvider extends ContentProvider
                         file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
         }
-        default: {
-            return super.openFile(uri, mode);
+        case MATCH_SEARCH_SUGGESTIONS: {
+            break;
         }
         }
+        return super.openFile(uri, mode);
     }
 
     /* (non-Javadoc)
@@ -139,7 +155,30 @@ public class PasswdClientProvider extends ContentProvider
                         String[] selectionArgs,
                         String sortOrder)
     {
-        return null;
+        PasswdSafeUtil.dbginfo(TAG, "query uri: %s", uri);
+        switch (MATCHER.match(uri)) {
+        case MATCH_FILES: {
+            return null;
+        }
+        case MATCH_SEARCH_SUGGESTIONS: {
+            if (selectionArgs.length != 1) {
+                break;
+            }
+            String query = selectionArgs[0];
+            if ((query == null) || (query.length() < 2)) {
+                return null;
+            }
+
+            PasswdSafeUtil.dbginfo(TAG, "query suggestions: %s", query);
+            Pattern queryPattern = Pattern.compile(
+                    query, Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+            PasswdRecordFilter filter = new PasswdRecordFilter(
+                    queryPattern, PasswdRecordFilter.OPTS_DEFAULT);
+            return PasswdSafeFileDataFragment.useOpenFileData(
+                    new SuggestionsUser(filter, getContext()));
+        }
+        }
+        throw new IllegalArgumentException("query unknown: " + uri);
     }
 
     /* (non-Javadoc)
@@ -152,5 +191,58 @@ public class PasswdClientProvider extends ContentProvider
                       String[] selectionArgs)
     {
         return 0;
+    }
+
+    /**
+     * PasswdFileData user for search suggestions
+     */
+    private static class SuggestionsUser implements PasswdFileDataUser<Cursor>
+    {
+        private final PasswdRecordFilter itsFilter;
+        private final Context itsContext;
+
+        /**
+         * Constructor
+         */
+        public SuggestionsUser(PasswdRecordFilter filter, Context ctx)
+        {
+            itsFilter = filter;
+            itsContext = ctx;
+        }
+
+        @Override
+        public Cursor useFileData(@NonNull PasswdFileData fileData)
+        {
+            // TODO: sort records and limit number
+            MatrixCursor cursor = new MatrixCursor(
+                    new String[]{BaseColumns._ID,
+                                 SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
+                                 SearchManager.SUGGEST_COLUMN_TEXT_1,
+                                 SearchManager.SUGGEST_COLUMN_TEXT_2,
+                                 SearchManager.SUGGEST_COLUMN_ICON_1 });
+
+            Object[] row = new Object[5];
+            row[4] = null;
+            int id = 0;
+            for (PwsRecord rec: fileData.getRecords()) {
+                String match = itsFilter.filterRecord(rec, fileData,
+                                                      itsContext);
+                if (match == null) {
+                    continue;
+                }
+
+                String title = fileData.getTitle(rec);
+                String username = fileData.getUsername(rec);
+                String uuid = fileData.getUUID(rec);
+                String recId = PasswdRecord.getRecordId(null, title, username);
+                row[0] = id++;
+                row[1] = uuid;
+                row[2] = recId;
+                row[3] = match;
+                cursor.addRow(row);
+            }
+
+            return cursor;
+        }
     }
 }
