@@ -8,6 +8,9 @@ package com.jefftharris.passwdsafe.file;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -16,6 +19,7 @@ import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -25,6 +29,7 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.PasswdSafeFileDataFragment;
+import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
@@ -35,6 +40,7 @@ import org.pwsafe.lib.file.PwsRecord;
  *  client password files
  */
 public class PasswdClientProvider extends ContentProvider
+        implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     private static final UriMatcher MATCHER;
     private static final int MATCH_FILES = 1;
@@ -45,6 +51,8 @@ public class PasswdClientProvider extends ContentProvider
     private static PasswdClientProvider itsProvider = null;
     private static final Object itsProviderLock = new Object();
     private final Set<String> itsFiles = new HashSet<>();
+    private int itsSearchFlags = 0;
+    private MatchComparator itsSearchComp = new MatchComparator(true, false);
 
     static {
         MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -142,7 +150,18 @@ public class PasswdClientProvider extends ContentProvider
     public boolean onCreate()
     {
         itsProvider = this;
+        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+        prefs.registerOnSharedPreferenceChangeListener(this);
+        updatePrefs(prefs);
         return true;
+    }
+
+    @Override
+    public void shutdown()
+    {
+        super.shutdown();
+        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /* (non-Javadoc)
@@ -170,12 +189,16 @@ public class PasswdClientProvider extends ContentProvider
             }
 
             PasswdSafeUtil.dbginfo(TAG, "query suggestions: %s", query);
-            Pattern queryPattern = Pattern.compile(
-                    query, Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+            Pattern queryPattern;
+            MatchComparator comparator;
+            synchronized (this) {
+                queryPattern = Pattern.compile(query, itsSearchFlags);
+                comparator = itsSearchComp;
+            }
             PasswdRecordFilter filter = new PasswdRecordFilter(
                     queryPattern, PasswdRecordFilter.OPTS_DEFAULT);
             return PasswdSafeFileDataFragment.useOpenFileData(
-                    new SuggestionsUser(filter, getContext()));
+                    new SuggestionsUser(filter, comparator, getContext()));
         }
         }
         throw new IllegalArgumentException("query unknown: " + uri);
@@ -193,56 +216,171 @@ public class PasswdClientProvider extends ContentProvider
         return 0;
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    {
+        switch (key) {
+        case Preferences.PREF_SORT_ASCENDING:
+        case Preferences.PREF_SORT_CASE_SENSITIVE:
+        case Preferences.PREF_SEARCH_CASE_SENSITIVE:
+        case Preferences.PREF_SEARCH_REGEX: {
+            updatePrefs(prefs);
+            break;
+        }
+        }
+    }
+
+    /**
+     * Update search and sort preferences
+     */
+    private synchronized void updatePrefs(SharedPreferences prefs)
+    {
+        itsSearchFlags = 0;
+        if (!Preferences.getSearchCaseSensitivePref(prefs)) {
+            itsSearchFlags |= Pattern.CASE_INSENSITIVE;
+        }
+        if (!Preferences.getSearchRegexPref(prefs)) {
+            itsSearchFlags |= Pattern.LITERAL;
+        }
+
+        itsSearchComp = new MatchComparator(
+                Preferences.getSortAscendingPref(prefs),
+                Preferences.getSortCaseSensitivePref(prefs));
+    }
+
     /**
      * PasswdFileData user for search suggestions
      */
     private static class SuggestionsUser implements PasswdFileDataUser<Cursor>
     {
         private final PasswdRecordFilter itsFilter;
+        private final MatchComparator itsComparator;
         private final Context itsContext;
 
         /**
          * Constructor
          */
-        public SuggestionsUser(PasswdRecordFilter filter, Context ctx)
+        public SuggestionsUser(PasswdRecordFilter filter,
+                               MatchComparator comparator,
+                               Context ctx)
         {
             itsFilter = filter;
+            itsComparator = comparator;
             itsContext = ctx;
         }
 
         @Override
         public Cursor useFileData(@NonNull PasswdFileData fileData)
         {
-            // TODO: sort records and limit number
+            // TODO: limit number
+            ArrayList<RecordMatch> recs = new ArrayList<>();
+            for (PwsRecord rec: fileData.getRecords()) {
+                String match = itsFilter.filterRecord(rec, fileData,
+                                                      itsContext);
+                if (match != null) {
+                    recs.add(new RecordMatch(rec, match, fileData));
+                }
+            }
+            Collections.sort(recs, itsComparator);
+
             MatrixCursor cursor = new MatrixCursor(
                     new String[]{BaseColumns._ID,
                                  SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
                                  SearchManager.SUGGEST_COLUMN_TEXT_1,
                                  SearchManager.SUGGEST_COLUMN_TEXT_2,
-                                 SearchManager.SUGGEST_COLUMN_ICON_1 });
+                                 SearchManager.SUGGEST_COLUMN_ICON_1 },
+                    recs.size());
 
             Object[] row = new Object[5];
             row[4] = null;
             int id = 0;
-            for (PwsRecord rec: fileData.getRecords()) {
-                String match = itsFilter.filterRecord(rec, fileData,
-                                                      itsContext);
-                if (match == null) {
-                    continue;
-                }
-
-                String title = fileData.getTitle(rec);
-                String username = fileData.getUsername(rec);
-                String uuid = fileData.getUUID(rec);
-                String recId = PasswdRecord.getRecordId(null, title, username);
+            for (RecordMatch match: recs) {
                 row[0] = id++;
-                row[1] = uuid;
-                row[2] = recId;
-                row[3] = match;
+                row[1] = fileData.getUUID(match.itsRecord);
+                row[2] = PasswdRecord.getRecordId(null, match.itsTitle,
+                                                  match.itsUser);
+                row[3] = match.itsMatch;
                 cursor.addRow(row);
             }
 
             return cursor;
+        }
+    }
+
+    /**
+     * A matched password record
+     */
+    private static class RecordMatch
+    {
+        public final String itsTitle;
+        public final String itsUser;
+        public final String itsMatch;
+        public final PwsRecord itsRecord;
+
+        /**
+         * Constructor
+         */
+        public RecordMatch(PwsRecord rec,
+                           String match,
+                           PasswdFileData fileData)
+        {
+            itsTitle = fileData.getTitle(rec);
+            itsUser = fileData.getUsername(rec);
+            itsMatch = match;
+            itsRecord = rec;
+        }
+    }
+
+    /**
+     * Comparator for RecordMatch objects
+     */
+    private static class MatchComparator implements Comparator<RecordMatch>
+    {
+        private final boolean itsIsAscending;
+        private final boolean itsIsCaseSensitive;
+
+        /**
+         * Constructor
+         */
+        public MatchComparator(boolean ascending, boolean caseSensitive)
+        {
+            itsIsAscending = ascending;
+            itsIsCaseSensitive = caseSensitive;
+        }
+
+        @Override
+        public int compare(RecordMatch m1, RecordMatch m2)
+        {
+            int rc = compareField(m1.itsTitle, m2.itsTitle);
+            if (rc == 0) {
+                rc = compareField(m1.itsUser, m2.itsUser);
+            }
+
+            if (!itsIsAscending) {
+                rc = -rc;
+            }
+
+            return rc;
+        }
+
+        /**
+         * Compare two string fields
+         */
+        private int compareField(String arg0, String arg1)
+        {
+            if ((arg0 == null) && (arg1 == null)) {
+                return 0;
+            } else if (arg0 == null) {
+                return -1;
+            } else if (arg1 == null) {
+                return 1;
+            } else {
+                if (itsIsCaseSensitive) {
+                    return arg0.compareTo(arg1);
+                } else {
+                    return arg0.compareToIgnoreCase(arg1);
+                }
+            }
         }
     }
 }
