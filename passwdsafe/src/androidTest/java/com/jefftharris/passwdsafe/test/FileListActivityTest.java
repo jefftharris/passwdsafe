@@ -122,7 +122,8 @@ public class FileListActivityTest
     /**
      * Test on a file in the list
      */
-    private static DataInteraction onTestFile(String fileTitle)
+    private static DataInteraction onTestFile(
+            @SuppressWarnings("SameParameterValue") String fileTitle)
     {
         return onData(allOf(is(instanceOf(HashMap.class)),
                             withFileData(fileTitle)))

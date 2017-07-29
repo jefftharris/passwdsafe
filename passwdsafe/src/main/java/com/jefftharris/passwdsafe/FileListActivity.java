@@ -51,6 +51,9 @@ public class FileListActivity extends AppCompatActivity
 {
     public static final String INTENT_EXTRA_CLOSE_ON_OPEN = "closeOnOpen";
 
+    private static final String PREF_LAST_PROVIDER =
+            "FileListActivity.lastProvider";
+
     private static final int REQUEST_STORAGE_PERM = 1;
     private static final int REQUEST_APP_SETTINGS = 2;
 
@@ -343,12 +346,16 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public void showFiles()
     {
+        SharedPreferences prefs = Preferences.getSharedPrefs(this);
+        prefs.edit().remove(PREF_LAST_PROVIDER).apply();
         showFiles(itsIsLegacyChooserChanged, null);
     }
 
     @Override
     public void showSyncProviderFiles(Uri uri)
     {
+        SharedPreferences prefs = Preferences.getSharedPrefs(this);
+        prefs.edit().putString(PREF_LAST_PROVIDER, uri.toString()).apply();
         doChangeView(ViewChange.SYNC_FILES,
                      SyncProviderFilesFragment.newInstance(uri));
     }
@@ -367,11 +374,23 @@ public class FileListActivity extends AppCompatActivity
     {
         itsIsLegacyChooserChanged = false;
         if (savedState == null) {
-            Fragment filesFrag;
-            if (itsIsLegacyChooser) {
-                filesFrag = new FileListFragment();
-            } else {
-                filesFrag = new StorageFileListFragment();
+            Fragment filesFrag = null;
+            if (initial) {
+                SharedPreferences prefs = Preferences.getSharedPrefs(this);
+                String lastProvider = prefs.getString(PREF_LAST_PROVIDER, null);
+
+                if (lastProvider != null) {
+                    Uri uri = Uri.parse(lastProvider);
+                    filesFrag = SyncProviderFilesFragment.newInstance(uri);
+                }
+            }
+
+            if (filesFrag == null) {
+                if (itsIsLegacyChooser) {
+                    filesFrag = new FileListFragment();
+                } else {
+                    filesFrag = new StorageFileListFragment();
+                }
             }
 
             doChangeView(initial ? ViewChange.FILES_INIT : ViewChange.FILES,
