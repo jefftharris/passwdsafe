@@ -7,17 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.pwsafe.lib.file.PwsRecord;
-
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,10 +22,11 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.util.LongSparseArray;
 import android.util.Log;
 
-import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdExpiration;
+import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataObserver;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
@@ -46,6 +36,15 @@ import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.LongReference;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
+
+import org.pwsafe.lib.file.PwsRecord;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * The NotificationMgr class encapsulates the notifications provided by the app
@@ -76,7 +75,8 @@ public class NotificationMgr implements PasswdFileDataObserver
     private final AlarmManager itsAlarmMgr;
     private final NotificationManager itsNotifyMgr;
     private final DbHelper itsDbHelper;
-    private final HashMap<Long, UriNotifInfo> itsUriNotifs = new HashMap<>();
+    private final LongSparseArray<UriNotifInfo> itsUriNotifs =
+            new LongSparseArray<>();
     private final HashSet<Uri> itsNotifUris = new HashSet<>();
     private int itsNextNotifId = 1;
     private PasswdExpiryFilter itsExpiryFilter = null;
@@ -199,7 +199,7 @@ public class NotificationMgr implements PasswdFileDataObserver
             try {
                 SQLiteDatabase db = itsDbHelper.getReadableDatabase();
                 Long id = getDbUriId(uri, db);
-                UriNotifInfo info = itsUriNotifs.get(id);
+                UriNotifInfo info = (id != null) ? itsUriNotifs.get(id) : null;
                 if (info != null) {
                     itsNotifyMgr.cancel(info.getNotifId());
                 }
@@ -379,13 +379,10 @@ public class NotificationMgr implements PasswdFileDataObserver
             uriCursor.close();
         }
 
-        Iterator<HashMap.Entry<Long, UriNotifInfo>> iter =
-            itsUriNotifs.entrySet().iterator();
-        while (iter.hasNext()) {
-            HashMap.Entry<Long, UriNotifInfo> entry = iter.next();
-            if (!uris.contains(entry.getKey())) {
-                itsNotifyMgr.cancel(entry.getValue().getNotifId());
-                iter.remove();
+        for (int i = itsUriNotifs.size() - 1; i >= 0; --i) {
+            if (!uris.contains(itsUriNotifs.keyAt(i))) {
+                itsNotifyMgr.cancel(itsUriNotifs.valueAt(i).getNotifId());
+                itsUriNotifs.removeAt(i);
             }
         }
 
