@@ -38,12 +38,20 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
      */
     public interface Listener
     {
-        /** Handle when a prompt was confirmed */
+        /** Handle when a prompt was confirmed or the neutral action selected
+         */
         void promptConfirmed(Bundle confirmArgs);
 
         /** Handle when a prompt was canceled */
         void promptCanceled();
     }
+
+    private static final String ARG_CONFIRM = "confirm";
+    private static final String ARG_CONFIRM_ARGS = "confirmArgs";
+    private static final String ARG_NEUTRAL = "neutral";
+    private static final String ARG_NEUTRAL_ARGS = "neutralArgs";
+    private static final String ARG_PROMPT = "prompt";
+    private static final String ARG_TITLE = "title";
 
     private CheckBox itsConfirmCb;
     private AlertDialog itsDialog;
@@ -57,12 +65,27 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
                                                   String confirm,
                                                   Bundle confirmArgs)
     {
+        return newInstance(title, prompt, confirm, confirmArgs, null, null);
+    }
+
+    /**
+     * Create a new instance with a neutral option
+     */
+    public static ConfirmPromptDialog newInstance(String title,
+                                                  String prompt,
+                                                  String confirm,
+                                                  Bundle confirmArgs,
+                                                  String neutral,
+                                                  Bundle neutralArgs)
+    {
         ConfirmPromptDialog dialog = new ConfirmPromptDialog();
         Bundle args = new Bundle();
-        args.putString("title", title);
-        args.putString("prompt", prompt);
-        args.putString("confirm", confirm);
-        args.putBundle("confirmArgs", confirmArgs);
+        args.putString(ARG_TITLE, title);
+        args.putString(ARG_PROMPT, prompt);
+        args.putString(ARG_CONFIRM, confirm);
+        args.putBundle(ARG_CONFIRM_ARGS, confirmArgs);
+        args.putString(ARG_NEUTRAL, neutral);
+        args.putBundle(ARG_NEUTRAL_ARGS, neutralArgs);
         dialog.setArguments(args);
         return dialog;
     }
@@ -71,12 +94,13 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState)
     {
         Bundle args = getArguments();
-        String titleStr = args.getString("title");
-        String promptStr = args.getString("prompt");
-        String confirmStr = args.getString("confirm");
+        String titleStr = args.getString(ARG_TITLE);
+        String promptStr = args.getString(ARG_PROMPT);
+        String confirmStr = args.getString(ARG_CONFIRM);
         if (TextUtils.isEmpty(confirmStr)) {
             confirmStr = getString(R.string.ok);
         }
+        String neutralStr = args.getString(ARG_NEUTRAL);
 
         Context ctx = getContext();
         LayoutInflater factory = LayoutInflater.from(ctx);
@@ -93,6 +117,9 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
             .setView(dlgView)
             .setPositiveButton(confirmStr, this)
             .setNegativeButton(R.string.cancel, this);
+        if (!TextUtils.isEmpty(neutralStr)) {
+            alert.setNeutralButton(neutralStr, this);
+        }
         itsDialog = alert.create();
         return itsDialog;
     }
@@ -130,14 +157,19 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
             return;
         }
 
-        Bundle confirmArgs = getArguments().getBundle("confirmArgs");
         switch (which) {
         case AlertDialog.BUTTON_POSITIVE: {
-            itsListener.promptConfirmed(confirmArgs);
+            itsListener.promptConfirmed(
+                    getArguments().getBundle(ARG_CONFIRM_ARGS));
             break;
         }
         case AlertDialog.BUTTON_NEGATIVE: {
             itsListener.promptCanceled();
+            break;
+        }
+        case AlertDialog.BUTTON_NEUTRAL: {
+            itsListener.promptConfirmed(
+                    getArguments().getBundle(ARG_NEUTRAL_ARGS));
             break;
         }
         }

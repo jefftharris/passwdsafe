@@ -45,7 +45,8 @@
     <string name="copy_password_warning">
         Warning: All apps can read the clipboard contents, and the clipboard
         cannot be reliably cleared.  The PasswdSafe alternate keyboard is a
-        more secure method for entering passwords into other apps.
+        more secure method for entering passwords into other apps.  Click Enable
+        to open the keyboard settings.
     </string>
     <string name="copy_url">Copy URL</string>
     <string name="copy_user">Copy User Name</string>

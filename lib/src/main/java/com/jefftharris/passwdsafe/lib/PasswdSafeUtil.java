@@ -215,6 +215,18 @@ public class PasswdSafeUtil
         dlg.show();
     }
 
+    /**
+     * Show and error message with logged exception
+     */
+    public static void showError(String msg,
+                                 String logTag,
+                                 Throwable error,
+                                 Context context)
+    {
+        Log.e(logTag, msg, error);
+        showErrorMsg(msg, context);
+    }
+
     /** Log a debug message at info level */
     public static void dbginfo(String tag, String msg)
     {

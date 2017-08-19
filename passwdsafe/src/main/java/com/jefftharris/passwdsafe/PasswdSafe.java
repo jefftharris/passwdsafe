@@ -8,12 +8,14 @@
 package com.jefftharris.passwdsafe;
 
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -145,7 +147,9 @@ public class PasswdSafe extends AppCompatActivity
         /** Delete a file */
         DELETE_FILE,
         /** Delete a record */
-        DELETE_RECORD
+        DELETE_RECORD,
+        /** Show settings to enable the keyboard */
+        SHOW_ENABLE_KEYBOARD
     }
 
     /** Method for finishing the edit of the file */
@@ -836,10 +840,14 @@ public class PasswdSafe extends AppCompatActivity
             confirmArgs.putString(CONFIRM_ARG_ACTION,
                                   ConfirmAction.COPY_PASSWORD.name());
             confirmArgs.putString(CONFIRM_ARG_RECORD, recUuid);
+            Bundle enableArgs = new Bundle();
+            enableArgs.putString(CONFIRM_ARG_ACTION,
+                                 ConfirmAction.SHOW_ENABLE_KEYBOARD.name());
             ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
                     getString(R.string.copy_password),
                     getString(R.string.copy_password_warning),
-                    getString(android.R.string.copy), confirmArgs);
+                    getString(android.R.string.copy), confirmArgs,
+                    getString(R.string.enable), enableArgs);
             dialog.show(getSupportFragmentManager(), "Copy password");
             return;
         }
@@ -1161,6 +1169,16 @@ public class PasswdSafe extends AppCompatActivity
             if ((removed != null) && removed) {
                 finishEdit(EditFinish.DELETE_RECORD, location.getRecord(),
                            location.selectRecord(null), null);
+            }
+            break;
+        }
+        case SHOW_ENABLE_KEYBOARD: {
+            try {
+                startActivity(
+                        new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS));
+            } catch (ActivityNotFoundException e) {
+                PasswdSafeUtil.showError("Keyboard settings not found", TAG,
+                                         e, this);
             }
             break;
         }
