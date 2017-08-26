@@ -46,7 +46,8 @@
         Warnung: Alle Apps können den Inhalt der Zwischenablage lesen. Die
         Zwischenablage kann nicht zuverlässig geleert werden. Die alternative
         Tastatur von PasswdSafe ist eine sicherere Möglichkeit um Kennwörter
-        in andere Apps einzufügen.
+        in andere Apps einzufügen.  Auf Aktivieren klicken, um die
+        Tastatureinstellungen zu öffnen.
     </string>
     <string name="copy_url">URL kopieren</string>
     <string name="copy_user">Benutzername kopieren</string>
