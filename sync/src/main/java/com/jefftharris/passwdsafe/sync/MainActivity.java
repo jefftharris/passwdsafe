@@ -621,7 +621,7 @@ public class MainActivity extends AppCompatActivity
         boolean hasBox = false;
         boolean hasOnedrive = false;
         boolean hasOwncloud = false;
-        for (boolean more = cursor.moveToFirst(); more;
+        for (boolean more = (cursor != null) && cursor.moveToFirst(); more;
                 more = cursor.moveToNext()) {
             String typeStr = cursor.getString(
                     PasswdSafeContract.Providers.PROJECTION_IDX_TYPE);
@@ -684,13 +684,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader)
     {
-        updateGdriveAccount(null);
-        updateDropboxAccount(null);
-        updateBoxAccount(null);
-        updateOnedriveAccount(null);
-        updateOwncloudAccount(null);
-        GuiUtils.setVisible(findViewById(R.id.no_accounts_msg), true);
-        GuiUtils.invalidateOptionsMenu(this);
+        onLoadFinished(loader, null);
     }
 
     @Override
