@@ -12,14 +12,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.AssetManager;
 import android.net.Uri;
-import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.FileProvider;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -187,45 +181,16 @@ public class AboutUtils
     private static void sendLog(Activity act, String pkgName)
     {
         try {
-            File logFileDir = new File(act.getCacheDir(), "shared-tmpfiles");
-            //noinspection ResultOfMethodCallIgnored
-            logFileDir.mkdirs();
-            File logFile = new File(logFileDir, "logcat.txt");
-
+            FileSharer sharer = new FileSharer("logcat.txt", act, pkgName);
+            File logFile = sharer.getFile();
             if (!runLogcat(true, logFile)) {
                 runLogcat(false, logFile);
             }
 
-            Uri logUri = FileProvider.getUriForFile(act,
-                                                    pkgName + ".fileprovider",
-                                                    logFile);
-            Intent sendIntent = ShareCompat.IntentBuilder
-                    .from(act)
-                    .setStream(logUri)
-                    .setType("text/plain")
-                    .setEmailTo(new String[]
-                                        { "jeffharris@users.sourceforge.net" })
-                    .setSubject("PasswdSafe log")
-                    .getIntent()
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            // Workaround for Android bug.
-            // grantUriPermission also needed for KITKAT,
-            // see https://code.google.com/p/android/issues/detail?id=76683
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-                List<ResolveInfo> resInfoList =
-                        act.getPackageManager().queryIntentActivities(
-                                sendIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                for (ResolveInfo resolveInfo : resInfoList) {
-                    act.grantUriPermission(
-                            resolveInfo.activityInfo.packageName, logUri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }
-            }
-
-            act.startActivity(
-                    Intent.createChooser(sendIntent,
-                                         act.getString(R.string.send_log_to)));
+            sharer.share(act.getString(R.string.send_log_to),
+                         "text/plain",
+                         new String[] { "jeffharris@users.sourceforge.net" },
+                         "PasswdSafe log");
         } catch (Exception e) {
             PasswdSafeUtil.dbginfo(TAG, e, "Error sharing log");
         }
