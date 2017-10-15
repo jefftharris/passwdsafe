@@ -43,6 +43,7 @@ import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.OwnCloudClientFactory;
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.accounts.AccountTypeUtils;
+import com.owncloud.android.lib.common.network.CertificateCombinedException;
 import com.owncloud.android.lib.common.network.NetworkUtils;
 
 /**
@@ -218,8 +219,18 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
             @Override
             public void useOwncloud(OwnCloudClient client) throws Exception
             {
-                String displayName =
-                        OwncloudSyncer.getDisplayName(client, getContext());
+                String displayName;
+                Context ctx = getContext();
+                try {
+                    displayName = OwncloudSyncer.getDisplayName(client, ctx);
+                } catch (SyncIOException e) {
+                    if (e.getCause() instanceof CertificateCombinedException) {
+                        displayName =
+                                OwncloudSyncer.getDisplayName(client, ctx);
+                    } else {
+                        throw e;
+                    }
+                }
                 connResult.set(new SyncConnectivityResult(displayName));
             }
         });
