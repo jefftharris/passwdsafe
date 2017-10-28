@@ -43,8 +43,8 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     productFlavors {
     }
@@ -58,7 +58,6 @@ dependencies {
     compile project(':lib-onedrive:onedriveaccess')
     compile project(':lib-onedrive')
     compile 'com.google.android.gms:play-services-auth:8.4.0'
-
     // Google Drive
     compile('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -66,10 +65,8 @@ dependencies {
     compile('com.google.apis:google-api-services-drive:v3-rev58-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-
     // Dropbox
     compile 'com.dropbox.core:dropbox-core-sdk:3.0.3'
-
     // Box
     compile 'com.box:box-android-sdk:4.0.10'
 }
