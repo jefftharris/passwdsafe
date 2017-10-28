@@ -14,7 +14,6 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -1012,16 +1011,12 @@ public class MainActivity extends AppCompatActivity
                     new AlertDialog.Builder(getActivity());
             builder
             .setMessage(R.string.remove_account)
-            .setPositiveButton(android.R.string.yes,
-                               new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    MainActivity act = (MainActivity)getActivity();
-                    act.removeAccount(currAcct);
-                }
-            })
+            .setPositiveButton(
+                    android.R.string.yes,
+                    (dialog, which) -> {
+                        MainActivity act = (MainActivity)getActivity();
+                        act.removeAccount(currAcct);
+                    })
             .setNegativeButton(android.R.string.no, null);
             return builder.create();
         }
