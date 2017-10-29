@@ -551,6 +551,9 @@ public class PasswdFileUri implements Parcelable
                 File[] extdirs = ApiCompat.getExternalFilesDirs(ctx, null);
                 if ((extdirs != null) && (extdirs.length > 1)) {
                     for (int i = 1; i < extdirs.length; ++i) {
+                        if (extdirs[i] == null) {
+                            continue;
+                        }
                         String path = extdirs[i].getAbsolutePath();
                         int pos = path.indexOf("/Android/");
                         if (pos == -1) {
