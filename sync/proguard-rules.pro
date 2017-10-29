@@ -100,6 +100,10 @@
 # Apache http
 -dontwarn org.apache.http.**
 -dontnote org.apache.http.**
+-keep class org.apache.commons.httpclient.auth.BasicScheme
+-keep class org.apache.commons.httpclient.auth.DigestScheme
+-keep class org.apache.commons.httpclient.auth.NTLMScheme
+-keep class org.apache.commons.httpclient.cookie.**
 
 # Box library
 -keepclasseswithmembers,includedescriptorclasses class com.box.boxandroidlibv2.dao.** { *; }
