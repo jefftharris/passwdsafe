@@ -46,7 +46,6 @@ import org.pwsafe.lib.file.PwsStorage;
 import org.pwsafe.lib.file.PwsStreamStorage;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -802,12 +801,8 @@ public class PasswdFileUri implements Parcelable
 
             final Pattern pat = Pattern.compile(
                     "^" + Pattern.quote(fileName) + "_\\d{8}_\\d{6}\\.ibak$");
-            File[] backupFiles = dir.listFiles(new FileFilter() {
-                public boolean accept(File f)
-                {
-                    return f.isFile() && pat.matcher(f.getName()).matches();
-                }
-            });
+            File[] backupFiles = dir.listFiles(
+                    f -> f.isFile() && pat.matcher(f.getName()).matches());
             if (backupFiles != null) {
                 Arrays.sort(backupFiles);
 
