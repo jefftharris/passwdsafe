@@ -10,9 +10,9 @@
     ],
     "enableExternalDirectory": true,
     "enableAdb": false,
-    "formFactor": "phone",
+    "formFactor": "tablet",
     "name": "com.jefftharris.passwdsafe",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "packageName": "com.jefftharris.passwdsafe",
     "resize": "scale",
     "useGoogleContactsSyncAdapter": false,
@@ -54,5 +54,5 @@
     }
   },
   "update_url": "https://localhost",
-  "version": "5.3.0"
+  "version": "6.10.0"
 }
