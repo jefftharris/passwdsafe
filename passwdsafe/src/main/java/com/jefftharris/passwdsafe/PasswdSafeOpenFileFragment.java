@@ -1130,15 +1130,10 @@ public class PasswdSafeOpenFileFragment
         protected final void doDelayed(final Runnable action)
         {
             cancelPendingAction();
-            itsPendingAction = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    action.run();
-                    itsPendingAction = null;
-                    itsSavedPasswordMsg.setTextColor(itsSavedPasswordTextColor);
-                }
+            itsPendingAction = () -> {
+                action.run();
+                itsPendingAction = null;
+                itsSavedPasswordMsg.setTextColor(itsSavedPasswordTextColor);
             };
             itsSavedPasswordMsg.postDelayed(itsPendingAction, 2000);
         }
@@ -1149,14 +1144,7 @@ public class PasswdSafeOpenFileFragment
         private void setNotificationMsg(CharSequence msg, final int baseMsgId)
         {
             itsSavedPasswordMsg.setText(msg);
-            doDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    itsSavedPasswordMsg.setText(baseMsgId);
-                }
-            });
+            doDelayed(() -> itsSavedPasswordMsg.setText(baseMsgId));
         }
 
         /**
@@ -1220,17 +1208,12 @@ public class PasswdSafeOpenFileFragment
         {
             switch (finishMode) {
             case SUCCESS: {
-                doDelayed(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        itsLoadSavedPasswordUser = null;
-                        if (itsYubikeyCb.isChecked()) {
-                            setPhase(Phase.YUBIKEY);
-                        } else {
-                            setPhase(Phase.OPENING);
-                        }
+                doDelayed(() -> {
+                    itsLoadSavedPasswordUser = null;
+                    if (itsYubikeyCb.isChecked()) {
+                        setPhase(Phase.YUBIKEY);
+                    } else {
+                        setPhase(Phase.OPENING);
                     }
                 });
                 break;
@@ -1296,27 +1279,17 @@ public class PasswdSafeOpenFileFragment
         {
             switch (finishMode) {
             case SUCCESS: {
-                doDelayed(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        itsAddSavedPasswordUser = null;
-                        finishFileOpen(itsOpenResult.itsFileData);
-                    }
+                doDelayed(() -> {
+                    itsAddSavedPasswordUser = null;
+                    finishFileOpen(itsOpenResult.itsFileData);
                 });
                 break;
             }
             case ERROR:
             case TIMEOUT: {
-                doDelayed(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        itsAddSavedPasswordUser = null;
-                        setPhase(Phase.WAITING_PASSWORD);
-                    }
+                doDelayed(() -> {
+                    itsAddSavedPasswordUser = null;
+                    setPhase(Phase.WAITING_PASSWORD);
                 });
                 break;
             }
