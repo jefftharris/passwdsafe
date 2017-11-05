@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.test;
 
+import android.os.Environment;
 import android.support.test.espresso.DataInteraction;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.BoundedMatcher;
@@ -17,12 +18,16 @@ import com.jefftharris.passwdsafe.BuildConfig;
 import com.jefftharris.passwdsafe.FileListActivity;
 import com.jefftharris.passwdsafe.R;
 
+import junit.framework.Assert;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +61,8 @@ import static org.hamcrest.Matchers.not;
 @RunWith(AndroidJUnit4.class)
 public class FileListActivityTest
 {
+    public static final File DIR = Environment.getExternalStorageDirectory();
+
     @Rule
     public IntentsTestRule<FileListActivity> itsActivityRule =
             new IntentsTestRule<>(FileListActivity.class);
@@ -79,20 +86,23 @@ public class FileListActivityTest
     {
         verifyDrawerClosed();
 
+        Assert.assertTrue(
+                DIR.equals(new File("/storage/emulated/0")) ||
+                DIR.equals(new File("/mnt/sdcard")));
         onView(withId(R.id.current_group_label))
-                .check(matches(withText("/storage/emulated/0")));
+                .check(matches(withText(DIR.getPath())));
         onView(withId(R.id.current_group_label))
                 .perform(click());
         onView(withId(R.id.current_group_label))
-                .check(matches(withText("/storage/emulated")));
+                .check(matches(withText(DIR.getParentFile().getPath())));
         onView(withId(R.id.home))
                 .perform(click());
         onView(withId(R.id.current_group_label))
-                .check(matches(withText("/storage/emulated/0")));
+                .check(matches(withText(DIR.getPath())));
     }
 
     @Test
-    public void testLaunchFileNew()
+    public void testLaunchFileNew() throws MalformedURLException
     {
         verifyDrawerClosed();
 
@@ -102,7 +112,7 @@ public class FileListActivityTest
         intended(allOf(
                 hasAction(equalTo("com.jefftharris.passwdsafe.action.NEW")),
                 toPackage("com.jefftharris.passwdsafe"),
-                hasData("file:///storage/emulated/0")));
+                hasData("file://" + DIR.getAbsolutePath())));
     }
 
     @Test

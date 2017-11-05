@@ -58,8 +58,6 @@ import static org.hamcrest.Matchers.not;
 @RunWith(AndroidJUnit4.class)
 public class PasswdSafeNewFileFragmentTest
 {
-    private static final File DIR = new File("/storage/emulated/0");
-
     @Rule
     public ActivityTestRule<PasswdSafe> itsActivityRule =
             new ActivityTestRule<PasswdSafe>(PasswdSafe.class)
@@ -68,7 +66,7 @@ public class PasswdSafeNewFileFragmentTest
                 protected Intent getActivityIntent()
                 {
                     return PasswdSafeUtil.createNewFileIntent(
-                            Uri.fromFile(DIR));
+                            Uri.fromFile(FileListActivityTest.DIR));
                 }
             };
 
@@ -99,8 +97,10 @@ public class PasswdSafeNewFileFragmentTest
     @Test
     public void testExistingFile()
     {
-        Assert.assertTrue(new File(DIR, "test.psafe3").exists());
-        Assert.assertTrue(!new File(DIR, "ZZZtest.psafe3").exists());
+        Assert.assertTrue(
+                new File(FileListActivityTest.DIR, "test.psafe3").exists());
+        Assert.assertTrue(
+                !new File(FileListActivityTest.DIR, "ZZZtest.psafe3").exists());
 
         onFileNameView()
                 .perform(replaceText("ZZZtest.psafe3"));
@@ -164,7 +164,8 @@ public class PasswdSafeNewFileFragmentTest
     public void testPassword()
     {
         // Check initial with valid file name
-        Assert.assertTrue(!new File(DIR, "ZZZtest.psafe3").exists());
+        Assert.assertTrue(
+                !new File(FileListActivityTest.DIR, "ZZZtest.psafe3").exists());
         onFileNameView()
                 .perform(replaceText("ZZZtest.psafe3"));
         onView(withId(R.id.file_name_input))
@@ -231,7 +232,7 @@ public class PasswdSafeNewFileFragmentTest
     @Test
     public void testNewFile() throws InterruptedException
     {
-        File file = new File(DIR, "ZZZtest.psafe3");
+        File file = new File(FileListActivityTest.DIR, "ZZZtest.psafe3");
         if (file.exists()) {
             Assert.assertTrue(file.delete());
         }
