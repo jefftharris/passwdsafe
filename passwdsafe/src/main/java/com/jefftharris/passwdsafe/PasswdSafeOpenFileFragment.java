@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.Pair;
@@ -1304,7 +1305,7 @@ public class PasswdSafeOpenFileFragment
     /**
      * Text watcher to clear the invalid password message
      */
-    private final class ErrorClearingWatcher implements TextWatcher
+    private final class ErrorClearingWatcher extends AbstractTextWatcher
     {
         @Override
         public void afterTextChanged(Editable s)
@@ -1312,18 +1313,6 @@ public class PasswdSafeOpenFileFragment
             TextInputUtils.setTextInputError(null, itsPasswordInput);
             itsPasswordEdit.removeTextChangedListener(itsErrorClearingWatcher);
             itsErrorClearingWatcher = null;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count,
-                                      int after)
-        {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before,
-                                  int count)
-        {
         }
     }
 }
