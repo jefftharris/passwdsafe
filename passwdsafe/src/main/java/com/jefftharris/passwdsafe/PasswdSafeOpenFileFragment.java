@@ -162,7 +162,7 @@ public class PasswdSafeOpenFileFragment
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            setFileUri((Uri)args.getParcelable(ARG_URI));
+            setFileUri(args.getParcelable(ARG_URI));
             itsRecToOpen = args.getString(ARG_REC_TO_OPEN);
         }
 
