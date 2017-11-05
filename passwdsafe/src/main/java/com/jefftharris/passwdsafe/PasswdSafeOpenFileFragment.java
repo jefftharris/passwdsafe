@@ -673,7 +673,7 @@ public class PasswdSafeOpenFileFragment
         Owner<PwsPassword> passwd =
                 new Owner<>(new PwsPassword(itsPasswordEdit.getText()));
         try {
-            itsOpenTask = new OpenTask(passwd.pass(), readonly);
+            itsOpenTask = new OpenTask(passwd.pass(), readonly, this);
             itsOpenTask.execute();
         } finally {
             passwd.close();
@@ -844,27 +844,40 @@ public class PasswdSafeOpenFileFragment
     /**
      * Background task for opening the file
      */
-    private class OpenTask extends BackgroundTask<OpenResult>
+    private static class OpenTask
+            extends BackgroundTask<OpenResult, PasswdSafeOpenFileFragment>
     {
+        private final PasswdFileUri itsFileUri;
         private final Owner<PwsPassword> itsPassword;
         private final boolean itsItsIsReadOnly;
+        private final boolean itsIsYubikey;
+        private final SavePasswordChange itsSaveChange;
+        private final SavedPasswordsMgr itsSavedPasswordsMgr;
 
+        /**
+         * Constructor
+         */
         public OpenTask(Owner<PwsPassword>.Param passwd,
-                        boolean itsIsReadOnly)
+                        boolean itsIsReadOnly,
+                        PasswdSafeOpenFileFragment frag)
         {
+            super(frag);
+            itsFileUri = frag.getPasswdFileUri();
             itsPassword = passwd.use();
             itsItsIsReadOnly = itsIsReadOnly;
+            itsIsYubikey = frag.itsIsYubikey;
+            itsSaveChange = frag.itsSaveChange;
+            itsSavedPasswordsMgr = frag.itsSavedPasswordsMgr;
         }
 
         @Override
         protected OpenResult doInBackground(Void... voids)
         {
-            PasswdFileData fileData =
-                    new PasswdFileData(getPasswdFileUri());
+            PasswdFileData fileData = new PasswdFileData(itsFileUri);
             try {
                 fileData.setYubikey(itsIsYubikey);
                 fileData.load(itsPassword.pass(), itsItsIsReadOnly,
-                              getActivity());
+                              getContext());
             } catch (Exception e) {
                 return new OpenResult(null, null, e);
             }
@@ -873,7 +886,7 @@ public class PasswdSafeOpenFileFragment
             switch (itsSaveChange) {
             case ADD: {
                 try {
-                    itsSavedPasswordsMgr.generateKey(getPasswdFileUri());
+                    itsSavedPasswordsMgr.generateKey(itsFileUri);
                 } catch (InvalidAlgorithmParameterException |
                         NoSuchAlgorithmException | NoSuchProviderException |
                         IOException e) {
@@ -894,7 +907,10 @@ public class PasswdSafeOpenFileFragment
         protected void onPostExecute(OpenResult data)
         {
             super.onPostExecute(data);
-            openTaskFinished(data);
+            PasswdSafeOpenFileFragment frag = getFragment();
+            if (frag != null) {
+                frag.openTaskFinished(data);
+            }
             itsPassword.close();
         }
     }

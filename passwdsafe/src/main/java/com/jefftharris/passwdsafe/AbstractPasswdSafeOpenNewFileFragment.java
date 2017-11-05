@@ -7,8 +7,10 @@
  */
 package com.jefftharris.passwdsafe;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -17,6 +19,7 @@ import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.CountedBool;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +106,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
      */
     protected final void startResolve()
     {
-        ResolveTask task = new ResolveTask();
+        ResolveTask task = new ResolveTask(itsFileUri, this);
         itsResolveTasks.add(task);
         task.execute();
     }
@@ -204,10 +207,20 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
     /**
      * Background task for resolving the file URI
      */
-    private class ResolveTask extends BackgroundTask<PasswdFileUri>
+    private static class ResolveTask
+            extends BackgroundTask<PasswdFileUri,
+                                   AbstractPasswdSafeOpenNewFileFragment>
     {
-        private final PasswdFileUri.Creator itsUriCreator =
-                new PasswdFileUri.Creator(itsFileUri, getActivity());
+        private final PasswdFileUri.Creator itsUriCreator;
+
+        /**
+         * Constructor
+         */
+        private ResolveTask(Uri uri, AbstractPasswdSafeOpenNewFileFragment frag)
+        {
+            super(frag);
+            itsUriCreator = new PasswdFileUri.Creator(uri, getContext());
+        }
 
         @Override
         protected final void onPreExecute()
@@ -226,13 +239,17 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
         protected final void onPostExecute(PasswdFileUri uri)
         {
             super.onPostExecute(uri);
+            AbstractPasswdSafeOpenNewFileFragment frag = getFragment();
+            if (frag == null) {
+                return;
+            }
             Throwable resolveEx = itsUriCreator.getResolveEx();
             if (resolveEx != null) {
                 PasswdSafeUtil.showFatalMsg(
-                        getString(R.string.file_not_found_perm_denied),
-                        getActivity());
+                        getContext().getString(R.string.file_not_found_perm_denied),
+                        frag.getActivity());
             } else {
-                resolveTaskFinished(uri, this);
+                frag.resolveTaskFinished(uri, this);
             }
         }
     }
@@ -240,9 +257,38 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
     /**
      * Background task
      */
-    protected abstract class BackgroundTask<ResultT>
+    protected static abstract class BackgroundTask<
+                ResultT, FragT extends AbstractPasswdSafeOpenNewFileFragment>
             extends AsyncTask<Void, Void, ResultT>
     {
+        private final WeakReference<FragT> itsFrag;
+        private final Context itsContext;
+
+        /**
+         * Constructor
+         */
+        protected BackgroundTask(FragT frag)
+        {
+            itsFrag = new WeakReference<>(frag);
+            itsContext = frag.getContext().getApplicationContext();
+        }
+
+        /**
+         * Get the fragment if valid
+         */
+        protected @Nullable FragT getFragment()
+        {
+            return itsFrag.get();
+        }
+
+        /**
+         * Get a context
+         */
+        protected Context getContext()
+        {
+            return itsContext;
+        }
+
         @Override
         protected final void onCancelled()
         {
@@ -252,15 +298,25 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
         @Override
         protected void onPreExecute()
         {
-            setProgressVisible(true, true);
-            setFieldsDisabled(true);
+            setRunning(true);
         }
 
         @Override
         protected void onPostExecute(ResultT data)
         {
-            setProgressVisible(false, true);
-            setFieldsDisabled(false);
+            setRunning(false);
+        }
+
+        /**
+         * Set whether the task is running
+         */
+        private void setRunning(boolean running)
+        {
+            AbstractPasswdSafeOpenNewFileFragment frag = itsFrag.get();
+            if (frag != null) {
+                frag.setProgressVisible(running, true);
+                frag.setFieldsDisabled(running);
+            }
         }
     }
 }

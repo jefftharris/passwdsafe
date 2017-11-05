@@ -233,7 +233,7 @@ public class PasswdSafeNewFileFragment
                 Owner<PwsPassword> passwd =
                         new Owner<>(new PwsPassword(itsPassword.getText()));
                 try {
-                    itsNewTask = new NewTask(fileName, passwd.pass());
+                    itsNewTask = new NewTask(fileName, passwd.pass(), this);
                     itsNewTask.execute();
                 } finally {
                     passwd.close();
@@ -304,7 +304,7 @@ public class PasswdSafeNewFileFragment
             Owner<PwsPassword> passwd =
                     new Owner<>(new PwsPassword(itsPassword.getText()));
             try {
-                itsNewTask = new NewTask(fileName, passwd.pass());
+                itsNewTask = new NewTask(fileName, passwd.pass(), this);
                 itsNewTask.execute();
             } finally {
                 passwd.close();
@@ -508,19 +508,27 @@ public class PasswdSafeNewFileFragment
     /**
      * Background task for creating a new file
      */
-    private class NewTask extends BackgroundTask<Object>
+    private static class NewTask
+            extends BackgroundTask<Object, PasswdSafeNewFileFragment>
     {
         private final String itsFileName;
+        private final PasswdFileUri itsFileUri;
+        private final boolean itsUseStorage;
         private final Owner<PwsPassword> itsPassword;
-        private PasswdFileUri itsFileUri;
+        private PasswdFileUri itsNewFileUri;
 
         /**
          * Constructor
          */
-        public NewTask(String fileName, Owner<PwsPassword>.Param passwd)
+        public NewTask(String fileName,
+                       Owner<PwsPassword>.Param passwd,
+                       PasswdSafeNewFileFragment frag)
         {
+            super(frag);
             itsFileName = fileName;
+            itsFileUri = frag.getPasswdFileUri();
             itsPassword = passwd.use();
+            itsUseStorage = frag.itsUseStorage;
         }
 
         @Override
@@ -529,12 +537,11 @@ public class PasswdSafeNewFileFragment
             try {
                 Context ctx = getContext();
                 if (itsUseStorage) {
-                    itsFileUri = getPasswdFileUri();
+                    itsNewFileUri = itsFileUri;
                 } else {
-                    itsFileUri = getPasswdFileUri().createNewChild(itsFileName,
-                                                                   ctx);
+                    itsNewFileUri = itsFileUri.createNewChild(itsFileName, ctx);
                 }
-                PasswdFileData fileData = new PasswdFileData(itsFileUri);
+                PasswdFileData fileData = new PasswdFileData(itsNewFileUri);
                 fileData.createNewFile(itsPassword.pass(), ctx);
                 return fileData;
             } catch (Exception e) {
@@ -546,7 +553,10 @@ public class PasswdSafeNewFileFragment
         protected void onPostExecute(Object data)
         {
             super.onPostExecute(data);
-            newTaskFinished(data, itsFileUri);
+            PasswdSafeNewFileFragment frag = getFragment();
+            if (frag != null) {
+                frag.newTaskFinished(data, itsNewFileUri);
+            }
             itsPassword.close();
         }
     }
