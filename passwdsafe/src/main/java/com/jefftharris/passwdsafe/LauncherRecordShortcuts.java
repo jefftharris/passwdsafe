@@ -11,14 +11,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -121,15 +119,10 @@ public class LauncherRecordShortcuts extends AppCompatActivity
 
         itsFileDataView.clearFileData();
         String fileTitle = PasswdSafeFileDataFragment.useOpenFileData(
-                new PasswdFileDataUser<String>()
-                {
-                    @Override
-                    public String useFileData(@NonNull PasswdFileData fileData)
-                    {
-                        itsFileDataView.setFileData(fileData);
-                        return fileData.getUri().getIdentifier(
-                                LauncherRecordShortcuts.this, true);
-                    }
+                fileData -> {
+                    itsFileDataView.setFileData(fileData);
+                    return fileData.getUri().getIdentifier(
+                            LauncherRecordShortcuts.this, true);
                 });
         if (fileTitle != null) {
             itsFile.setText(fileTitle);
@@ -160,15 +153,9 @@ public class LauncherRecordShortcuts extends AppCompatActivity
     {
         if (itsFileDataView.handleSharedPreferenceChanged(prefs, key)) {
             PasswdSafeFileDataFragment.useOpenFileData(
-                    new PasswdFileDataUser<Void>()
-                    {
-                        @Override
-                        public Void useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            itsFileDataView.refreshFileData(fileData);
-                            return null;
-                        }
+                    (PasswdFileDataUser<Void>)fileData -> {
+                        itsFileDataView.refreshFileData(fileData);
+                        return null;
                     });
         }
     }
@@ -249,17 +236,10 @@ public class LauncherRecordShortcuts extends AppCompatActivity
         switch (itsMode) {
         case SHORTCUT: {
             Pair<Uri, String> rc = PasswdSafeFileDataFragment.useOpenFileData(
-                    new PasswdFileDataUser<Pair<Uri, String>>()
-                    {
-                        @Override
-                        public Pair<Uri, String> useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            PwsRecord rec = fileData.getRecord(uuid);
-                            String title = fileData.getTitle(rec);
-                            return new Pair<>(fileData.getUri().getUri(),
-                                              title);
-                        }
+                    fileData -> {
+                        PwsRecord rec = fileData.getRecord(uuid);
+                        String title = fileData.getTitle(rec);
+                        return new Pair<>(fileData.getUri().getUri(), title);
                     });
             if (rc != null) {
                 Intent shortcutIntent = PasswdSafeUtil.createOpenIntent(

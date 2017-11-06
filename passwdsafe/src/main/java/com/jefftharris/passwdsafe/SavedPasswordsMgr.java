@@ -547,15 +547,10 @@ public final class SavedPasswordsMgr
          */
         public void removeSavedPassword(final Uri uri) throws Exception
         {
-            itsDb.useDb(new PasswdSafeDb.DbUser<Void>()
-            {
-                @Override
-                public Void useDb(SQLiteDatabase db) throws Exception
-                {
-                    db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                              WHERE_BY_URI, new String[] {uri.toString()});
-                    return null;
-                }
+            itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
+                db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
+                          WHERE_BY_URI, new String[] {uri.toString()});
+                return null;
             });
         }
 
@@ -564,15 +559,9 @@ public final class SavedPasswordsMgr
          */
         public void removeAllSavedPasswords() throws Exception
         {
-            itsDb.useDb(new PasswdSafeDb.DbUser<Void>()
-            {
-                @Override
-                public Void useDb(SQLiteDatabase db) throws Exception
-                {
-                    db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                              null, null);
-                    return null;
-                }
+            itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
+                db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS, null, null);
+                return null;
             });
         }
 
@@ -607,15 +596,10 @@ public final class SavedPasswordsMgr
             values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_IV, iv);
             values.put(PasswdSafeDb.DB_COL_SAVED_PASSWORDS_ENC_PASSWD,
                        encPasswd);
-            itsDb.useDb(new PasswdSafeDb.DbUser<Void>()
-            {
-                @Override
-                public Void useDb(SQLiteDatabase db) throws Exception
-                {
-                    db.replaceOrThrow(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                                      null, values);
-                    return null;
-                }
+            itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
+                db.replaceOrThrow(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
+                                  null, values);
+                return null;
             });
         }
 

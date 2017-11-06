@@ -121,37 +121,29 @@ public final class StorageFileListFragment extends ListFragment
                                RecentFilesDb.DB_COL_FILES_ID,
                                RecentFilesDb.DB_COL_FILES_DATE },
                 new int[] { R.id.text, R.id.icon, R.id.mod_date }, 0);
-        itsFilesAdapter.setViewBinder(
-                new SimpleCursorAdapter.ViewBinder()
-                {
-                    @Override
-                    public boolean setViewValue(View view, Cursor cursor,
-                                                int columnIdx)
-                    {
-                        switch (view.getId()) {
-                        case R.id.text: {
-                            TextView tv = (TextView)view;
-                            String title = cursor.getString(columnIdx);
-                            tv.setText(title);
-                            tv.requestLayout();
-                            return false;
-                        }
-                        case R.id.icon: {
-                            ImageView iv = (ImageView)view;
-                            iv.setImageResource(itsFileIcon);
-                            return true;
-                        }
-                        case R.id.mod_date: {
-                            TextView tv = (TextView)view;
-                            long date = cursor.getLong(
-                                    RecentFilesDb.QUERY_COL_DATE);
-                            tv.setText(Utils.formatDate(date, getActivity()));
-                            return true;
-                        }
-                        }
-                        return false;
-                    }
-                });
+        itsFilesAdapter.setViewBinder((view, cursor, columnIdx) -> {
+            switch (view.getId()) {
+            case R.id.text: {
+                TextView tv = (TextView)view;
+                String title = cursor.getString(columnIdx);
+                tv.setText(title);
+                tv.requestLayout();
+                return false;
+            }
+            case R.id.icon: {
+                ImageView iv = (ImageView)view;
+                iv.setImageResource(itsFileIcon);
+                return true;
+            }
+            case R.id.mod_date: {
+                TextView tv = (TextView)view;
+                long date = cursor.getLong(RecentFilesDb.QUERY_COL_DATE);
+                tv.setText(Utils.formatDate(date, getActivity()));
+                return true;
+            }
+            }
+            return false;
+        });
 
         setListAdapter(itsFilesAdapter);
 

@@ -25,12 +25,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.file.HeaderPasswdPolicies;
-import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
+import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import com.jefftharris.passwdsafe.view.PasswdPolicyEditDialog;
@@ -257,25 +256,13 @@ public class PasswdSafePolicyListFragment extends ListFragment
         PasswdSafeUtil.dbginfo(TAG, "savePolicies: %s, rename: %s",
                                newPolicies, policyRename);
 
-        itsListener.useFileData(new PasswdFileDataUser<Void>()
-        {
-            @Override
-            public Void useFileData(@NonNull PasswdFileData fileData)
-            {
-                fileData.setHdrPasswdPolicies(
-                        newPolicies.isEmpty() ? null : newPolicies,
-                        policyRename.get());
-                return null;
-            }
+        itsListener.useFileData((PasswdFileDataUser<Void>)fileData -> {
+            fileData.setHdrPasswdPolicies(
+                    newPolicies.isEmpty() ? null : newPolicies,
+                    policyRename.get());
+            return null;
         });
-        itsListener.finishPolicyEdit(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                refresh();
-            }
-        });
+        itsListener.finishPolicyEdit(this::refresh);
     }
 
     /**
@@ -287,15 +274,10 @@ public class PasswdSafePolicyListFragment extends ListFragment
 
         itsHdrPolicies = null;
         itsIsFileReadonly = true;
-        itsListener.useFileData(new PasswdFileDataUser<Void>()
-        {
-            @Override
-            public Void useFileData(@NonNull PasswdFileData fileData)
-            {
-                itsHdrPolicies = fileData.getHdrPasswdPolicies();
-                itsIsFileReadonly = !fileData.isV3() || !fileData.canEdit();
-                return null;
-            }
+        itsListener.useFileData((PasswdFileDataUser<Void>)fileData -> {
+            itsHdrPolicies = fileData.getHdrPasswdPolicies();
+            itsIsFileReadonly = !fileData.isV3() || !fileData.canEdit();
+            return null;
         });
 
         if (itsHdrPolicies != null) {

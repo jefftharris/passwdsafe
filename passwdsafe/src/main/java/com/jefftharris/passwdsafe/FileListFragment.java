@@ -7,15 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -44,6 +35,14 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.FileComparator;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The FileListFragment allows the user to choose which file to open
@@ -320,22 +319,20 @@ public final class FileListFragment extends ListFragment
             final boolean showHiddenFiles,
             @SuppressWarnings("SameParameterValue") final boolean showDirs)
     {
-        File[] files = dir.listFiles(new FileFilter() {
-            public final boolean accept(File pathname) {
-                String filename = pathname.getName();
-                if (pathname.isDirectory()) {
-                    return showDirs &&
-                            (showHiddenFiles ||
-                             !(filename.startsWith(".") ||
-                               filename.equalsIgnoreCase("LOST.DIR")));
-                }
-                return filename.endsWith(".psafe3") ||
-                        filename.endsWith(".dat") ||
-                        (showHiddenFiles &&
-                                (filename.endsWith(".psafe3~") ||
-                                 filename.endsWith(".dat~") ||
-                                 filename.endsWith(".ibak")));
+        File[] files = dir.listFiles(pathname -> {
+            String filename = pathname.getName();
+            if (pathname.isDirectory()) {
+                return showDirs &&
+                        (showHiddenFiles ||
+                         !(filename.startsWith(".") ||
+                           filename.equalsIgnoreCase("LOST.DIR")));
             }
+            return filename.endsWith(".psafe3") ||
+                    filename.endsWith(".dat") ||
+                    (showHiddenFiles &&
+                            (filename.endsWith(".psafe3~") ||
+                             filename.endsWith(".dat~") ||
+                             filename.endsWith(".ibak")));
         });
 
         FileData[] data;
@@ -377,32 +374,25 @@ public final class FileListFragment extends ListFragment
                                         new String[] { TITLE, ICON, MOD_DATE },
                                         new int[] { R.id.text, R.id.icon,
                                                     R.id.mod_date });
-            adapter.setViewBinder(new SimpleAdapter.ViewBinder()
-            {
-                @Override
-                public boolean setViewValue(View view,
-                                            Object data,
-                                            String textRepresentation)
-                {
-                    switch (view.getId()) {
-                    case R.id.text: {
-                        TextView tv = (TextView)view;
-                        tv.setText(textRepresentation);
-                        tv.requestLayout();
-                        return true;
-                    }
-                    case R.id.mod_date: {
-                        if (data == null) {
-                            view.setVisibility(View.GONE);
-                            return true;
-                        } else {
-                            view.setVisibility(View.VISIBLE);
-                            return false;
-                        }
-                    }
-                    }
-                    return false;
+            adapter.setViewBinder((view, data, textRepresentation) -> {
+                switch (view.getId()) {
+                case R.id.text: {
+                    TextView tv = (TextView)view;
+                    tv.setText(textRepresentation);
+                    tv.requestLayout();
+                    return true;
                 }
+                case R.id.mod_date: {
+                    if (data == null) {
+                        view.setVisibility(View.GONE);
+                        return true;
+                    } else {
+                        view.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                }
+                }
+                return false;
             });
         }
 

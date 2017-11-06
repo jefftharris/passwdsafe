@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +19,6 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
-import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -179,23 +177,16 @@ public class PasswdSafeExpirationsFragment
      */
     private void refresh()
     {
-        Pair<Boolean, Boolean> rc = getListener().useFileData(
-                new PasswdFileDataUser<Pair<Boolean, Boolean>>()
-                {
-                    @Override
-                    public Pair<Boolean, Boolean> useFileData(
-                            @NonNull PasswdFileData fileData)
-                    {
-                        PasswdFileUri uri = fileData.getUri();
-                        boolean enabled = NotificationMgr.notifSupported(uri);
-                        boolean checked = false;
-                        if (enabled) {
-                            NotificationMgr notifyMgr = getNotifyMgr();
-                            checked = notifyMgr.hasPasswdExpiryNotif(uri);
-                        }
-                        return new Pair<>(enabled, checked);
-                    }
-                });
+        Pair<Boolean, Boolean> rc = getListener().useFileData(fileData -> {
+            PasswdFileUri uri = fileData.getUri();
+            boolean enabled = NotificationMgr.notifSupported(uri);
+            boolean checked = false;
+            if (enabled) {
+                NotificationMgr notifyMgr = getNotifyMgr();
+                checked = notifyMgr.hasPasswdExpiryNotif(uri);
+            }
+            return new Pair<>(enabled, checked);
+        });
         if (rc != null) {
             // Disable listener to set state
             itsEnableExpiryNotifs.setOnCheckedChangeListener(null);
@@ -210,15 +201,10 @@ public class PasswdSafeExpirationsFragment
      */
     private void setExpiryNotif(final boolean enabled)
     {
-        getListener().useFileData(new PasswdFileDataUser<Void>()
-        {
-            @Override
-            public Void useFileData(@NonNull PasswdFileData fileData)
-            {
-                NotificationMgr notifyMgr = getNotifyMgr();
-                notifyMgr.setPasswdExpiryNotif(fileData, enabled);
-                return null;
-            }
+        getListener().useFileData((PasswdFileDataUser<Void>)fileData -> {
+            NotificationMgr notifyMgr = getNotifyMgr();
+            notifyMgr.setPasswdExpiryNotif(fileData, enabled);
+            return null;
         });
         refresh();
     }

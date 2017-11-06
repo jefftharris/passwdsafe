@@ -24,7 +24,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ListView;
@@ -34,9 +33,9 @@ import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
-import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.view.TextInputUtils;
 
 import org.pwsafe.lib.file.PwsRecord;
@@ -173,6 +172,7 @@ public class PasswdSafeRecordBasicFragment
         });
         itsPasswordSubset.setKeyListener(new NumberKeyListener()
         {
+            @NonNull
             @Override
             protected char[] getAcceptedChars()
             {
@@ -199,15 +199,7 @@ public class PasswdSafeRecordBasicFragment
         itsReferencesRow = root.findViewById(R.id.references_row);
         itsReferences = (ListView)root.findViewById(R.id.references);
         itsReferences.setOnItemClickListener(
-                new AdapterView.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id)
-                    {
-                        showRefRec(false, position);
-                    }
-                });
+                (parent, view, position, id) -> showRefRec(false, position));
 
         registerForContextMenu(itsUserRow);
         registerForContextMenu(itsPasswordRow);
@@ -451,31 +443,22 @@ public class PasswdSafeRecordBasicFragment
      */
     private void showRefRec(final boolean baseRef, final int referencingPos)
     {
-        PasswdLocation location = useRecordInfo(
-                new RecordInfoUser<PasswdLocation>()
-                {
-                    @Override
-                    public PasswdLocation useRecordInfo(
-                            @NonNull RecordInfo info)
-                    {
-                        PwsRecord refRec = null;
-                        if (baseRef) {
-                            refRec = info.itsPasswdRec.getRef();
-                        } else {
-                            List<PwsRecord> refs =
-                                    info.itsPasswdRec.getRefsToRecord();
-                            if ((referencingPos >= 0) &&
-                                (referencingPos < refs.size())) {
-                                refRec = refs.get(referencingPos);
-                            }
-                        }
-                        if (refRec == null) {
-                            return null;
-                        }
+        PasswdLocation location = useRecordInfo(info -> {
+            PwsRecord refRec = null;
+            if (baseRef) {
+                refRec = info.itsPasswdRec.getRef();
+            } else {
+                List<PwsRecord> refs = info.itsPasswdRec.getRefsToRecord();
+                if ((referencingPos >= 0) && (referencingPos < refs.size())) {
+                    refRec = refs.get(referencingPos);
+                }
+            }
+            if (refRec == null) {
+                return null;
+            }
 
-                        return new PasswdLocation(refRec, info.itsFileData);
-                    }
-                });
+            return new PasswdLocation(refRec, info.itsFileData);
+        });
         if (location != null) {
             getListener().changeLocation(location);
         }
@@ -635,13 +618,7 @@ public class PasswdSafeRecordBasicFragment
     private @Nullable
     String getPassword()
     {
-        return useRecordInfo(new RecordInfoUser<String>()
-        {
-            @Override
-            public String useRecordInfo(@NonNull RecordInfo info)
-            {
-                return info.itsPasswdRec.getPassword(info.itsFileData);
-            }
-        });
+        return useRecordInfo(
+                info -> info.itsPasswdRec.getPassword(info.itsFileData));
     }
 }

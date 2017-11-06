@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
-import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 
@@ -107,17 +106,11 @@ public abstract class AbstractPasswdSafeLocationFragment
      */
     protected final <RetT> RetT useRecordInfo(final RecordInfoUser<RetT> user)
     {
-        return useRecordFile(new RecordFileUser<RetT>()
-        {
-            @Override
-            public RetT useFile(@Nullable RecordInfo info,
-                                @NonNull PasswdFileData fileData)
-            {
-                if (info != null) {
-                    return user.useRecordInfo(info);
-                }
-                return null;
+        return useRecordFile((info, fileData) -> {
+            if (info != null) {
+                return user.useRecordInfo(info);
             }
+            return null;
         });
     }
 
@@ -126,23 +119,18 @@ public abstract class AbstractPasswdSafeLocationFragment
      */
     protected final <RetT> RetT useRecordFile(final RecordFileUser<RetT> user)
     {
-        return useFileData(new PasswdFileDataUser<RetT>()
-        {
-            @Override
-            public RetT useFileData(@NonNull PasswdFileData fileData)
-            {
-                PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
-                if (rec == null) {
-                    return user.useFile(null, fileData);
-                }
-                PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
-                if (passwdRec == null) {
-                    return user.useFile(null, fileData);
-                }
-
-                return user.useFile(new RecordInfo(rec, passwdRec, fileData),
-                                    fileData);
+        return useFileData(fileData -> {
+            PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
+            if (rec == null) {
+                return user.useFile(null, fileData);
             }
+            PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
+            if (passwdRec == null) {
+                return user.useFile(null, fileData);
+            }
+
+            return user.useFile(new RecordInfo(rec, passwdRec, fileData),
+                                fileData);
         });
     }
 }

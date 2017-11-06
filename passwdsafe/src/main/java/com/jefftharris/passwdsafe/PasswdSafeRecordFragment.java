@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -141,17 +140,12 @@ public class PasswdSafeRecordFragment
         viewPager.setCurrentItem(itsLastSelectedTab);
 
         itsTabs = (TabLayout)root.findViewById(R.id.tabs);
-        itsTabs.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (!isAdded()) {
-                    return;
-                }
-                itsTabs.setupWithViewPager(viewPager);
-                updateNotesTab();
+        itsTabs.post(() -> {
+            if (!isAdded()) {
+                return;
             }
+            itsTabs.setupWithViewPager(viewPager);
+            updateNotesTab();
         });
 
         return root;
@@ -223,32 +217,27 @@ public class PasswdSafeRecordFragment
      */
     private void refresh()
     {
-        useRecordInfo(new RecordInfoUser<Void>()
-        {
-            @Override
-            public Void useRecordInfo(@NonNull RecordInfo info)
-            {
-                itsCanEdit = info.itsFileData.canEdit();
-                itsTitle = info.itsFileData.getTitle(info.itsRec);
-                boolean isProtected = info.itsFileData.isProtected(info.itsRec);
-                List<PwsRecord> refs = info.itsPasswdRec.getRefsToRecord();
-                boolean hasRefs = (refs != null) && !refs.isEmpty();
-                itsCanDelete = itsCanEdit && !hasRefs && !isProtected;
+        useRecordInfo((RecordInfoUser<Void>)info -> {
+            itsCanEdit = info.itsFileData.canEdit();
+            itsTitle = info.itsFileData.getTitle(info.itsRec);
+            boolean isProtected = info.itsFileData.isProtected(info.itsRec);
+            List<PwsRecord> refs = info.itsPasswdRec.getRefsToRecord();
+            boolean hasRefs = (refs != null) && !refs.isEmpty();
+            itsCanDelete = itsCanEdit && !hasRefs && !isProtected;
 
-                switch (info.itsPasswdRec.getType()) {
-                case NORMAL:
-                case ALIAS: {
-                    String notes = info.itsFileData.getNotes(info.itsRec);
-                    itsHasNotes = !TextUtils.isEmpty(notes);
-                    break;
-                }
-                case SHORTCUT: {
-                    itsHasNotes = false;
-                    break;
-                }
-                }
-                return null;
+            switch (info.itsPasswdRec.getType()) {
+            case NORMAL:
+            case ALIAS: {
+                String notes = info.itsFileData.getNotes(info.itsRec);
+                itsHasNotes = !TextUtils.isEmpty(notes);
+                break;
             }
+            case SHORTCUT: {
+                itsHasNotes = false;
+                break;
+            }
+            }
+            return null;
         });
         updateNotesTab();
         GuiUtils.invalidateOptionsMenu(getActivity());

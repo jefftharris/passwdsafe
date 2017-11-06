@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -22,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -95,14 +93,7 @@ public class PasswdSafeChangePasswordFragment
         PasswordVisibilityMenuHandler.set(ctx, itsPassword, itsPasswordConfirm);
 
         GuiUtils.setupFormKeyboard(itsPassword, itsPasswordConfirm,
-                                   getContext(), new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        save();
-                    }
-                });
+                                   getContext(), this::save);
 
         return rootView;
     }
@@ -111,15 +102,10 @@ public class PasswdSafeChangePasswordFragment
     public void onResume()
     {
         super.onResume();
-        useFileData(new PasswdFileDataUser<Void>()
-        {
-            @Override
-            public Void useFileData(@NonNull PasswdFileData fileData)
-            {
-                itsTitle.setText(fileData.getUri().getIdentifier(getContext(),
-                                                                 true));
-                return null;
-            }
+        useFileData((PasswdFileDataUser<Void>)fileData -> {
+            itsTitle.setText(fileData.getUri().getIdentifier(getContext(),
+                                                             true));
+            return null;
         });
         getListener().updateViewChangingPassword();
         itsValidator.validate();
@@ -175,14 +161,9 @@ public class PasswdSafeChangePasswordFragment
         final Owner<PwsPassword> passwd =
                 new Owner<>(new PwsPassword(itsPassword.getText()));
         try {
-            useFileData(new PasswdFileDataUser<Void>()
-            {
-                @Override
-                public Void useFileData(@NonNull PasswdFileData fileData)
-                {
-                    fileData.changePasswd(passwd.pass());
-                    return null;
-                }
+            useFileData((PasswdFileDataUser<Void>)fileData -> {
+                fileData.changePasswd(passwd.pass());
+                return null;
             });
         } finally {
             passwd.close();

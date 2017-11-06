@@ -340,14 +340,7 @@ public class PasswdSafeEditRecordFragment
             // to occur which clears the reference
             View root = getView();
             if (root != null) {
-                root.post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        setLinkRefUuid(ref);
-                    }
-                });
+                root.post(() -> setLinkRefUuid(ref));
             }
         }
 
@@ -708,46 +701,40 @@ public class PasswdSafeEditRecordFragment
      */
     private void initialize()
     {
-        useRecordFile(new RecordFileUser<Void>()
-        {
-            @Override
-            public Void useFile(@Nullable RecordInfo info,
-                                @NonNull PasswdFileData fileData)
-            {
-                PwsRecord record;
-                String group;
-                if (info != null) {
-                    record = info.itsRec;
-                    itsUuid = fileData.getUUID(record);
-                    itsIsV3 = fileData.isV3();
-                    itsTitle.setText(fileData.getTitle(record));
-                    group = fileData.getGroup(record);
-                    itsUser.setText(fileData.getUsername(record));
-                    itsHistory = fileData.getPasswdHistory(record);
-                    itsNotes.setText(fileData.getNotes(record));
+        useRecordFile((RecordFileUser<Void>)(info, fileData) -> {
+            PwsRecord record;
+            String group;
+            if (info != null) {
+                record = info.itsRec;
+                itsUuid = fileData.getUUID(record);
+                itsIsV3 = fileData.isV3();
+                itsTitle.setText(fileData.getTitle(record));
+                group = fileData.getGroup(record);
+                itsUser.setText(fileData.getUsername(record));
+                itsHistory = fileData.getPasswdHistory(record);
+                itsNotes.setText(fileData.getNotes(record));
 
-                    if (itsIsV3) {
-                        itsUrl.setText(fileData.getURL(record));
-                        itsEmail.setText(fileData.getEmail(record));
-                        itsIsProtected = fileData.isProtected(record);
-                        historyChanged(true);
-                    } else {
-                        GuiUtils.setVisible(itsUrlInput, false);
-                        GuiUtils.setVisible(itsEmailInput, false);
-                        GuiUtils.setVisible(itsHistoryGroup, false);
-                    }
+                if (itsIsV3) {
+                    itsUrl.setText(fileData.getURL(record));
+                    itsEmail.setText(fileData.getEmail(record));
+                    itsIsProtected = fileData.isProtected(record);
+                    historyChanged(true);
                 } else {
-                    record = null;
-                    itsUuid = null;
-                    itsIsV3 = fileData.isV3();
-                    group = getLocation().getRecordGroup();
+                    GuiUtils.setVisible(itsUrlInput, false);
+                    GuiUtils.setVisible(itsEmailInput, false);
+                    GuiUtils.setVisible(itsHistoryGroup, false);
                 }
-                initGroup(group, fileData, record);
-                initTypeAndPassword(info);
-                initPasswdPolicy(info, fileData);
-                initPasswdExpiry(info);
-                return null;
+            } else {
+                record = null;
+                itsUuid = null;
+                itsIsV3 = fileData.isV3();
+                group = getLocation().getRecordGroup();
             }
+            initGroup(group, fileData, record);
+            initTypeAndPassword(info);
+            initPasswdPolicy(info, fileData);
+            initPasswdExpiry(info);
+            return null;
         });
         updateProtected();
         itsValidator.validate();
@@ -1114,15 +1101,9 @@ public class PasswdSafeEditRecordFragment
      */
     private void setLinkRefUuid(final String refUuid)
     {
-        useRecordFile(new RecordFileUser<Void>()
-        {
-            @Override
-            public Void useFile(@Nullable RecordInfo info,
-                                @NonNull PasswdFileData fileData)
-            {
-                setLinkRef(fileData.getRecord(refUuid), fileData);
-                return null;
-            }
+        useRecordFile((RecordFileUser<Void>)(info, fileData) -> {
+            setLinkRef(fileData.getRecord(refUuid), fileData);
+            return null;
         });
     }
 
@@ -1270,17 +1251,7 @@ public class PasswdSafeEditRecordFragment
      */
     private void saveRecord()
     {
-        EditRecordResult rc = useRecordFile(
-                new RecordFileUser<EditRecordResult>()
-                {
-                    @Override
-                    public EditRecordResult useFile(
-                            @Nullable RecordInfo info,
-                            @NonNull PasswdFileData fileData)
-                    {
-                        return updateSaveRecord(info, fileData);
-                    }
-                });
+        EditRecordResult rc = useRecordFile(this::updateSaveRecord);
         if (rc != null) {
             getListener().finishEditRecord(rc);
         }

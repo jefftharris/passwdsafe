@@ -22,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -79,15 +78,9 @@ public class SyncProviderFragment extends ListFragment
                                          container, false);
 
         View launchBtn = rootView.findViewById(android.R.id.empty);
-        launchBtn.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                PasswdSafeUtil.startMainActivity(PasswdSafeUtil.SYNC_PACKAGE,
-                                                 getActivity());
-            }
-        });
+        launchBtn.setOnClickListener(
+                v -> PasswdSafeUtil.startMainActivity(
+                        PasswdSafeUtil.SYNC_PACKAGE, getActivity()));
 
         GuiUtils.setVisible(rootView, checkProvider(getContext()));
         return rootView;
@@ -109,43 +102,38 @@ public class SyncProviderFragment extends ListFragment
                               PasswdSafeContract.Providers.COL_TYPE},
                new int[] { android.R.id.text1, android.R.id.text2, R.id.icon },
                0);
-        itsProviderAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder()
-        {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int colIdx)
-            {
-                int id = view.getId();
-                switch (id) {
-                case android.R.id.text1: {
-                    String displayName =
-                            PasswdSafeContract.Providers.getDisplayName(cursor);
-                    TextView tv = (TextView)view;
-                    tv.setText(displayName);
-                    return true;
-                }
-                case android.R.id.text2:
-                case R.id.icon: {
-                    try {
-                        String typeStr = cursor.getString(colIdx);
-                        ProviderType type = ProviderType.valueOf(typeStr);
-                        switch (id) {
-                        case android.R.id.text2: {
-                            type.setText((TextView)view);
-                            break;
-                        }
-                        case R.id.icon: {
-                            type.setIcon((ImageView)view);
-                            break;
-                        }
-                        }
-                        return true;
-                    } catch (IllegalArgumentException e) {
-                        return false;
-                    }
-                }
-                }
-                return false;
+        itsProviderAdapter.setViewBinder((view, cursor, colIdx) -> {
+            int id = view.getId();
+            switch (id) {
+            case android.R.id.text1: {
+                String displayName =
+                        PasswdSafeContract.Providers.getDisplayName(cursor);
+                TextView tv = (TextView)view;
+                tv.setText(displayName);
+                return true;
             }
+            case android.R.id.text2:
+            case R.id.icon: {
+                try {
+                    String typeStr = cursor.getString(colIdx);
+                    ProviderType type = ProviderType.valueOf(typeStr);
+                    switch (id) {
+                    case android.R.id.text2: {
+                        type.setText((TextView)view);
+                        break;
+                    }
+                    case R.id.icon: {
+                        type.setIcon((ImageView)view);
+                        break;
+                    }
+                    }
+                    return true;
+                } catch (IllegalArgumentException e) {
+                    return false;
+                }
+            }
+            }
+            return false;
         });
         setListAdapter(itsProviderAdapter);
 
