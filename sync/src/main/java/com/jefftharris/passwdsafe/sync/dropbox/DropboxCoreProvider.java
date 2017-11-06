@@ -215,15 +215,9 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     {
         final ObjectHolder<SyncConnectivityResult> connResult =
                 new ObjectHolder<>();
-        useDropboxService(new DropboxUser()
-        {
-            @Override
-            public void useDropbox() throws Exception
-            {
-                String displayName =
-                        DropboxCoreSyncer.getDisplayName(itsClient);
-                connResult.set(new SyncConnectivityResult(displayName));
-            }
+        useDropboxService(() -> {
+            String displayName = DropboxCoreSyncer.getDisplayName(itsClient);
+            connResult.set(new SyncConnectivityResult(displayName));
         });
         return connResult.get();
     }
@@ -234,15 +228,9 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
                      final SyncConnectivityResult connResult,
                      final SyncLogRecord logrec) throws Exception
     {
-        useDropboxService(new DropboxUser()
-        {
-            @Override
-            public void useDropbox() throws Exception
-            {
-                new DropboxCoreSyncer(itsClient, provider, connResult,
-                                      logrec, getContext()).sync();
-            }
-        });
+        useDropboxService(
+                () -> new DropboxCoreSyncer(itsClient, provider, connResult,
+                                            logrec, getContext()).sync());
     }
 
     /** List files */
@@ -400,34 +388,28 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             editor.apply();
 
             try {
-                didMigrate |= SyncDb.useDb(new SyncDb.DbUser<Boolean>()
-                {
-                    @Override
-                    public Boolean useDb(SQLiteDatabase db) throws Exception
-                    {
-                        boolean dbmigrate = false;
-                        for (DbProvider provider: SyncDb.getProviders(db)) {
-                            if (provider.itsType != ProviderType.DROPBOX) {
-                                continue;
-                            }
-
-                            dbmigrate = true;
-                            String dirpfx = "/Apps/PasswdSafe Sync";
-                            for (DbFile dbfile:
-                                    SyncDb.getFiles(provider.itsId, db)) {
-                                SyncDb.updateRemoteFile(
-                                        dbfile.itsId,
-                                        (dirpfx +
-                                         dbfile.itsRemoteId).toLowerCase(),
-                                        dbfile.itsRemoteTitle,
-                                        dirpfx + dbfile.itsRemoteFolder,
-                                        dbfile.itsRemoteModDate,
-                                        dbfile.itsRemoteHash,
-                                        db);
-                            }
+                didMigrate |= SyncDb.useDb(db -> {
+                    boolean dbmigrate = false;
+                    for (DbProvider provider: SyncDb.getProviders(db)) {
+                        if (provider.itsType != ProviderType.DROPBOX) {
+                            continue;
                         }
-                        return dbmigrate;
+
+                        dbmigrate = true;
+                        String dirpfx = "/Apps/PasswdSafe Sync";
+                        for (DbFile dbfile:
+                                SyncDb.getFiles(provider.itsId, db)) {
+                            SyncDb.updateRemoteFile(
+                                    dbfile.itsId,
+                                    (dirpfx + dbfile.itsRemoteId).toLowerCase(),
+                                    dbfile.itsRemoteTitle,
+                                    dirpfx + dbfile.itsRemoteFolder,
+                                    dbfile.itsRemoteModDate,
+                                    dbfile.itsRemoteHash,
+                                    db);
+                        }
                     }
+                    return dbmigrate;
                 });
             } catch (Exception e) {
                 Log.e(TAG, "Error migrating files", e);
