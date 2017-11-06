@@ -150,13 +150,7 @@ public class PasswdPolicyView extends LinearLayout
         showPolicy(null, -1);
 
         Button btn = (Button)findViewById(R.id.policy_view_generate);
-        btn.setOnClickListener(new OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                generatePasswd();
-            }
-        });
+        btn.setOnClickListener(v -> generatePasswd());
 
         itsGeneratedPasswd =
             (TextView)findViewById(R.id.policy_view_generated_passwd);

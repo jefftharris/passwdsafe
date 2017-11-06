@@ -83,15 +83,10 @@ public class NewGroupDialog extends DialogFragment
                 .setOnCancelListener(dlgClick);
         final AlertDialog alertDialog = builder.create();
         TextView tv = (TextView)view.findViewById(R.id.new_group);
-        GuiUtils.setupFormKeyboard(tv, tv, getContext(), new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                Button btn = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                if (btn.isEnabled()) {
-                    btn.performClick();
-                }
+        GuiUtils.setupFormKeyboard(tv, tv, getContext(), () -> {
+            Button btn = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            if (btn.isEnabled()) {
+                btn.performClick();
             }
         });
         return alertDialog;

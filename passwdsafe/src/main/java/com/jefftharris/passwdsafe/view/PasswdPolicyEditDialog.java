@@ -19,13 +19,10 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -216,13 +213,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         itsValidator.registerTextView(itsCustomSymbolsEdit);
 
         Button btn = (Button)itsView.findViewById(R.id.generate);
-        btn.setOnClickListener(new OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                generatePasswd();
-            }
-        });
+        btn.setOnClickListener(btnView -> generatePasswd());
 
         return dialog;
     }
@@ -404,14 +395,9 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
     {
         if (init) {
             option.setChecked(use);
-            option.setOnCheckedChangeListener(new OnCheckedChangeListener()
-            {
-                public void onCheckedChanged(CompoundButton buttonView,
-                                             boolean isChecked)
-                {
-                    setOption((CheckBox)buttonView, isChecked, false);
-                }
-            });
+            option.setOnCheckedChangeListener(
+                    (buttonView, isChecked) ->
+                            setOption((CheckBox)buttonView, isChecked, false));
         }
 
         setOptionLenVisible(option);
@@ -431,14 +417,8 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         if (init) {
             itsUseCustomSymbols.setChecked(useCustom);
             itsUseCustomSymbols.setOnCheckedChangeListener(
-                new OnCheckedChangeListener()
-                {
-                    public void onCheckedChanged(CompoundButton buttonView,
-                                                 boolean isChecked)
-                    {
-                        setCustomSymbolsOption(isChecked, false);
-                    }
-                });
+                    (buttonView, isChecked) ->
+                            setCustomSymbolsOption(isChecked, false));
         }
 
         View defView = itsView.findViewById(R.id.symbols_default);

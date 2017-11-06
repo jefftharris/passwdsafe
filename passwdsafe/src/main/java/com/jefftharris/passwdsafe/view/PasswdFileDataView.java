@@ -440,14 +440,7 @@ public final class PasswdFileDataView
                     new StringComparator() : String.CASE_INSENSITIVE_ORDER;
             if (!itsRecordOptions.itsIsSortAscending) {
                 final Comparator<String> comp = groupComp;
-                groupComp = new Comparator<String>()
-                {
-                    @Override
-                    public int compare(String s1, String s2)
-                    {
-                        return -comp.compare(s1, s2);
-                    }
-                };
+                groupComp = (s1, s2) -> -comp.compare(s1, s2);
             }
 
             for (PwsRecord rec: records) {
