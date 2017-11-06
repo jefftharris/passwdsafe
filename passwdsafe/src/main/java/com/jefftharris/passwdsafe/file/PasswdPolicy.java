@@ -710,7 +710,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         // Pronounceable passwords generation code copied from
         // CPasswordCharPool::MakePronounceable from Password Safe project
 
-        /**
+        /*
          * Following based on gpw.C from
          * http://www.multicians.org/thvv/tvvtools.html
          * Thanks to Tom Van Vleck, Morrie Gasser, and Dan Edwards.
