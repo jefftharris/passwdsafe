@@ -7,9 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.util.Comparator;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -33,6 +30,9 @@ import android.widget.TextView;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.sync.R;
+
+import java.util.Comparator;
+import java.util.List;
 
 /**
  *  Fragment to show synced password files
@@ -219,28 +219,23 @@ public class SyncedFilesFragment extends ListFragment
             itsProgressBar.setVisibility(View.VISIBLE);
             itsProgressBarRefCount = 1;
         }
-        itsListener.listFiles(itsPathId, new Listener.ListFilesCb()
-        {
-            @Override
-            public void handleFiles(List<ProviderRemoteFile> files)
-            {
-                if (files != null) {
-                    itsFilesAdapter.clear();
-                    for (ProviderRemoteFile file: files) {
-                        PasswdSafeUtil.dbginfo(TAG, "list file: %s",
-                                               file.toDebugString());
-                        boolean selected =
-                                itsListener.isSelected(file.getRemoteId());
-                        itsFilesAdapter.add(new ListItem(file, selected));
-                    }
-                    itsFilesAdapter.sort(new ListItemComparator());
-                    itsFilesAdapter.notifyDataSetChanged();
+        itsListener.listFiles(itsPathId, files -> {
+            if (files != null) {
+                itsFilesAdapter.clear();
+                for (ProviderRemoteFile file: files) {
+                    PasswdSafeUtil.dbginfo(TAG, "list file: %s",
+                                           file.toDebugString());
+                    boolean selected =
+                            itsListener.isSelected(file.getRemoteId());
+                    itsFilesAdapter.add(new ListItem(file, selected));
                 }
+                itsFilesAdapter.sort(new ListItemComparator());
+                itsFilesAdapter.notifyDataSetChanged();
+            }
 
-                if (--itsProgressBarRefCount <= 0) {
-                    itsProgressBar.setVisibility(View.GONE);
-                    itsProgressBarRefCount = 0;
-                }
+            if (--itsProgressBarRefCount <= 0) {
+                itsProgressBar.setVisibility(View.GONE);
+                itsProgressBarRefCount = 0;
             }
         });
     }

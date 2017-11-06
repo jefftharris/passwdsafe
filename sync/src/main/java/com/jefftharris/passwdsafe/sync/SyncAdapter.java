@@ -13,7 +13,6 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -54,14 +53,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
         DbProvider dbprovider;
         try {
-            dbprovider = SyncDb.useDb(new SyncDb.DbUser<DbProvider>()
-            {
-                @Override
-                public DbProvider useDb(SQLiteDatabase db) throws Exception
-                {
-                    return SyncHelper.getDbProviderForAcct(account, db);
-                }
-            });
+            dbprovider = SyncDb.useDb(
+                    db -> SyncHelper.getDbProviderForAcct(account, db));
         } catch (Exception e) {
             Log.e(TAG, "onPerformSync error for " + account, e);
             dbprovider = null;

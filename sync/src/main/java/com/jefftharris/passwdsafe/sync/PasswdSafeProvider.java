@@ -7,18 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
@@ -49,6 +37,18 @@ import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncHelper;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *  The PasswdSafeProvider class is a content provider for synced
@@ -141,20 +141,15 @@ public class PasswdSafeProvider extends ContentProvider
         case PasswdSafeContract.MATCH_PROVIDER: {
             PasswdSafeUtil.dbginfo(TAG, "Delete provider: %s", uri);
             try {
-                return SyncDb.useDb(new SyncDb.DbUser<Integer>()
-                {
-                    @Override
-                    public Integer useDb(SQLiteDatabase db) throws Exception
-                    {
-                        long id = PasswdSafeContract.Providers.getId(uri);
-                        DbProvider provider = SyncDb.getProvider(id, db);
-                        if (provider == null) {
-                            return 0;
-                        }
-
-                        deleteProvider(provider, db);
-                        return 1;
+                return SyncDb.useDb(db -> {
+                    long id = PasswdSafeContract.Providers.getId(uri);
+                    DbProvider provider = SyncDb.getProvider(id, db);
+                    if (provider == null) {
+                        return 0;
                     }
+
+                    deleteProvider(provider, db);
+                    return 1;
                 });
             } catch (Exception e) {
                 String msg = "Error deleting provider: " + uri;
@@ -165,27 +160,20 @@ public class PasswdSafeProvider extends ContentProvider
         case PasswdSafeContract.MATCH_PROVIDER_FILE: {
             PasswdSafeUtil.dbginfo(TAG, "Delete file: %s", uri);
             try {
-                return SyncDb.useDb(new SyncDb.DbUser<Integer>()
-                {
-                    @Override
-                    public Integer useDb(SQLiteDatabase db) throws Exception
-                    {
-                        long providerId =
-                                PasswdSafeContract.Providers.getId(uri);
-                        long id = PasswdSafeContract.Files.getId(uri);
-                        DbFile file = SyncDb.getFile(id, db);
-                        if (file == null) {
-                            return 0;
-                        }
-
-                        DbProvider dbProvider =
-                                SyncDb.getProvider(providerId, db);
-                        Provider provider = ProviderFactory.getProvider(
-                                dbProvider.itsType, getContext());
-                        provider.deleteLocalFile(file, db);
-                        notifyFileChanges(providerId, id);
-                        return 1;
+                return SyncDb.useDb(db -> {
+                    long providerId = PasswdSafeContract.Providers.getId(uri);
+                    long id = PasswdSafeContract.Files.getId(uri);
+                    DbFile file = SyncDb.getFile(id, db);
+                    if (file == null) {
+                        return 0;
                     }
+
+                    DbProvider dbProvider = SyncDb.getProvider(providerId, db);
+                    Provider provider = ProviderFactory.getProvider(
+                            dbProvider.itsType, getContext());
+                    provider.deleteLocalFile(file, db);
+                    notifyFileChanges(providerId, id);
+                    return 1;
                 });
             } catch (Exception e) {
                 String msg = "Error deleting file: " + uri;
@@ -258,15 +246,10 @@ public class PasswdSafeProvider extends ContentProvider
             }
             PasswdSafeUtil.dbginfo(TAG, "Insert provider: %s", acct);
             try {
-                return SyncDb.useDb(new SyncDb.DbUser<Uri>()
-                {
-                    @Override
-                    public Uri useDb(SQLiteDatabase db) throws Exception
-                    {
-                        long id = addProvider(acct, type, db);
-                        return ContentUris.withAppendedId(
-                                PasswdSafeContract.Providers.CONTENT_URI, id);
-                    }
+                return SyncDb.useDb(db -> {
+                    long id = addProvider(acct, type, db);
+                    return ContentUris.withAppendedId(
+                            PasswdSafeContract.Providers.CONTENT_URI, id);
                 });
             } catch (Exception e) {
                 String msg = "Error adding provider: " + acct;
@@ -283,27 +266,18 @@ public class PasswdSafeProvider extends ContentProvider
             PasswdSafeUtil.dbginfo(TAG, "Insert file \"%s\" for %s",
                                    title, uri);
             try {
-                return SyncDb.useDb(new SyncDb.DbUser<Uri>()
-                {
-                    @Override
-                    public Uri useDb(SQLiteDatabase db) throws Exception
-                    {
-                        long providerId =
-                                PasswdSafeContract.Providers.getId(uri);
-                        DbProvider dbProvider =
-                                SyncDb.getProvider(providerId, db);
-                        if (dbProvider == null) {
-                            throw new Exception("No provider for " +
-                                                providerId);
-                        }
-
-                        Provider provider = ProviderFactory.getProvider(
-                                dbProvider.itsType, getContext());
-                        long id = provider.insertLocalFile(providerId, title,
-                                                           db);
-                        notifyFileChanges(providerId, -1);
-                        return ContentUris.withAppendedId(uri, id);
+                return SyncDb.useDb(db -> {
+                    long providerId = PasswdSafeContract.Providers.getId(uri);
+                    DbProvider dbProvider = SyncDb.getProvider(providerId, db);
+                    if (dbProvider == null) {
+                        throw new Exception("No provider for " + providerId);
                     }
+
+                    Provider provider = ProviderFactory.getProvider(
+                            dbProvider.itsType, getContext());
+                    long id = provider.insertLocalFile(providerId, title, db);
+                    notifyFileChanges(providerId, -1);
+                    return ContentUris.withAppendedId(uri, id);
                 });
             } catch (Exception e) {
                 String msg = "Error adding file: " + title;
@@ -328,35 +302,22 @@ public class PasswdSafeProvider extends ContentProvider
         Context ctx = getContext();
         //noinspection ConstantConditions
         SyncDb.initializeDb(ctx.getApplicationContext());
-        itsListener = new OnAccountsUpdateListener()
+        itsListener = accounts -> new AsyncTask<Void, Void, Void>()
         {
             @Override
-            public void onAccountsUpdated(Account[] accounts)
+            protected Void doInBackground(Void... params)
             {
-                new AsyncTask<Void, Void, Void>()
-                {
-                    @Override
-                    protected Void doInBackground(Void... params)
-                    {
-                        try {
-                            SyncDb.useDb(new SyncDb.DbUser<Void>()
-                            {
-                                @Override
-                                public Void useDb(SQLiteDatabase db)
-                                        throws Exception
-                                {
-                                    validateAccounts(db);
-                                    return null;
-                                }
-                            });
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error validating accounts", e);
-                        }
+                try {
+                    SyncDb.useDb((SyncDb.DbUser<Void>)db -> {
+                        validateAccounts(db);
                         return null;
-                    }
-                }.execute();
+                    });
+                } catch (Exception e) {
+                    Log.e(TAG, "Error validating accounts", e);
+                }
+                return null;
             }
-        };
+        }.execute();
         if (ActivityCompat.checkSelfPermission(
                 ctx, android.Manifest.permission.GET_ACCOUNTS) ==
             PackageManager.PERMISSION_GRANTED) {
@@ -523,27 +484,22 @@ public class PasswdSafeProvider extends ContentProvider
         case PasswdSafeContract.MATCH_PROVIDER: {
             PasswdSafeUtil.dbginfo(TAG, "Update provider: %s", uri);
             try {
-                return SyncDb.useDb(new SyncDb.DbUser<Integer>()
-                {
-                    @Override
-                    public Integer useDb(SQLiteDatabase db) throws Exception
-                    {
-                        long id = PasswdSafeContract.Providers.getId(uri);
-                        DbProvider provider = SyncDb.getProvider(id, db);
-                        if (provider == null) {
-                            return 0;
-                        }
-
-                        Integer syncFreq = values.getAsInteger(
-                                PasswdSafeContract.Providers.COL_SYNC_FREQ);
-                        if ((syncFreq != null) &&
-                            (provider.itsSyncFreq != syncFreq)) {
-                            PasswdSafeUtil.dbginfo(TAG, "Update sync freq %d",
-                                                   syncFreq);
-                            updateSyncFreq(provider, syncFreq, db);
-                        }
-                        return 1;
+                return SyncDb.useDb(db -> {
+                    long id = PasswdSafeContract.Providers.getId(uri);
+                    DbProvider provider = SyncDb.getProvider(id, db);
+                    if (provider == null) {
+                        return 0;
                     }
+
+                    Integer syncFreq = values.getAsInteger(
+                            PasswdSafeContract.Providers.COL_SYNC_FREQ);
+                    if ((syncFreq != null) &&
+                        (provider.itsSyncFreq != syncFreq)) {
+                        PasswdSafeUtil.dbginfo(TAG, "Update sync freq %d",
+                                               syncFreq);
+                        updateSyncFreq(provider, syncFreq, db);
+                    }
+                    return 1;
                 });
             } catch (Exception e) {
                 String msg = "Error deleting provider: " + uri;
@@ -559,64 +515,56 @@ public class PasswdSafeProvider extends ContentProvider
             }
 
             try {
-                return SyncDb.useDb(new SyncDb.DbUser<Integer>()
-                {
-                    @Override
-                    public Integer useDb(SQLiteDatabase db) throws Exception
-                    {
-                        File tmpFile = null;
-                        try {
-                            Context ctx = getContext();
-                            if (ctx == null) {
-                                throw new NullPointerException("ctx");
-                            }
+                return SyncDb.useDb(db -> {
+                    File tmpFile = null;
+                    try {
+                        Context ctx = getContext();
+                        if (ctx == null) {
+                            throw new NullPointerException("ctx");
+                        }
 
-                            long providerId =
-                                    PasswdSafeContract.Providers.getId(uri);
-                            long id = PasswdSafeContract.Files.getId(uri);
-                            DbFile file = SyncDb.getFile(id, db);
-                            if (file == null) {
-                                throw new IllegalArgumentException(
-                                        "File not found: " + uri);
-                            }
+                        long providerId =
+                                PasswdSafeContract.Providers.getId(uri);
+                        long id = PasswdSafeContract.Files.getId(uri);
+                        DbFile file = SyncDb.getFile(id, db);
+                        if (file == null) {
+                            throw new IllegalArgumentException(
+                                    "File not found: " + uri);
+                        }
 
-                            String localFileName =
-                                    (file.itsLocalFile != null) ?
-                                    file.itsLocalFile :
-                                    SyncHelper.getLocalFileName(id);
-                            tmpFile = File.createTempFile("passwd", ".tmp",
-                                                          ctx.getFilesDir());
+                        String localFileName = (file.itsLocalFile != null) ?
+                                               file.itsLocalFile :
+                                               SyncHelper.getLocalFileName(id);
+                        tmpFile = File.createTempFile("passwd", ".tmp",
+                                                      ctx.getFilesDir());
 
-                            ContentResolver cr = ctx.getContentResolver();
-                            writeToFile(
-                                    cr.openInputStream(Uri.parse(updateUri)),
+                        ContentResolver cr = ctx.getContentResolver();
+                        writeToFile(cr.openInputStream(Uri.parse(updateUri)),
                                     tmpFile);
 
-                            File localFile =
-                                    ctx.getFileStreamPath(localFileName);
-                            if (!tmpFile.renameTo(localFile)) {
-                                throw new IOException(
-                                        "Error renaming " +
-                                        tmpFile.getAbsolutePath() +
-                                        " to " + localFile.getAbsolutePath());
-                            }
-                            tmpFile = null;
-
-                            DbProvider dbProvider =
-                                    SyncDb.getProvider(providerId, db);
-                            Provider provider = ProviderFactory.getProvider(
-                                    dbProvider.itsType, getContext());
-                            provider.updateLocalFile(file, localFileName,
-                                                     localFile, db);
-                            notifyFileChanges(providerId, id);
-                        } finally {
-                             if ((tmpFile != null) && !tmpFile.delete()) {
-                                 Log.e(TAG, "Error deleting tmp file " +
-                                            tmpFile.getAbsolutePath());
-                             }
+                        File localFile = ctx.getFileStreamPath(localFileName);
+                        if (!tmpFile.renameTo(localFile)) {
+                            throw new IOException(
+                                    "Error renaming " +
+                                    tmpFile.getAbsolutePath() +
+                                    " to " + localFile.getAbsolutePath());
                         }
-                        return 1;
+                        tmpFile = null;
+
+                        DbProvider dbProvider =
+                                SyncDb .getProvider(providerId, db);
+                        Provider provider = ProviderFactory.getProvider(
+                                dbProvider.itsType, getContext());
+                        provider.updateLocalFile(file, localFileName,
+                                                 localFile, db);
+                        notifyFileChanges(providerId, id);
+                    } finally {
+                         if ((tmpFile != null) && !tmpFile.delete()) {
+                             Log.e(TAG, "Error deleting tmp file " +
+                                        tmpFile.getAbsolutePath());
+                         }
                     }
+                    return 1;
                 });
             } catch (Exception e) {
                 Log.e(TAG, "Error updating " + uri, e);
@@ -646,14 +594,9 @@ public class PasswdSafeProvider extends ContentProvider
         case PasswdSafeContract.MATCH_PROVIDER_FILE: {
             DbFile file;
             try {
-                file = SyncDb.useDb(new SyncDb.DbUser<DbFile>()
-                {
-                    @Override
-                    public DbFile useDb(SQLiteDatabase db) throws Exception
-                    {
-                        long id = PasswdSafeContract.Files.getId(uri);
-                        return SyncDb.getFile(id, db);
-                    }
+                file = SyncDb.useDb(db -> {
+                    long id = PasswdSafeContract.Files.getId(uri);
+                    return SyncDb.getFile(id, db);
                 });
             } catch (Exception e) {
                 throw (FileNotFoundException)
@@ -780,22 +723,15 @@ public class PasswdSafeProvider extends ContentProvider
             }
 
             final Long id = idval;
-            List<DbProvider> providers =
-                    SyncDb.useDb(new SyncDb.DbUser<List<DbProvider>>()
-                    {
-                        @Override
-                        public List<DbProvider> useDb(SQLiteDatabase db)
-                                throws Exception
-                        {
-                            if (id == null) {
-                                return SyncDb.getProviders(db);
-                            }
+            List<DbProvider> providers = SyncDb.useDb(db -> {
+                if (id == null) {
+                    return SyncDb.getProviders(db);
+                }
 
-                            DbProvider provider = SyncDb.getProvider(id, db);
-                            return (provider != null) ?
-                                   Collections.singletonList(provider) : null;
-                        }
-                    });
+                DbProvider provider = SyncDb.getProvider(id, db);
+                return (provider != null) ?
+                       Collections.singletonList(provider) : null;
+            });
             if (providers == null) {
                 return;
             }

@@ -14,9 +14,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -74,14 +72,9 @@ public class AccountChooserDlg extends DialogFragment
             for (int i = 0; i < accts.length; ++i) {
                 names[i] = accts[i].name;
             }
-            builder.setItems(names, new OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    onAccountSelected(names[which]);
-                }
-            });
+            builder.setItems(names,
+                             (dialog, which) ->
+                                     onAccountSelected(names[which]));
         } else {
             builder.setMessage(args.getString("noAccountsMsg"));
         }

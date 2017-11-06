@@ -12,7 +12,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -74,65 +73,58 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     @Override
     public void updateSyncFreq(Account acct, final int freq)
     {
-        itsHandler.post(new Runnable() {
-            @Override
-            public void run()
-            {
-                String userId = getAccountUserId();
-                PasswdSafeUtil.dbginfo(itsTag,
-                                       "updateSyncFreq acct %s, freq %d",
-                                       userId, freq);
+        itsHandler.post(() -> {
+            String userId = getAccountUserId();
+            PasswdSafeUtil.dbginfo(itsTag, "updateSyncFreq acct %s, freq %d",
+                                   userId, freq);
 
-                if ((userId != null) && (freq > 0)) {
-                    if (itsSyncTimeoutIntent == null) {
-                        Intent timeoutIntent =
-                                new Intent(ACTION_SYNC_EXPIRATION_TIMEOUT);
-                        timeoutIntent.putExtra(
-                                SYNC_EXPIRATION_TIMEOUT_EXTRA_TYPE,
-                                itsProviderType.toString());
+            if ((userId != null) && (freq > 0)) {
+                if (itsSyncTimeoutIntent == null) {
+                    Intent timeoutIntent =
+                            new Intent( ACTION_SYNC_EXPIRATION_TIMEOUT);
+                    timeoutIntent.putExtra(SYNC_EXPIRATION_TIMEOUT_EXTRA_TYPE,
+                                           itsProviderType.toString());
 
-                        int requestCode;
-                        switch (itsProviderType) {
-                        case BOX: {
-                            requestCode = BROADCAST_REQUEST_SYNC_BOX;
-                            break;
-                        }
-                        case DROPBOX: {
-                            requestCode = BROADCAST_REQUEST_SYNC_DROPBOX;
-                            break;
-                        }
-                        case ONEDRIVE: {
-                            requestCode = BROADCAST_REQUEST_SYNC_ONEDRIVE;
-                            break;
-                        }
-                        case OWNCLOUD: {
-                            requestCode = BROADCAST_REQUEST_SYNC_OWNCLOUD;
-                            break;
-                        }
-                        case GDRIVE:
-                            //noinspection UnnecessaryDefault
-                        default: {
-                            throw new IllegalStateException("GDRIVE not valid");
-                        }
-                        }
-
-                        itsSyncTimeoutIntent = PendingIntent.getBroadcast(
-                                itsContext, requestCode, timeoutIntent,
-                                PendingIntent.FLAG_CANCEL_CURRENT);
+                    int requestCode;
+                    switch (itsProviderType) {
+                    case BOX: {
+                        requestCode = BROADCAST_REQUEST_SYNC_BOX;
+                        break;
+                    }
+                    case DROPBOX: {
+                        requestCode = BROADCAST_REQUEST_SYNC_DROPBOX;
+                        break;
+                    }
+                    case ONEDRIVE: {
+                        requestCode = BROADCAST_REQUEST_SYNC_ONEDRIVE;
+                        break;
+                    }
+                    case OWNCLOUD: {
+                        requestCode = BROADCAST_REQUEST_SYNC_OWNCLOUD;
+                        break;
+                    }
+                    case GDRIVE:
+                        //noinspection UnnecessaryDefault
+                    default: {
+                        throw new IllegalStateException("GDRIVE not valid");
+                    }
                     }
 
-                    AlarmManager alarmMgr = (AlarmManager)
-                            itsContext.getSystemService(Context.ALARM_SERVICE);
-                    long interval = freq * 1000;
-                    alarmMgr.setInexactRepeating(
-                            AlarmManager.RTC,
-                            System.currentTimeMillis() + interval,
-                            interval, itsSyncTimeoutIntent);
-                } else {
-                    if (itsSyncTimeoutIntent != null) {
-                        itsSyncTimeoutIntent.cancel();
-                        itsSyncTimeoutIntent = null;
-                    }
+                    itsSyncTimeoutIntent = PendingIntent.getBroadcast(
+                            itsContext, requestCode, timeoutIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT);
+                }
+
+                AlarmManager alarmMgr = (AlarmManager)
+                        itsContext.getSystemService(Context.ALARM_SERVICE);
+                long interval = freq * 1000;
+                alarmMgr.setInexactRepeating(
+                        AlarmManager.RTC, System.currentTimeMillis() + interval,
+                        interval, itsSyncTimeoutIntent);
+            } else {
+                if (itsSyncTimeoutIntent != null) {
+                    itsSyncTimeoutIntent.cancel();
+                    itsSyncTimeoutIntent = null;
                 }
             }
         });
@@ -142,17 +134,11 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     protected final void updateProviderSyncFreq(final String userId)
             throws Exception
     {
-        SyncDb.useDb(new SyncDb.DbUser<Void>()
-        {
-            @Override
-            public Void useDb(SQLiteDatabase db) throws Exception
-            {
-                DbProvider provider = SyncDb.getProvider(userId,
-                                                         itsProviderType, db);
-                updateSyncFreq(null,
-                               (provider != null) ? provider.itsSyncFreq : 0);
-                return null;
-            }
+        SyncDb.useDb((SyncDb.DbUser<Void>)db -> {
+            DbProvider provider = SyncDb.getProvider(userId, itsProviderType,
+                                                     db);
+            updateSyncFreq(null, (provider != null) ? provider.itsSyncFreq : 0);
+            return null;
         });
     }
 
@@ -255,14 +241,8 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
             final Account account = getAccount(acctUserId);
             DbProvider dbprovider;
             try {
-                dbprovider = SyncDb.useDb(new SyncDb.DbUser<DbProvider>()
-                {
-                    @Override
-                    public DbProvider useDb(SQLiteDatabase db) throws Exception
-                    {
-                        return SyncHelper.getDbProviderForAcct(account, db);
-                    }
-                });
+                dbprovider = SyncDb.useDb(
+                        db -> SyncHelper.getDbProviderForAcct(account, db));
             } catch (Exception e) {
                 dbprovider = null;
             }

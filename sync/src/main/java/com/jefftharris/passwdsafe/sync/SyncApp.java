@@ -80,14 +80,10 @@ public class SyncApp extends Application
      * called from a background thread. */
     public void updateGDriveSyncState(final SyncUpdateHandler.GDriveState state)
     {
-        itsHandler.post(new Runnable() {
-            @Override
-            public void run()
-            {
-                itsSyncGDriveState = state;
-                if (itsSyncUpdateHandler != null) {
-                    itsSyncUpdateHandler.updateGDriveState(state);
-                }
+        itsHandler.post(() -> {
+            itsSyncGDriveState = state;
+            if (itsSyncUpdateHandler != null) {
+                itsSyncUpdateHandler.updateGDriveState(state);
             }
         });
     }

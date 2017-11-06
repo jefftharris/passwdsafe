@@ -173,16 +173,10 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
         itsListTasks.clear();
 
-        AbstractListFilesTask task =
-                createListFilesTask(this, new AbstractListFilesTask.Callback()
-                {
-                    @Override
-                    public void handleFiles(List<ProviderRemoteFile> files,
-                                            AbstractListFilesTask task)
-                    {
-                        itsListTasks.remove(task);
-                        cb.handleFiles(files);
-                    }
+        AbstractListFilesTask task = createListFilesTask(
+                this, (files, cbtask) -> {
+                    itsListTasks.remove(cbtask);
+                    cb.handleFiles(files);
                 });
         itsListTasks.add(task);
         task.execute(path);
@@ -237,34 +231,26 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
 
         FileSyncedUpdateTask task = new FileSyncedUpdateTask(
                 itsProviderUri, file, synced,
-                new FileSyncedUpdateTask.Callback()
-                {
-                    @Override
-                    public void updateComplete(Exception error,
-                                               long remFileId,
-                                               FileSyncedUpdateTask task)
-                    {
-                        itsUpdateTasks.remove(task);
-                        if (error == null) {
-                            if (synced) {
-                                itsSyncedFiles.put(file.getRemoteId(),
-                                                   remFileId);
-                            } else {
-                                itsSyncedFiles.remove(file.getRemoteId());
-                            }
+                (error, remFileId, cbtask) -> {
+                    itsUpdateTasks.remove(cbtask);
+                    if (error == null) {
+                        if (synced) {
+                            itsSyncedFiles.put(file.getRemoteId(), remFileId);
                         } else {
-                            String msg = "Error updating sync for " +
-                                    file.getRemoteId();
-                            Log.e(TAG, msg, error);
-                            PasswdSafeUtil.showErrorMsg(
-                                    msg, AbstractSyncedFilesActivity.this);
+                            itsSyncedFiles.remove(file.getRemoteId());
                         }
-                        getContentResolver().notifyChange(itsFilesUri, null);
-                        Provider provider = ProviderFactory.getProvider(
-                                itsProviderType,
-                                AbstractSyncedFilesActivity.this);
-                        provider.requestSync(false);
+                    } else {
+                        String msg = "Error updating sync for " +
+                                     file.getRemoteId();
+                        Log.e(TAG, msg, error);
+                        PasswdSafeUtil.showErrorMsg(
+                                msg, AbstractSyncedFilesActivity.this);
                     }
+                    getContentResolver().notifyChange(itsFilesUri, null);
+                    Provider provider = ProviderFactory.getProvider(
+                            itsProviderType,
+                            AbstractSyncedFilesActivity.this);
+                    provider.requestSync(false);
                 });
         itsUpdateTasks.add(task);
         task.execute();

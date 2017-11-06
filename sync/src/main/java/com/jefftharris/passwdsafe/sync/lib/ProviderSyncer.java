@@ -7,14 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,6 +18,14 @@ import android.util.Log;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  *  Base attributes and methods for the sync operation for a provider
@@ -114,15 +114,9 @@ public abstract class ProviderSyncer<ProviderClientT>
                         itsLogrec.checkSyncInterrupted();
                         itsLogrec.addEntry(oper.getDescription(itsContext));
                         oper.doOper(itsProviderClient, itsContext);
-                        useDb(new DbUser<Void>()
-                        {
-                            @Override
-                            public Void useDb(boolean dbOk, SQLiteDatabase db)
-                                    throws Exception
-                            {
-                                oper.doPostOperUpdate(dbOk, db, itsContext);
-                                return null;
-                            }
+                        useDb((DbUser<Void>)(dbOk, db) -> {
+                            oper.doPostOperUpdate(dbOk, db, itsContext);
+                            return null;
                         });
                     } catch (Exception e) {
                         e = updateSyncException(e);
@@ -175,17 +169,12 @@ public abstract class ProviderSyncer<ProviderClientT>
     private <T> T useDb(final DbUser<T> user) throws Exception
     {
         itsLogrec.checkSyncInterrupted();
-        return SyncDb.useDb(new SyncDb.DbUser<T>()
-        {
-            @Override
-            public T useDb(SQLiteDatabase db) throws Exception
-            {
-                try {
-                    boolean dbOk = SyncDb.checkUpdateCount(itsDbUpdateCount);
-                    return user.useDb(dbOk, db);
-                } finally {
-                    itsDbUpdateCount = SyncDb.getUpdateCount();
-                }
+        return SyncDb.useDb(db -> {
+            try {
+                boolean dbOk = SyncDb.checkUpdateCount(itsDbUpdateCount);
+                return user.useDb(dbOk, db);
+            } finally {
+                itsDbUpdateCount = SyncDb.getUpdateCount();
             }
         });
     }

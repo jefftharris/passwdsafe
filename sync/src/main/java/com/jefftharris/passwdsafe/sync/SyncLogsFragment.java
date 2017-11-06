@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync;
 
-import java.util.Locale;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -30,6 +28,8 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
+
+import java.util.Locale;
 
 /**
  * Fragment to show the sync logs
@@ -77,78 +77,71 @@ public class SyncLogsFragment extends ListFragment
                                PasswdSafeContract.SyncLogs.COL_STACK},
                 new int[] { R.id.title, R.id.log, R.id.stack }, 0);
 
-        itsLogsAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder()
-        {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int colIdx)
-            {
-                switch (colIdx) {
-                case PasswdSafeContract.SyncLogs.PROJECTION_IDX_START: {
-                    long start = cursor.getLong(
-                            PasswdSafeContract.SyncLogs.PROJECTION_IDX_START);
-                    long end = cursor.getLong(
-                            PasswdSafeContract.SyncLogs.PROJECTION_IDX_END);
-                    String acct = cursor.getString(
-                            PasswdSafeContract.SyncLogs.PROJECTION_IDX_ACCT);
-                    TextView tv = (TextView)view;
+        itsLogsAdapter.setViewBinder((view, cursor, colIdx) -> {
+            switch (colIdx) {
+            case PasswdSafeContract.SyncLogs.PROJECTION_IDX_START: {
+                long start = cursor.getLong(
+                        PasswdSafeContract.SyncLogs.PROJECTION_IDX_START);
+                long end = cursor.getLong(
+                        PasswdSafeContract.SyncLogs.PROJECTION_IDX_END);
+                String acct = cursor.getString(
+                        PasswdSafeContract.SyncLogs.PROJECTION_IDX_ACCT);
+                TextView tv = (TextView)view;
 
-                    String str =
-                        String.format(Locale.US, "%s (%ds) - %s",
-                                      Utils.formatDate(start, getActivity()),
-                                      (end - start) / 1000,
-                                      acct);
-                    tv.setText(str);
-                    return true;
-                }
-                case PasswdSafeContract.SyncLogs.PROJECTION_IDX_LOG: {
-                    int flags = cursor.getInt(
-                            PasswdSafeContract.SyncLogs.PROJECTION_IDX_FLAGS);
-                    String log = cursor.getString(
-                            PasswdSafeContract.SyncLogs.PROJECTION_IDX_LOG);
-
-                    StringBuilder str = new StringBuilder();
-                    if ((flags &
-                            PasswdSafeContract.SyncLogs.FLAGS_IS_MANUAL) != 0) {
-                        str.append(getString(R.string.manual));
-                    } else {
-                        str.append(getString(R.string.automatic));
-                    }
-
-                    str.append(", ");
-                    if ((flags &
-                            PasswdSafeContract.SyncLogs.FLAGS_IS_NOT_CONNECTED) != 0) {
-                        str.append(getString(R.string.network_not_connected));
-                    } else {
-                        str.append(getString(R.string.network_connected));
-                    }
-
-                    if (log.length() != 0) {
-                        str.append("\n");
-                    }
-                    str.append(log);
-                    TextView tv = (TextView)view;
-                    tv.setText(str.toString());
-                    return true;
-                }
-                case PasswdSafeContract.SyncLogs.PROJECTION_IDX_STACK: {
-                    boolean checked =
-                            getListView().isItemChecked(cursor.getPosition());
-                    String stack;
-                    if (checked) {
-                        stack = cursor.getString(
-                                PasswdSafeContract.SyncLogs.PROJECTION_IDX_STACK);
-                    } else {
-                        stack = null;
-                    }
-
-                    GuiUtils.setVisible(view,
-                                        checked && !TextUtils.isEmpty(stack));
-                    ((TextView)view).setText(stack);
-                    return true;
-                }
-                }
-                return false;
+                String str = String.format(
+                        Locale.US, "%s (%ds) - %s",
+                        Utils.formatDate(start, getActivity()),
+                        (end - start) / 1000, acct);
+                tv.setText(str);
+                return true;
             }
+            case PasswdSafeContract.SyncLogs.PROJECTION_IDX_LOG: {
+                int flags = cursor.getInt(
+                        PasswdSafeContract.SyncLogs.PROJECTION_IDX_FLAGS);
+                String log = cursor.getString(
+                        PasswdSafeContract.SyncLogs.PROJECTION_IDX_LOG);
+
+                StringBuilder str = new StringBuilder();
+                if ((flags &
+                     PasswdSafeContract.SyncLogs.FLAGS_IS_MANUAL) != 0) {
+                    str.append(getString(R.string.manual));
+                } else {
+                    str.append(getString(R.string.automatic));
+                }
+
+                str.append(", ");
+                if ((flags &
+                     PasswdSafeContract.SyncLogs.FLAGS_IS_NOT_CONNECTED) != 0) {
+                    str.append(getString(R.string.network_not_connected));
+                } else {
+                    str.append(getString(R.string.network_connected));
+                }
+
+                if (log.length() != 0) {
+                    str.append("\n");
+                }
+                str.append(log);
+                TextView tv = (TextView)view;
+                tv.setText(str.toString());
+                return true;
+            }
+            case PasswdSafeContract.SyncLogs.PROJECTION_IDX_STACK: {
+                boolean checked =
+                        getListView().isItemChecked(cursor.getPosition());
+                String stack;
+                if (checked) {
+                    stack = cursor.getString(
+                            PasswdSafeContract.SyncLogs.PROJECTION_IDX_STACK);
+                } else {
+                    stack = null;
+                }
+
+                GuiUtils.setVisible(view, checked && !TextUtils.isEmpty(stack));
+                ((TextView)view).setText(stack);
+                return true;
+            }
+            }
+            return false;
         });
 
         setListAdapter(itsLogsAdapter);

@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe.sync.lib;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -109,14 +108,9 @@ public class ProviderSync
      */
     private void updateUIBegin()
     {
-        itsUIHandler.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (itsIsShowNotifs) {
-                    showProgressNotif();
-                }
+        itsUIHandler.post(() -> {
+            if (itsIsShowNotifs) {
+                showProgressNotif();
             }
         });
     }
@@ -126,17 +120,12 @@ public class ProviderSync
      */
     private void updateUIEnd(final SyncLogRecord logrec)
     {
-        itsUIHandler.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (itsIsShowNotifs) {
-                    NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
-                                           itsNotifTag, itsContext);
-                }
-                showResultNotifs(logrec);
+        itsUIHandler.post(() -> {
+            if (itsIsShowNotifs) {
+                NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
+                                       itsNotifTag, itsContext);
             }
+            showResultNotifs(logrec);
         });
     }
 
@@ -371,18 +360,12 @@ public class ProviderSync
             }
 
             try {
-                SyncDb.useDb(new SyncDb.DbUser<Void>()
-                {
-                    @Override
-                    public Void useDb(SQLiteDatabase db) throws Exception
-                    {
-                        Log.i(TAG, itsLogrec.toString(itsContext));
-                        SyncDb.deleteSyncLogs(System.currentTimeMillis()
-                                              - 2 * DateUtils.WEEK_IN_MILLIS,
-                                              db);
-                        SyncDb.addSyncLog(itsLogrec, db, itsContext);
-                        return null;
-                    }
+                SyncDb.useDb((SyncDb.DbUser<Void>)db -> {
+                    Log.i(TAG, itsLogrec.toString(itsContext));
+                    SyncDb.deleteSyncLogs(System.currentTimeMillis()
+                                          - 2 * DateUtils.WEEK_IN_MILLIS, db);
+                    SyncDb.addSyncLog(itsLogrec, db, itsContext);
+                    return null;
                 });
             } catch (Exception e) {
                 Log.e(TAG, "Sync write log error", e);

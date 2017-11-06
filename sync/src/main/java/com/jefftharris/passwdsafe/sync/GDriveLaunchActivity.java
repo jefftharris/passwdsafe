@@ -7,12 +7,9 @@
  */
 package com.jefftharris.passwdsafe.sync;
 
-import java.util.List;
-
 import android.content.ActivityNotFoundException;
 import android.content.ContentUris;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +21,8 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
+
+import java.util.List;
 
 /**
  * The GDriveLaunchActivity is used to open files from within the Google Drive
@@ -71,31 +70,26 @@ public class GDriveLaunchActivity extends AppCompatActivity
     private static Uri getFileUri(final String fileId)
     {
         try {
-            return SyncDb.useDb(new SyncDb.DbUser<Uri>()
-            {
-                @Override
-                public Uri useDb(SQLiteDatabase db) throws Exception
-                {
-                    List<DbProvider> providers = SyncDb.getProviders(db);
-                    for (DbProvider provider: providers) {
-                        if (provider.itsType != ProviderType.GDRIVE) {
-                            continue;
-                        }
-                        DbFile file = SyncDb.getFileByRemoteId(provider.itsId,
-                                                               fileId, db);
-                        if (file == null) {
-                            continue;
-                        }
-
-                        Uri uri = PasswdSafeContract.Providers.CONTENT_URI;
-                        Uri.Builder builder = uri.buildUpon();
-                        ContentUris.appendId(builder, provider.itsId);
-                        builder.appendPath(PasswdSafeContract.Files.TABLE);
-                        ContentUris.appendId(builder, file.itsId);
-                        return builder.build();
+            return SyncDb.useDb(db -> {
+                List<DbProvider> providers = SyncDb.getProviders(db);
+                for (DbProvider provider: providers) {
+                    if (provider.itsType != ProviderType.GDRIVE) {
+                        continue;
                     }
-                    return null;
+                    DbFile file = SyncDb.getFileByRemoteId(provider.itsId,
+                                                           fileId, db);
+                    if (file == null) {
+                        continue;
+                    }
+
+                    Uri uri = PasswdSafeContract.Providers.CONTENT_URI;
+                    Uri.Builder builder = uri.buildUpon();
+                    ContentUris.appendId(builder, provider.itsId);
+                    builder.appendPath(PasswdSafeContract.Files.TABLE);
+                    ContentUris.appendId(builder, file.itsId);
+                    return builder.build();
                 }
+                return null;
             });
         } catch (Exception e) {
             Log.e(TAG, "Error opening Google Drive file: " + fileId, e);
