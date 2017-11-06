@@ -19,7 +19,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -83,42 +82,26 @@ public class AboutUtils
                 (ToggleButton)detailsView.findViewById(R.id.toggle_license);
         final TextView licenseView =
                 (TextView)detailsView.findViewById(R.id.license);
-        btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked)
-            {
-                licenseView.setText(extraLicenseInfo);
-                GuiUtils.setVisible(licenseView, isChecked);
-            }
+        btn.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            licenseView.setText(extraLicenseInfo);
+            GuiUtils.setVisible(licenseView, isChecked);
         });
         GuiUtils.setVisible(btn, !TextUtils.isEmpty(extraLicenseInfo));
 
         View sendToBtn = detailsView.findViewById(R.id.send_log);
-        sendToBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                sendLog(act, (pkgInfo != null) ? pkgInfo.packageName : null);
-            }
-        });
+        sendToBtn.setOnClickListener(
+                v -> sendLog(act, (pkgInfo != null) ?
+                                  pkgInfo.packageName : null));
 
         View privacyPolicyBtn = detailsView.findViewById(R.id.privacy_policy);
-        privacyPolicyBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent policyIntent = new Intent(Intent.ACTION_VIEW,
-                                                 Uri.parse(PRIVACY_POLICY_URL));
-                if (policyIntent.resolveActivity(act.getPackageManager()) !=
-                    null) {
-                    act.startActivity(Intent.createChooser(
-                            policyIntent,
-                            act.getString(R.string.privacy_policy)));
-                }
+        privacyPolicyBtn.setOnClickListener(v -> {
+            Intent policyIntent = new Intent(Intent.ACTION_VIEW,
+                                             Uri.parse(PRIVACY_POLICY_URL));
+            if (policyIntent.resolveActivity(act.getPackageManager()) !=
+                null) {
+                act.startActivity(Intent.createChooser(
+                        policyIntent,
+                        act.getString(R.string.privacy_policy)));
             }
         });
         return name;
