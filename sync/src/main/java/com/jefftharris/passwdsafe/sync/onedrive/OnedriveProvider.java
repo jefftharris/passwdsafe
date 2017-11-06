@@ -81,67 +81,59 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     public void startAccountLink(final FragmentActivity activity,
                                  final int requestCode)
     {
-        Runnable loginTask = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (itsAuthClient.hasPendingLogin()) {
-                    createAuthClient();
-                }
-                itsAuthClient.login(activity, null, new AuthListener()
-                {
-                    @Override
-                    public void onAuthComplete(AuthStatus status,
-                                               AuthSession session,
-                                               Object userState)
-                    {
-                        PasswdSafeUtil.dbginfo(
-                                TAG, "login ok status %s, sess [%s]",
-                                status, session);
-                        boolean success = false;
-
-                        switch (status) {
-                        case CONNECTED: {
-                            success = true;
-                            break;
-                        }
-                        case NOT_CONNECTED:
-                        case UNKNOWN: {
-                            Log.e(TAG, "Auth complete, bad status: " + status);
-                            break;
-                        }
-                        }
-                        sendResult(success);
-                    }
-
-                    @Override
-                    public void onAuthError(AuthException exception,
-                                            Object userState)
-                    {
-                        Log.e(TAG, "Auth error", exception);
-                        sendResult(false);
-                    }
-
-                    /**
-                     * Send the result of the login
-                     */
-                    private void sendResult(boolean success)
-                    {
-                        Intent intent = new Intent();
-                        PendingIntent pendIntent =
-                                activity.createPendingResult(
-                                        requestCode, intent,
-                                        PendingIntent.FLAG_ONE_SHOT);
-                        try {
-                            pendIntent.send(success ? Activity.RESULT_OK :
-                                            Activity.RESULT_CANCELED);
-                        } catch (PendingIntent.CanceledException e) {
-                            Log.e(TAG, "login intent send failed", e);
-                        }
-                    }
-                });
+        Runnable loginTask = () -> {
+            if (itsAuthClient.hasPendingLogin()) {
+                createAuthClient();
             }
+            itsAuthClient.login(activity, null, new AuthListener()
+            {
+                @Override
+                public void onAuthComplete(AuthStatus status,
+                                           AuthSession session,
+                                           Object userState)
+                {
+                    PasswdSafeUtil.dbginfo(TAG, "login ok status %s, sess [%s]",
+                                           status, session);
+                    boolean success = false;
+
+                    switch (status) {
+                    case CONNECTED: {
+                        success = true;
+                        break;
+                    }
+                    case NOT_CONNECTED:
+                    case UNKNOWN: {
+                        Log.e(TAG, "Auth complete, bad status: " + status);
+                        break;
+                    }
+                    }
+                    sendResult(success);
+                }
+
+                @Override
+                public void onAuthError(AuthException exception,
+                                        Object userState)
+                {
+                    Log.e(TAG, "Auth error", exception);
+                    sendResult(false);
+                }
+
+                /**
+                 * Send the result of the login
+                 */
+                private void sendResult(boolean success)
+                {
+                    Intent intent = new Intent();
+                    PendingIntent pendIntent = activity.createPendingResult(
+                            requestCode, intent, PendingIntent.FLAG_ONE_SHOT);
+                    try {
+                        pendIntent.send(success ? Activity.RESULT_OK :
+                                        Activity.RESULT_CANCELED);
+                    } catch (PendingIntent.CanceledException e) {
+                        Log.e(TAG, "login intent send failed", e);
+                    }
+                }
+            });
         };
 
         if (isAccountAuthorized()) {
@@ -258,14 +250,9 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     {
         final ObjectHolder<SyncConnectivityResult> connResult =
                 new ObjectHolder<>();
-        useOneDriveService(new OneDriveUser()
-        {
-            @Override
-            public void useOneDrive(IOneDriveService client) throws Exception
-            {
-                String displayName = OnedriveSyncer.getDisplayName(client);
-                connResult.set(new SyncConnectivityResult(displayName));
-            }
+        useOneDriveService(client -> {
+            String displayName = OnedriveSyncer.getDisplayName(client);
+            connResult.set(new SyncConnectivityResult(displayName));
         });
         return connResult.get();
     }
@@ -279,16 +266,9 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                      final SyncConnectivityResult connResult,
                      final SyncLogRecord logrec) throws Exception
     {
-        useOneDriveService(new OneDriveUser()
-        {
-            @Override
-            public void useOneDrive(IOneDriveService client) throws Exception
-            {
-                new OnedriveSyncer(client, provider, connResult, logrec,
-                                   getContext()).sync();
-
-            }
-        });
+        useOneDriveService(
+                client -> new OnedriveSyncer(client, provider, connResult,
+                                             logrec, getContext()).sync());
     }
 
     /**
