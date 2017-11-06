@@ -7,9 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.owncloud;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
@@ -45,6 +42,9 @@ import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.accounts.AccountTypeUtils;
 import com.owncloud.android.lib.common.network.CertificateCombinedException;
 import com.owncloud.android.lib.common.network.NetworkUtils;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Implements a provider for the ownCloud service
@@ -214,25 +214,19 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     {
         final ObjectHolder<SyncConnectivityResult> connResult =
                 new ObjectHolder<>();
-        useOwncloudService(new OwncloudUser()
-        {
-            @Override
-            public void useOwncloud(OwnCloudClient client) throws Exception
-            {
-                String displayName;
-                Context ctx = getContext();
-                try {
+        useOwncloudService(client -> {
+            String displayName;
+            Context ctx = getContext();
+            try {
+                displayName = OwncloudSyncer.getDisplayName(client, ctx);
+            } catch (SyncIOException e) {
+                if (e.getCause() instanceof CertificateCombinedException) {
                     displayName = OwncloudSyncer.getDisplayName(client, ctx);
-                } catch (SyncIOException e) {
-                    if (e.getCause() instanceof CertificateCombinedException) {
-                        displayName =
-                                OwncloudSyncer.getDisplayName(client, ctx);
-                    } else {
-                        throw e;
-                    }
+                } else {
+                    throw e;
                 }
-                connResult.set(new SyncConnectivityResult(displayName));
             }
+            connResult.set(new SyncConnectivityResult(displayName));
         });
         return connResult.get();
     }
@@ -246,25 +240,19 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
                      final SyncConnectivityResult connResult,
                      final SyncLogRecord logrec) throws Exception
     {
-        useOwncloudService(new OwncloudUser()
-        {
-            @Override
-            public void useOwncloud(OwnCloudClient client) throws Exception
-            {
-                PasswdSafeUtil.dbginfo(TAG, "sync client: %b", itsAccountName);
-                OwncloudSyncer syncer =
-                        new OwncloudSyncer(client, provider, connResult,
-                                           logrec, getContext());
-                try {
-                    syncer.sync();
-                } catch (SyncIOException e) {
-                    if (e.isRetry()) {
-                        requestSync(false);
-                    }
-                    throw e;
-                } finally {
-                    itsIsSyncAuthError = !syncer.isAuthorized();
+        useOwncloudService(client -> {
+            PasswdSafeUtil.dbginfo(TAG, "sync client: %b", itsAccountName);
+            OwncloudSyncer syncer = new OwncloudSyncer(
+                    client, provider, connResult, logrec, getContext());
+            try {
+                syncer.sync();
+            } catch (SyncIOException e) {
+                if (e.isRetry()) {
+                    requestSync(false);
                 }
+                throw e;
+            } finally {
+                itsIsSyncAuthError = !syncer.isAuthorized();
             }
         });
     }
