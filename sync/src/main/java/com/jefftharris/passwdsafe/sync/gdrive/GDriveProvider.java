@@ -217,16 +217,10 @@ public class GDriveProvider extends AbstractProvider
     {
         final ObjectHolder<SyncConnectivityResult> connResult =
                 new ObjectHolder<>();
-        useDriveService(acct, new DriveUser()
-        {
-            @Override
-            public SyncUpdateHandler.GDriveState useDrive(Drive drive)
-                    throws Exception
-            {
-                String displayName = GDriveSyncer.getDisplayName(drive);
-                connResult.set(new SyncConnectivityResult(displayName));
-                return SyncUpdateHandler.GDriveState.OK;
-            }
+        useDriveService(acct, drive -> {
+            String displayName = GDriveSyncer.getDisplayName(drive);
+            connResult.set(new SyncConnectivityResult(displayName));
+            return SyncUpdateHandler.GDriveState.OK;
         });
         return connResult.get();
     }
@@ -236,17 +230,11 @@ public class GDriveProvider extends AbstractProvider
                      final SyncConnectivityResult connResult,
                      final SyncLogRecord logrec) throws Exception
     {
-        useDriveService(acct, new DriveUser()
-        {
-            @Override
-            public SyncUpdateHandler.GDriveState useDrive(Drive drive)
-                    throws Exception
-            {
-                GDriveSyncer sync = new GDriveSyncer(
-                        drive, provider, connResult, logrec, itsContext);
-                sync.sync();
-                return sync.getSyncState();
-            }
+        useDriveService(acct, drive -> {
+            GDriveSyncer sync = new GDriveSyncer(
+                    drive, provider, connResult, logrec, itsContext);
+            sync.sync();
+            return sync.getSyncState();
         });
     }
 
@@ -321,18 +309,13 @@ public class GDriveProvider extends AbstractProvider
         if (migration < MIGRATION_V3API) {
             // Set the account name from the db provider
             try {
-                SyncDb.useDb(new SyncDb.DbUser<Void>()
-                {
-                    @Override
-                    public Void useDb(SQLiteDatabase db) throws Exception
-                    {
-                        for (DbProvider provider: SyncDb.getProviders(db)) {
-                            if (provider.itsType == ProviderType.GDRIVE) {
-                                setAcctName(provider.itsAcct);
-                            }
+                SyncDb.useDb((SyncDb.DbUser<Void>)db -> {
+                    for (DbProvider provider: SyncDb.getProviders(db)) {
+                        if (provider.itsType == ProviderType.GDRIVE) {
+                            setAcctName(provider.itsAcct);
                         }
-                        return null;
                     }
+                    return null;
                 });
             } catch (Exception e) {
                 Log.e(TAG, "Error migrating account", e);
