@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe.pref;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.preference.ListPreference;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -93,14 +92,7 @@ public class MultiSelectListPreference extends ListPreference
 
         builder.setMultiChoiceItems(
             entries, itsSelectedItems,
-            new DialogInterface.OnMultiChoiceClickListener()
-            {
-                public void onClick(DialogInterface dialog, int which,
-                                    boolean isChecked)
-                {
-                    itsSelectedItems[which] = isChecked;
-                }
-            });
+            (dialog, which, isChecked) -> itsSelectedItems[which] = isChecked);
     }
 
     /* (non-Javadoc)
