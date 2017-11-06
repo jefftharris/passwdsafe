@@ -74,10 +74,6 @@ public final class NotifUtils
     }
 
     /**
-     * Get the intent activity class for the notification
-     */
-
-    /**
      * Show a notification with a custom builder
      */
     public static void showNotif(NotificationCompat.Builder builder,
