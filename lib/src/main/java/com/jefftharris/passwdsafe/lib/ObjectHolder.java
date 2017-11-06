@@ -24,14 +24,6 @@ public final class ObjectHolder<T>
     }
 
     /**
-     * Value constructor
-     */
-    public ObjectHolder(T obj)
-    {
-        itsObj = obj;
-    }
-
-    /**
      * Get the object
      */
     public final T get()
