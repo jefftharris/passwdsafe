@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.box;
 
-import java.util.List;
-
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -38,6 +36,8 @@ import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
+
+import java.util.List;
 
 /**
  * Implements a provider for the Box.com service
@@ -212,14 +212,9 @@ public class BoxProvider extends AbstractSyncTimerProvider
     {
         final ObjectHolder<SyncConnectivityResult> connResult =
                 new ObjectHolder<>();
-        useBoxService(new BoxUser()
-        {
-            @Override
-            public void useBox() throws Exception
-            {
-                String displayName = BoxSyncer.getDisplayName(itsClient);
-                connResult.set(new SyncConnectivityResult(displayName));
-            }
+        useBoxService(() -> {
+            String displayName = BoxSyncer.getDisplayName(itsClient);
+            connResult.set(new SyncConnectivityResult(displayName));
         });
         return connResult.get();
     }
@@ -230,16 +225,8 @@ public class BoxProvider extends AbstractSyncTimerProvider
                      final SyncConnectivityResult connResult,
                      final SyncLogRecord logrec) throws Exception
     {
-        useBoxService(new BoxUser()
-        {
-            @Override
-            public void useBox() throws Exception
-            {
-                new BoxSyncer(itsClient, provider, connResult,
-                              logrec, getContext()).sync();
-
-            }
-        });
+        useBoxService(() -> new BoxSyncer(itsClient, provider, connResult,
+                                          logrec, getContext()).sync());
     }
 
     @Override

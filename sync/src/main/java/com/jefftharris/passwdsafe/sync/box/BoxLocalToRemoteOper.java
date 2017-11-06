@@ -41,15 +41,10 @@ public class BoxLocalToRemoteOper
         PasswdSafeUtil.dbginfo(TAG, "syncLocalToRemote %s", itsFile);
 
         BoxApiFile fileApi = new BoxApiFile(providerClient);
-        ProgressListener uploadProgress = new ProgressListener()
-        {
-            @Override
-            public void onProgressChanged(long numBytes, long totalBytes)
-            {
-                PasswdSafeUtil.dbginfo(TAG, "progress %d/%d",
-                                       numBytes, totalBytes);
-            }
-        };
+        ProgressListener uploadProgress =
+                (numBytes, totalBytes) ->
+                        PasswdSafeUtil.dbginfo(TAG, "progress %d/%d",
+                                                                                   numBytes, totalBytes);
 
         BoxFile updatedFile;
         if (itsFile.itsLocalFile != null) {

@@ -11,7 +11,6 @@ import android.content.Context;
 
 import com.box.androidsdk.content.BoxApiFile;
 import com.box.androidsdk.content.BoxException;
-import com.box.androidsdk.content.listeners.ProgressListener;
 import com.box.androidsdk.content.models.BoxSession;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
@@ -49,16 +48,10 @@ public class BoxRemoteToLocalOper
             BoxApiFile fileApi = new BoxApiFile(providerClient);
             os = new BufferedOutputStream(new FileOutputStream(destFile));
             fileApi.getDownloadRequest(os, itsFile.itsRemoteId)
-                   .setProgressListener(new ProgressListener()
-                   {
-                       @Override
-                       public void onProgressChanged(long numBytes,
-                                                     long totalBytes)
-                       {
-                           PasswdSafeUtil.dbginfo(TAG, "progress %d/%d",
-                                                  numBytes, totalBytes);
-                       }
-                   })
+                   .setProgressListener(
+                           (numBytes, totalBytes) ->
+                                   PasswdSafeUtil.dbginfo(TAG, "progress %d/%d",
+                                                          numBytes, totalBytes))
                    .send();
         } finally {
             Utils.closeStreams(os);
