@@ -65,9 +65,6 @@
           </option>
         </AndroidXmlCodeStyleSettings>
         <Objective-C-extensions>
-          <option name="GENERATE_INSTANCE_VARIABLES_FOR_PROPERTIES" value="ASK" />
-          <option name="RELEASE_STYLE" value="IVAR" />
-          <option name="TYPE_QUALIFIERS_PLACEMENT" value="BEFORE" />
           <file>
             <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Import" />
             <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Macro" />
@@ -118,6 +115,7 @@
           <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
           <option name="BINARY_OPERATION_WRAP" value="1" />
           <option name="TERNARY_OPERATION_WRAP" value="1" />
+          <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
           <option name="ARRAY_INITIALIZER_WRAP" value="1" />
           <option name="ENUM_CONSTANTS_WRAP" value="2" />
           <indentOptions>
