@@ -150,14 +150,14 @@ public final class SavedPasswordsMgr
      */
     public SavedPasswordsMgr(Context ctx)
     {
+        itsContext = ctx.getApplicationContext();
         if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_MARSHMALLOW) {
             itsFingerprintMgr =
-                    SavedPasswordsMgrMarshmallow.getFingerprintMgr(ctx);
+                    SavedPasswordsMgrMarshmallow.getFingerprintMgr(itsContext);
         } else {
             itsFingerprintMgr = new FingerprintMgr();
         }
-        itsDb = new SavedPasswordsDb(ctx);
-        itsContext = ctx;
+        itsDb = new SavedPasswordsDb(itsContext);
     }
 
     /**
