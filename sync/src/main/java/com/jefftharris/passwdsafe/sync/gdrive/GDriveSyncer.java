@@ -88,7 +88,7 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
                 "not trashed" +
                 " and ( mimeType = 'application/octet-stream' or " +
                 "       mimeType = 'binary/octet-stream' or " +
-                "       mimeType = 'application/psafe3' )" +
+                "       mimeType = '" + PasswdSafeUtil.MIME_TYPE_PSAFE3 + "' )" +
                 " and fullText contains '.psafe3'";
         for (File file: listFiles(query)) {
             if (!isSyncFile(file)) {

@@ -7,10 +7,6 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,6 +23,10 @@ import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+
 /**
  * The PasswdSafeUtil class contains common helper methods
  */
@@ -35,10 +35,13 @@ public class PasswdSafeUtil
 {
     private static final String PACKAGE = "com.jefftharris.passwdsafe";
     public static final String SYNC_PACKAGE = PACKAGE + ".sync";
+
     public static final String NEW_INTENT = PACKAGE + ".action.NEW";
     public static final String VIEW_INTENT = PACKAGE + ".action.VIEW";
     public static final String SEARCH_VIEW_INTENT =
             PACKAGE + ".action.SEARCH_VIEW";
+
+    public static final String MIME_TYPE_PSAFE3 = "application/psafe3";
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
 

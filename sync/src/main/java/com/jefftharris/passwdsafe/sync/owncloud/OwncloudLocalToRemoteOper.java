@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.owncloud;
 
-import java.io.File;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -20,6 +18,8 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.resources.files.ReadRemoteFileOperation;
 import com.owncloud.android.lib.resources.files.RemoteFile;
 import com.owncloud.android.lib.resources.files.UploadRemoteFileOperation;
+
+import java.io.File;
 
 /**
  * An ownCloud sync operation to sync a local file to a remote one
@@ -66,7 +66,7 @@ public class OwncloudLocalToRemoteOper extends
 
             UploadRemoteFileOperation oper = new UploadRemoteFileOperation(
                     uploadFile.getAbsolutePath(),
-                    remotePath, "application/psafe3");
+                    remotePath, PasswdSafeUtil.MIME_TYPE_PSAFE3);
             RemoteOperationResult res = oper.execute(providerClient);
             OwncloudSyncer.checkOperationResult(res, ctx);
 

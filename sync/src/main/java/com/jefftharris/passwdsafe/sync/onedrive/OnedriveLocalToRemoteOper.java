@@ -63,7 +63,7 @@ public class OnedriveLocalToRemoteOper
 
             Item updatedItem = providerClient.uploadItemByPath(
                     remotePath,
-                    new TypedFile("application/psafe3", uploadFile));
+                    new TypedFile(PasswdSafeUtil.MIME_TYPE_PSAFE3, uploadFile));
             setUpdatedFile(new OnedriveProviderFile(updatedItem));
         } finally {
             if ((tmpFile != null) && !tmpFile.delete()) {

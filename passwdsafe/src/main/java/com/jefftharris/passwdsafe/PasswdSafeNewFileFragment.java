@@ -225,7 +225,7 @@ public class PasswdSafeNewFileFragment
                 createIntent.addCategory(Intent.CATEGORY_OPENABLE);
 
                 // Create a file with the requested MIME type and name.
-                createIntent.setType("application/psafe3");
+                createIntent.setType(PasswdSafeUtil.MIME_TYPE_PSAFE3);
                 createIntent.putExtra(Intent.EXTRA_TITLE, fileName);
 
                 startActivityForResult(createIntent, CREATE_DOCUMENT_REQUEST);

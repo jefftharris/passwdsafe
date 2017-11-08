@@ -42,7 +42,7 @@ public class GDriveLocalToRemoteOper
 
         File fileUpdates = new File();
         fileUpdates.setName(itsFile.itsLocalTitle);
-        fileUpdates.setMimeType("application/psafe3");
+        fileUpdates.setMimeType(PasswdSafeUtil.MIME_TYPE_PSAFE3);
         if (isInsert()) {
             fileUpdates.setDescription("Password Safe file");
         }
