@@ -277,7 +277,7 @@ public class PasswdSafe extends AppCompatActivity
 
             Intent intent = getIntent();
             PasswdSafeUtil.dbginfo(TAG, "onCreate: %s", intent);
-            switch (intent.getAction()) {
+            switch (String.valueOf(intent.getAction())) {
             case PasswdSafeUtil.VIEW_INTENT:
             case Intent.ACTION_VIEW: {
                 changeFileOpenView(intent);
@@ -308,7 +308,7 @@ public class PasswdSafe extends AppCompatActivity
         super.onNewIntent(intent);
 
         PasswdSafeUtil.dbginfo(TAG, "onNewIntent: %s", intent);
-        switch (intent.getAction()) {
+        switch (String.valueOf(intent.getAction())) {
         case PasswdSafeUtil.VIEW_INTENT:
         case Intent.ACTION_VIEW: {
             final Uri openUri = PasswdSafeApp.getOpenUriFromIntent(intent);
