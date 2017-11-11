@@ -172,12 +172,13 @@ public class PasswdSafeUtil
                                     final Activity activity,
                                     boolean copyTrace)
     {
-        if (copyTrace && (t != null)) {
-            StringWriter writer = new StringWriter();
-            t.printStackTrace(new PrintWriter(writer));
-            String trace = writer.toString();
-            Log.e(TAG, trace);
-            copyToClipboard(trace, activity);
+        if (t != null) {
+            Log.e(TAG, msg, t);
+            if (copyTrace) {
+                StringWriter writer = new StringWriter();
+                t.printStackTrace(new PrintWriter(writer));
+                copyToClipboard(writer.toString(), activity);
+            }
         }
 
         AbstractDialogClickListener dlgClick = new AbstractDialogClickListener()
