@@ -337,7 +337,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                 }
                 Intent val =
                         data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT);
-                setDefFilePref((val != null) ? val.getData().toString() : null);
+                Uri uri = (val != null) ? val.getData() : null;
+                setDefFilePref((uri != null) ? uri.toString() : null);
                 return true;
             }
             default: {
@@ -351,10 +352,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          */
         private void setDefFilePref(String prefVal)
         {
-            SharedPreferences.Editor editor =
-                    itsDefFilePref.getSharedPreferences().edit();
+            SharedPreferences prefs = itsDefFilePref.getSharedPreferences();
+            SharedPreferences.Editor editor = prefs.edit();
             editor.putString(Preferences.PREF_DEF_FILE, prefVal);
             editor.apply();
+            onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
         }
 
         /**
