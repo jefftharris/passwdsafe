@@ -127,31 +127,26 @@ public class SyncProviderFilesFragment extends ListFragment
                new int[] { R.id.title, R.id.mod_date, R.id.folder },
                0);
 
-        itsProviderAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder()
-        {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int colIdx)
-            {
-                switch (colIdx) {
-                case PasswdSafeContract.Files.PROJECTION_IDX_MOD_DATE: {
-                    long modDate = cursor.getLong(colIdx);
-                    TextView tv = (TextView)view;
-                    tv.setText(Utils.formatDate(modDate, getActivity()));
-                    return true;
-                }
-                case PasswdSafeContract.Files.PROJECTION_IDX_FOLDER: {
-                    String folder = cursor.getString(colIdx);
-                    if (TextUtils.isEmpty(folder)) {
-                        view.setVisibility(View.GONE);
-                    } else {
-                        view.setVisibility(View.VISIBLE);
-                        ((TextView)view).setText(folder);
-                    }
-                    return true;
-                }
-                }
-                return false;
+        itsProviderAdapter.setViewBinder((view, cursor, colIdx) -> {
+            switch (colIdx) {
+            case PasswdSafeContract.Files.PROJECTION_IDX_MOD_DATE: {
+                long modDate = cursor.getLong(colIdx);
+                TextView tv = (TextView)view;
+                tv.setText(Utils.formatDate(modDate, getActivity()));
+                return true;
             }
+            case PasswdSafeContract.Files.PROJECTION_IDX_FOLDER: {
+                String folder = cursor.getString(colIdx);
+                if (TextUtils.isEmpty(folder)) {
+                    view.setVisibility(View.GONE);
+                } else {
+                    view.setVisibility(View.VISIBLE);
+                    ((TextView)view).setText(folder);
+                }
+                return true;
+            }
+            }
+            return false;
         });
 
         setListAdapter(itsProviderAdapter);
