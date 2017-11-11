@@ -313,15 +313,7 @@ public class PasswdSafe extends AppCompatActivity
         case Intent.ACTION_VIEW: {
             final Uri openUri = PasswdSafeApp.getOpenUriFromIntent(intent);
             Boolean reopen = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<Boolean>()
-                    {
-                        @Override
-                        public Boolean useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            return !fileData.getUri().getUri().equals(openUri);
-                        }
-                    });
+                    fileData -> !fileData.getUri().getUri().equals(openUri));
             if ((reopen == null) || reopen) {
                 // Close and reopen the new file
                 itsFileDataFrag.setFileData(null);
@@ -339,20 +331,13 @@ public class PasswdSafe extends AppCompatActivity
             MenuItemCompat.collapseActionView(itsSearchItem);
             final String uuid =
                     intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
-            PasswdLocation loc =
-                    useFileData(new PasswdFileDataUser<PasswdLocation>()
-                    {
-                        @Override
-                        public PasswdLocation useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            PwsRecord rec = fileData.getRecord(uuid);
-                            if (rec == null) {
-                                return null;
-                            }
-                            return new PasswdLocation(rec, fileData);
-                        }
-                    });
+            PasswdLocation loc = useFileData(fileData -> {
+                PwsRecord rec = fileData.getRecord(uuid);
+                if (rec == null) {
+                    return null;
+                }
+                return new PasswdLocation(rec, fileData);
+            });
             if (loc != null) {
                 changeLocation(loc);
             }
@@ -444,52 +429,46 @@ public class PasswdSafe extends AppCompatActivity
         final BitSet options = new BitSet();
         options.set(MENU_BIT_HAS_CLOSE);
 
-        itsFileDataFrag.useFileData(new PasswdFileDataUser<Void>()
-        {
-            @Override
-            public Void useFileData(@NonNull PasswdFileData fileData)
-            {
-                boolean fileEditable = fileData.canEdit();
-
-                switch (itsCurrViewMode) {
-                case VIEW_LIST: {
-                    options.set(MENU_BIT_CAN_ADD, fileEditable);
-                    options.set(MENU_BIT_HAS_SEARCH, true);
-                    if (fileEditable) {
-                        options.set(MENU_BIT_HAS_FILE_OPS, true);
-                        options.set(MENU_BIT_HAS_FILE_CHANGE_PASSWORD,
-                                    fileData.isNotYubikey());
-                        options.set(MENU_BIT_HAS_FILE_PROTECT, true);
-                        options.set(MENU_BIT_PROTECT_ALL,
-                                    itsLocation.getGroups().isEmpty());
-                    }
-                    if (fileData.canDelete()) {
-                        options.set(MENU_BIT_HAS_FILE_OPS, true);
-                        options.set(MENU_BIT_HAS_FILE_DELETE, true);
-                    }
-                    break;
+        itsFileDataFrag.useFileData((PasswdFileDataUser<Void>)fileData -> {
+            boolean fileEditable = fileData.canEdit();
+            switch (itsCurrViewMode) {
+            case VIEW_LIST: {
+                options.set(MENU_BIT_CAN_ADD, fileEditable);
+                options.set(MENU_BIT_HAS_SEARCH, true);
+                if (fileEditable) {
+                    options.set(MENU_BIT_HAS_FILE_OPS, true);
+                    options.set(MENU_BIT_HAS_FILE_CHANGE_PASSWORD,
+                                fileData.isNotYubikey());
+                    options.set(MENU_BIT_HAS_FILE_PROTECT, true);
+                    options.set(MENU_BIT_PROTECT_ALL,
+                                itsLocation.getGroups().isEmpty());
                 }
-                case VIEW_RECORD: {
-                    options.set(MENU_BIT_CAN_ADD, fileEditable);
-                    break;
+                if (fileData.canDelete()) {
+                    options.set(MENU_BIT_HAS_FILE_OPS, true);
+                    options.set(MENU_BIT_HAS_FILE_DELETE, true);
                 }
-                case INIT:
-                case FILE_OPEN:
-                case FILE_NEW:
-                case VIEW_ABOUT:
-                case VIEW_EXPIRATION:
-                case VIEW_POLICY_LIST:
-                case VIEW_PREFERENCES: {
-                    break;
-                }
-                case EDIT_RECORD:
-                case CHANGING_PASSWORD: {
-                    options.set(MENU_BIT_HAS_CLOSE, false);
-                    break;
-                }
-                }
-                return null;
+                break;
             }
+            case VIEW_RECORD: {
+                options.set(MENU_BIT_CAN_ADD, fileEditable);
+                break;
+            }
+            case INIT:
+            case FILE_OPEN:
+            case FILE_NEW:
+            case VIEW_ABOUT:
+            case VIEW_EXPIRATION:
+            case VIEW_POLICY_LIST:
+            case VIEW_PREFERENCES: {
+                break;
+            }
+            case EDIT_RECORD:
+            case CHANGING_PASSWORD: {
+                options.set(MENU_BIT_HAS_CLOSE, false);
+                break;
+            }
+            }
+            return null;
         });
 
         MenuItem item = menu.findItem(R.id.menu_add);
@@ -561,14 +540,7 @@ public class PasswdSafe extends AppCompatActivity
             return true;
         }
         case R.id.menu_close: {
-            checkNavigation(false, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    finish();
-                }
-            });
+            checkNavigation(false, this::finish);
             return true;
         }
         case R.id.menu_file_change_password: {
@@ -579,16 +551,8 @@ public class PasswdSafe extends AppCompatActivity
         }
         case R.id.menu_file_delete: {
             String uriName = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<String>()
-                    {
-                        @Override
-                        public String useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            return fileData.getUri().getIdentifier(
-                                    PasswdSafe.this, true);
-                        }
-                    });
+                    fileData -> fileData.getUri().getIdentifier(PasswdSafe.this,
+                                                                true));
             if (uriName == null) {
                 return true;
             }
@@ -645,14 +609,7 @@ public class PasswdSafe extends AppCompatActivity
             }
         }
 
-        checkNavigation(false, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                PasswdSafe.super.onBackPressed();
-            }
-        });
+        checkNavigation(false, PasswdSafe.super::onBackPressed);
     }
 
     /**
@@ -858,47 +815,40 @@ public class PasswdSafe extends AppCompatActivity
         }
         }
 
-        String copyStr = itsFileDataFrag.useFileData(
-                new PasswdFileDataUser<String>()
-                {
-                    @Override
-                    public String useFileData(@NonNull PasswdFileData fileData)
-                    {
-                        PwsRecord rec = fileData.getRecord(recUuid);
-                        if (rec == null) {
-                            return null;
-                        }
+        String copyStr = itsFileDataFrag.useFileData(fileData -> {
+            PwsRecord rec = fileData.getRecord(recUuid);
+            if (rec == null) {
+                return null;
+            }
 
-                        switch (field) {
-                        case PASSWORD: {
-                            PasswdRecord passwdRec =
-                                    fileData.getPasswdRecord(rec);
-                            if (passwdRec != null) {
-                                return passwdRec.getPassword(fileData);
-                            }
-                            break;
-                        }
-                        case USER_NAME: {
-                            return fileData.getUsername(rec);
-                        }
-                        case URL: {
-                            String url = fileData.getURL(rec);
-                            if (!TextUtils.isEmpty(url)) {
-                                return url;
-                            }
-                            break;
-                        }
-                        case EMAIL: {
-                            String email = fileData.getEmail(rec);
-                            if (!TextUtils.isEmpty(email)) {
-                                return email;
-                            }
-                            break;
-                        }
-                        }
-                        return null;
-                    }
-                });
+            switch (field) {
+            case PASSWORD: {
+                PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
+                if (passwdRec != null) {
+                    return passwdRec.getPassword(fileData);
+                }
+                break;
+            }
+            case USER_NAME: {
+                return fileData.getUsername(rec);
+            }
+            case URL: {
+                String url = fileData.getURL(rec);
+                if (!TextUtils.isEmpty(url)) {
+                    return url;
+                }
+                break;
+            }
+            case EMAIL: {
+                String email = fileData.getEmail(rec);
+                if (!TextUtils.isEmpty(email)) {
+                    return email;
+                }
+                break;
+            }
+            }
+            return null;
+        });
         if (copyStr != null) {
             PasswdSafeUtil.copyToClipboard(copyStr, PasswdSafe.this);
         }
@@ -958,20 +908,11 @@ public class PasswdSafe extends AppCompatActivity
         if (!isFileOpen() || !location.isRecord()) {
             return;
         }
-        PasswdRecordFilter filter = itsFileDataFrag.useFileData(
-                new PasswdFileDataUser<PasswdRecordFilter>()
-                {
-                    @Override
-                    public PasswdRecordFilter useFileData(
-                            @NonNull PasswdFileData fileData)
-                    {
-                        PasswdFileDataView dataView =
-                                itsFileDataFrag.getFileDataView();
-                        String recordUuid = location.getRecord();
-                        return dataView.createSimilarRecordFilter(recordUuid,
-                                                                  fileData);
-                    }
-                });
+        PasswdRecordFilter filter = itsFileDataFrag.useFileData(fileData -> {
+            PasswdFileDataView dataView = itsFileDataFrag.getFileDataView();
+            String recordUuid = location.getRecord();
+            return dataView.createSimilarRecordFilter(recordUuid, fileData);
+        });
 
         setRecordFilter(filter);
     }
@@ -1051,16 +992,10 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void finishChangePassword()
     {
-        itsFileDataFrag.useFileData(new PasswdFileDataUser<Void>()
-        {
-            @Override
-            public Void useFileData(@NonNull PasswdFileData fileData)
-            {
-                SavedPasswordsMgr savedMgr =
-                        new SavedPasswordsMgr(PasswdSafe.this);
-                savedMgr.removeSavedPassword(fileData.getUri());
-                return null;
-            }
+        itsFileDataFrag.useFileData((PasswdFileDataUser<Void>)fileData -> {
+            SavedPasswordsMgr savedMgr = new SavedPasswordsMgr(PasswdSafe.this);
+            savedMgr.removeSavedPassword(fileData.getUri());
+            return null;
         });
 
         finishEdit(EditFinish.CHANGE_PASSWORD, null, null, null);
@@ -1128,15 +1063,7 @@ public class PasswdSafe extends AppCompatActivity
         }
         case DELETE_FILE: {
             PasswdFileUri uri = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<PasswdFileUri>()
-                    {
-                        @Override
-                        public PasswdFileUri useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            return fileData.getUri();
-                        }
-                    });
+                    PasswdFileData::getUri);
             if (uri != null) {
                 itsCurrTask = new DeleteTask(uri, this);
                 itsCurrTask.execute();
@@ -1150,22 +1077,13 @@ public class PasswdSafe extends AppCompatActivity
                 break;
             }
 
-            Boolean removed = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<Boolean>()
-                    {
-                        @Override
-                        public Boolean useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            PwsRecord rec =
-                                    fileData.getRecord(location.getRecord());
-                            if (rec != null) {
-                                return fileData.removeRecord(rec,
-                                                             PasswdSafe.this);
-                            }
-                            return null;
-                        }
-                    });
+            Boolean removed = itsFileDataFrag.useFileData(fileData -> {
+                PwsRecord rec = fileData.getRecord(location.getRecord());
+                if (rec != null) {
+                    return fileData.removeRecord(rec, PasswdSafe.this);
+                }
+                return null;
+            });
             if ((removed != null) && removed) {
                 finishEdit(EditFinish.DELETE_RECORD, location.getRecord(),
                            location.selectRecord(null), null);
@@ -1235,16 +1153,7 @@ public class PasswdSafe extends AppCompatActivity
      */
     private boolean isFileOpen()
     {
-        Boolean isOpen = itsFileDataFrag.useFileData(
-                new PasswdFileDataUser<Boolean>()
-                {
-                    @Override
-                    public Boolean useFileData(@NonNull PasswdFileData fileData)
-                    {
-                        return true;
-                    }
-                });
-
+        Boolean isOpen = itsFileDataFrag.useFileData(fileData -> true);
         return (isOpen != null) && isOpen;
     }
 
@@ -1253,31 +1162,15 @@ public class PasswdSafe extends AppCompatActivity
      */
     private void protectRecords(final boolean doProtect)
     {
-        Boolean doSave = itsFileDataFrag.useFileData(
-                new PasswdFileDataUser<Boolean>()
-                {
-                    @Override
-                    public Boolean useFileData(
-                            @NonNull final PasswdFileData fileData)
-                    {
-                        itsFileDataFrag.getFileDataView().walkGroupRecords(
-                                new PasswdFileDataView.RecordVisitor()
-                                {
-                                    @Override
-                                    public void visitRecord(String recordUuid)
-                                    {
-                                        PwsRecord rec =
-                                                fileData.getRecord(recordUuid);
-                                        if (rec != null) {
-                                            fileData.setProtected(doProtect,
-                                                                  rec);
-                                        }
-                                    }
-                                });
-                        return true;
-                    }
-                });
-
+        Boolean doSave = itsFileDataFrag.useFileData(fileData -> {
+            itsFileDataFrag.getFileDataView().walkGroupRecords(recordUuid -> {
+                PwsRecord rec = fileData.getRecord(recordUuid);
+                if (rec != null) {
+                    fileData.setProtected(doProtect, rec);
+                }
+            });
+            return true;
+        });
         if ((doSave != null) && doSave) {
             finishEdit(EditFinish.PROTECT_RECORD, null, null, null);
         }
@@ -1296,16 +1189,8 @@ public class PasswdSafe extends AppCompatActivity
 
         if (saveRun.isSave()) {
             String fileId = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<String>()
-                    {
-                        @Override
-                        public String useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            return fileData.getUri().getIdentifier(
-                                    PasswdSafe.this, false);
-                        }
-                    });
+                    fileData -> fileData.getUri().getIdentifier(PasswdSafe.this,
+                                                                false));
             if (fileId == null) {
                 fileId = "";
             }
@@ -1379,60 +1264,55 @@ public class PasswdSafe extends AppCompatActivity
                               final Fragment contentFrag,
                               final String transTag)
     {
-        checkNavigation(true, new Runnable()
-        {
-            public void run()
-            {
-                FragmentManager fragMgr = getSupportFragmentManager();
-                FragmentTransaction txn = fragMgr.beginTransaction();
+        checkNavigation(true, () -> {
+            FragmentManager fragMgr = getSupportFragmentManager();
+            FragmentTransaction txn = fragMgr.beginTransaction();
 
-                boolean clearBackStack = false;
-                boolean supportsBack = false;
-                switch (mode) {
-                case INIT:
-                case FILE_OPEN:
-                case FILE_NEW:
-                case OPEN_INIT: {
-                    clearBackStack = true;
-                    break;
-                }
-                case OPEN:
-                case RECORD:
-                case EDIT_RECORD:
-                case CHANGE_PASSWORD:
-                case VIEW_ABOUT:
-                case VIEW_EXPIRATION:
-                case VIEW_POLICY_LIST:
-                case VIEW_PREFERENCES: {
-                    supportsBack = true;
-                    break;
-                }
-                }
-                if (clearBackStack) {
-                    //noinspection StatementWithEmptyBody
-                    while (fragMgr.popBackStackImmediate()) {
-                        // Clear back stack
-                    }
-                }
-
-                txn.setTransitionStyle(
-                        FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                if (contentFrag != null) {
-                    txn.replace(R.id.content, contentFrag);
-                } else {
-                    Fragment currFrag = fragMgr.findFragmentById(R.id.content);
-                    if ((currFrag != null) && currFrag.isAdded()) {
-                        txn.remove(currFrag);
-                    }
-                }
-
-                if (supportsBack) {
-                    txn.addToBackStack(transTag);
-                }
-
-                txn.commit();
-                itsIsConfirmBackClosed = true;
+            boolean clearBackStack = false;
+            boolean supportsBack = false;
+            switch (mode) {
+            case INIT:
+            case FILE_OPEN:
+            case FILE_NEW:
+            case OPEN_INIT: {
+                clearBackStack = true;
+                break;
             }
+            case OPEN:
+            case RECORD:
+            case EDIT_RECORD:
+            case CHANGE_PASSWORD:
+            case VIEW_ABOUT:
+            case VIEW_EXPIRATION:
+            case VIEW_POLICY_LIST:
+            case VIEW_PREFERENCES: {
+                supportsBack = true;
+                break;
+            }
+            }
+            if (clearBackStack) {
+                //noinspection StatementWithEmptyBody
+                while (fragMgr.popBackStackImmediate()) {
+                    // Clear back stack
+                }
+            }
+
+            txn.setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            if (contentFrag != null) {
+                txn.replace(R.id.content, contentFrag);
+            } else {
+                Fragment currFrag = fragMgr.findFragmentById(R.id.content);
+                if ((currFrag != null) && currFrag.isAdded()) {
+                    txn.remove(currFrag);
+                }
+            }
+
+            if (supportsBack) {
+                txn.addToBackStack(transTag);
+            }
+
+            txn.commit();
+            itsIsConfirmBackClosed = true;
         });
     }
 
@@ -1463,25 +1343,18 @@ public class PasswdSafe extends AppCompatActivity
         }
 
         if (doPrompt) {
-            DialogInterface.OnClickListener continueListener =
-                    new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.dismiss();
-                            if (popOnConfirm) {
-                                FragmentManager fragMgr =
-                                        getSupportFragmentManager();
-                                fragMgr.popBackStackImmediate();
-                            }
-                            navRun.run();
-                        }
-                    };
+            DialogInterface.OnClickListener listener = (dialog, which) -> {
+                dialog.dismiss();
+                if (popOnConfirm) {
+                    FragmentManager fragMgr = getSupportFragmentManager();
+                    fragMgr.popBackStackImmediate();
+                }
+                navRun.run();
+            };
             new AlertDialog.Builder(this)
                     .setTitle(R.string.continue_p)
                     .setMessage(R.string.any_changes_will_be_lost)
-                    .setPositiveButton(R.string.continue_str, continueListener)
+                    .setPositiveButton(R.string.continue_str, listener)
                     .setNegativeButton(R.string.cancel, null)
                     .show();
         } else {
@@ -1524,19 +1397,12 @@ public class PasswdSafe extends AppCompatActivity
             itsTitle = null;
             String groups = itsLocation.getGroupPath();
             if (TextUtils.isEmpty(groups)) {
-                fileNameUpdate = itsFileDataFrag.useFileData(
-                        new PasswdFileDataUser<String>()
-                        {
-                            @Override
-                            public String useFileData(
-                                    @NonNull PasswdFileData fileData)
-                            {
-                                PasswdFileUri uri = fileData.getUri();
-                                itsTitle = PasswdSafeApp.getAppFileTitle(
-                                        uri, PasswdSafe.this);
-                                return uri.getIdentifier(PasswdSafe.this, true);
-                            }
-                        });
+                fileNameUpdate = itsFileDataFrag.useFileData(fileData -> {
+                    PasswdFileUri uri = fileData.getUri();
+                    itsTitle = PasswdSafeApp.getAppFileTitle(uri,
+                                                             PasswdSafe.this);
+                    return uri.getIdentifier(PasswdSafe.this, true);
+                });
             }
             if (itsTitle == null) {
                 itsTitle = PasswdSafeApp.getAppTitle(groups, this);
@@ -1558,21 +1424,13 @@ public class PasswdSafe extends AppCompatActivity
                     PasswdSafeNavDrawerFragment.Mode.RECORDS_LIST :
                     PasswdSafeNavDrawerFragment.Mode.RECORDS_SINGLE;
             fileTimeoutPaused = false;
-            itsTitle = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<String>()
-                    {
-                        @Override
-                        public String useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            if (itsLocation.isRecord()) {
-                                PwsRecord rec = fileData.getRecord(
-                                        itsLocation.getRecord());
-                                return fileData.getTitle(rec);
-                            }
-                            return null;
-                        }
-                    });
+            itsTitle = itsFileDataFrag.useFileData(fileData -> {
+                if (itsLocation.isRecord()) {
+                    PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
+                    return fileData.getTitle(rec);
+                }
+                return null;
+            });
             if (itsTitle == null) {
                 itsTitle = getString(R.string.new_entry);
             }
@@ -1580,22 +1438,14 @@ public class PasswdSafe extends AppCompatActivity
         }
         case EDIT_RECORD: {
             drawerMode = PasswdSafeNavDrawerFragment.Mode.RECORDS_ACTION;
-            itsTitle = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<String>()
-                    {
-                        @Override
-                        public String useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            if (itsLocation.isRecord()) {
-                                PwsRecord rec = fileData.getRecord(
-                                        itsLocation.getRecord());
-                                return getString(R.string.edit_item,
-                                                 fileData.getTitle(rec));
-                            }
-                            return null;
-                        }
-                    });
+            itsTitle = itsFileDataFrag.useFileData(fileData -> {
+                if (itsLocation.isRecord()) {
+                    PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
+                    return getString(R.string.edit_item,
+                                     fileData.getTitle(rec));
+                }
+                return null;
+            });
             if (itsTitle == null) {
                 itsTitle = getString(R.string.new_entry);
             }
@@ -1839,22 +1689,15 @@ public class PasswdSafe extends AppCompatActivity
         @Override
         protected final void handleDoInBackground() throws Exception
         {
-            Exception e = itsFileDataFrag.useFileData(
-                    new PasswdFileDataUser<Exception>()
-                    {
-                        @Override
-                        public Exception useFileData(
-                                @NonNull PasswdFileData fileData)
-                        {
-                            try {
-                                fileData.save(getContext());
-                                PasswdSafeUtil.dbginfo(TAG, "SaveTask finished");
-                                return null;
-                            } catch (Exception e) {
-                                return e;
-                            }
-                        }
-                    });
+            Exception e = itsFileDataFrag.useFileData(fileData -> {
+                try {
+                    fileData.save(getContext());
+                    PasswdSafeUtil.dbginfo(TAG, "SaveTask finished");
+                    return null;
+                } catch (Exception e1) {
+                    return e1;
+                }
+            });
             if (e != null) {
                 throw e;
             }
