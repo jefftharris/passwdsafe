@@ -414,12 +414,13 @@ public class PasswdSafe extends AppCompatActivity
                 (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         itsSearchItem = menu.findItem(R.id.menu_search);
         MenuItemCompat.collapseActionView(itsSearchItem);
-        SearchView searchView = (SearchView)
-                MenuItemCompat.getActionView(itsSearchItem);
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(true);
-
+        if (searchManager != null) {
+            SearchView searchView = (SearchView)
+                    MenuItemCompat.getActionView(itsSearchItem);
+            searchView.setSearchableInfo(
+                    searchManager.getSearchableInfo(getComponentName()));
+            searchView.setIconifiedByDefault(true);
+        }
         return true;
     }
 
@@ -1215,7 +1216,9 @@ public class PasswdSafe extends AppCompatActivity
     private void changeFileOpenView(Intent intent)
     {
         Uri openUri = PasswdSafeApp.getOpenUriFromIntent(intent);
-        String recToOpen = intent.getData().getQueryParameter("recToOpen");
+        Uri intentUri = intent.getData();
+        String recToOpen = (intentUri != null) ?
+                           intentUri.getQueryParameter("recToOpen") : null;
         Fragment openFrag = PasswdSafeOpenFileFragment.newInstance(openUri,
                                                                    recToOpen);
         doChangeView(ChangeMode.FILE_OPEN, openFrag);
