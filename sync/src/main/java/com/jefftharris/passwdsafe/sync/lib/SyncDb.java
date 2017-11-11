@@ -740,7 +740,7 @@ public class SyncDb
             throws SQLException
         {
             if (!db.isReadOnly()) {
-                db.execSQL("PRAGMA foreign_keys = ON;");
+                db.execSQL("PRAGMA foreign_keys = \"ON\";");
             }
         }
     }

@@ -73,7 +73,7 @@ public class LauncherRecordShortcuts extends AppCompatActivity
         itsFileDataView.onAttach(this, prefs);
 
         Intent intent = getIntent();
-        switch (intent.getAction()) {
+        switch (String.valueOf(intent.getAction())) {
         case Intent.ACTION_CREATE_SHORTCUT: {
             setTitle(R.string.shortcut_record);
             itsMode = Mode.SHORTCUT;
