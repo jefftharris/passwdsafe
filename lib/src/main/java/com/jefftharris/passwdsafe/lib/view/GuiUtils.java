@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.lib.view;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,7 +20,6 @@ import android.support.v4.app.NotificationCompat;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -32,6 +29,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
+
+import java.util.List;
 
 /**
  * @author jharris
@@ -59,31 +58,25 @@ public final class GuiUtils
         }
 
         // Defer measurement so listview is rendered to get its width
-        listView.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                int width = View.MeasureSpec.makeMeasureSpec(
-                        listView.getMeasuredWidth(), View.MeasureSpec.AT_MOST);
-                int height = View.MeasureSpec.makeMeasureSpec(
-                        0, View.MeasureSpec.UNSPECIFIED);
-                int totalHeight = 0;
-                int numItems = listAdapter.getCount();
-                for (int i = 0; i < numItems; i++) {
-                    View listItem = listAdapter.getView(i, null, listView);
-                    listItem.measure(width, height);
-                    totalHeight += listItem.getMeasuredHeight();
-                }
-
-                ViewGroup.LayoutParams params = listView.getLayoutParams();
-                params.height = totalHeight;
-                if (numItems > 0) {
-                    params.height +=
-                            listView.getDividerHeight() * (numItems - 1);
-                }
-                listView.setLayoutParams(params);
+        listView.post(() -> {
+            int width = View.MeasureSpec.makeMeasureSpec(
+                    listView.getMeasuredWidth(), View.MeasureSpec.AT_MOST);
+            int height = View.MeasureSpec.makeMeasureSpec(
+                    0, View.MeasureSpec.UNSPECIFIED);
+            int totalHeight = 0;
+            int numItems = listAdapter.getCount();
+            for (int i = 0; i < numItems; i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                listItem.measure(width, height);
+                totalHeight += listItem.getMeasuredHeight();
             }
+
+            ViewGroup.LayoutParams params = listView.getLayoutParams();
+            params.height = totalHeight;
+            if (numItems > 0) {
+                params.height += listView.getDividerHeight() * (numItems - 1);
+            }
+            listView.setLayoutParams(params);
         });
     }
 
@@ -128,14 +121,7 @@ public final class GuiUtils
     {
         // Use a delayed post to prevent stack overflow errors on gingerbread
         // from repeated toggles on Gingerbread
-        view.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                view.setVisibility(visible ? View.VISIBLE : View.GONE);
-            }
-        });
+        view.post(() -> view.setVisibility(visible ? View.VISIBLE : View.GONE));
     }
 
     /**
@@ -147,16 +133,12 @@ public final class GuiUtils
                                          final Button okBtn,
                                          Context ctx)
     {
-        setupFormKeyboard(firstField, finalField, ctx, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (okBtn.isEnabled()) {
-                    okBtn.performClick();
-                }
-            }
-        });
+        setupFormKeyboard(firstField, finalField, ctx,
+                          () -> {
+                              if (okBtn.isEnabled()) {
+                                  okBtn.performClick();
+                              }
+                          });
     }
 
 
@@ -173,21 +155,17 @@ public final class GuiUtils
             GuiUtilsFroyo.showKeyboard(firstField, ctx);
         }
 
-        finalField.setOnKeyListener(new OnKeyListener()
-        {
-            public boolean onKey(View v, int keyCode, KeyEvent event)
-            {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                    case KeyEvent.KEYCODE_DPAD_CENTER:
-                    case KeyEvent.KEYCODE_ENTER: {
-                        enterRunnable.run();
-                        return true;
-                    }
-                    }
+        finalField.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_CENTER:
+                case KeyEvent.KEYCODE_ENTER: {
+                    enterRunnable.run();
+                    return true;
                 }
-                return false;
+                }
             }
+            return false;
         });
     }
 
