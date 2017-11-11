@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -76,7 +77,6 @@ public class PasswdSafeNewFileFragment
     private Button itsOkBtn;
     private final CountedBool itsBackgroundDisable = new CountedBool();
     private final Validator itsValidator = new Validator();
-    private NewTask itsNewTask;
     private boolean itsUseStorage = false;
 
     private static final String ARG_URI = "uri";
@@ -233,8 +233,7 @@ public class PasswdSafeNewFileFragment
                 Owner<PwsPassword> passwd =
                         new Owner<>(new PwsPassword(itsPassword.getText()));
                 try {
-                    itsNewTask = new NewTask(fileName, passwd.pass(), this);
-                    itsNewTask.execute();
+                    startTask(new NewTask(fileName, passwd.pass(), this));
                 } finally {
                     passwd.close();
                 }
@@ -304,8 +303,7 @@ public class PasswdSafeNewFileFragment
             Owner<PwsPassword> passwd =
                     new Owner<>(new PwsPassword(itsPassword.getText()));
             try {
-                itsNewTask = new NewTask(fileName, passwd.pass(), this);
-                itsNewTask.execute();
+                startTask(new NewTask(fileName, passwd.pass(), this));
             } finally {
                 passwd.close();
             }
@@ -363,11 +361,6 @@ public class PasswdSafeNewFileFragment
     @Override
     protected final void doCancelFragment(boolean userCancel)
     {
-        if (itsNewTask != null) {
-            NewTask task = itsNewTask;
-            itsNewTask = null;
-            task.cancel(false);
-        }
         GuiUtils.setKeyboardVisible(itsPasswordInput, getActivity(), false);
         if (userCancel && itsListener != null) {
             itsListener.handleFileNewCanceled();
@@ -391,25 +384,18 @@ public class PasswdSafeNewFileFragment
     /**
      * Handle when the new task is finished
      */
-    private void newTaskFinished(Object result, PasswdFileUri fileUri)
+    private void newTaskFinished(PasswdFileData result,
+                                 Throwable error,
+                                 PasswdFileUri fileUri)
     {
-        if (itsNewTask == null) {
-            return;
-        }
-        itsNewTask = null;
-
-        if (result == null) {
-            cancelFragment(false);
-            return;
-        }
-
-        if (result instanceof PasswdFileData) {
-            itsListener.handleFileNew((PasswdFileData)result);
-        } else {
-            Exception e = (Exception) result;
+        if (result != null) {
+            itsListener.handleFileNew(result);
+        } else if (error != null) {
             PasswdSafeUtil.showFatalMsg(
-                    e, getString(R.string.cannot_create_file, fileUri),
+                    error, getString(R.string.cannot_create_file, fileUri),
                     getActivity());
+        } else {
+            cancelFragment(false);
         }
     }
 
@@ -508,8 +494,8 @@ public class PasswdSafeNewFileFragment
     /**
      * Background task for creating a new file
      */
-    private static class NewTask
-            extends BackgroundTask<Object, PasswdSafeNewFileFragment>
+    private static final class NewTask
+            extends BackgroundTask<PasswdFileData, PasswdSafeNewFileFragment>
     {
         private final String itsFileName;
         private final PasswdFileUri itsFileUri;
@@ -532,32 +518,30 @@ public class PasswdSafeNewFileFragment
         }
 
         @Override
-        protected Object doInBackground(Void... voids)
+        protected PasswdFileData doInBackground() throws Exception
         {
-            try {
-                Context ctx = getContext();
-                if (itsUseStorage) {
-                    itsNewFileUri = itsFileUri;
-                } else {
-                    itsNewFileUri = itsFileUri.createNewChild(itsFileName, ctx);
-                }
-                PasswdFileData fileData = new PasswdFileData(itsNewFileUri);
-                fileData.createNewFile(itsPassword.pass(), ctx);
-                return fileData;
-            } catch (Exception e) {
-                return e;
+            Context ctx = getContext();
+            if (itsUseStorage) {
+                itsNewFileUri = itsFileUri;
+            } else {
+                itsNewFileUri = itsFileUri.createNewChild(itsFileName, ctx);
             }
+            PasswdFileData fileData = new PasswdFileData(itsNewFileUri);
+            fileData.createNewFile(itsPassword.pass(), ctx);
+            return fileData;
         }
 
         @Override
-        protected void onPostExecute(Object data)
+        protected void onTaskFinished(PasswdFileData result,
+                                      Throwable error,
+                                      @NonNull PasswdSafeNewFileFragment frag)
         {
-            super.onPostExecute(data);
-            PasswdSafeNewFileFragment frag = getFragment();
-            if (frag != null) {
-                frag.newTaskFinished(data, itsNewFileUri);
+            super.onTaskFinished(result, error, frag);
+            try {
+                frag.newTaskFinished(result, error, itsNewFileUri);
+            } finally {
+                itsPassword.close();
             }
-            itsPassword.close();
         }
     }
 }

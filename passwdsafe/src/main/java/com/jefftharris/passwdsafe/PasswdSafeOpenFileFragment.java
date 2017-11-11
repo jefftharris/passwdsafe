@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Editable;
@@ -121,7 +122,6 @@ public class PasswdSafeOpenFileFragment
     private CheckBox itsSavePasswdCb;
     private CheckBox itsYubikeyCb;
     private Button itsOkBtn;
-    private OpenTask itsOpenTask;
     private SavedPasswordsMgr itsSavedPasswordsMgr;
     private boolean itsIsPasswordSaved = false;
     private SavePasswordChange itsSaveChange = SavePasswordChange.NONE;
@@ -434,11 +434,6 @@ public class PasswdSafeOpenFileFragment
     @Override
     protected final void doCancelFragment(boolean userCancel)
     {
-        if (itsOpenTask != null) {
-            OpenTask task = itsOpenTask;
-            itsOpenTask = null;
-            task.cancel(false);
-        }
         Context ctx = getContext();
         if (ctx != null) {
             GuiUtils.setKeyboardVisible(itsPasswordEdit, ctx, false);
@@ -674,8 +669,7 @@ public class PasswdSafeOpenFileFragment
         Owner<PwsPassword> passwd =
                 new Owner<>(new PwsPassword(itsPasswordEdit.getText()));
         try {
-            itsOpenTask = new OpenTask(passwd.pass(), readonly, this);
-            itsOpenTask.execute();
+            startTask(new OpenTask(passwd.pass(), readonly, this));
         } finally {
             passwd.close();
         }
@@ -684,19 +678,9 @@ public class PasswdSafeOpenFileFragment
     /**
      * Handle when the open task is finished
      */
-    private void openTaskFinished(OpenResult result)
+    private void openTaskFinished(OpenResult result, Throwable error)
     {
-        if (itsOpenTask == null) {
-            return;
-        }
-        itsOpenTask = null;
-
-        if (result == null) {
-            cancelFragment(false);
-            return;
-        }
-
-        if (result.itsFileData != null) {
+        if (result != null) {
             switch (itsSaveChange) {
             case ADD: {
                 if (result.itsKeygenError != null) {
@@ -724,11 +708,10 @@ public class PasswdSafeOpenFileFragment
                 break;
             }
             }
-        } else {
-            Exception e = result.itsError;
-            if (((e instanceof IOException) &&
-                 TextUtils.equals(e.getMessage(), "Invalid password")) ||
-                (e instanceof InvalidPassphraseException)) {
+        } else if (error != null) {
+            if (((error instanceof IOException) &&
+                 TextUtils.equals(error.getMessage(), "Invalid password")) ||
+                (error instanceof InvalidPassphraseException)) {
                 if (itsRetries++ < 5) {
                     TextInputUtils.setTextInputError(
                             getString(R.string.invalid_password),
@@ -745,10 +728,12 @@ public class PasswdSafeOpenFileFragment
                             false);
                 }
             } else {
-                String msg = e.toString();
-                PasswdSafeUtil.showFatalMsg(e, msg, getActivity());
+                PasswdSafeUtil.showFatalMsg(error, error.toString(),
+                                            getActivity());
             }
             setPhase(Phase.WAITING_PASSWORD);
+        } else {
+            cancelFragment(false);
         }
     }
 
@@ -828,24 +813,21 @@ public class PasswdSafeOpenFileFragment
     {
         public final PasswdFileData itsFileData;
         public final Exception itsKeygenError;
-        public final Exception itsError;
 
         /**
          * Constructor
          */
-        public OpenResult(PasswdFileData fileData, Exception keygenError,
-                          Exception error)
+        public OpenResult(PasswdFileData fileData, Exception keygenError)
         {
             itsFileData = fileData;
             itsKeygenError = keygenError;
-            itsError = error;
         }
     }
 
     /**
      * Background task for opening the file
      */
-    private static class OpenTask
+    private static final class OpenTask
             extends BackgroundTask<OpenResult, PasswdSafeOpenFileFragment>
     {
         private final PasswdFileUri itsFileUri;
@@ -872,16 +854,11 @@ public class PasswdSafeOpenFileFragment
         }
 
         @Override
-        protected OpenResult doInBackground(Void... voids)
+        protected OpenResult doInBackground() throws Exception
         {
             PasswdFileData fileData = new PasswdFileData(itsFileUri);
-            try {
-                fileData.setYubikey(itsIsYubikey);
-                fileData.load(itsPassword.pass(), itsItsIsReadOnly,
-                              getContext());
-            } catch (Exception e) {
-                return new OpenResult(null, null, e);
-            }
+            fileData.setYubikey(itsIsYubikey);
+            fileData.load(itsPassword.pass(), itsItsIsReadOnly, getContext());
 
             Exception keygenError = null;
             switch (itsSaveChange) {
@@ -901,18 +878,20 @@ public class PasswdSafeOpenFileFragment
             }
             }
 
-            return new OpenResult(fileData, keygenError, null);
+            return new OpenResult(fileData, keygenError);
         }
 
         @Override
-        protected void onPostExecute(OpenResult data)
+        protected void onTaskFinished(OpenResult result,
+                                      Throwable error,
+                                      @NonNull PasswdSafeOpenFileFragment frag)
         {
-            super.onPostExecute(data);
-            PasswdSafeOpenFileFragment frag = getFragment();
-            if (frag != null) {
-                frag.openTaskFinished(data);
+            super.onTaskFinished(result, error, frag);
+            try {
+                frag.openTaskFinished(result, error);
+            } finally {
+                itsPassword.close();
             }
-            itsPassword.close();
         }
     }
 
