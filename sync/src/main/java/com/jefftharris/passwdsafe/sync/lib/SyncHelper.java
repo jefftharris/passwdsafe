@@ -31,7 +31,7 @@ public class SyncHelper
     public static DbProvider getDbProviderForAcct(Account acct,
                                                   SQLiteDatabase db)
     {
-        DbProvider provider = null;
+        DbProvider provider;
         try {
             db.beginTransaction();
             ProviderType providerType;
