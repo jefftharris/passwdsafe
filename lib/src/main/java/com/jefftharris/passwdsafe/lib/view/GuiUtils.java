@@ -177,6 +177,9 @@ public final class GuiUtils
     {
         InputMethodManager imm = (InputMethodManager)
             ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm == null) {
+            return;
+        }
         if (visible) {
             if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_HONEYCOMB) {
                 imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
