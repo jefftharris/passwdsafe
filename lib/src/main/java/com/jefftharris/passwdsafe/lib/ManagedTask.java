@@ -80,9 +80,9 @@ public abstract class ManagedTask<ResultT, FragT extends Fragment>
     /**
      * Run the task in the background
      * @return The result of the task
-     * @throws Exception If an error occurs
+     * @throws Throwable If an error occurs
      */
-    protected abstract ResultT doInBackground() throws Exception;
+    protected abstract ResultT doInBackground() throws Throwable;
 
     /**
      * Finish the task

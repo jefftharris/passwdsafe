@@ -239,7 +239,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
         }
 
         @Override
-        protected PasswdFileUri doInBackground()
+        protected PasswdFileUri doInBackground() throws Throwable
         {
             return itsUriCreator.finishCreate();
         }
@@ -251,13 +251,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
                 @NonNull AbstractPasswdSafeOpenNewFileFragment frag)
         {
             super.onTaskFinished(result, error, frag);
-            Throwable resolveEx = itsUriCreator.getResolveEx();
-            if (resolveEx != null) {
-                error = resolveEx;
-            }
             frag.resolveTaskFinished(result, error);
-
-            // TODO: resolveex not needed, just throw
         }
     }
 

@@ -425,7 +425,12 @@ public class NotificationMgr implements PasswdFileDataObserver
         throws SQLException
     {
         PasswdFileUri.Creator creator = new PasswdFileUri.Creator(uri, itsCtx);
-        PasswdFileUri passwdUri = creator.finishCreate();
+        PasswdFileUri passwdUri;
+        try {
+            passwdUri = creator.finishCreate();
+        } catch (Throwable e) {
+            passwdUri = null;
+        }
         if ((passwdUri == null) || !passwdUri.exists()) {
             PasswdSafeUtil.dbginfo(TAG, "Notif file doesn't exist: %s", uri);
             return false;

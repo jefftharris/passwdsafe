@@ -389,8 +389,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             @Override
             protected PasswdFileUri doInBackground(Void... params)
             {
-                return (itsUriCreator != null) ?
-                       itsUriCreator.finishCreate() : null;
+                try {
+                    return (itsUriCreator != null) ?
+                           itsUriCreator.finishCreate() : null;
+                } catch (Throwable e) {
+                    return null;
+                }
             }
 
             @Override

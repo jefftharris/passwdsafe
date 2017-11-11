@@ -143,10 +143,13 @@ public class PasswdFileUri implements Parcelable
         /**
          * Finish creating the PasswdFileUri, typically in a background thread
          */
-        public PasswdFileUri finishCreate()
+        public PasswdFileUri finishCreate() throws Throwable
         {
             if ((itsResolvedUri == null) && (itsResolveEx == null)) {
                 create();
+            }
+            if (itsResolveEx != null) {
+                throw itsResolveEx;
             }
             return itsResolvedUri;
         }
