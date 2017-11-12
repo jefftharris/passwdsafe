@@ -1042,8 +1042,7 @@ public class PasswdSafe extends AppCompatActivity
                                       Date customDate)
     {
         PasswdRecordFilter recFilter =
-                new PasswdRecordFilter(filter, customDate,
-                                       PasswdRecordFilter.OPTS_DEFAULT);
+                new PasswdRecordFilter(filter, customDate);
         setRecordFilter(recFilter);
     }
 

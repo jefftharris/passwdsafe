@@ -80,16 +80,14 @@ public final class PasswdRecordFilter implements Closeable
     }
 
     /** Constructor for expiration */
-    public PasswdRecordFilter(PasswdExpiryFilter filter,
-                              Date customDate,
-                              int opts)
+    public PasswdRecordFilter(PasswdExpiryFilter filter, Date customDate)
     {
         itsType = Type.EXPIRATION;
         itsSearchQuery = null;
         itsExpiryFilter = filter;
         itsExpiryAtMillis = itsExpiryFilter.getExpiryFromNow(customDate);
         itsSimilarFields = null;
-        itsOptions = opts;
+        itsOptions = OPTS_DEFAULT;
     }
 
     /** Constructor for similar record */
