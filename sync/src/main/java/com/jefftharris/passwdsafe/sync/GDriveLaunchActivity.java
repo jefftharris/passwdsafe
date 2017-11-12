@@ -40,7 +40,7 @@ public class GDriveLaunchActivity extends AppCompatActivity
         Intent intent = getIntent();
         String action = intent.getAction();
         boolean doFinish = true;
-        if (action.equals("com.google.android.apps.drive.DRIVE_OPEN")) {
+        if ("com.google.android.apps.drive.DRIVE_OPEN".equals(action)) {
             String fileId = intent.getStringExtra("resourceId");
             PasswdSafeUtil.dbginfo(TAG, "Open GDrive file %s", fileId);
 
