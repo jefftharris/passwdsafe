@@ -346,9 +346,10 @@ public class PasswdSafeIME extends InputMethodService
             InputMethodManager inputMgr =
                     (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             IBinder token = getToken();
-            if (!ApiCompat.shouldOfferSwitchingToNextInputMethod(inputMgr,
-                                                                 token) ||
-                !ApiCompat.switchToNextInputMethod(inputMgr, token, false)) {
+            if ((inputMgr != null) &&
+                (!ApiCompat.shouldOfferSwitchingToNextInputMethod(inputMgr,
+                                                                  token) ||
+                 !ApiCompat.switchToNextInputMethod(inputMgr, token, false))) {
                 inputMgr.showInputMethodPicker();
             }
             break;
@@ -356,7 +357,9 @@ public class PasswdSafeIME extends InputMethodService
         case KEYBOARD_CHOOSE_KEY: {
             InputMethodManager inputMgr =
                     (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-            inputMgr.showInputMethodPicker();
+            if (inputMgr != null) {
+                inputMgr.showInputMethodPicker();
+            }
             break;
         }
         case Keyboard.KEYCODE_MODE_CHANGE: {
