@@ -36,8 +36,10 @@ public final class ApiCompatHoneycomb
     {
         ClipboardManager clipMgr = (ClipboardManager)
                 ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(null, str);
-        clipMgr.setPrimaryClip(clip);
+        if (clipMgr != null) {
+            ClipData clip = ClipData.newPlainText(null, str);
+            clipMgr.setPrimaryClip(clip);
+        }
     }
 
     /**
@@ -47,6 +49,6 @@ public final class ApiCompatHoneycomb
     {
         ClipboardManager clipMgr = (ClipboardManager)
                 ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-        return clipMgr.hasPrimaryClip();
+        return (clipMgr != null) && clipMgr.hasPrimaryClip();
     }
 }

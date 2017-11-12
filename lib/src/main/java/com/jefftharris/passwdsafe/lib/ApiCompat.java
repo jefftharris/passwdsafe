@@ -160,7 +160,9 @@ public final class ApiCompat
             @SuppressWarnings("deprecation")
             ClipboardManager clipMgr = (ClipboardManager)
                     ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-            clipMgr.setText(str);
+            if (clipMgr != null) {
+                clipMgr.setText(str);
+            }
         }
     }
 
@@ -175,7 +177,7 @@ public final class ApiCompat
             @SuppressWarnings("deprecation")
             ClipboardManager clipMgr = (ClipboardManager)
                     ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-            return clipMgr.hasText();
+            return (clipMgr != null) && clipMgr.hasText();
         }
     }
 
