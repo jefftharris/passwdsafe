@@ -63,7 +63,9 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         if (itsSyncTimeoutIntent != null) {
             AlarmManager alarmMgr = (AlarmManager)
                     itsContext.getSystemService(Context.ALARM_SERVICE);
-            alarmMgr.cancel(itsSyncTimeoutIntent);
+            if (alarmMgr != null) {
+                alarmMgr.cancel(itsSyncTimeoutIntent);
+            }
         }
     }
 
@@ -117,10 +119,13 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
 
                 AlarmManager alarmMgr = (AlarmManager)
                         itsContext.getSystemService(Context.ALARM_SERVICE);
-                long interval = freq * 1000;
-                alarmMgr.setInexactRepeating(
-                        AlarmManager.RTC, System.currentTimeMillis() + interval,
-                        interval, itsSyncTimeoutIntent);
+                if (alarmMgr != null) {
+                    long interval = freq * 1000;
+                    alarmMgr.setInexactRepeating(
+                            AlarmManager.RTC,
+                            System.currentTimeMillis() + interval,
+                            interval, itsSyncTimeoutIntent);
+                }
             } else {
                 if (itsSyncTimeoutIntent != null) {
                     itsSyncTimeoutIntent.cancel();
