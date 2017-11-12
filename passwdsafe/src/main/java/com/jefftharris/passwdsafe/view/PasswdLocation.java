@@ -22,6 +22,7 @@ import org.pwsafe.lib.file.PwsRecord;
  */
 public class PasswdLocation implements Parcelable
 {
+    @SuppressWarnings("unused")
     public static final Parcelable.Creator<PasswdLocation> CREATOR =
             new Parcelable.Creator<PasswdLocation>() {
                 public PasswdLocation createFromParcel(Parcel in)

@@ -82,6 +82,7 @@ public class PasswdFileUri implements Parcelable
 
 
     /** Parcelable CREATOR instance */
+    @SuppressWarnings("unused")
     public static final Parcelable.Creator<PasswdFileUri> CREATOR =
             new Parcelable.Creator<PasswdFileUri>()
             {
