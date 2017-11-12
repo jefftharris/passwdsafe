@@ -59,6 +59,7 @@ public final class FileSharer
     /**
      * Share the file
      */
+    @SuppressWarnings("RedundantThrows")
     public void share(String chooserMsg,
                       String contentType,
                       String[] emailAddrs,
