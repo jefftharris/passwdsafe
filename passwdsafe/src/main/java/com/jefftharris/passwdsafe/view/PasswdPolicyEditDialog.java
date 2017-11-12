@@ -313,13 +313,11 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
     {
         String passwd = null;
         PasswdPolicy policy = createPolicy();
-        if (policy != null) {
-            try {
-                passwd = policy.generate();
-            } catch (Exception e) {
-                PasswdSafeUtil.showErrorMsg(e.toString(),
-                                            itsView.getContext());
-            }
+        try {
+            passwd = policy.generate();
+        } catch (Exception e) {
+            PasswdSafeUtil.showErrorMsg(e.toString(),
+                                        itsView.getContext());
         }
         itsGeneratedPasswd.setText(passwd);
     }
