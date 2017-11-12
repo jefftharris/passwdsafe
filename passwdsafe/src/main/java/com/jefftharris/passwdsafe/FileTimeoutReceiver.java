@@ -95,7 +95,7 @@ public class FileTimeoutReceiver extends BroadcastReceiver
     public void onReceive(Context ctx, Intent intent)
     {
         boolean close = false;
-        switch (intent.getAction()) {
+        switch (String.valueOf(intent.getAction())) {
         case PasswdSafeApp.FILE_TIMEOUT_INTENT: {
             Log.i(TAG, "File timeout");
             close = true;
