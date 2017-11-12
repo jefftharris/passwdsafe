@@ -15,16 +15,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.Pair;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
-import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.SearchView;
@@ -32,7 +34,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +45,7 @@ import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
+import com.jefftharris.passwdsafe.lib.FileSharer;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.ProgressFragment;
@@ -148,6 +150,8 @@ public class PasswdSafe extends AppCompatActivity
         DELETE_FILE,
         /** Delete a record */
         DELETE_RECORD,
+        /** Share a file */
+        SHARE_FILE,
         /** Show settings to enable the keyboard */
         SHOW_ENABLE_KEYBOARD
     }
@@ -223,10 +227,11 @@ public class PasswdSafe extends AppCompatActivity
     private static final int MENU_BIT_HAS_FILE_OPS = 1;
     private static final int MENU_BIT_HAS_FILE_CHANGE_PASSWORD = 2;
     private static final int MENU_BIT_HAS_FILE_PROTECT = 3;
-    private static final int MENU_BIT_HAS_FILE_DELETE = 4;
-    private static final int MENU_BIT_PROTECT_ALL = 5;
-    private static final int MENU_BIT_HAS_SEARCH = 6;
-    private static final int MENU_BIT_HAS_CLOSE = 7;
+    private static final int MENU_BIT_HAS_FILE_SHARE = 4;
+    private static final int MENU_BIT_HAS_FILE_DELETE = 5;
+    private static final int MENU_BIT_PROTECT_ALL = 6;
+    private static final int MENU_BIT_HAS_SEARCH = 7;
+    private static final int MENU_BIT_HAS_CLOSE = 8;
 
     private static final String TAG = "PasswdSafe";
 
@@ -441,6 +446,7 @@ public class PasswdSafe extends AppCompatActivity
                     options.set(MENU_BIT_HAS_FILE_CHANGE_PASSWORD,
                                 fileData.isNotYubikey());
                     options.set(MENU_BIT_HAS_FILE_PROTECT, true);
+                    options.set(MENU_BIT_HAS_FILE_SHARE, true);
                     options.set(MENU_BIT_PROTECT_ALL,
                                 itsLocation.getGroups().isEmpty());
                 }
@@ -508,6 +514,11 @@ public class PasswdSafe extends AppCompatActivity
                                       R.string.unprotect_group);
             }
 
+            item = menu.findItem(R.id.menu_file_share);
+            if (item != null) {
+                item.setEnabled(options.get(MENU_BIT_HAS_FILE_SHARE));
+            }
+
             item = menu.findItem(R.id.menu_file_delete);
             if (item != null) {
                 item.setEnabled(options.get(MENU_BIT_HAS_FILE_DELETE));
@@ -568,6 +579,18 @@ public class PasswdSafe extends AppCompatActivity
         }
         case R.id.menu_file_protect_records: {
             protectRecords(true);
+            return true;
+        }
+        case R.id.menu_file_share: {
+            Bundle confirmArgs = new Bundle();
+            confirmArgs.putString(CONFIRM_ARG_ACTION,
+                                  ConfirmAction.SHARE_FILE.name());
+            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
+                    getString(R.string.share_file_p),
+                    getString(R.string.share_file_msg),
+                    getString(R.string.share), confirmArgs);
+            dialog.show(getSupportFragmentManager(), "Share file");
+
             return true;
         }
         case R.id.menu_file_unprotect_records: {
@@ -1091,6 +1114,10 @@ public class PasswdSafe extends AppCompatActivity
             }
             break;
         }
+        case SHARE_FILE: {
+            shareFile();
+            break;
+        }
         case SHOW_ENABLE_KEYBOARD: {
             try {
                 startActivity(
@@ -1174,6 +1201,30 @@ public class PasswdSafe extends AppCompatActivity
         });
         if ((doSave != null) && doSave) {
             finishEdit(EditFinish.PROTECT_RECORD, null, null, null);
+        }
+    }
+
+    /**
+     * Share the file
+     */
+    private void shareFile()
+    {
+        Pair<String, String> rc = itsFileDataFrag.useFileData((fileData) -> {
+            PasswdFileUri uri = fileData.getUri();
+            return new Pair<>(uri.getIdentifier(PasswdSafe.this, true),
+                              uri.getFileName());
+        });
+        String fileId = TextUtils.isEmpty(rc.first) ?
+                        "PasswdSafe file" : rc.first;
+        String fileName = TextUtils.isEmpty(rc.second) ?
+                          "share.psafe3" : rc.second;
+
+        PasswdSafeUtil.dbginfo(TAG, "share: " + fileId);
+        try {
+            itsCurrTask = new ShareTask(fileId, fileName, this);
+            itsCurrTask.execute();
+        } catch (Exception e) {
+            PasswdSafeUtil.showError("Error sharing", TAG, e, this);
         }
     }
 
@@ -1724,6 +1775,57 @@ public class PasswdSafe extends AppCompatActivity
                                              msg);
             }
             return msg;
+        }
+    }
+
+    /**
+     * Task to share a file
+     */
+    private final class ShareTask extends AbstractTask
+    {
+        private final String itsFileId;
+        private final FileSharer itsSharer;
+
+        /**
+         * Constructor
+         */
+        public ShareTask(String fileId, String fileName, Context ctx)
+                throws IOException
+        {
+            super(getString(R.string.sharing_file, fileId), ctx);
+            itsFileId = fileId;
+
+            itsSharer = new FileSharer(fileName, getContext(),
+                                       PasswdSafeUtil.PACKAGE);
+        }
+
+        @Override
+        protected final void handleDoInBackground() throws Exception
+        {
+            Exception e = itsFileDataFrag.useFileData((fileData) -> {
+                try {
+                    fileData.saveAs(itsSharer.getFile(), getContext());
+                    PasswdSafeUtil.dbginfo(TAG, "ShareTask finished");
+                    return null;
+                } catch (Exception ex) {
+                    return ex;
+                }
+            });
+            if (e != null) {
+                throw e;
+            }
+        }
+
+        @Override
+        protected final void handlePostExecute()
+        {
+            try {
+                itsSharer.share(getString(R.string.sharing_file, itsFileId),
+                                PasswdSafeUtil.MIME_TYPE_PSAFE3, null,
+                                itsFileId, PasswdSafe.this);
+            } catch (Exception e) {
+                PasswdSafeUtil.showError("Error sharing", TAG, e, getContext());
+            }
         }
     }
 

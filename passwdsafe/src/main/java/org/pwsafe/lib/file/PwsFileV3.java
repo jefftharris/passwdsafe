@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.crypto.BadPaddingException;
@@ -226,11 +227,14 @@ public final class PwsFileV3 extends PwsFile
         if (isReadOnly())
             throw new IOException("File is read only");
 
-        if (lastStorageChange != null && // check for concurrent change
-            storage.getModifiedDate().after(lastStorageChange)) {
-            throw new ConcurrentModificationException(
-                    "Password store was changed independently - no save " +
-                    "possible!");
+        // check for concurrent change
+        if (lastStorageChange != null) {
+            Date modDate = storage.getModifiedDate();
+            if ((modDate != null) && (modDate.after(lastStorageChange))) {
+                throw new ConcurrentModificationException(
+                        "Password store was changed independently - no save " +
+                        "possible!");
+            }
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

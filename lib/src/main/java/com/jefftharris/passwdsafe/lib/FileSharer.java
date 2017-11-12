@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.lib;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -17,6 +18,7 @@ import android.support.v4.app.ShareCompat;
 import android.support.v4.content.FileProvider;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -24,22 +26,26 @@ import java.util.List;
  */
 public final class FileSharer
 {
-    private final Activity itsActivity;
     private final String itsPkgName;
     private final File itsFile;
 
     /**
      * Constructor
      */
-    public FileSharer(String fileName, Activity act, String pkgName)
+    public FileSharer(String fileName, Context ctx, String pkgName)
+            throws IOException
     {
-        itsActivity = act;
         itsPkgName = pkgName;
 
-        File shareDir = new File(itsActivity.getCacheDir(), "shared-tmpfiles");
-        //noinspection ResultOfMethodCallIgnored
-        shareDir.mkdirs();
+        File shareDir = new File(ctx.getCacheDir(), "shared-tmpfiles");
+        if (!shareDir.isDirectory() && !shareDir.mkdirs()) {
+            throw new IOException("Error creating: " + shareDir);
+        }
+
         itsFile = new File(shareDir, fileName);
+        if (itsFile.exists() && !itsFile.delete()) {
+            throw new IOException("Error deleting: " + itsFile);
+        }
     }
 
     /**
@@ -56,14 +62,15 @@ public final class FileSharer
     public void share(String chooserMsg,
                       String contentType,
                       String[] emailAddrs,
-                      String subject)
+                      String subject,
+                      Activity act)
             throws Exception
     {
-        Uri fileUri = FileProvider.getUriForFile(itsActivity,
+        Uri fileUri = FileProvider.getUriForFile(act,
                                                  itsPkgName + ".fileprovider",
                                                  itsFile);
         Intent sendIntent = ShareCompat.IntentBuilder
-                .from(itsActivity)
+                .from(act)
                 .setStream(fileUri)
                 .setType(contentType)
                 .setEmailTo(emailAddrs)
@@ -76,15 +83,15 @@ public final class FileSharer
         // see https://code.google.com/p/android/issues/detail?id=76683
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             List<ResolveInfo> resInfoList =
-                    itsActivity.getPackageManager().queryIntentActivities(
+                    act.getPackageManager().queryIntentActivities(
                             sendIntent, PackageManager.MATCH_DEFAULT_ONLY);
             for (ResolveInfo resolveInfo : resInfoList) {
-                itsActivity.grantUriPermission(
+                act.grantUriPermission(
                         resolveInfo.activityInfo.packageName, fileUri,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
         }
 
-        itsActivity.startActivity(Intent.createChooser(sendIntent, chooserMsg));
+        act.startActivity(Intent.createChooser(sendIntent, chooserMsg));
     }
 }

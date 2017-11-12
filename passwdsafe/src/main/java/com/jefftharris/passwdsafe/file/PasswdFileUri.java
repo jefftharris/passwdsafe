@@ -20,6 +20,7 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.OpenableColumns;
+import android.support.annotation.Nullable;
 import android.support.v4.os.EnvironmentCompat;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
@@ -440,6 +441,25 @@ public class PasswdFileUri implements Parcelable
         return itsSyncType;
     }
 
+    /**
+     * Get the name of the URI's file if known
+     */
+    public @Nullable String getFileName()
+    {
+        switch (itsType) {
+        case FILE: {
+            return itsFile.getName();
+        }
+        case SYNC_PROVIDER:
+        case GENERIC_PROVIDER: {
+            return itsTitle;
+        }
+        case EMAIL: {
+            return null;
+        }
+        }
+        return null;
+    }
 
     /** Get an identifier for the URI */
     public String getIdentifier(Context context, boolean shortId)
@@ -546,6 +566,7 @@ public class PasswdFileUri implements Parcelable
                 break;
             }
 
+            itsTitle = itsFile.getName();
             if (!itsFile.canWrite()) {
                 writable = false;
 

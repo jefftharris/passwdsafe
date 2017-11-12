@@ -173,9 +173,9 @@ public class AboutUtils
             sharer.share(act.getString(R.string.send_log_to),
                          "text/plain",
                          new String[] { "jeffharris@users.sourceforge.net" },
-                         "PasswdSafe log");
+                         "PasswdSafe log", act);
         } catch (Exception e) {
-            PasswdSafeUtil.dbginfo(TAG, e, "Error sharing log");
+            PasswdSafeUtil.showError("Error sharing", TAG, e, act);
         }
     }
 

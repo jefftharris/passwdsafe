@@ -7,18 +7,16 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
+import android.util.Log;
+
+import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.util.Pair;
 
 import org.pwsafe.lib.UUID;
 import org.pwsafe.lib.Util;
@@ -31,6 +29,7 @@ import org.pwsafe.lib.file.PwsField;
 import org.pwsafe.lib.file.PwsFieldTypeV2;
 import org.pwsafe.lib.file.PwsFieldTypeV3;
 import org.pwsafe.lib.file.PwsFile;
+import org.pwsafe.lib.file.PwsFileStorage;
 import org.pwsafe.lib.file.PwsFileV1;
 import org.pwsafe.lib.file.PwsFileV2;
 import org.pwsafe.lib.file.PwsFileV3;
@@ -49,16 +48,19 @@ import org.pwsafe.lib.file.PwsTimeField;
 import org.pwsafe.lib.file.PwsUUIDField;
 import org.pwsafe.lib.file.PwsUnknownField;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
-import android.util.Log;
-
-import com.jefftharris.passwdsafe.R;
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
-import com.jefftharris.passwdsafe.util.Pair;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @SuppressWarnings("SameParameterValue")
 public class PasswdFileData
@@ -108,30 +110,22 @@ public class PasswdFileData
         finishOpenFile();
     }
 
+    /**
+     * Save the file
+     */
     public void save(Context context)
-        throws IOException, ConcurrentModificationException
+            throws IOException, ConcurrentModificationException
     {
-        if (itsPwsFile != null) {
-            for (int idx = 0; idx < itsRecords.size(); ++idx) {
-                PwsRecord rec = itsRecords.get(idx);
-                if (rec.isModified()) {
-                    PasswdSafeUtil.dbginfo(TAG, "Updating idx: %d", idx);
-                    itsPwsFile.set(idx, rec);
-                    rec.resetModified();
-                }
-            }
+        doSave(new PasswdFileUri.SaveHelper(context), null, context);
+    }
 
-            setSaveHdrFields(context);
-
-            PwsStorage storage = itsPwsFile.getStorage();
-            try {
-                storage.setSaveHelper(new PasswdFileUri.SaveHelper(context));
-                itsPwsFile.save();
-                notifyObservers(this);
-            } finally {
-                storage.setSaveHelper(null);
-            }
-        }
+    /**
+     * Save the file to the given file name
+     */
+    public void saveAs(File file, Context context)
+            throws IOException, ConcurrentModificationException
+    {
+        doSave(null, new PwsFileStorage(file.getPath(), null), context);
     }
 
     public void close()
@@ -1258,6 +1252,45 @@ public class PasswdFileData
                                                   hdrPolicies);
     }
 
+    /**
+     * Implementation of saving the file or saving as another file
+     */
+    private void doSave(PwsStorage.SaveHelper saveHelper,
+                        PwsStorage saveAsStorage,
+                        Context context)
+            throws IOException, ConcurrentModificationException
+    {
+        if (itsPwsFile != null) {
+            for (int idx = 0; idx < itsRecords.size(); ++idx) {
+                PwsRecord rec = itsRecords.get(idx);
+                if (rec.isModified()) {
+                    PasswdSafeUtil.dbginfo(TAG, "Updating idx: %d", idx);
+                    itsPwsFile.set(idx, rec);
+                    rec.resetModified();
+                }
+            }
+
+            setSaveHdrFields(context);
+
+            PwsStorage storage = itsPwsFile.getStorage();
+            try {
+                if (saveHelper != null) {
+                    storage.setSaveHelper(saveHelper);
+                } else if (saveAsStorage != null) {
+                    itsPwsFile.setStorage(saveAsStorage);
+                }
+
+                itsPwsFile.save();
+                notifyObservers(this);
+            } finally {
+                if (saveHelper != null) {
+                    storage.setSaveHelper(null);
+                } else if (saveAsStorage != null) {
+                    itsPwsFile.setStorage(storage);
+                }
+            }
+        }
+    }
 
     private static int getHdrMinorVersion(PwsRecord rec)
     {
