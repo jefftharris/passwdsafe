@@ -124,7 +124,8 @@ public class GDriveProvider extends AbstractProvider
         }
 
         Bundle b = activityData.getExtras();
-        String accountName = b.getString(AccountManager.KEY_ACCOUNT_NAME);
+        String accountName = (b != null) ?
+                b.getString(AccountManager.KEY_ACCOUNT_NAME) : null;
         Log.i(TAG, "Selected account: " + accountName);
         if (TextUtils.isEmpty(accountName)) {
             return null;

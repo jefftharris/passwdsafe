@@ -108,7 +108,8 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
             }
 
             Bundle b = activityData.getExtras();
-            accountName = b.getString(AccountManager.KEY_ACCOUNT_NAME);
+            accountName = (b != null) ?
+                    b.getString(AccountManager.KEY_ACCOUNT_NAME) : null;
             Log.i(TAG, "Selected account: " + accountName);
             if (TextUtils.isEmpty(accountName)) {
                 accountName = null;
