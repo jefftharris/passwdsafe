@@ -152,9 +152,10 @@ public class PasswdSafeUtil
         showFatalMsg(null, msg, activity, false);
     }
 
-    public static void showFatalMsg(String msg,
-                                    Activity activity,
-                                    boolean copyTrace)
+    public static void showFatalMsg(
+            String msg,
+            Activity activity,
+            @SuppressWarnings("SameParameterValue") boolean copyTrace)
     {
         showFatalMsg(null, msg, activity, copyTrace);
     }
@@ -253,8 +254,11 @@ public class PasswdSafeUtil
     }
 
     /** Log a formatted debug message and exception at info level */
-    public static void dbginfo(String tag, Throwable t,
-                               String fmt, Object... args)
+    public static void dbginfo(
+            @SuppressWarnings("SameParameterValue") String tag,
+            Throwable t,
+            @SuppressWarnings("SameParameterValue") String fmt,
+            Object... args)
     {
         if (DEBUG) {
             Log.i(tag, String.format(fmt, args), t);
