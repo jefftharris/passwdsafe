@@ -9,6 +9,7 @@
 // SHA256 for PasswordSafe, based on LibTomCrypt by
 // Tom St Denis, tomstdenis@iahu.ca, http://libtomcrypt.org
 //-----------------------------------------------------------------------------
+#include <cstring>
 #include "sha256.h"
 
 //#define LTC_CLEAN_STACK
