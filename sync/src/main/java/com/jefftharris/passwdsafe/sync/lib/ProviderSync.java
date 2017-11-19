@@ -45,6 +45,7 @@ public class ProviderSync
     private static final Handler itsUIHandler =
             new Handler(Looper.getMainLooper());
     private static final Object itsLock = new Object();
+    private static final int SYNC_TIMEOUT_MINS = 1;
 
     private static final String TAG = "ProviderSync";
 
@@ -91,13 +92,13 @@ public class ProviderSync
 
             itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                                                "sync");
-            itsWakeLock.acquire();
+            itsWakeLock.acquire(TimeUnit.MINUTES.toMillis(SYNC_TIMEOUT_MINS));
             try {
                 FutureTask<Void> task = new FutureTask<>(sync, null);
                 try {
                     Thread t = new Thread(task);
                     t.start();
-                    task.get(60, TimeUnit.SECONDS);
+                    task.get(SYNC_TIMEOUT_MINS, TimeUnit.MINUTES);
                 } catch (Exception e) {
                     sync.setTaskException(e);
                     task.cancel(true);
@@ -263,7 +264,7 @@ public class ProviderSync
         @Override
         public void run()
         {
-            itsWakeLock.acquire();
+            itsWakeLock.acquire(TimeUnit.MINUTES.toMillis(SYNC_TIMEOUT_MINS));
             try {
                 sync();
             } finally {
