@@ -14,9 +14,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,6 +46,8 @@ import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.FileSharer;
+import com.jefftharris.passwdsafe.lib.ManagedTask;
+import com.jefftharris.passwdsafe.lib.ManagedTasks;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.ProgressFragment;
@@ -193,8 +195,8 @@ public class PasswdSafe extends AppCompatActivity
      * navigation drawer. */
     private PasswdSafeNavDrawerFragment itsNavDrawerFrag;
 
-    /** Currently running task */
-    private AbstractTask itsCurrTask = null;
+    /** Currently running tasks */
+    private final ManagedTasks itsTasks = new ManagedTasks();
 
     /** Used to store the last screen title */
     private CharSequence itsTitle;
@@ -388,10 +390,7 @@ public class PasswdSafe extends AppCompatActivity
     {
         super.onPause();
         itsIsResumed = false;
-        if (itsCurrTask != null) {
-            itsCurrTask.cancelTask();
-            itsCurrTask = null;
-        }
+        itsTasks.cancelTasks();
     }
 
     @Override
@@ -1088,8 +1087,7 @@ public class PasswdSafe extends AppCompatActivity
             PasswdFileUri uri = itsFileDataFrag.useFileData(
                     PasswdFileData::getUri);
             if (uri != null) {
-                itsCurrTask = new DeleteTask(uri, this);
-                itsCurrTask.execute();
+                itsTasks.startTask(new DeleteTask(uri, this));
             }
             break;
         }
@@ -1220,8 +1218,7 @@ public class PasswdSafe extends AppCompatActivity
 
         PasswdSafeUtil.dbginfo(TAG, "share: " + fileId);
         try {
-            itsCurrTask = new ShareTask(fileId, fileName, this);
-            itsCurrTask.execute();
+            itsTasks.startTask(new ShareTask(fileId, fileName, this));
         } catch (Exception e) {
             PasswdSafeUtil.showError("Error sharing", TAG, e, this);
         }
@@ -1235,20 +1232,61 @@ public class PasswdSafe extends AppCompatActivity
                             PasswdLocation newLocation,
                             Runnable postSaveRun)
     {
-        FinishSaveRunnable saveRun =
-                new FinishSaveRunnable(task, popTag, newLocation, postSaveRun);
-
-        if (saveRun.isSave()) {
+        FinishSaveInfo saveInfo = new FinishSaveInfo(task, popTag,
+                                                     newLocation, postSaveRun);
+        if (saveInfo.itsIsSave) {
             String fileId = itsFileDataFrag.useFileData(
                     fileData -> fileData.getUri().getIdentifier(PasswdSafe.this,
                                                                 false));
             if (fileId == null) {
                 fileId = "";
             }
-            itsCurrTask = new SaveTask(fileId, saveRun, this);
-            itsCurrTask.execute();
+            itsTasks.startTask(new SaveTask(fileId, saveInfo, this));
         } else {
-            saveRun.run();
+            editFinished(saveInfo);
+        }
+    }
+
+    /**
+     * Handle when an edit is finished
+     */
+    private void editFinished(FinishSaveInfo saveState)
+    {
+        if (saveState.itsIsSave) {
+            itsFileDataFrag.refreshFileData();
+        }
+
+        FragmentManager fragMgr = getSupportFragmentManager();
+        if (saveState.itsIsPopBack) {
+            fragMgr.popBackStackImmediate();
+
+            if (saveState.itsPopTag != null) {
+                //noinspection StatementWithEmptyBody
+                while(fragMgr.popBackStackImmediate(
+                        saveState.itsPopTag,
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
+                    // Pop all fragments up to the first use of the given tag
+                }
+            }
+        }
+
+        if (saveState.itsIsAddRecord) {
+            if (itsIsTwoPane) {
+                changeOpenView(saveState.itsNewLocation, false);
+            } else {
+                Fragment contentsFrag = fragMgr.findFragmentById(R.id.content);
+                if (contentsFrag instanceof PasswdSafeListFragment) {
+                    ((PasswdSafeListFragment)contentsFrag).updateSelection(
+                            saveState.itsNewLocation);
+                }
+            }
+        } else if (saveState.shouldResetLoc(itsFileDataFrag.getFileDataView(),
+                                            itsLocation)) {
+            changeOpenView(new PasswdLocation(), true);
+        }
+
+        if (saveState.itsPostSaveRun != null) {
+            saveState.itsPostSaveRun.run();
         }
     }
 
@@ -1599,9 +1637,9 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     /**
-     * Runnable for finishing the save of the file
+     * Information for finishing the save of the file
      */
-    private final class FinishSaveRunnable implements Runnable
+    private static final class FinishSaveInfo
     {
         private boolean itsIsAddRecord;
         private boolean itsIsSave;
@@ -1613,10 +1651,10 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        public FinishSaveRunnable(EditFinish task,
-                                  String popTag,
-                                  PasswdLocation newLocation,
-                                  Runnable postSaveRun)
+        public FinishSaveInfo(EditFinish task,
+                              String popTag,
+                              PasswdLocation newLocation,
+                              Runnable postSaveRun)
         {
             switch (task) {
             case ADD_RECORD: {
@@ -1653,94 +1691,44 @@ public class PasswdSafe extends AppCompatActivity
         }
 
         /**
-         * Get whether to save
-         */
-        public boolean isSave()
-        {
-            return itsIsSave;
-        }
-
-        @Override
-        public void run()
-        {
-            if (itsIsSave) {
-                itsFileDataFrag.refreshFileData();
-            }
-            boolean resetLoc = shouldResetLoc();
-
-            FragmentManager fragMgr = getSupportFragmentManager();
-            if (itsIsPopBack) {
-                fragMgr.popBackStackImmediate();
-
-                if (itsPopTag != null) {
-                    //noinspection StatementWithEmptyBody
-                    while(fragMgr.popBackStackImmediate(
-                            itsPopTag,
-                            FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
-                        // Pop all fragments up to the first use of the
-                        // given tag
-                    }
-                }
-            }
-
-            if (itsIsAddRecord) {
-                if (itsIsTwoPane) {
-                    changeOpenView(itsNewLocation, false);
-                } else {
-                    Fragment contentsFrag =
-                            fragMgr.findFragmentById(R.id.content);
-                    if (contentsFrag instanceof PasswdSafeListFragment) {
-                        ((PasswdSafeListFragment)contentsFrag)
-                                .updateSelection(itsNewLocation);
-                    }
-                }
-            } else if (resetLoc) {
-                changeOpenView(new PasswdLocation(), true);
-            }
-
-            if (itsPostSaveRun != null) {
-                itsPostSaveRun.run();
-            }
-        }
-
-        /**
          * Should the location be reset
          */
-        private boolean shouldResetLoc()
+        public boolean shouldResetLoc(PasswdFileDataView dataView,
+                                      PasswdLocation currLocation)
         {
+            //noinspection SimplifiableIfStatement
             if (!itsIsSave || (itsNewLocation == null)) {
                 return false;
             }
 
-            PasswdFileDataView dataView = itsFileDataFrag.getFileDataView();
-            //noinspection SimplifiableIfStatement
-            if (!dataView.isGroupingRecords()) {
-                return false;
-            } else {
-                return !itsNewLocation.equalGroups(itsLocation) ||
-                       !dataView.hasGroup(itsNewLocation.getRecordGroup());
-            }
+            return dataView.isGroupingRecords() &&
+                   (!itsNewLocation.equalGroups(currLocation) ||
+                    !dataView.hasGroup(itsNewLocation.getRecordGroup()));
         }
     }
 
     /**
      * Task to save a file in the background
      */
-    private final class SaveTask extends AbstractTask
+    private static final class SaveTask extends AbstractTask
     {
-        private final Runnable itsPostSaveRun;
+        private final @NonNull FinishSaveInfo itsSaveInfo;
+        private final PasswdSafeFileDataFragment itsFileDataFrag;
 
         /**
          * Constructor
          */
-        public SaveTask(String fileId, Runnable postSaveRun, Context ctx)
+        public SaveTask(String fileId,
+                        @NonNull FinishSaveInfo saveInfo,
+                        PasswdSafe act)
         {
-            super(ctx.getString(R.string.saving_file, fileId), ctx);
-            itsPostSaveRun = postSaveRun;
+            super(act.getString(R.string.saving_file, fileId), act);
+            itsSaveInfo = saveInfo;
+            itsFileDataFrag = act.itsFileDataFrag;
         }
 
         @Override
-        protected final void handleDoInBackground() throws Exception
+        protected Boolean doInBackground() throws Throwable
         {
             Exception e = itsFileDataFrag.useFileData(fileData -> {
                 try {
@@ -1754,52 +1742,51 @@ public class PasswdSafe extends AppCompatActivity
             if (e != null) {
                 throw e;
             }
+            return true;
         }
 
         @Override
-        protected final void handlePostExecute()
+        protected void onTaskFinished(Boolean result, Throwable error,
+                                      @NonNull PasswdSafe act)
         {
-            if (itsPostSaveRun != null) {
-                itsPostSaveRun.run();
+            super.onTaskFinished(result, error, act);
+            if (result != null) {
+                act.editFinished(itsSaveInfo);
+            } else if (error != null) {
+                String msg = error.toString();
+                if ((error instanceof IOException) &&
+                    (ApiCompat.SDK_VERSION >= ApiCompat.SDK_KITKAT)) {
+                    msg = act.getString(R.string.kitkat_sdcard_warning, msg);
+                }
+                PasswdSafeUtil.showFatalMsg(error, msg, act);
             }
-        }
-
-        @Override
-        protected final String getExceptionMsg(Exception e)
-        {
-            String msg = super.getExceptionMsg(e);
-            if ((e instanceof IOException) &&
-                (ApiCompat.SDK_VERSION >= ApiCompat.SDK_KITKAT)) {
-                msg = getContext().getString(R.string.kitkat_sdcard_warning,
-                                             msg);
-            }
-            return msg;
         }
     }
 
     /**
      * Task to share a file
      */
-    private final class ShareTask extends AbstractTask
+    private static final class ShareTask extends AbstractTask
     {
         private final String itsFileId;
         private final FileSharer itsSharer;
+        private final PasswdSafeFileDataFragment itsFileDataFrag;
 
         /**
          * Constructor
          */
-        public ShareTask(String fileId, String fileName, Context ctx)
+        public ShareTask(String fileId, String fileName, PasswdSafe act)
                 throws IOException
         {
-            super(getString(R.string.sharing_file, fileId), ctx);
+            super(act.getString(R.string.sharing_file, fileId), act);
             itsFileId = fileId;
-
             itsSharer = new FileSharer(fileName, getContext(),
                                        PasswdSafeUtil.PACKAGE);
+            itsFileDataFrag = act.itsFileDataFrag;
         }
 
         @Override
-        protected final void handleDoInBackground() throws Exception
+        protected Boolean doInBackground() throws Throwable
         {
             Exception e = itsFileDataFrag.useFileData((fileData) -> {
                 try {
@@ -1813,17 +1800,29 @@ public class PasswdSafe extends AppCompatActivity
             if (e != null) {
                 throw e;
             }
+            return true;
         }
 
         @Override
-        protected final void handlePostExecute()
+        protected void onTaskFinished(Boolean result, Throwable error,
+                                      @NonNull PasswdSafe act)
         {
-            try {
-                itsSharer.share(getString(R.string.sharing_file, itsFileId),
-                                PasswdSafeUtil.MIME_TYPE_PSAFE3, null,
-                                itsFileId, PasswdSafe.this);
-            } catch (Exception e) {
-                PasswdSafeUtil.showError("Error sharing", TAG, e, getContext());
+            super.onTaskFinished(result, error, act);
+            if (result != null) {
+                try {
+                    itsSharer.share(
+                            act.getString(R.string.sharing_file, itsFileId),
+                            PasswdSafeUtil.MIME_TYPE_PSAFE3, null,
+                            itsFileId, act);
+                } catch (Exception e) {
+                    error = e;
+                }
+            }
+            // TODO: ensure show error called with activity context
+            // TODO: i18n errors
+            if (error != null) {
+                PasswdSafeUtil.showError("Error sharing: " + error.getMessage(),
+                                         TAG, error, act);
             }
         }
     }
@@ -1831,138 +1830,73 @@ public class PasswdSafe extends AppCompatActivity
     /**
      * Task to delete a file in the background
      */
-    private final class DeleteTask extends AbstractTask
+    private static final class DeleteTask extends AbstractTask
     {
         private final PasswdFileUri itsFileUri;
 
         /**
          * Constructor
          */
-        public DeleteTask(PasswdFileUri uri, Context ctx)
+        public DeleteTask(PasswdFileUri uri, PasswdSafe act)
         {
-            super(ctx.getString(R.string.delete_file), ctx);
+            super(act.getString(R.string.delete_file), act);
             itsFileUri = uri;
         }
 
         @Override
-        protected void handleDoInBackground() throws Exception
+        protected Boolean doInBackground() throws Throwable
         {
             Context ctx = getContext();
             RecentFilesDb recentFilesDb = new RecentFilesDb(ctx);
             recentFilesDb.removeUri(itsFileUri.getUri());
 
             itsFileUri.delete(ctx);
+            return true;
         }
 
         @Override
-        protected void handlePostExecute()
+        protected void onTaskFinished(Boolean result, Throwable error,
+                                      @NonNull PasswdSafe act)
         {
-            PasswdSafe.this.finish();
+            super.onTaskFinished(result, error, act);
+            if (result != null) {
+                act.finish();
+            } else if (error != null) {
+                PasswdSafeUtil.showFatalMsg(error, "Error deleting file", act);
+            }
         }
     }
 
     /**
      * Abstract task for background operations
      */
-    private abstract class AbstractTask
+    private static abstract class AbstractTask
+            extends ManagedTask<Boolean, PasswdSafe>
     {
-        private final Context itsContext;
         private final ProgressFragment itsProgressFrag;
-        private final AsyncTask<Void, Void, Object> itsTask =
-                new AsyncTask<Void, Void, Object>()
-                {
-                    @Override
-                    protected void onPreExecute()
-                    {
-                        itsProgressFrag.show(getSupportFragmentManager(), null);
-                    }
-
-                    @Override
-                    protected void onPostExecute(Object result)
-                    {
-                        handlePostExecute(result);
-                    }
-
-                    @Override
-                    protected Object doInBackground(Void... params)
-                    {
-                        try {
-                            handleDoInBackground();
-                            return new Object();
-                        } catch (Exception e) {
-                            return e;
-                        }
-                    }
-                };
 
         /**
          * Constructor
          */
-        protected AbstractTask(String msg, Context ctx) 
+        protected AbstractTask(String msg, PasswdSafe act)
         {
-            itsContext = ctx.getApplicationContext();
+            super(act, act);
             itsProgressFrag = ProgressFragment.newInstance(msg);
         }
 
-        /**
-         * Execute the task
-         */
-        public final void execute()
+        @Override @CallSuper
+        protected void onTaskStarted(@NonNull PasswdSafe act)
         {
-            itsTask.execute();
+            itsProgressFrag.show(act.getSupportFragmentManager(), null);
         }
 
-        /**
-         * Cancel the save task
-         */
-        public final void cancelTask()
+        @Override @CallSuper
+        protected void onTaskFinished(Boolean result,
+                                      Throwable error,
+                                      @NonNull PasswdSafe act)
         {
-            itsTask.cancel(false);
-            handlePostExecute(null);
-        }
-
-        /**
-         * Handle the result of executing the task
-         */
-        private void handlePostExecute(Object result)
-        {
+            act.itsTasks.taskFinished(this);
             itsProgressFrag.dismiss();
-            itsCurrTask = null;
-
-            if (result instanceof Exception) {
-                Exception e = (Exception)result;
-                String msg = getExceptionMsg(e);
-                PasswdSafeUtil.showFatalMsg(e, msg, PasswdSafe.this, true);
-            } else if (result != null) {
-                handlePostExecute();
-            }
-        }
-
-        /**
-         * Execute the task in a background thread
-         */
-        protected abstract void handleDoInBackground() throws Exception;
-
-        /**
-         * Execute a task in the main thread after the background operation
-         * completes successfully
-         */
-        protected abstract void handlePostExecute();
-
-        /**
-         * Get a message for the exception
-         */
-        protected String getExceptionMsg(Exception e)
-        {
-            return e.toString();
-        }
-
-        /**
-         * Get a context
-         */
-        protected final Context getContext()
-        {
-            return itsContext;
         }
     }
 }
