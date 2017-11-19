@@ -10,12 +10,12 @@ import java.text.SimpleDateFormat
 apply plugin: 'com.android.library'
 
 static def hgId() {
-    return 'hg id'.execute().text.trim();
+    return 'hg id'.execute().text.trim()
 }
 
 static def buildTime() {
-    def df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z");
-    return df.format(new Date());
+    def df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z")
+    return df.format(new Date())
 }
 
 android {
