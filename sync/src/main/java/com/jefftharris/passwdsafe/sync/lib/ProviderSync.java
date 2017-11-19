@@ -307,10 +307,16 @@ public class ProviderSync
             SyncConnectivityResult connResult = null;
             ConnectivityManager connMgr = (ConnectivityManager)
                     itsContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
-            addTrace("got network info");
-            boolean online = (netInfo != null) && netInfo.isConnected();
-            addTrace("got connected");
+            boolean online;
+            if (connMgr != null) {
+                NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
+                addTrace("got network info");
+                online = (netInfo != null) && netInfo.isConnected();
+                addTrace("got connected");
+            } else {
+                online = false;
+                itsLogrec.addFailure(new NullPointerException("connMgr"));
+            }
             if (online) {
                 try {
                     connResult =
