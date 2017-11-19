@@ -12,14 +12,12 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 
-import java.lang.ref.WeakReference;
-
 /**
  * An async task that is manageable from fragments or activities
  */
 public abstract class ManagedTask<ResultT, FragT>
 {
-    private final WeakReference<FragT> itsFrag;
+    private final ManagedRef<FragT> itsFrag;
     private final Context itsContext;
     private final Task<ResultT, FragT> itsTask;
 
@@ -28,7 +26,7 @@ public abstract class ManagedTask<ResultT, FragT>
      */
     public ManagedTask(FragT frag, Context context)
     {
-        itsFrag = new WeakReference<>(frag);
+        itsFrag = new ManagedRef<>(frag);
         itsContext = context.getApplicationContext();
         itsTask = new Task<>(this);
     }
@@ -91,7 +89,6 @@ public abstract class ManagedTask<ResultT, FragT>
         FragT frag = itsFrag.get();
         if (frag != null) {
             onTaskFinished(result, error, frag);
-            // TODO: check for frag added or activity running
         }
     }
 
