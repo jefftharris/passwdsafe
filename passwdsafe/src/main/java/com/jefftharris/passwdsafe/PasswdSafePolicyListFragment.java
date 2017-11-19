@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.jefftharris.passwdsafe.file.HeaderPasswdPolicies;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -262,7 +263,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
                     policyRename.get());
             return null;
         });
-        itsListener.finishPolicyEdit(this::refresh);
+
+        itsListener.finishPolicyEdit(new PolicyEditFinisher(this));
     }
 
     /**
@@ -467,6 +469,31 @@ public class PasswdSafePolicyListFragment extends ListFragment
                 }
                 }
                 return false;
+            }
+        }
+    }
+
+    /**
+     * Runnable for finishing the policy edit after a save
+     */
+    private static class PolicyEditFinisher implements Runnable
+    {
+        private final ManagedRef<PasswdSafePolicyListFragment> itsFrag;
+
+        /**
+         * Constructor
+         */
+        private PolicyEditFinisher(PasswdSafePolicyListFragment frag)
+        {
+            itsFrag = new ManagedRef<>(frag);
+        }
+
+        @Override
+        public void run()
+        {
+            PasswdSafePolicyListFragment frag = itsFrag.get();
+            if (frag != null) {
+                frag.refresh();
             }
         }
     }
