@@ -84,6 +84,11 @@ public class ProviderSync
 
             PowerManager powerMgr = (PowerManager)
                     itsContext.getSystemService(Context.POWER_SERVICE);
+            if (powerMgr == null) {
+                Log.e(TAG, "Null power manager");
+                return;
+            }
+
             itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                                                "sync");
             itsWakeLock.acquire();
