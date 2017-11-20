@@ -1366,23 +1366,27 @@ public class PasswdFileData
     /** Notify observer of file changes */
     private static void notifyObservers(PasswdFileData fileData)
     {
-        AsyncTask<PasswdFileData, Void, PasswdFileData> notifyTask =
-            new AsyncTask<PasswdFileData, Void, PasswdFileData>()
-            {
-                @Override
-                protected PasswdFileData doInBackground(PasswdFileData... params)
-                {
-                    return params[0];
-                }
+        new NotifyTask().execute(fileData);
+    }
 
-                @Override
-                protected void onPostExecute(PasswdFileData fileData)
-                {
-                    for (PasswdFileDataObserver obs: itsObservers) {
-                        obs.passwdFileDataChanged(fileData);
-                    }
-                }
-            };
-        notifyTask.execute(fileData);
+    /**
+     * Async task to notify observers of a file change
+     */
+    private static class NotifyTask
+            extends AsyncTask<PasswdFileData, Void, PasswdFileData>
+    {
+        @Override
+        protected PasswdFileData doInBackground(PasswdFileData... params)
+        {
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(PasswdFileData fileData)
+        {
+            for (PasswdFileDataObserver obs: itsObservers) {
+                obs.passwdFileDataChanged(fileData);
+            }
+        }
     }
 }
