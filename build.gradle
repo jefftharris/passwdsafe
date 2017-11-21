@@ -52,5 +52,9 @@ tasks.addRule("Pattern: hgpush_<ID>") { String taskName ->
 task hgpush_all {
     description = "Mercurial push to common repositories"
     group = "other"
-    dependsOn << ["default", "win", "bb", "sf"].collect {"hgpush_$it"}
+
+    dependsOn << "hg paths".execute().text.split("\n").collect({ line ->
+        def path = line.split(" ")[0]
+        "hgpush_$path"
+    })
 }
