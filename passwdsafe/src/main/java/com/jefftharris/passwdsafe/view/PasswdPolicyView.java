@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 
@@ -166,7 +167,8 @@ public class PasswdPolicyView extends LinearLayout
             try {
                 passwd = itsPolicy.generate();
             } catch (Exception e) {
-                PasswdSafeUtil.showErrorMsg(e.toString(), getContext());
+                PasswdSafeUtil.showErrorMsg(e.toString(),
+                                            new ActContext(getContext()));
             }
         }
         itsGeneratedPasswd.setText(passwd);

@@ -44,6 +44,7 @@ import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.FileSharer;
 import com.jefftharris.passwdsafe.lib.ManagedTask;
@@ -1101,7 +1102,8 @@ public class PasswdSafe extends AppCompatActivity
             Boolean removed = itsFileDataFrag.useFileData(fileData -> {
                 PwsRecord rec = fileData.getRecord(location.getRecord());
                 if (rec != null) {
-                    return fileData.removeRecord(rec, PasswdSafe.this);
+                    return fileData.removeRecord(
+                            rec, new ActContext(PasswdSafe.this));
                 }
                 return null;
             });
@@ -1120,8 +1122,8 @@ public class PasswdSafe extends AppCompatActivity
                 startActivity(
                         new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS));
             } catch (ActivityNotFoundException e) {
-                PasswdSafeUtil.showError("Keyboard settings not found", TAG,
-                                         e, this);
+                PasswdSafeUtil.showError("Keyboard settings not found", TAG, e,
+                                         new ActContext(this));
             }
             break;
         }
@@ -1143,9 +1145,8 @@ public class PasswdSafe extends AppCompatActivity
         try {
             filter = fileView.createRecordFilter(query);
         } catch (Exception e) {
-            String msg = e.getMessage();
-            Log.e(TAG, msg, e);
-            PasswdSafeUtil.showErrorMsg(msg, this);
+            PasswdSafeUtil.showError(e.getMessage(), TAG, e,
+                                     new ActContext(this));
             return;
         }
         setRecordFilter(filter);
@@ -1220,7 +1221,8 @@ public class PasswdSafe extends AppCompatActivity
         try {
             itsTasks.startTask(new ShareTask(fileId, fileName, this));
         } catch (Exception e) {
-            PasswdSafeUtil.showError("Error sharing", TAG, e, this);
+            PasswdSafeUtil.showError("Error sharing", TAG, e,
+                                     new ActContext(this));
         }
     }
 
@@ -1818,11 +1820,9 @@ public class PasswdSafe extends AppCompatActivity
                     error = e;
                 }
             }
-            // TODO: ensure show error called with activity context
-            // TODO: i18n errors
             if (error != null) {
                 PasswdSafeUtil.showError("Error sharing: " + error.getMessage(),
-                                         TAG, error, act);
+                                         TAG, error, new ActContext(act));
             }
         }
     }

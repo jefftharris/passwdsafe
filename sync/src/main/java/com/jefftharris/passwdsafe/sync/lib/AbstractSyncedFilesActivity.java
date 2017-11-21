@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -242,9 +243,8 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
                     } else {
                         String msg = "Error updating sync for " +
                                      file.getRemoteId();
-                        Log.e(TAG, msg, error);
-                        PasswdSafeUtil.showErrorMsg(
-                                msg, AbstractSyncedFilesActivity.this);
+                        PasswdSafeUtil.showError(msg, TAG, error,
+                                                 new ActContext(this));
                     }
                     getContentResolver().notifyChange(itsFilesUri, null);
                     Provider provider = ProviderFactory.getProvider(

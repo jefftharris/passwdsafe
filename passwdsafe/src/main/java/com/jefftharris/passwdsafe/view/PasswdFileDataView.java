@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 
 import com.jefftharris.passwdsafe.Preferences;
@@ -22,6 +21,7 @@ import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.file.RecordSimilarFields;
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
 
@@ -67,6 +67,7 @@ public final class PasswdFileDataView
     private PasswdExpiryNotifPref itsExpiryNotifPref =
             Preferences.PREF_PASSWD_EXPIRY_NOTIF_DEF;
     private Context itsContext;
+    private ActContext itsActContext;
     private int itsFolderIcon;
     private int itsRecordIcon;
 
@@ -86,6 +87,7 @@ public final class PasswdFileDataView
     public void onAttach(Context ctx, SharedPreferences prefs)
     {
         itsContext = ctx.getApplicationContext();
+        itsActContext = new ActContext(ctx);
         itsRecordOptions = new PasswdRecordDisplayOptions(prefs);
         itsIsSearchCaseSensitive =
                 Preferences.getSearchCaseSensitivePref(prefs);
@@ -106,6 +108,7 @@ public final class PasswdFileDataView
     public void onDetach()
     {
         itsContext = null;
+        itsActContext = null;
     }
 
     /**
@@ -163,9 +166,7 @@ public final class PasswdFileDataView
                         itsFilter.get().toString(itsContext));
                 setRecordFilter(filter);
             } catch (Exception e) {
-                String msg = e.getMessage();
-                Log.e(TAG, msg, e);
-                PasswdSafeUtil.showErrorMsg(msg, itsContext);
+                PasswdSafeUtil.showError(e.getMessage(), TAG, e, itsActContext);
             }
         }
 

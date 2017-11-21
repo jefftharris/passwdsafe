@@ -208,11 +208,18 @@ public class PasswdSafeUtil
         dlg.show();
     }
 
-    public static void showErrorMsg(String msg, Context context)
+    /**
+     * Show an error message
+     */
+    public static void showErrorMsg(String msg, ActContext context)
     {
-        AlertDialog.Builder dlg = new AlertDialog.Builder(context)
-                .setTitle(PasswdSafeUtil.getAppTitle(context) + " - " +
-                          context.getString(R.string.error))
+        Context ctx = context.getContext();
+        if (ctx == null) {
+            return;
+        }
+        AlertDialog.Builder dlg = new AlertDialog.Builder(ctx)
+                .setTitle(PasswdSafeUtil.getAppTitle(ctx) + " - " +
+                          ctx.getString(R.string.error))
                 .setMessage(msg)
                 .setCancelable(true)
                 .setPositiveButton(R.string.close, null);
@@ -225,7 +232,7 @@ public class PasswdSafeUtil
     public static void showError(String msg,
                                  String logTag,
                                  Throwable error,
-                                 Context context)
+                                 ActContext context)
     {
         Log.e(logTag, msg, error);
         showErrorMsg(msg, context);

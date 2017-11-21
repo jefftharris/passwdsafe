@@ -15,6 +15,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
 
@@ -174,7 +175,7 @@ public class PasswdFileData
         }
     }
 
-    public final boolean removeRecord(PwsRecord rec, Context context)
+    public final boolean removeRecord(PwsRecord rec, ActContext context)
     {
         int errMsg = 0;
         do {
@@ -214,9 +215,12 @@ public class PasswdFileData
         } while(false);
 
         if (errMsg != 0) {
-            String msg = context.getString(R.string.cannot_delete_record,
-                                           context.getString(errMsg));
-            PasswdSafeUtil.showErrorMsg(msg, context);
+            Context ctx = context.getContext();
+            if (ctx != null) {
+                String msg = ctx.getString(R.string.cannot_delete_record,
+                                           ctx.getString(errMsg));
+                PasswdSafeUtil.showErrorMsg(msg, context);
+            }
             return false;
         }
         return true;

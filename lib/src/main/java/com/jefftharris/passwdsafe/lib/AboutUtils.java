@@ -175,7 +175,8 @@ public class AboutUtils
                          new String[] { "jeffharris@users.sourceforge.net" },
                          "PasswdSafe log", act);
         } catch (Exception e) {
-            PasswdSafeUtil.showError("Error sharing", TAG, e, act);
+            PasswdSafeUtil.showError("Error sharing", TAG, e,
+                                     new ActContext(act));
         }
     }
 

@@ -36,6 +36,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
@@ -109,8 +110,7 @@ public class GDriveProvider extends AbstractProvider
         } catch (ActivityNotFoundException e) {
             String msg = itsContext.getString(
                     R.string.google_acct_not_available);
-            Log.e(TAG, msg, e);
-            PasswdSafeUtil.showErrorMsg(msg, activity);
+            PasswdSafeUtil.showError(msg, TAG, e, new ActContext(activity));
         }
     }
 
