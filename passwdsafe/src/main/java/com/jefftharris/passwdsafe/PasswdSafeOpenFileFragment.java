@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -687,7 +688,8 @@ public class PasswdSafeOpenFileFragment
                     String msg = getString(
                             R.string.password_save_canceled_key_error,
                             result.itsKeygenError.getLocalizedMessage());
-                    PasswdSafeUtil.showErrorMsg(msg, getContext());
+                    PasswdSafeUtil.showErrorMsg(msg,
+                                                new ActContext(getContext()));
                     break;
                 }
 

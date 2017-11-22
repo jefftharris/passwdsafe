@@ -267,7 +267,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
          */
         protected BackgroundTask(FragT frag)
         {
-            super(frag);
+            super(frag, frag.getContext());
         }
 
         @Override @CallSuper

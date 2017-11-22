@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
@@ -317,7 +318,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
             passwd = policy.generate();
         } catch (Exception e) {
             PasswdSafeUtil.showErrorMsg(e.toString(),
-                                        itsView.getContext());
+                                        new ActContext(itsView.getContext()));
         }
         itsGeneratedPasswd.setText(passwd);
     }

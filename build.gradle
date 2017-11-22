@@ -14,7 +14,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -30,4 +30,31 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+// Task to push to common repositories
+tasks.addRule("Pattern: hgpush_<ID>") { String taskName ->
+    if (taskName.startsWith("hgpush_")) {
+        task(taskName, type:Exec) {
+            executable = "hg"
+            args = ["push", taskName - "hgpush_"]
+            ignoreExitValue = true
+            doLast {
+                def rc = execResult.getExitValue()
+                if ((rc != 0) && (rc != 1)) {
+                    execResult.assertNormalExitValue()
+                }
+            }
+        }
+    }
+}
+
+task hgpush_all {
+    description = "Mercurial push to common repositories"
+    group = "other"
+
+    dependsOn << "hg paths".execute().text.split("\n").collect({ line ->
+        def path = line.split(" ")[0]
+        "hgpush_$path"
+    })
 }

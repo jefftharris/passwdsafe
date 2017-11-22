@@ -10,27 +10,24 @@ package com.jefftharris.passwdsafe.lib;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
-
-import java.lang.ref.WeakReference;
 
 /**
  * An async task that is manageable from fragments or activities
  */
-public abstract class ManagedTask<ResultT, FragT extends Fragment>
+public abstract class ManagedTask<ResultT, FragT>
 {
-    private final WeakReference<FragT> itsFrag;
+    private final ManagedRef<FragT> itsFrag;
     private final Context itsContext;
     private final Task<ResultT, FragT> itsTask;
 
     /**
      * Constructor
      */
-    public ManagedTask(FragT frag)
+    public ManagedTask(FragT frag, Context context)
     {
-        itsFrag = new WeakReference<>(frag);
-        itsContext = frag.getContext().getApplicationContext();
+        itsFrag = new ManagedRef<>(frag);
+        itsContext = context.getApplicationContext();
         itsTask = new Task<>(this);
     }
 
@@ -98,7 +95,7 @@ public abstract class ManagedTask<ResultT, FragT extends Fragment>
     /**
      * Background async task
      */
-    private static class Task<ResultT, FragT extends Fragment>
+    private static class Task<ResultT, FragT>
             extends AsyncTask<Void, Void, Pair<ResultT, Throwable>>
     {
         private final ManagedTask<ResultT, FragT> itsTask;
