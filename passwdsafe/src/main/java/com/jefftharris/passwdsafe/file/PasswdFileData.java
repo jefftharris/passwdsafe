@@ -117,7 +117,7 @@ public class PasswdFileData
     public void save(Context context)
             throws IOException, ConcurrentModificationException
     {
-        doSave(new PasswdFileUri.SaveHelper(context), null, context);
+        doSave(new PasswdFileSaveHelper(context), null, context);
     }
 
     /**

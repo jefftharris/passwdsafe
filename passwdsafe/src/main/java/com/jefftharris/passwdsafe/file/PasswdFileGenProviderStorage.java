@@ -42,8 +42,8 @@ public class PasswdFileGenProviderStorage extends PwsStreamStorage
         FileOutputStream fos = null;
         try {
             try {
-                PasswdFileUri.SaveHelper helper =
-                        (PasswdFileUri.SaveHelper)getSaveHelper();
+                PasswdFileSaveHelper helper =
+                        (PasswdFileSaveHelper)getSaveHelper();
                 Context ctx = helper.getContext();
 
                 pfd = ctx.getContentResolver().openFileDescriptor(itsUri, "w");

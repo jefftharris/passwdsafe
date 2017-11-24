@@ -12,7 +12,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -25,13 +24,11 @@ import android.support.v4.os.EnvironmentCompat;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
-import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.ProviderType;
-import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.util.Pair;
 
 import org.pwsafe.lib.exception.EndOfFileException;
@@ -48,12 +45,6 @@ import org.pwsafe.lib.file.PwsStreamStorage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * The PasswdFileUri class encapsulates a URI to a password file
@@ -764,97 +755,6 @@ public class PasswdFileUri implements Parcelable
         } finally {
             if (fileCursor != null) {
                 fileCursor.close();
-            }
-        }
-    }
-
-
-    /** A PwsStorage save helper for files */
-    public static class SaveHelper implements PwsStorage.SaveHelper
-    {
-        private final Context itsContext;
-
-        public SaveHelper(Context context)
-        {
-            itsContext = context;
-        }
-
-        /** Get the save context */
-        public Context getContext()
-        {
-            return itsContext;
-        }
-
-        /* (non-Javadoc)
-         * @see org.pwsafe.lib.file.PwsStorage.SaveHelper#getSaveFileName(java.io.File, boolean)
-         */
-        @Override
-        public String getSaveFileName(File file, boolean isV3)
-        {
-            String name = file.getName();
-            Pattern pat = Pattern.compile("^(.*)_\\d{8}_\\d{6}\\.ibak$");
-            Matcher match = pat.matcher(name);
-            //noinspection ConstantConditions
-            if ((match != null) && match.matches()) {
-                name = match.group(1);
-                if (isV3) {
-                    name += ".psafe3";
-                } else {
-                    name += ".dat";
-                }
-            }
-            return name;
-        }
-
-        /* (non-Javadoc)
-         * @see org.pwsafe.lib.file.PwsStorage.SaveHelper#createBackupFile(java.io.File, java.io.File)
-         */
-        @Override
-        public void createBackupFile(File fromFile, File toFile)
-                throws IOException
-        {
-            SharedPreferences prefs = Preferences.getSharedPrefs(itsContext);
-            FileBackupPref backupPref = Preferences.getFileBackupPref(prefs);
-
-            File dir = toFile.getParentFile();
-            String fileName = toFile.getName();
-            int dotpos = fileName.lastIndexOf('.');
-            if (dotpos != -1) {
-                fileName = fileName.substring(0, dotpos);
-            }
-
-            final Pattern pat = Pattern.compile(
-                    "^" + Pattern.quote(fileName) + "_\\d{8}_\\d{6}\\.ibak$");
-            File[] backupFiles = dir.listFiles(
-                    f -> f.isFile() && pat.matcher(f.getName()).matches());
-            if (backupFiles != null) {
-                Arrays.sort(backupFiles);
-
-                int numBackups = backupPref.getNumBackups();
-                if (numBackups > 0) {
-                    --numBackups;
-                }
-                for (int i = 0, numFiles = backupFiles.length;
-                        numFiles > numBackups; ++i, --numFiles) {
-                    if (!backupFiles[i].equals(fromFile)) {
-                        if (!backupFiles[i].delete()) {
-                            Log.e(TAG,
-                                  "Error removing backup: " + backupFiles[i]);
-                        }
-                    }
-                }
-            }
-
-            if (backupPref != FileBackupPref.BACKUP_NONE) {
-                SimpleDateFormat bakTime =
-                        new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
-                String bakName =
-                        fileName + "_" + bakTime.format(new Date()) + ".ibak";
-                File bakFile = new File(dir, bakName);
-                if (!toFile.renameTo(bakFile)) {
-                    throw new IOException("Can not create backup file: " +
-                                          bakFile);
-                }
             }
         }
     }

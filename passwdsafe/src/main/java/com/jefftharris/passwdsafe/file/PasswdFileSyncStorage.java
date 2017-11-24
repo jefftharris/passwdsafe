@@ -45,8 +45,8 @@ public final class PasswdFileSyncStorage extends PwsStreamStorage
     {
         File file = null;
         try {
-            PasswdFileUri.SaveHelper helper =
-                    (PasswdFileUri.SaveHelper)getSaveHelper();
+            PasswdFileSaveHelper helper =
+                    (PasswdFileSaveHelper)getSaveHelper();
             Context ctx = helper.getContext();
             file = File.createTempFile("passwd", ".tmp", ctx.getCacheDir());
             PwsFileStorage.writeFile(file, data);
