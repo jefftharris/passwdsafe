@@ -30,7 +30,6 @@ import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.util.Pair;
@@ -855,55 +854,6 @@ public class PasswdFileUri implements Parcelable
                 if (!toFile.renameTo(bakFile)) {
                     throw new IOException("Can not create backup file: " +
                                           bakFile);
-                }
-            }
-        }
-    }
-
-
-    /** A PwsStreamStorage implementation for sync providers */
-    private static class PasswdFileSyncStorage extends PwsStreamStorage
-    {
-        private final Uri itsUri;
-
-        /** Constructor */
-        public PasswdFileSyncStorage(Uri uri, String id, InputStream stream)
-        {
-            super(id, stream);
-            itsUri = uri;
-        }
-
-        /** Save the file contents */
-        @Override
-        public boolean save(byte[] data, boolean isV3)
-        {
-            File file = null;
-            try {
-                PasswdFileUri.SaveHelper helper =
-                        (PasswdFileUri.SaveHelper)getSaveHelper();
-                Context ctx = helper.getContext();
-                file = File.createTempFile("passwd", ".tmp", ctx.getCacheDir());
-                PwsFileStorage.writeFile(file, data);
-
-                Uri fileUri = PasswdClientProvider.addFile(file);
-                ContentResolver cr = ctx.getContentResolver();
-                ContentValues values = new ContentValues();
-                values.put(PasswdSafeContract.Files.COL_FILE,
-                           fileUri.toString());
-                cr.update(itsUri, values, null, null);
-
-                PasswdSafeUtil.dbginfo(TAG, "SyncStorage update %s with %s",
-                                       itsUri, file);
-                return true;
-            } catch (Exception e) {
-                Log.e(TAG, "Error saving " + itsUri, e);
-                return false;
-            } finally {
-                if (file != null) {
-                    PasswdClientProvider.removeFile(file);
-                    if (!file.delete()) {
-                        Log.e(TAG, "Error deleting " + file);
-                    }
                 }
             }
         }
