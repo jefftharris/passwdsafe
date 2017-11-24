@@ -1520,7 +1520,9 @@ public class PasswdSafe extends AppCompatActivity
             itsTitle = itsFileDataFrag.useFileData(fileData -> {
                 if (itsLocation.isRecord()) {
                     PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
-                    return fileData.getTitle(rec);
+                    if (rec != null) {
+                        return fileData.getTitle(rec);
+                    }
                 }
                 return null;
             });
@@ -1534,8 +1536,10 @@ public class PasswdSafe extends AppCompatActivity
             itsTitle = itsFileDataFrag.useFileData(fileData -> {
                 if (itsLocation.isRecord()) {
                     PwsRecord rec = fileData.getRecord(itsLocation.getRecord());
-                    return getString(R.string.edit_item,
-                                     fileData.getTitle(rec));
+                    if (rec != null) {
+                        return getString(R.string.edit_item,
+                                         fileData.getTitle(rec));
+                    }
                 }
                 return null;
             });
