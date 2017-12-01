@@ -319,6 +319,11 @@
     <string name="select_file_label">Datei auswählen</string>
     <string name="send">Senden</string>
     <string name="set_password">Passwort wieder verwenden</string>
+    <string name="share">Teilen</string>
+    <string name="share_file">Datei teilen</string>
+    <string name="share_file_msg">Durchs Teilen werden andere Apps Zugriff auf deine Passwörter erhalten</string>
+    <string name="share_file_p">Datei teilen?</string>
+    <string name="sharing_file">Teile %1$s…</string>
     <string name="shortcut_base_record_header">VERKNÜPFUNG</string>
     <string name="shortcut_file">Verknüpfungsdatei</string>
     <string name="shortcut_record">Verknüpfungseintrag</string>
@@ -359,8 +364,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        &lt;b&gt;NEXT&lt;/b&gt; - Taste fürs öffnen der Tastatureinstellungen
-        hinzugefügt
+        &lt;b&gt;6.11.0&lt;/b&gt; - Möglichkeit eine offene Passworddatei zu teilen
+        hinzugefügt.  Button für die Tastatur-Einstellungen beim kopieren
+        hinzugefügt.  Fehlerbehebungen.
         \n\n
         &lt;b&gt;6.10.0&lt;/b&gt; - Suchvorschläge hinzugefügt
         \n\n

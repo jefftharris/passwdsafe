@@ -326,6 +326,11 @@
     <string name="select_file_label">Sélectionnez le fichier passwdsafe</string>
     <string name="send">Envoyer</string>
     <string name="set_password">Définir le mot de passe</string>
+    <string name="share">Partager</string>
+    <string name="share_file">Partager le Fichier</string>
+    <string name="share_file_msg">Partager exportera le fichier des mots de passe vers d\'autres applications</string>
+    <string name="share_file_p">Partager le fichier?</string>
+    <string name="sharing_file">Partage %1$s…</string>
     <string name="shortcut_base_record_header">RACCOURCI</string>
     <string name="shortcut_file">Raccourci Fichier</string>
     <string name="shortcut_record">Raccourci Entrée </string>
@@ -368,8 +373,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        &lt;b&gt;NEXT&lt;/b&gt; - Ajout bouton pour ouvrir les paramètres
-        clavier dans la demande de copie
+        &lt;b&gt;6.11.0&lt;/b&gt; - Ajout partage d\'un fichier mot de passe ouvert.  Ajout
+        bouton pour ouvrir la configuration clavier lors de la demande de
+        copie.  Correction de bugs.
         \n\n
         &lt;b&gt;6.10.0&lt;/b&gt; - Ajout suggestions recherche
         \n\n
