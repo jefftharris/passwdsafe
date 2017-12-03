@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -111,6 +112,18 @@ public final class GuiUtils
     public static void setVisible(View view, boolean visible)
     {
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Set a button checked without animation
+     */
+    public static void setCheckedNoAnim(CompoundButton view, boolean checked)
+    {
+        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_HONEYCOMB) {
+            GuiUtilsHoneycomb.setCheckedNoAnim(view, checked);
+        } else {
+            view.setChecked(checked);
+        }
     }
 
     /**

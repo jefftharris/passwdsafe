@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -36,6 +37,15 @@ public final class GuiUtilsHoneycomb
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Set a button checked without animation
+     */
+    public static void setCheckedNoAnim(CompoundButton view, boolean checked)
+    {
+        view.setChecked(checked);
+        view.jumpDrawablesToCurrentState();
     }
 
     /**
