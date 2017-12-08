@@ -687,7 +687,7 @@ public class PasswdSafeOpenFileFragment
                 if (result.itsKeygenError != null) {
                     String msg = getString(
                             R.string.password_save_canceled_key_error,
-                            result.itsKeygenError.getLocalizedMessage());
+                            result.itsKeygenError.toString());
                     PasswdSafeUtil.showErrorMsg(msg,
                                                 new ActContext(getContext()));
                     break;
@@ -1173,7 +1173,7 @@ public class PasswdSafeOpenFileFragment
                        getString(R.string.password_loaded));
             } catch (IllegalBlockSizeException | BadPaddingException |
                     IOException e) {
-                String msg = "Error using cipher: " + e.getLocalizedMessage();
+                String msg = "Error using cipher: " + e;
                 Log.e(itsTag, msg, e);
                 onAuthenticationError(0, msg);
             }
@@ -1244,7 +1244,7 @@ public class PasswdSafeOpenFileFragment
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_saved));
             } catch (Exception e) {
-                String msg = "Error using cipher: " + e.getLocalizedMessage();
+                String msg = "Error using cipher: " + e;
                 Log.e(itsTag, msg, e);
                 onAuthenticationError(0, msg);
             }
