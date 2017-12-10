@@ -7,10 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import java.io.File;
-
-import org.pwsafe.lib.file.PwsFile;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -23,8 +19,13 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
+import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
+
+import org.pwsafe.lib.file.PwsFile;
+
+import java.io.File;
 
 /**
  * The Preferences class manages preferences for the application
@@ -86,6 +87,10 @@ public class Preferences
         "passwordClearAllNotifsPref";
     public static final String PREF_PASSWD_CLEAR_ALL_SAVED =
         "passwordClearAllSavedPref";
+    public static final String PREF_PASSWD_VISIBLE_TIMEOUT =
+            "passwordVisibleTimeoutPref";
+    private static final PasswdTimeoutPref PREF_PASSWD_VISIBLE_TIMEOUT_DEF =
+            PasswdTimeoutPref.TO_NONE;
 
     public static final String PREF_RECORD_SORT_ORDER = "recordSortOrderPref";
     public static final RecordSortOrderPref PREF_RECORD_SORT_ORDER_DEF =
@@ -297,6 +302,18 @@ public class Preferences
             val = PasswdPolicy.SYMBOLS_DEFAULT;
         }
         return val;
+    }
+
+    public static PasswdTimeoutPref getPasswdVisibleTimeoutPref(
+            SharedPreferences prefs)
+    {
+        try {
+            return PasswdTimeoutPref.prefValueOf(
+                    prefs.getString(PREF_PASSWD_VISIBLE_TIMEOUT,
+                                    PREF_PASSWD_VISIBLE_TIMEOUT_DEF.name()));
+        } catch (IllegalArgumentException e) {
+            return PREF_PASSWD_VISIBLE_TIMEOUT_DEF;
+        }
     }
 
     /** Upgrade the default password policy preference if needed */

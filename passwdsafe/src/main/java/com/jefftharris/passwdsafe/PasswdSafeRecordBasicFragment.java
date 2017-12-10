@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe;
 
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,6 +35,7 @@ import android.widget.Toast;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
+import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.view.TextInputUtils;
@@ -83,6 +85,7 @@ public class PasswdSafeRecordBasicFragment
     private TextView itsUser;
     private View itsPasswordRow;
     private TextView itsPassword;
+    private Runnable itsPasswordHideRun;
     private SeekBar itsPasswordSeek;
     private CompoundButton itsPasswordSubsetBtn;
     private TextInputLayout itsPasswordSubsetInput;
@@ -186,6 +189,8 @@ public class PasswdSafeRecordBasicFragment
                        InputType.TYPE_NUMBER_FLAG_SIGNED;
             }
         });
+        itsPasswordHideRun = () ->
+                updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
         itsUrlRow = root.findViewById(R.id.url_row);
         itsUrl = (TextView)root.findViewById(R.id.url);
         itsEmailRow = root.findViewById(R.id.email_row);
@@ -206,6 +211,13 @@ public class PasswdSafeRecordBasicFragment
         updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
 
         return root;
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        itsPassword.removeCallbacks(itsPasswordHideRun);
     }
 
     @Override
@@ -398,6 +410,8 @@ public class PasswdSafeRecordBasicFragment
         setFieldText(itsUser, itsUserRow,
                      info.itsFileData.getUsername(info.itsRec));
 
+        // TODO: call to update password shown(INIT) but watch fields only
+        // initialized here
         itsIsPasswordShown = false;
         itsHiddenPasswordStr = getString(hiddenId);
         String password = info.itsFileData.getPassword(recForPassword);
@@ -529,6 +543,25 @@ public class PasswdSafeRecordBasicFragment
         itsPassword.setText(
                 (password != null) ? password : itsHiddenPasswordStr);
         TypefaceUtils.enableMonospace(itsPassword, itsIsPasswordShown, act);
+        itsPassword.removeCallbacks(itsPasswordHideRun);
+        if (itsIsPasswordShown) {
+            SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+            PasswdTimeoutPref timeout =
+                    Preferences.getPasswdVisibleTimeoutPref(prefs);
+            switch (timeout) {
+            case TO_15_SEC:
+            case TO_30_SEC:
+            case TO_1_MIN:
+            case TO_5_MIN: {
+                itsPassword.postDelayed(itsPasswordHideRun,
+                                        timeout.getTimeout());
+                break;
+            }
+            case TO_NONE: {
+                break;
+            }
+            }
+        }
         GuiUtils.invalidateOptionsMenu(act);
     }
 
