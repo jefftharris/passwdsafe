@@ -187,7 +187,7 @@ public class PasswdSafeRecordPasswordFragment
             itsHistory.setAdapter(null);
         }
         GuiUtils.setListViewHeightBasedOnChildren(itsHistory);
-        itsHistoryEnabledCb.setChecked(historyEnabled);
+        GuiUtils.setCheckedNoAnim(itsHistoryEnabledCb, historyEnabled);
         itsHistoryEnabledCb.setEnabled(historyExists);
         itsHistoryMaxSize.setText(historyMaxSize);
         GuiUtils.setVisible(itsHistoryMaxSize, historyExists);
