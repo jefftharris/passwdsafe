@@ -410,18 +410,15 @@ public class PasswdSafeRecordBasicFragment
         setFieldText(itsUser, itsUserRow,
                      info.itsFileData.getUsername(info.itsRec));
 
-        // TODO: call to update password shown(INIT) but watch fields only
-        // initialized here
-        itsIsPasswordShown = false;
         itsHiddenPasswordStr = getString(hiddenId);
         String password = info.itsFileData.getPassword(recForPassword);
         setFieldText(itsPassword, itsPasswordRow,
                      ((password != null) ? itsHiddenPasswordStr : null));
         int passwordLen = (password != null) ? password.length() : 0;
         itsPasswordSeek.setMax(passwordLen);
-        itsPasswordSeek.setProgress(0);
         itsSubsetErrorStr = getString(R.string.password_subset_error,
                                       passwordLen);
+        updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
 
         setFieldText(itsUrl, itsUrlRow, url);
         setFieldText(itsEmail, itsEmailRow, email);
