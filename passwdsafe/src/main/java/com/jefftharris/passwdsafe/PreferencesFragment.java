@@ -31,6 +31,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
+import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
@@ -431,6 +432,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
      */
     private final class PasswordScreen extends Screen
     {
+        private final ListPreference itsPasswdVisibleTimeoutPref;
         private final ListPreference itsPasswdEncPref;
         private final ListPreference itsPasswdExpiryNotifPref;
         private final EditTextPreference itsPasswdDefaultSymsPref;
@@ -440,6 +442,15 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          */
         public PasswordScreen(SharedPreferences prefs, Resources res)
         {
+            itsPasswdVisibleTimeoutPref = (ListPreference)
+                    findPreference(Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
+            itsPasswdVisibleTimeoutPref.setEntries(
+                    PasswdTimeoutPref.getDisplayNames(res));
+            itsPasswdVisibleTimeoutPref.setEntryValues(
+                    PasswdTimeoutPref.getValues());
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
+
             itsPasswdEncPref = (ListPreference)
                     findPreference(Preferences.PREF_PASSWD_ENC);
             String[] charsets =  PwsFile.ALL_PASSWORD_CHARSETS.toArray(
@@ -481,6 +492,13 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                                               String key)
         {
             switch (key) {
+            case Preferences.PREF_PASSWD_VISIBLE_TIMEOUT: {
+                PasswdTimeoutPref pref =
+                        Preferences.getPasswdVisibleTimeoutPref(prefs);
+                itsPasswdVisibleTimeoutPref.setSummary(
+                        pref.getDisplayName(getResources()));
+                break;
+            }
             case Preferences.PREF_PASSWD_ENC: {
                 itsPasswdEncPref.setSummary(
                         Preferences.getPasswordEncodingPref(prefs));

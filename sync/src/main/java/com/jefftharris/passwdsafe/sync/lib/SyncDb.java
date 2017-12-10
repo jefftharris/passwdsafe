@@ -7,9 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -23,6 +20,9 @@ import android.text.TextUtils;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The SyncDb encapsulates the synchronization database
@@ -630,8 +630,8 @@ public class SyncDb
             db.execSQL("CREATE TABLE " + DB_TABLE_SYNC_LOGS + " (" +
                        DB_COL_SYNC_LOGS_ID + " INTEGER PRIMARY KEY," +
                        DB_COL_SYNC_LOGS_ACCT + " TEXT NOT NULL," +
-                       DB_COL_SYNC_LOGS_START + " INTEGER NOT NULL," +
-                       DB_COL_SYNC_LOGS_END + " INTEGER NOT NULL," +
+                       DB_COL_SYNC_LOGS_START + " INTEGER NOT NULL, \"" +
+                       DB_COL_SYNC_LOGS_END + "\" INTEGER NOT NULL," +
                        DB_COL_SYNC_LOGS_FLAGS + " INTEGER NOT NULL," +
                        DB_COL_SYNC_LOGS_LOG + " TEXT" +
                        ");");

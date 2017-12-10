@@ -592,6 +592,15 @@
         <item>In 1 Jahr</item>
      </string-array>
 
+    <!-- Order must match PasswdTimeoutPref enum values -->
+    <string-array name="passwd_timeout_pref">
+        <item>Keine</item>
+        <item>15 Sekunden</item>
+        <item>30 Sekunden</item>
+        <item>1 Minute</item>
+        <item>5 Minuten</item>
+    </string-array>
+
     <!-- Order must match constants in PasswdExpiration.Type -->
     <string-array name="expire_type">
         <item>Keine</item>

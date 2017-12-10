@@ -73,6 +73,12 @@
 
             <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
+                android:name="passwordVisibleTimeout Pref"
+                android:key="passwordVisibleTimeoutPref"
+                android:title="@string/password_visibility_timeout"/>
+
+            <!--suppress AndroidElementNotAllowed -->
+            <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="passwordEncoding Pref"
                 android:key="passwordEncodingPref"
                 android:title="@string/file_password_encoding"/>
