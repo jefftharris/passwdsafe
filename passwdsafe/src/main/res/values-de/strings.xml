@@ -254,6 +254,7 @@
     </string>
     <string name="password_subset_hint">Passwortteilmenge. E.g. 1,5,-1</string>
     <string name="password_times_header">PASSWORTZEITEN</string>
+    <string name="password_visibility_timeout">Passwort automatisch verbergen</string>
     <string name="password_with_expiration">Passwort mit Ablaufdatum</string>
     <string name="passwords">Passwörter</string>
     <string name="passwords_do_not_match">Passwörter stimmen nicht überein</string>
@@ -364,6 +365,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.12.0&lt;/b&gt; - Sichtbare Passwörter werden automatisch
+        wieder verborgen. Die Zeitspanne kann in den Passwort-Einstellungen
+        geändert werden.
+        \n\n
         &lt;b&gt;6.11.0&lt;/b&gt; - Möglichkeit eine offene Passworddatei zu teilen
         hinzugefügt.  Button für die Tastatur-Einstellungen beim kopieren
         hinzugefügt.  Fehlerbehebungen.

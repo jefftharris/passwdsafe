@@ -365,11 +365,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        NEXT - i18n password_visibility_timeout
-
-        Add a timer to hide a visible password after a timeout.  The duration
-        is set by a password preference.
-
+        &lt;b&gt;6.12.0&lt;/b&gt; - Add a timer to hide a visible password after
+        a timeout. The duration is set by a password preference.
+        \n\n
         &lt;b&gt;6.11.0&lt;/b&gt; - Add sharing of an open password file.  Add button to open
         keyboard settings in copy prompt.  Bug fixes.
         \n\n

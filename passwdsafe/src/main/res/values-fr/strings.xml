@@ -263,6 +263,7 @@
     </string>
     <string name="password_subset_hint">Morceaux mots de passe. E.g. 1,5,-1</string>
     <string name="password_times_header">TEMPS MOT DE PASSE</string>
+    <string name="password_visibility_timeout">Temporisation visibilité du mots de passe</string>
     <string name="password_with_expiration">Mot de passe avec date d\'expiration</string>
     <string name="passwords">Mots de passe</string>
     <string name="passwords_do_not_match">Les mots de passe ne correspondent pas</string>
@@ -373,6 +374,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.12.0&lt;/b&gt; - Ajout d\'un minuteur pour cacher le mots de
+        passe affiché après un certain temps. La durée est réglé par une
+        preference.
+        \n\n
         &lt;b&gt;6.11.0&lt;/b&gt; - Ajout partage d\'un fichier mot de passe ouvert.  Ajout
         bouton pour ouvrir la configuration clavier lors de la demande de
         copie.  Correction de bugs.
