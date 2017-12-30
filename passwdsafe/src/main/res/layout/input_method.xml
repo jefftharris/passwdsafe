@@ -50,6 +50,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hapticFeedbackEnabled="true"
-        android:keyBackground="@drawable/btn_keyboard_key_ics"/>
+        android:keyBackground="@drawable/btn_keyboard_key_ics"
+        android:keyPreviewLayout="@null"
+        android:popupLayout="@layout/input_method_popup"/>
 
 </LinearLayout>

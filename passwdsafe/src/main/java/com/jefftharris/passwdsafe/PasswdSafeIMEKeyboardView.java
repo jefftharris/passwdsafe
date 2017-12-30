@@ -39,7 +39,6 @@ public class PasswdSafeIMEKeyboardView extends KeyboardView
     protected boolean onLongPress(Keyboard.Key key)
     {
         switch (key.codes[0]) {
-        case ' ':
         case PasswdSafeIME.KEYBOARD_NEXT_KEY:
         case PasswdSafeIME.KEYBOARD_CHOOSE_KEY: {
             getOnKeyboardActionListener().onKey(
