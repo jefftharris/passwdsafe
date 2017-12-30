@@ -508,7 +508,6 @@ public class PasswdSafeOpenFileFragment
         }
         case WAITING_PASSWORD: {
             itsUserPassword = itsPasswordEdit.getText().toString();
-            setProgressVisible(false, false);
             cancelSavedPasswordUsers();
             break;
         }
@@ -1188,6 +1187,7 @@ public class PasswdSafeOpenFileFragment
         @Override
         protected void handleFinish(SavedPasswordFinish finishMode)
         {
+            setProgressVisible(false, false);
             switch (finishMode) {
             case SUCCESS: {
                 doDelayed(() -> {
@@ -1204,7 +1204,6 @@ public class PasswdSafeOpenFileFragment
             case FRAGMENT_CANCEL:
             case TIMEOUT: {
                 itsLoadSavedPasswordUser = null;
-                setProgressVisible(false, false);
                 break;
             }
             }
