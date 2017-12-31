@@ -299,8 +299,7 @@ public class FileListNavDrawerFragment
                 MenuItem item = menu.add(R.id.menu_group_main,
                                          nextProviderId, 10,
                                          R.string.select_accounts);
-                item.setIcon(R.mipmap.ic_launcher_sync);
-                updateMenuIcon(item);
+                item.setIcon(R.drawable.ic_passwdsafe_sync_dark);
                 itsNoProvidersNavItem = nextProviderId;
             }
         }
