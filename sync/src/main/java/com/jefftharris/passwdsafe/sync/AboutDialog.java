@@ -55,6 +55,7 @@ public class AboutDialog extends AppCompatDialogFragment
                                        "license-android.txt",
                                        "license-AndroidAssetStudio.txt",
                                        "license-MaterialIcons.txt",
+                                       "license-icons.txt",
                                        "license-box.txt",
                                        "license-onedrive.txt",
                                        "license-owncloud.txt") +

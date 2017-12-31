@@ -75,7 +75,8 @@ public class AboutFragment extends Fragment
         String licenses = AboutUtils.getLicenses(
                 getContext(), "license-PasswdSafe.txt",
                 "license-android.txt", "license-AndroidAssetStudio.txt",
-                "license-MaterialIcons.txt", "license-RobotoMono.txt");
+                "license-MaterialIcons.txt", "license-icons.txt",
+                "license-RobotoMono.txt");
 
         AboutUtils.updateAboutFields(rootView, licenses, getActivity());
         itsFileDetailsGroup = rootView.findViewById(R.id.file_details_group);
