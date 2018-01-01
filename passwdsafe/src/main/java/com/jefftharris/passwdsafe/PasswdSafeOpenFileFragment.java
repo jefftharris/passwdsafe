@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
@@ -864,6 +865,9 @@ public class PasswdSafeOpenFileFragment
             Exception keygenError = null;
             switch (itsSaveChange) {
             case ADD: {
+                if (Looper.myLooper() == null) {
+                    Looper.prepare();
+                }
                 try {
                     itsSavedPasswordsMgr.generateKey(itsFileUri);
                 } catch (InvalidAlgorithmParameterException |
