@@ -9,13 +9,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
-        minSdkVersion 10
+        minSdkVersion 14
         resConfigs "de", "fr"
-        targetSdkVersion 25
+        targetSdkVersion 27
         // <major><minor><bugfix><beta>
         versionCode 6120000
         versionName "6.12.0"
