@@ -145,7 +145,7 @@ public class ProviderSync
         String content = itsProvider.getTypeAndDisplayName(itsContext);
 
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(itsContext)
+                GuiUtils.createNotificationBuilder(itsContext)
                         .setContentTitle(title)
                         .setContentText(content)
                         .setTicker(title)
@@ -209,7 +209,7 @@ public class ProviderSync
         String content = itsProvider.getTypeAndDisplayName(itsContext);
 
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(itsContext)
+                GuiUtils.createNotificationBuilder(itsContext)
                         .setContentTitle(title)
                         .setContentText(content)
                         .setTicker(title)

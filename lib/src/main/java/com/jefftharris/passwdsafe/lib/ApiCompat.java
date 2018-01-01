@@ -38,6 +38,7 @@ public final class ApiCompat
     public static final int SDK_KITKAT = 19;
     public static final int SDK_LOLLIPOP = 21;
     public static final int SDK_MARSHMALLOW = 23;
+    public static final int SDK_OREO = 26;
 
     /** Copy of Intent.FLAG_ACTIVITY_CLEAR_TASK available on API 11 */
     public static final int INTENT_FLAG_ACTIVITY_CLEAR_TASK = 0x00008000;

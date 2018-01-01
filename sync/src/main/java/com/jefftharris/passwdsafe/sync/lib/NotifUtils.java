@@ -65,11 +65,12 @@ public final class NotifUtils
     public static void showNotif(Type type, String content, Context ctx)
     {
         String title = getTitle(type, ctx);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setTicker(title)
-                .setAutoCancel(true);
+        NotificationCompat.Builder builder =
+                GuiUtils.createNotificationBuilder(ctx)
+                        .setContentTitle(title)
+                        .setContentText(content)
+                        .setTicker(title)
+                        .setAutoCancel(true);
         showNotif(builder, type, null, ctx);
     }
 

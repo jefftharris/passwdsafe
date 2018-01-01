@@ -12,6 +12,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.TextInputLayout;
@@ -255,7 +257,7 @@ public final class GuiUtils
                                         String notifyTag,
                                         boolean autoCancel)
     {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx)
+        NotificationCompat.Builder builder = createNotificationBuilder(ctx)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setContentIntent(intent)
@@ -277,12 +279,22 @@ public final class GuiUtils
                                         String notifyTag,
                                         Context ctx)
     {
-        BitmapDrawable b =
-                (BitmapDrawable)getDrawable(ctx.getResources(), bigIcon);
-        if (b == null) {
+        Drawable draw = getDrawable(ctx.getResources(), bigIcon);
+        Bitmap icon;
+        if (draw instanceof BitmapDrawable) {
+            icon = ((BitmapDrawable)draw).getBitmap();
+        } else if (draw != null) {
+            icon = Bitmap.createBitmap(draw.getIntrinsicWidth(),
+                                       draw.getIntrinsicHeight(),
+                                       Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(icon);
+            draw = draw.mutate();
+            draw.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            draw.draw(canvas);
+        } else {
             return;
         }
-        builder.setLargeIcon(b.getBitmap());
+        builder.setLargeIcon(icon);
         notifyMgr.notify(notifyTag, notifyId, builder.build());
     }
 
@@ -309,5 +321,18 @@ public final class GuiUtils
             style.addLine("…");
             builder.setNumber(linesSize);
         }
+    }
+
+    /**
+     * Create a notification builder
+     */
+    public static NotificationCompat.Builder createNotificationBuilder(
+            Context ctx)
+    {
+        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_OREO) {
+            return GuiUtilsOreo.createNotificationBuilder(ctx);
+        }
+        //noinspection deprecation
+        return new NotificationCompat.Builder(ctx);
     }
 }
