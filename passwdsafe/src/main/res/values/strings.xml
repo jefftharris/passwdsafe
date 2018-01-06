@@ -365,6 +365,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.13.0&lt;/b&gt; - Add delete key to long-press on keyboard
+        space bar.  Fix saving passwords on some Samsung devices.
+        \n\n
         &lt;b&gt;6.12.0&lt;/b&gt; - Add a timer to hide a visible password after
         a timeout. The duration is set by a password preference.
         \n\n
