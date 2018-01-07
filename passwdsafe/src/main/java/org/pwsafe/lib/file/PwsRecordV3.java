@@ -15,6 +15,7 @@ import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -453,31 +454,31 @@ public class PwsRecordV3 extends PwsRecord
             }
             byte[] remainingDataInRecord = Util.getBytes(rawData, 5, 11);
             if (length <= 11) {
-                Util.copyBytes(Util.getBytes(remainingDataInRecord, 0, length),
-                               data);
+                System.arraycopy(remainingDataInRecord, 0, data, 0, length);
             } else if (length > 11) {
                 int bytesToRead = length - 11;
-                int blocksToRead = bytesToRead / file.getBlockSize();
+                final int blockSize = file.getBlockSize();
+                int blocksToRead = bytesToRead / blockSize;
+
+                System.arraycopy(remainingDataInRecord, 0, data, 0,
+                                 remainingDataInRecord.length);
+                int pos = remainingDataInRecord.length;
+
+                byte[] nextBlock = new byte[blockSize];
+                int nextBlockLen = nextBlock.length;
+                for (int i = 0; i < blocksToRead; i++, pos += nextBlockLen) {
+                    file.readDecryptedBytes(nextBlock);
+                    System.arraycopy(nextBlock, 0, data, pos, nextBlockLen);
+                }
 
                 // if blocksToRead doesn't fit neatly into current block
                 // size, add an extra block for the remaining bytes
-                if (bytesToRead % file.getBlockSize() != 0)
-                    blocksToRead++;
-
-                byte[] remainingRecords = new byte[0];
-                for (int i = 0; i < blocksToRead; i++) {
-                    byte[] nextBlock = new byte[file.getBlockSize()];
+                if ((bytesToRead % blockSize) != 0) {
                     file.readDecryptedBytes(nextBlock);
-                    if (i == blocksToRead - 1) {
-                        // last block, do magic
-                        nextBlock = Util.getBytes(
-                                nextBlock, 0,
-                                bytesToRead - remainingRecords.length);
-                    }
-                    remainingRecords =
-                            Util.mergeBytes(remainingRecords, nextBlock);
+                    int bytesRead = pos - remainingDataInRecord.length;
+                    nextBlockLen = bytesToRead - bytesRead;
+                    System.arraycopy(nextBlock, 0, data, pos, nextBlockLen);
                 }
-                data = Util.mergeBytes(remainingDataInRecord, remainingRecords);
             }
             byte[] dataToHash = data;
             file.hasher.digest(dataToHash);
@@ -626,33 +627,39 @@ public class PwsRecordV3 extends PwsRecord
     protected void writeField(PwsFile file, PwsField field, int type)
             throws IOException
     {
-        byte lenBlock[];
-        byte dataBlock[];
-
-        lenBlock = new byte[5];
-        dataBlock = field.getBytes();
+        byte lenBlock[] = new byte[5];
+        byte dataBlock[] = field.getBytes();
 
         Util.putIntToByteArray(lenBlock, dataBlock.length, 0);
         lenBlock[4] = (byte)type;
 
-        // ensure encryption payload is equal blocks of 16
-        int bytesToPad = 0;
-        int calcWriteLen = lenBlock.length + dataBlock.length;
-        if (calcWriteLen % 16 != 0) {
-            bytesToPad = 16 - (calcWriteLen % 16);
+        final int blockSize = 16;
+        byte[] nextBlock = new byte[blockSize];
+
+        int firstBlockLen = Math.min(dataBlock.length, 11);
+        System.arraycopy(lenBlock, 0, nextBlock, 0, lenBlock.length);
+        System.arraycopy(dataBlock, 0,
+                         nextBlock, lenBlock.length, firstBlockLen);
+        file.writeEncryptedBytes(nextBlock);
+
+        int bytesToWrite = dataBlock.length - 11;
+        if (bytesToWrite > 0) {
+            int blocksToWrite = bytesToWrite / blockSize;
+            int pos = 11;
+            int nextBlockLen = nextBlock.length;
+            for (int i = 0; i < blocksToWrite; ++i, pos += nextBlockLen) {
+                System.arraycopy(dataBlock, pos, nextBlock, 0, nextBlockLen);
+                file.writeEncryptedBytes(nextBlock);
+            }
+
+            if ((bytesToWrite % blockSize) != 0) {
+                int bytesWritten = pos - 11;
+                nextBlockLen = bytesToWrite - bytesWritten;
+                System.arraycopy(dataBlock, pos, nextBlock, 0, nextBlockLen);
+                Arrays.fill(nextBlock, nextBlockLen, nextBlock.length, (byte)0);
+                file.writeEncryptedBytes(nextBlock);
+            }
         }
-
-        dataBlock =
-                Util.cloneByteArray(dataBlock, dataBlock.length + bytesToPad);
-
-        // file.writeBytes(lenBlock);
-        byte[] dataToWrite = Util.mergeBytes(lenBlock, dataBlock);
-
-        for (int i = 0; i < (dataToWrite.length / 16); i++) {
-            byte[] nextBlock = Util.getBytes(dataToWrite, i * 16, 16);
-            file.writeEncryptedBytes(nextBlock);
-        }
-
     }
 
     /**
