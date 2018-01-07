@@ -220,6 +220,7 @@
                            android:layout_marginTop="10dp"
                            android:clickable="true"
                            android:contentDescription="@string/show_passwords"
+                           android:focusable="true"
                            android:longClickable="true"
                            android:src="?attr/drawableActionVisibility"/>
 
@@ -232,6 +233,7 @@
                            android:layout_toStartOf="@id/password_visibility"
                            android:clickable="true"
                            android:contentDescription="@string/generate_password"
+                           android:focusable="true"
                            android:longClickable="true"
                            android:src="?attr/drawableActionNewPassword"/>
             </RelativeLayout>
