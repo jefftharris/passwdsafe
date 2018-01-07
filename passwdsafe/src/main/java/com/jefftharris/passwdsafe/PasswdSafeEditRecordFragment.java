@@ -41,12 +41,14 @@ import com.jefftharris.passwdsafe.file.HeaderPasswdPolicies;
 import com.jefftharris.passwdsafe.file.PasswdExpiration;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdHistory;
+import com.jefftharris.passwdsafe.file.PasswdNotes;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
 import com.jefftharris.passwdsafe.view.EditRecordResult;
@@ -57,7 +59,6 @@ import com.jefftharris.passwdsafe.view.PasswdPolicyView;
 import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
 import com.jefftharris.passwdsafe.view.TextInputUtils;
 import com.jefftharris.passwdsafe.view.TimePickerDialogFragment;
-import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 
 import org.pwsafe.lib.file.PwsRecord;
 
@@ -712,7 +713,11 @@ public class PasswdSafeEditRecordFragment
                 group = fileData.getGroup(record);
                 itsUser.setText(fileData.getUsername(record));
                 itsHistory = fileData.getPasswdHistory(record);
-                itsNotes.setText(fileData.getNotes(record));
+                PasswdNotes notes = fileData.getNotes(record, getContext());
+                itsNotes.setText(notes.getNotes());
+                final boolean notesEnabled = !notes.isTruncated();
+                // Delay enable flag till after initialized for UI update
+                itsNotes.post(() -> itsNotes.setEnabled(notesEnabled));
 
                 if (itsIsV3) {
                     itsUrl.setText(fileData.getURL(record));
@@ -1290,14 +1295,16 @@ public class PasswdSafeEditRecordFragment
             fileData.setUsername(updateStr, record);
         }
 
-        String currNotes = fileData.getNotes(record);
+        PasswdNotes currNotes = fileData.getNotes(record, getContext());
         if (itsTypeHasDetails) {
-            updateStr = getUpdatedField(currNotes, itsNotes);
-            if (updateStr != null) {
-                fileData.setNotes(updateStr, record);
+            if (!currNotes.isTruncated()) {
+                updateStr = getUpdatedField(currNotes.getNotes(), itsNotes);
+                if (updateStr != null) {
+                    fileData.setNotes(updateStr, record);
+                }
             }
         } else {
-            if (currNotes != null) {
+            if (currNotes.getNotes() != null) {
                 fileData.setNotes(null, record);
             }
         }

@@ -224,6 +224,7 @@
     <string name="none_paren">(None)</string>
     <string name="none_selected_open">None selected.  Open PasswdSafe to choose.</string>
     <string name="notes">Notes</string>
+    <string name="notes_truncated_msg">\ … (truncated)</string>
     <string name="num_records">Number of records</string>
     <string name="ok">OK</string>
     <string name="open_file">Open %s</string>
@@ -365,6 +366,11 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.14.0&lt;/b&gt; - Improve file load and save performance.
+        Limit displayed size of notes fields.
+
+        I18N - notes_truncated_msg
+        \n\n
         &lt;b&gt;6.13.0&lt;/b&gt; - Add delete key to long-press on keyboard
         space bar.  Fix saving passwords on some Samsung devices.
         \n\n

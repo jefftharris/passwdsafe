@@ -320,7 +320,7 @@ public class PasswdSafeIME extends InputMethodService
                     return fileData.getEmail(rec);
                 }
                 case NOTES_KEY: {
-                    return fileData.getNotes(rec);
+                    return fileData.getNotes(rec, this).getNotes();
                 }
                 }
                 return null;

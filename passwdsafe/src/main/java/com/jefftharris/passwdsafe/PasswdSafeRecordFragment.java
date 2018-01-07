@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jefftharris.passwdsafe.file.PasswdNotes;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 
@@ -228,8 +229,9 @@ public class PasswdSafeRecordFragment
             switch (info.itsPasswdRec.getType()) {
             case NORMAL:
             case ALIAS: {
-                String notes = info.itsFileData.getNotes(info.itsRec);
-                itsHasNotes = !TextUtils.isEmpty(notes);
+                PasswdNotes notes = info.itsFileData.getNotes(info.itsRec,
+                                                              getContext());
+                itsHasNotes = !TextUtils.isEmpty(notes.getNotes());
                 break;
             }
             case SHORTCUT: {

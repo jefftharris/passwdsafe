@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.file;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -343,13 +344,9 @@ public class PasswdFileData
         return getDateField(rec, PwsRecordV3.LAST_MOD_TIME);
     }
 
-    public final String getNotes(PwsRecord rec)
+    public final @NonNull PasswdNotes getNotes(PwsRecord rec, Context ctx)
     {
-        String s = getField(rec, PwsRecordV3.NOTES);
-        if (s != null) {
-            s = s.replace("\r\n", "\n");
-        }
-        return s;
+        return new PasswdNotes(getField(rec, PwsRecordV3.NOTES), ctx);
     }
 
     public final void setNotes(String str, PwsRecord rec)

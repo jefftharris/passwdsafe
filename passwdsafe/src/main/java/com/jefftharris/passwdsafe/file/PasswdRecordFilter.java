@@ -138,7 +138,8 @@ public final class PasswdRecordFilter implements Closeable
                     queryMatch = QUERY_MATCH_URL;
                 } else if (filterField(fileData.getEmail(rec))) {
                     queryMatch = QUERY_MATCH_EMAIL;
-                } else if (filterField(fileData.getNotes(rec))) {
+                } else if (filterField(
+                        fileData.getNotes(rec, ctx).getNotes())) {
                     queryMatch = QUERY_MATCH_NOTES;
                 }
             } else {
