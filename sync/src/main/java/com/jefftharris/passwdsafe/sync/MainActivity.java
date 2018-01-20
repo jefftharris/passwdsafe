@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity
 
         for (int id: new int[]{R.id.box_interval, R.id.dropbox_interval,
                                R.id.gdrive_interval, R.id.onedrive_interval}) {
-            Spinner freqSpin = (Spinner)findViewById(id);
+            Spinner freqSpin = findViewById(id);
             assert freqSpin != null;
             freqSpin.setOnItemSelectedListener(freqSelListener);
         }
@@ -689,7 +689,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void updateGDriveState(GDriveState state)
     {
-        TextView warning = (TextView)findViewById(R.id.gdrive_sync_warning);
+        TextView warning = findViewById(R.id.gdrive_sync_warning);
         assert warning != null;
         switch (state) {
         case OK: {
@@ -744,13 +744,13 @@ public class MainActivity extends AppCompatActivity
             itsGDrivePlayUri = ContentUris.withAppendedId(
                     PasswdSafeContract.Providers.CONTENT_URI, id);
 
-            TextView acctView = (TextView)findViewById(R.id.gdrive_acct);
+            TextView acctView = findViewById(R.id.gdrive_acct);
             assert acctView != null;
             acctView.setText(acct);
 
             View freqSpinLabel = findViewById(R.id.gdrive_interval_label);
             assert freqSpinLabel != null;
-            Spinner freqSpin = (Spinner)findViewById(R.id.gdrive_interval);
+            Spinner freqSpin = findViewById(R.id.gdrive_interval);
             assert freqSpin != null;
             freqSpin.setSelection(freq.getDisplayIdx());
             freqSpin.setEnabled(true);
@@ -778,7 +778,7 @@ public class MainActivity extends AppCompatActivity
                     PasswdSafeContract.Providers.CONTENT_URI, id);
             boolean authorized = getDbxProvider().isAccountAuthorized();
 
-            TextView acctView = (TextView)findViewById(R.id.dropbox_acct);
+            TextView acctView = findViewById(R.id.dropbox_acct);
             assert acctView != null;
             acctView.setText(acct);
             View chooseFilesBtn = findViewById(R.id.dropbox_choose_files);
@@ -787,7 +787,7 @@ public class MainActivity extends AppCompatActivity
 
             View freqSpinLabel = findViewById(R.id.dropbox_interval_label);
             assert freqSpinLabel != null;
-            Spinner freqSpin = (Spinner)findViewById(R.id.dropbox_interval);
+            Spinner freqSpin = findViewById(R.id.dropbox_interval);
             assert freqSpin != null;
             freqSpin.setSelection(freq.getDisplayIdx());
             freqSpin.setEnabled(true);
@@ -818,13 +818,13 @@ public class MainActivity extends AppCompatActivity
                     PasswdSafeContract.Providers.CONTENT_URI, id);
             boolean authorized = getBoxProvider().isAccountAuthorized();
 
-            TextView acctView = (TextView)findViewById(R.id.box_acct);
+            TextView acctView = findViewById(R.id.box_acct);
             assert acctView != null;
             acctView.setText(acct);
 
             View freqSpinLabel = findViewById(R.id.box_interval_label);
             assert freqSpinLabel != null;
-            Spinner freqSpin = (Spinner) findViewById(R.id.box_interval);
+            Spinner freqSpin = findViewById(R.id.box_interval);
             assert freqSpin != null;
             freqSpin.setSelection(freq.getDisplayIdx());
             freqSpin.setEnabled(true);
@@ -857,7 +857,7 @@ public class MainActivity extends AppCompatActivity
             Provider provider = getOnedriveProvider();
             boolean authorized = provider.isAccountAuthorized();
 
-            TextView acctView = (TextView)findViewById(R.id.onedrive_acct);
+            TextView acctView = findViewById(R.id.onedrive_acct);
             assert acctView != null;
             acctView.setText(acct);
 
@@ -866,7 +866,7 @@ public class MainActivity extends AppCompatActivity
 
             View freqSpinLabel = findViewById(R.id.onedrive_interval_label);
             assert freqSpinLabel != null;
-            Spinner freqSpin = (Spinner) findViewById(R.id.onedrive_interval);
+            Spinner freqSpin = findViewById(R.id.onedrive_interval);
             assert freqSpin != null;
             freqSpin.setSelection(freq.getDisplayIdx());
 
@@ -895,7 +895,7 @@ public class MainActivity extends AppCompatActivity
             OwncloudProvider provider = getOwncloudProvider();
             boolean authorized = provider.isAccountAuthorized();
 
-            TextView acctView = (TextView)findViewById(R.id.owncloud_acct);
+            TextView acctView = findViewById(R.id.owncloud_acct);
             assert acctView != null;
             acctView.setText(acct);
 
@@ -1005,7 +1005,8 @@ public class MainActivity extends AppCompatActivity
         Dialog onCreateDialog(Bundle savedInstanceState)
         {
             Bundle args = getArguments();
-            final Uri currAcct = args.getParcelable("currAcct");
+            final Uri currAcct =
+                    (args != null) ? args.getParcelable("currAcct") : null;
 
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(getActivity());
@@ -1015,7 +1016,9 @@ public class MainActivity extends AppCompatActivity
                     android.R.string.yes,
                     (dialog, which) -> {
                         MainActivity act = (MainActivity)getActivity();
-                        act.removeAccount(currAcct);
+                        if (act != null) {
+                            act.removeAccount(currAcct);
+                        }
                     })
             .setNegativeButton(android.R.string.no, null);
             return builder.create();
