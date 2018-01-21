@@ -368,8 +368,6 @@
     <string name="release_notes">
         &lt;b&gt;6.14.0&lt;/b&gt; - Improve file load and save performance.
         Limit displayed size of notes fields.
-
-        I18N - notes_truncated_msg
         \n\n
         &lt;b&gt;6.13.0&lt;/b&gt; - Add delete key to long-press on keyboard
         space bar.  Fix saving passwords on some Samsung devices.
