@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 
@@ -73,6 +74,7 @@ public final class StorageFileListFragment extends ListFragment
 
     private Listener itsListener;
     private RecentFilesDb itsRecentFilesDb;
+    private ManagedRef<RecentFilesDb> itsRecentFilesDbRef;
     private SimpleCursorAdapter itsFilesAdapter;
     private int itsFileIcon;
 
@@ -93,6 +95,7 @@ public final class StorageFileListFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
         itsRecentFilesDb = new RecentFilesDb(getActivity());
+        itsRecentFilesDbRef = new ManagedRef<>(itsRecentFilesDb);
     }
 
     /* (non-Javadoc)
@@ -163,6 +166,8 @@ public final class StorageFileListFragment extends ListFragment
     {
         super.onDestroy();
         itsRecentFilesDb = null;
+        itsRecentFilesDbRef.clear();
+        itsRecentFilesDbRef = null;
     }
 
     /* (non-Javadoc)
@@ -249,71 +254,7 @@ public final class StorageFileListFragment extends ListFragment
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
     {
-        return new AsyncTaskLoader<Cursor>(getActivity())
-        {
-            /** Handle when the loader is reset */
-            @Override
-            protected void onReset()
-            {
-                super.onReset();
-                onStopLoading();
-            }
-
-            /** Handle when the loader is started */
-            @Override
-            protected void onStartLoading()
-            {
-                forceLoad();
-            }
-
-            /** Handle when the loader is stopped */
-            @Override
-            protected void onStopLoading()
-            {
-                cancelLoad();
-            }
-
-            /** Load the files in the background */
-            @Override
-            public Cursor loadInBackground()
-            {
-                PasswdSafeUtil.dbginfo(TAG, "loadInBackground");
-                int flags =
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                ContentResolver cr = getContext().getContentResolver();
-                List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
-                for (Uri permUri: permUris) {
-                    PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s",
-                                           permUri);
-                    Cursor cursor = null;
-                    try {
-                        cursor = cr.query(permUri, null, null, null, null);
-                        if ((cursor != null) && (cursor.moveToFirst())) {
-                            ApiCompat.takePersistableUriPermission(
-                                    cr, permUri, flags);
-                        } else {
-                            ApiCompat.releasePersistableUriPermission(
-                                    cr, permUri, flags);
-                            itsRecentFilesDb.removeUri(permUri);
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "File remove error: " + permUri, e);
-                    } finally {
-                        if (cursor != null) {
-                            cursor.close();
-                        }
-                    }
-                }
-
-                try {
-                    return itsRecentFilesDb.queryFiles();
-                } catch (Exception e) {
-                    Log.e(TAG, "Files load error", e);
-                }
-                return null;
-            }
-        };
+        return new FileLoader(itsRecentFilesDbRef, getContext());
     }
 
     @Override
@@ -373,5 +314,91 @@ public final class StorageFileListFragment extends ListFragment
         }
 
         itsListener.openFile(uri, title);
+    }
+
+
+    /**
+     * Background file loader
+     */
+    private static final class FileLoader extends AsyncTaskLoader<Cursor>
+    {
+        private final ManagedRef<RecentFilesDb> itsRecentFilesDb;
+
+        /**
+         * Constructor
+         */
+        public FileLoader(ManagedRef<RecentFilesDb> recentFilesDb, Context ctx)
+        {
+            super(ctx.getApplicationContext());
+            itsRecentFilesDb = recentFilesDb;
+        }
+
+        /** Handle when the loader is reset */
+        @Override
+        protected void onReset()
+        {
+            super.onReset();
+            onStopLoading();
+        }
+
+        /** Handle when the loader is started */
+        @Override
+        protected void onStartLoading()
+        {
+            forceLoad();
+        }
+
+        /** Handle when the loader is stopped */
+        @Override
+        protected void onStopLoading()
+        {
+            cancelLoad();
+        }
+
+        /** Load the files in the background */
+        @Override
+        public Cursor loadInBackground()
+        {
+            PasswdSafeUtil.dbginfo(TAG, "loadInBackground");
+
+            RecentFilesDb recentFilesDb = itsRecentFilesDb.get();
+            if (recentFilesDb == null) {
+                return null;
+            }
+
+            int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+            ContentResolver cr = getContext().getContentResolver();
+            List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
+            for (Uri permUri: permUris) {
+                PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s",
+                                       permUri);
+                Cursor cursor = null;
+                try {
+                    cursor = cr.query(permUri, null, null, null, null);
+                    if ((cursor != null) && (cursor.moveToFirst())) {
+                        ApiCompat.takePersistableUriPermission(cr, permUri,
+                                                               flags);
+                    } else {
+                        ApiCompat.releasePersistableUriPermission(cr, permUri,
+                                                                  flags);
+                        recentFilesDb.removeUri(permUri);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "File remove error: " + permUri, e);
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+            }
+
+            try {
+                return recentFilesDb.queryFiles();
+            } catch (Exception e) {
+                Log.e(TAG, "Files load error", e);
+            }
+            return null;
+        }
     }
 }
