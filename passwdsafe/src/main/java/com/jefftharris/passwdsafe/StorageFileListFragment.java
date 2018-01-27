@@ -118,8 +118,12 @@ public final class StorageFileListFragment extends ListFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
+        Context ctx = getContext();
+        if (ctx == null) {
+            return;
+        }
         itsFilesAdapter = new SimpleCursorAdapter(
-                getActivity(), R.layout.file_list_item, null,
+                ctx, R.layout.file_list_item, null,
                 new String[] { RecentFilesDb.DB_COL_FILES_TITLE,
                                RecentFilesDb.DB_COL_FILES_ID,
                                RecentFilesDb.DB_COL_FILES_DATE },
@@ -223,7 +227,11 @@ public final class StorageFileListFragment extends ListFragment
         }
         case R.id.menu_clear_recent: {
             try {
-                ContentResolver cr = getActivity().getContentResolver();
+                Context ctx = getContext();
+                if (ctx == null) {
+                    return true;
+                }
+                ContentResolver cr = ctx.getContentResolver();
                 int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
                 List<Uri> recentUris = itsRecentFilesDb.clear();
