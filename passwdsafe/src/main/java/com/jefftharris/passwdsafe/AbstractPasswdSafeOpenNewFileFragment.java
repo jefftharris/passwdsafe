@@ -94,7 +94,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
      */
     protected final void setupView(View rootView)
     {
-        itsProgress = (ProgressBar)rootView.findViewById(R.id.progress);
+        itsProgress = rootView.findViewById(R.id.progress);
         itsProgress.setVisibility(View.INVISIBLE);
     }
 
