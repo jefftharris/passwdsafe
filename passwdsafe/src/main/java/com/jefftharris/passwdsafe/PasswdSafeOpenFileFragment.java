@@ -18,6 +18,7 @@ import android.os.CountDownTimer;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -396,12 +397,16 @@ public class PasswdSafeOpenFileFragment
                 Context ctx = getContext();
                 SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
                 if (!Preferences.isFileSavedPasswordConfirm(prefs)) {
+                    FragmentManager fragMgr = getFragmentManager();
+                    if (fragMgr == null) {
+                        break;
+                    }
                     ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
                             getString(R.string.save_password_p),
                             getString(R.string.save_password_warning),
                             getString(R.string.save), null);
                     dlg.setTargetFragment(this, 0);
-                    dlg.show(getFragmentManager(), "saveConfirm");
+                    dlg.show(fragMgr, "saveConfirm");
                 }
             }
             break;
@@ -763,7 +768,7 @@ public class PasswdSafeOpenFileFragment
         if (PasswdSafeApp.DEBUG_AUTO_FILE != null) {
             title += " - AUTOOPEN!!!!!";
         }
-        itsTitle.setText(getActivity().getString(label, title));
+        itsTitle.setText(getResources().getString(label, title));
     }
 
     /**
@@ -1082,10 +1087,13 @@ public class PasswdSafeOpenFileFragment
             }
 
             if (resolve) {
-                TypedValue value = new TypedValue();
-                getContext().getTheme().resolveAttribute(textColor, value,
-                                                         true);
-                textColor = value.data;
+                Context ctx = getContext();
+                if (ctx != null) {
+                    TypedValue value = new TypedValue();
+                    ctx.getTheme().resolveAttribute(textColor, value,
+                                                    true);
+                    textColor = value.data;
+                }
             }
             itsSavedPasswordMsg.setTextColor(textColor);
             handleFinish(finishMode);
