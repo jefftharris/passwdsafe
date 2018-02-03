@@ -188,33 +188,31 @@ public class PasswdSafeOpenFileFragment
         setupView(rootView);
         Context ctx = getContext();
 
-        itsTitle = (TextView)rootView.findViewById(R.id.file);
-        itsPasswordInput =
-                (TextInputLayout)rootView.findViewById(R.id.passwd_input);
-        itsPasswordEdit = (TextView)rootView.findViewById(R.id.passwd_edit);
+        itsTitle = rootView.findViewById(R.id.file);
+        itsPasswordInput = rootView.findViewById(R.id.passwd_input);
+        itsPasswordEdit = rootView.findViewById(R.id.passwd_edit);
         TypefaceUtils.setMonospace(itsPasswordEdit, ctx);
         itsPasswordEdit.setEnabled(false);
 
-        itsReadonlyCb = (CheckBox)rootView.findViewById(R.id.read_only);
-        itsReadonlyMsg = (TextView)rootView.findViewById(R.id.read_only_msg);
+        itsReadonlyCb = rootView.findViewById(R.id.read_only);
+        itsReadonlyMsg = rootView.findViewById(R.id.read_only_msg);
         GuiUtils.setVisible(itsReadonlyMsg, false);
-        Button cancelBtn = (Button)rootView.findViewById(R.id.cancel);
+        Button cancelBtn = rootView.findViewById(R.id.cancel);
         cancelBtn.setOnClickListener(this);
-        itsOkBtn = (Button)rootView.findViewById(R.id.ok);
+        itsOkBtn = rootView.findViewById(R.id.ok);
         itsOkBtn.setOnClickListener(this);
         itsOkBtn.setEnabled(false);
 
-        itsSavedPasswordMsg =
-                (TextView)rootView.findViewById(R.id.saved_password);
+        itsSavedPasswordMsg = rootView.findViewById(R.id.saved_password);
         itsSavedPasswordTextColor = itsSavedPasswordMsg.getCurrentTextColor();
-        itsSavePasswdCb = (CheckBox)rootView.findViewById(R.id.save_password);
+        itsSavePasswdCb = rootView.findViewById(R.id.save_password);
         itsSavePasswdCb.setOnCheckedChangeListener(this);
         boolean saveAvailable = itsSavedPasswordsMgr.isAvailable();
         GuiUtils.setVisible(itsSavePasswdCb, saveAvailable);
         GuiUtils.setVisible(itsSavedPasswordMsg, false);
 
         itsYubiMgr = new YubikeyMgr();
-        itsYubikeyCb = (CheckBox)rootView.findViewById(R.id.yubikey);
+        itsYubikeyCb = rootView.findViewById(R.id.yubikey);
         setVisibility(R.id.file_open_help_text, false, rootView);
         itsYubiState = itsYubiMgr.getState(getActivity());
         switch (itsYubiState) {
