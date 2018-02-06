@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -37,20 +38,25 @@ public class OwncloudEditDialog extends DialogFragment
     public interface Listener
     {
         /** Handle changed settings for ownCloud */
-        void handleOwncloudSettingsChanged(String url,
+        void handleOwncloudSettingsChanged(Uri providerUri,
+                                           String url,
                                            ProviderSyncFreqPref freq);
     }
 
+    private Uri itsProviderUri;
     private Listener itsListener;
     private TextView itsUrlEdit;
     private Spinner itsSyncInterval;
     private DialogValidator itsValidator;
 
     /** Create an instance of the dialog */
-    public static OwncloudEditDialog newInstance(String url, int syncFreq)
+    public static OwncloudEditDialog newInstance(Uri providerUri,
+                                                 String url,
+                                                 int syncFreq)
     {
         OwncloudEditDialog dialog = new OwncloudEditDialog();
         Bundle args = new Bundle();
+        args.putParcelable("providerUri", providerUri);
         args.putString("url", url);
         args.putInt("syncFreq", syncFreq);
         dialog.setArguments(args);
@@ -63,6 +69,7 @@ public class OwncloudEditDialog extends DialogFragment
     Dialog onCreateDialog(Bundle savedInstanceState)
     {
         Bundle args = getArguments();
+        itsProviderUri = args.getParcelable("providerUri");
         String url = args.getString("url");
         int syncFreq = args.getInt("syncFreq");
 
@@ -135,7 +142,7 @@ public class OwncloudEditDialog extends DialogFragment
                     ProviderSyncFreqPref.displayValueOf(freqPos);
 
             itsListener.handleOwncloudSettingsChanged(
-                    itsUrlEdit.getText().toString(), freq);
+                    itsProviderUri, itsUrlEdit.getText().toString(), freq);
         }
         dialog.dismiss();
     }

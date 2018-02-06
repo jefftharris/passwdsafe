@@ -25,55 +25,41 @@ public enum ProviderType
     /** Set the ImageView to the icon of the provider type */
     public void setIcon(ImageView iv)
     {
-        switch (this) {
-        case GDRIVE: {
-            iv.setImageResource(R.drawable.google_drive);
-            break;
-        }
-        case DROPBOX: {
-            iv.setImageResource(R.drawable.dropbox);
-            break;
-        }
-        case BOX: {
-            iv.setImageResource(R.drawable.box);
-            break;
-        }
-        case ONEDRIVE: {
-            iv.setImageResource(R.drawable.onedrive);
-            break;
-        }
-        case OWNCLOUD: {
-            iv.setImageResource(R.drawable.owncloud);
-            break;
-        }
-        }
+        iv.setImageResource(getIconId(false));
     }
 
     /** Set the ImageView to the icon of the provider type */
     public void setIcon(MenuItem item)
     {
+        item.setIcon(getIconId(true));
+    }
+
+    /**
+     * Get the icon resource id for the provider type
+     */
+    public int getIconId(boolean forMenu)
+    {
         switch (this) {
         case GDRIVE: {
-            item.setIcon(R.drawable.google_drive);
-            break;
+            return R.drawable.google_drive;
         }
         case DROPBOX: {
-            item.setIcon(R.drawable.dropbox_trace);
-            break;
+            if (forMenu) {
+                return R.drawable.dropbox_trace;
+            }
+            return R.drawable.dropbox;
         }
         case BOX: {
-            item.setIcon(R.drawable.box);
-            break;
+            return R.drawable.box;
         }
         case ONEDRIVE: {
-            item.setIcon(R.drawable.onedrive);
-            break;
+            return R.drawable.onedrive;
         }
         case OWNCLOUD: {
-            item.setIcon(R.drawable.owncloud);
-            break;
+            return R.drawable.owncloud;
         }
         }
+        return 0;
     }
 
     /** Set the TextView to the name of the provider type */

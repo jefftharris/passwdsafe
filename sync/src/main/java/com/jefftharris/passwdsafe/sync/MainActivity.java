@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -25,14 +24,12 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -52,10 +49,13 @@ import com.jefftharris.passwdsafe.sync.owncloud.OwncloudFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudProvider;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderCallbacks<Cursor>, SyncUpdateHandler,
+        implements LoaderCallbacks<Cursor>,
+                   MainActivityProviderOps,
+                   SyncUpdateHandler,
                    AccountUpdateTask.Listener,
                    OwncloudEditDialog.Listener
 {
@@ -72,18 +72,22 @@ public class MainActivity extends AppCompatActivity
 
     private static final int LOADER_PROVIDERS = 0;
 
-    private DynamicPermissionMgr itsPermissionMgr;
-    private Uri itsGDrivePlayUri = null;
-    private Uri itsDropboxUri = null;
-    private boolean itsDropboxPendingAcctLink = false;
-    private Uri itsBoxUri = null;
-    private Uri itsOnedriveUri = null;
-    private Uri itsOwncloudUri = null;
-    private int itsOwncloudSyncFreq = 0;
-    private boolean itsIsRunning = false;
+    private static final int MENU_BIT_HAS_GDRIVE = 0;
+    private static final int MENU_BIT_HAS_DROPBOX = 1;
+    private static final int MENU_BIT_HAS_BOX = 2;
+    private static final int MENU_BIT_HAS_ONEDRIVE = 3;
+    private static final int MENU_BIT_HAS_OWNCLOUD = 4;
 
+    private DynamicPermissionMgr itsPermissionMgr;
+    private MainActivityProviderAdapter itsAccountsAdapter;
+    private final BitSet itsMenuOptions = new BitSet();
+    private GDriveState itsGDriveState = GDriveState.OK;
+    private SparseArray<Uri> itsAccountLinkUris = new SparseArray<>();
+    private boolean itsDropboxPendingAcctLink = false;
     private NewAccountTask itsNewAccountTask = null;
     private final List<AccountUpdateTask> itsUpdateTasks = new ArrayList<>();
+    private boolean itsIsRunning = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -91,50 +95,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i(TAG, "onCreate");
-
-        OnItemSelectedListener freqSelListener = new OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id)
-            {
-                if (!itsIsRunning) {
-                    PasswdSafeUtil.dbginfo(TAG, "not running");
-                    return;
-                }
-
-                switch (parent.getId()) {
-                case R.id.gdrive_interval: {
-                    onGdriveFreqChanged(position);
-                    break;
-                }
-                case R.id.dropbox_interval: {
-                    onDropboxFreqChanged(position);
-                    break;
-                }
-                case R.id.box_interval: {
-                    onBoxFreqChanged(position);
-                    break;
-                }
-                case R.id.onedrive_interval: {
-                    onOnedriveFreqChanged(position);
-                    break;
-                }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent)
-            {
-            }
-        };
-
-        for (int id: new int[]{R.id.box_interval, R.id.dropbox_interval,
-                               R.id.gdrive_interval, R.id.onedrive_interval}) {
-            Spinner freqSpin = findViewById(id);
-            assert freqSpin != null;
-            freqSpin.setOnItemSelectedListener(freqSelListener);
-        }
 
         itsPermissionMgr = new DynamicPermissionMgr(
                 Manifest.permission.GET_ACCOUNTS, this,
@@ -151,11 +111,11 @@ public class MainActivity extends AppCompatActivity
                                               GDRIVE_PLAY_SERVICES_ERROR_RC);
         }
 
-        updateGdriveAccount(null);
-        updateDropboxAccount(null);
-        updateBoxAccount(null);
-        updateOnedriveAccount(null);
-        updateOwncloudAccount(null);
+        itsAccountsAdapter = new MainActivityProviderAdapter(this);
+        RecyclerView accounts = findViewById(R.id.accounts);
+        accounts.setAdapter(itsAccountsAdapter);
+        accounts.setNestedScrollingEnabled(false);
+
         LoaderManager lm = getSupportLoaderManager();
         lm.initLoader(LOADER_PROVIDERS, null, this);
     }
@@ -204,7 +164,8 @@ public class MainActivity extends AppCompatActivity
         if (itsDropboxPendingAcctLink) {
             itsDropboxPendingAcctLink = false;
             itsNewAccountTask = getDbxProvider().finishAccountLink(
-                    Activity.RESULT_OK, null, itsDropboxUri);
+                    Activity.RESULT_OK, null,
+                    getAccountLinkUri(DROPBOX_LINK_RC));
         }
 
         if (itsNewAccountTask != null) {
@@ -221,24 +182,23 @@ public class MainActivity extends AppCompatActivity
     {
         switch (requestCode) {
         case BOX_AUTH_RC: {
-            itsNewAccountTask =
-                    getBoxProvider().finishAccountLink(resultCode, data,
-                                                       itsBoxUri);
+            itsNewAccountTask = getBoxProvider().finishAccountLink(
+                    resultCode, data, getAccountLinkUri(BOX_AUTH_RC));
             break;
         }
         case ONEDRIVE_LINK_RC: {
             itsNewAccountTask = getOnedriveProvider().finishAccountLink(
-                    resultCode, null, itsOnedriveUri);
+                    resultCode, null, getAccountLinkUri(ONEDRIVE_LINK_RC));
             break;
         }
         case OWNCLOUD_LINK_RC: {
             itsNewAccountTask = getOwncloudProvider().finishAccountLink(
-                    resultCode, data, itsOwncloudUri);
+                    resultCode, data, getAccountLinkUri(OWNCLOUD_LINK_RC));
             break;
         }
         case GDRIVE_PLAY_LINK_RC: {
             itsNewAccountTask = getGDrivePlayProvider().finishAccountLink(
-                    resultCode, data, itsGDrivePlayUri);
+                    resultCode, data, getAccountLinkUri(GDRIVE_PLAY_LINK_RC));
             break;
         }
         case GDRIVE_PLAY_SERVICES_ERROR_RC: {
@@ -279,12 +239,16 @@ public class MainActivity extends AppCompatActivity
         MenuItem item = menu.findItem(R.id.menu_add);
         item.setEnabled(itsPermissionMgr.hasPerms());
 
-        setProviderMenuEnabled(menu, R.id.menu_add_box, itsBoxUri);
-        setProviderMenuEnabled(menu, R.id.menu_add_dropbox, itsDropboxUri);
+        setProviderMenuEnabled(menu, R.id.menu_add_box,
+                               MENU_BIT_HAS_BOX);
+        setProviderMenuEnabled(menu, R.id.menu_add_dropbox,
+                               MENU_BIT_HAS_DROPBOX);
         setProviderMenuEnabled(menu, R.id.menu_add_google_drive,
-                               itsGDrivePlayUri);
-        setProviderMenuEnabled(menu, R.id.menu_add_onedrive, itsOnedriveUri);
-        setProviderMenuEnabled(menu, R.id.menu_add_owncloud, itsOwncloudUri);
+                               MENU_BIT_HAS_GDRIVE);
+        setProviderMenuEnabled(menu, R.id.menu_add_onedrive,
+                               MENU_BIT_HAS_ONEDRIVE);
+        setProviderMenuEnabled(menu, R.id.menu_add_owncloud,
+                               MENU_BIT_HAS_OWNCLOUD);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -309,23 +273,23 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         case R.id.menu_add_box: {
-            onBoxChoose();
+            onBoxChoose(null);
             return true;
         }
         case R.id.menu_add_dropbox: {
-            onDropboxChoose();
+            onDropboxChoose(null);
             return true;
         }
         case R.id.menu_add_google_drive: {
-            onGdriveChoose();
+            onGdriveChoose(null);
             return true;
         }
         case R.id.menu_add_onedrive: {
-            onOnedriveChoose();
+            onOnedriveChoose(null);
             return true;
         }
         case R.id.menu_add_owncloud: {
-            onOwncloudChoose();
+            onOwncloudChoose(null);
             return true;
         }
         default: {
@@ -344,11 +308,12 @@ public class MainActivity extends AppCompatActivity
 
 
     /** Handler to choose a Google Drive account */
-    private void onGdriveChoose()
+    private void onGdriveChoose(Uri currProviderUri)
     {
         Provider driveProvider = getGDrivePlayProvider();
         try {
             driveProvider.startAccountLink(this, GDRIVE_PLAY_LINK_RC);
+            itsAccountLinkUris.put(GDRIVE_PLAY_LINK_RC, currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "onGDrivePlayChoose failed", e);
             driveProvider.unlinkAccount();
@@ -356,42 +321,14 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /** Button onClick handler to sync a Google Drive account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onGdriveSync(View view)
-    {
-        Provider driveProvider = getGDrivePlayProvider();
-        if (driveProvider.isAccountAuthorized()) {
-            driveProvider.requestSync(true);
-        } else {
-            onGdriveChoose();
-        }
-    }
-
-
-    /** Button onClick handler to clear a Google Drive account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onGdriveClear(View view)
-    {
-        DialogFragment prompt = ClearPromptDlg.newInstance(itsGDrivePlayUri);
-        prompt.show(getSupportFragmentManager(), null);
-    }
-
-
-    /** Google Drive sync frequency spinner changed */
-    private void onGdriveFreqChanged(int pos)
-    {
-        ProviderSyncFreqPref freq = ProviderSyncFreqPref.displayValueOf(pos);
-        updateSyncFreq(freq, itsGDrivePlayUri);
-    }
-
     /** Handler to choose a Dropbox account */
-    private void onDropboxChoose()
+    private void onDropboxChoose(Uri currProviderUri)
     {
         Provider dbxProvider = getDbxProvider();
         try {
             dbxProvider.startAccountLink(this, DROPBOX_LINK_RC);
             itsDropboxPendingAcctLink = true;
+            itsAccountLinkUris.put(DROPBOX_LINK_RC, currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "startDropboxLink failed", e);
             dbxProvider.unlinkAccount();
@@ -399,53 +336,13 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /** Button onClick handler to sync a Dropbox account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onDropboxSync(View view)
-    {
-        Provider dbxProvider = getDbxProvider();
-        if (dbxProvider.isAccountAuthorized()) {
-            dbxProvider.requestSync(true);
-        } else {
-            onDropboxChoose();
-        }
-    }
-
-
-    /** Button onClick handler to clear a Dropbox account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onDropboxClear(View view)
-    {
-        DialogFragment prompt = ClearPromptDlg.newInstance(itsDropboxUri);
-        prompt.show(getSupportFragmentManager(), null);
-    }
-
-
-    /** Dropbox sync frequency spinner changed */
-    private void onDropboxFreqChanged(int pos)
-    {
-        ProviderSyncFreqPref freq = ProviderSyncFreqPref.displayValueOf(pos);
-        updateSyncFreq(freq, itsDropboxUri);
-    }
-
-
-    /** Button onClick handler to select Dropbox files */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onDropboxChooseFiles(View view)
-    {
-        Intent intent = new Intent();
-        intent.putExtra(DropboxFilesActivity.INTENT_PROVIDER_URI,
-                        itsDropboxUri);
-        intent.setClass(this, DropboxFilesActivity.class);
-        startActivity(intent);
-    }
-
     /** Handler to choose a Box account */
-    private void onBoxChoose()
+    private void onBoxChoose(Uri currProviderUri)
     {
         Provider boxProvider = getBoxProvider();
         try {
             boxProvider.startAccountLink(this, BOX_AUTH_RC);
+            itsAccountLinkUris.put(BOX_AUTH_RC, currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "Box startAccountLink failed", e);
             boxProvider.unlinkAccount();
@@ -453,42 +350,13 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /** Button onClick handler to sync a Box account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onBoxSync(View view)
-    {
-        Provider boxProvider = getBoxProvider();
-        if (boxProvider.isAccountAuthorized()) {
-            boxProvider.requestSync(true);
-        } else {
-            onBoxChoose();
-        }
-    }
-
-
-    /** Button onClick handler to clear a Box account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onBoxClear(View view)
-    {
-        DialogFragment prompt = ClearPromptDlg.newInstance(itsBoxUri);
-        prompt.show(getSupportFragmentManager(), null);
-    }
-
-
-    /** Box sync frequency spinner changed */
-    private void onBoxFreqChanged(int pos)
-    {
-        ProviderSyncFreqPref freq = ProviderSyncFreqPref.displayValueOf(pos);
-        updateSyncFreq(freq, itsBoxUri);
-    }
-
-
     /** Handler to choose an OneDrive account */
-    private void onOnedriveChoose()
+    private void onOnedriveChoose(Uri currProviderUri)
     {
         Provider onedriveProvider = getOnedriveProvider();
         try {
             onedriveProvider.startAccountLink(this, ONEDRIVE_LINK_RC);
+            itsAccountLinkUris.put(ONEDRIVE_LINK_RC, currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "OneDrive startAccountLink failed", e);
             onedriveProvider.unlinkAccount();
@@ -496,54 +364,13 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /** Button onClick handler to sync an OneDrive account */
-    @SuppressWarnings("UnusedParameters")
-    public void onOnedriveSync(View view)
-    {
-        Provider onedriveProvider = getOnedriveProvider();
-        if (onedriveProvider.isAccountAuthorized()) {
-            onedriveProvider.requestSync(true);
-        } else {
-            onOnedriveChoose();
-        }
-    }
-
-
-    /** Button onClick handler to clear an OneDrive account */
-    @SuppressWarnings("UnusedParameters")
-    public void onOnedriveClear(View view)
-    {
-        DialogFragment prompt = ClearPromptDlg.newInstance(itsOnedriveUri);
-        prompt.show(getSupportFragmentManager(), null);
-    }
-
-
-    /** OneDrive sync frequency spinner changed */
-    private void onOnedriveFreqChanged(int pos)
-    {
-        ProviderSyncFreqPref freq = ProviderSyncFreqPref.displayValueOf(pos);
-        updateSyncFreq(freq, itsOnedriveUri);
-    }
-
-
-   /** Button onClick handler to select OneDrive files */
-    @SuppressWarnings("UnusedParameters")
-    public void onOnedriveChooseFiles(View view)
-    {
-        Intent intent = new Intent();
-        intent.putExtra(OnedriveFilesActivity.INTENT_PROVIDER_URI,
-                        itsOnedriveUri);
-        intent.setClass(this, OnedriveFilesActivity.class);
-        startActivity(intent);
-    }
-
-
     /** Handler to choose an ownCloud account */
-    private void onOwncloudChoose()
+    private void onOwncloudChoose(Uri currProviderUri)
     {
         Provider owncloudProvider = getOwncloudProvider();
         try {
             owncloudProvider.startAccountLink(this, OWNCLOUD_LINK_RC);
+            itsAccountLinkUris.put(OWNCLOUD_LINK_RC, currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "ownCloud startAccountLink failed", e);
             owncloudProvider.unlinkAccount();
@@ -551,105 +378,60 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /** Button onClick handler to sync an ownCloud account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onOwncloudSync(View view)
-    {
-        getOwncloudProvider().requestSync(true);
-    }
-
-
-    /** Button onClick handler to edit an ownCloud account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onOwncloudEdit(View view)
-    {
-        String url = getOwncloudProvider().getUrl().toString();
-        DialogFragment dialog =
-                OwncloudEditDialog.newInstance(url, itsOwncloudSyncFreq);
-        dialog.show(getSupportFragmentManager(), null);
-    }
-
-
     /** Handle changed settings for ownCloud */
     @Override
-    public void handleOwncloudSettingsChanged(String url,
+    public void handleOwncloudSettingsChanged(Uri providerUri,
+                                              String url,
                                               ProviderSyncFreqPref freq)
     {
         getOwncloudProvider().setSettings(url);
-        int freqVal = freq.getFreq();
-        if (freqVal != itsOwncloudSyncFreq) {
-            itsOwncloudSyncFreq = freqVal;
-            updateSyncFreq(freq, itsOwncloudUri);
-        }
+        updateProviderSyncFreq(providerUri, freq);
+        LoaderManager lm = getSupportLoaderManager();
+        lm.restartLoader(LOADER_PROVIDERS, null, this);
     }
 
-
-    /** Button onClick handler to clear an ownCloud account */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onOwncloudClear(View view)
-    {
-        DialogFragment prompt = ClearPromptDlg.newInstance(itsOwncloudUri);
-        prompt.show(getSupportFragmentManager(), null);
-    }
-
-
-    /** Button onClick handler to select ownCloud files */
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public void onOwncloudChooseFiles(View view)
-    {
-        Intent intent = new Intent();
-        intent.putExtra(OwncloudFilesActivity.INTENT_PROVIDER_URI,
-                        itsOwncloudUri);
-        intent.setClass(this, OwncloudFilesActivity.class);
-        startActivity(intent);
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
-        return new CursorLoader(this, PasswdSafeContract.Providers.CONTENT_URI,
-                                PasswdSafeContract.Providers.PROJECTION,
-                                null, null, null);
+        // TODO: use PasswdCursorLoader like FileListNavDrawerFragment
+        return new CursorLoader(
+                this, PasswdSafeContract.Providers.CONTENT_URI,
+                PasswdSafeContract.Providers.PROJECTION,
+                null, null, PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
     {
-        boolean hasGdrive = false;
-        boolean hasDropbox = false;
-        boolean hasBox = false;
-        boolean hasOnedrive = false;
-        boolean hasOwncloud = false;
+        boolean hasAccounts = false;
+        itsMenuOptions.clear();
         for (boolean more = (cursor != null) && cursor.moveToFirst(); more;
                 more = cursor.moveToNext()) {
+            hasAccounts = true;
             String typeStr = cursor.getString(
                     PasswdSafeContract.Providers.PROJECTION_IDX_TYPE);
             try {
                 ProviderType type = ProviderType.valueOf(typeStr);
                 switch (type) {
                 case GDRIVE: {
-                    hasGdrive = true;
-                    updateGdriveAccount(cursor);
+                    itsMenuOptions.set(MENU_BIT_HAS_GDRIVE);
                     break;
                 }
                 case DROPBOX: {
-                    hasDropbox = true;
-                    updateDropboxAccount(cursor);
+                    itsMenuOptions.set(MENU_BIT_HAS_DROPBOX);
                     break;
                 }
                 case BOX: {
-                    hasBox = true;
-                    updateBoxAccount(cursor);
+                    itsMenuOptions.set(MENU_BIT_HAS_BOX);
                     break;
                 }
                 case ONEDRIVE: {
-                    hasOnedrive = true;
-                    updateOnedriveAccount(cursor);
+                    itsMenuOptions.set(MENU_BIT_HAS_ONEDRIVE);
                     break;
                 }
                 case OWNCLOUD: {
-                    hasOwncloud = true;
-                    updateOwncloudAccount(cursor);
+                    itsMenuOptions.set(MENU_BIT_HAS_OWNCLOUD);
                     break;
                 }
                 }
@@ -657,27 +439,11 @@ public class MainActivity extends AppCompatActivity
                 Log.e(TAG, "Unknown type: " + typeStr);
             }
         }
-        if (!hasGdrive) {
-            updateGdriveAccount(null);
-        }
-        if (!hasDropbox) {
-            updateDropboxAccount(null);
-        }
-        if (!hasBox) {
-            updateBoxAccount(null);
-        }
-        if (!hasOnedrive) {
-            updateOnedriveAccount(null);
-        }
-        if (!hasOwncloud) {
-            updateOwncloudAccount(null);
-        }
 
-        GuiUtils.setVisible(
-                findViewById(R.id.no_accounts_msg),
-                !(hasGdrive || hasDropbox || hasBox ||
-                  hasOnedrive || hasOwncloud));
+        GuiUtils.setVisible(findViewById(R.id.no_accounts_msg), !hasAccounts);
         GuiUtils.invalidateOptionsMenu(this);
+
+        itsAccountsAdapter.changeCursor(cursor);
     }
 
     @Override
@@ -687,26 +453,213 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void handleProviderSync(ProviderType type, Uri providerUri)
+    {
+        Provider provider = null;
+        switch (type) {
+        case GDRIVE: {
+            provider = getGDrivePlayProvider();
+            break;
+        }
+        case DROPBOX: {
+            provider = getDbxProvider();
+            break;
+        }
+        case BOX: {
+            provider = getBoxProvider();
+            break;
+        }
+        case ONEDRIVE: {
+            provider = getOnedriveProvider();
+            break;
+        }
+        case OWNCLOUD: {
+            provider = getOwncloudProvider();
+            break;
+        }
+        }
+        if (provider == null) {
+            return;
+        }
+        if (provider.isAccountAuthorized()) {
+            provider.requestSync(true);
+        } else {
+            switch (type) {
+            case GDRIVE: {
+                onGdriveChoose(providerUri);
+                break;
+            }
+            case DROPBOX: {
+                onDropboxChoose(providerUri);
+                break;
+            }
+            case BOX: {
+                onBoxChoose(providerUri);
+                break;
+            }
+            case ONEDRIVE: {
+                onOnedriveChoose(providerUri);
+                break;
+            }
+            case OWNCLOUD: {
+                onOwncloudChoose(providerUri);
+                break;
+            }
+            }
+        }
+    }
+
+    @Override
+    public void handleProviderChooseFiles(ProviderType type, Uri providerUri)
+    {
+        Class chooseActivity = null;
+        String uriKey = null;
+        switch (type) {
+        case DROPBOX: {
+            chooseActivity = DropboxFilesActivity.class;
+            uriKey = DropboxFilesActivity.INTENT_PROVIDER_URI;
+            break;
+        }
+        case ONEDRIVE: {
+            chooseActivity = OnedriveFilesActivity.class;
+            uriKey = OnedriveFilesActivity.INTENT_PROVIDER_URI;
+            break;
+        }
+        case OWNCLOUD: {
+            chooseActivity = OwncloudFilesActivity.class;
+            uriKey = OwncloudFilesActivity.INTENT_PROVIDER_URI;
+            break;
+        }
+        case BOX:
+        case GDRIVE: {
+            break;
+        }
+        }
+        if (chooseActivity == null) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.putExtra(uriKey, providerUri);
+        intent.setClass(this, chooseActivity);
+        startActivity(intent);
+    }
+
+    @Override
+    public void handleProviderDelete(Uri providerUri)
+    {
+        if (providerUri != null) {
+            DialogFragment prompt = ClearPromptDlg.newInstance(providerUri);
+            prompt.show(getSupportFragmentManager(), null);
+        }
+    }
+
+    @Override
+    public void handleProviderEditDialog(ProviderType type,
+                                         Uri providerUri,
+                                         ProviderSyncFreqPref freq)
+    {
+        switch (type) {
+        case OWNCLOUD: {
+            String url = getOwncloudProvider().getUrl().toString();
+            DialogFragment dialog = OwncloudEditDialog.newInstance(
+                    providerUri, url, freq.getFreq());
+            dialog.show(getSupportFragmentManager(), null);
+            break;
+        }
+        case BOX:
+        case DROPBOX:
+        case GDRIVE:
+        case ONEDRIVE: {
+            break;
+        }
+        }
+    }
+
+    @Override
+    public void updateProviderSyncFreq(final Uri providerUri,
+                                       ProviderSyncFreqPref freq)
+    {
+        new AccountUpdateTask(providerUri, getString(R.string.updating_account))
+        {
+            @Override
+            protected void doAccountUpdate(ContentResolver cr)
+            {
+                ContentValues values = new ContentValues();
+                values.put(PasswdSafeContract.Providers.COL_SYNC_FREQ,
+                           freq.getFreq());
+                cr.update(itsAccountUri, values, null, null);
+            }
+        }.startTask(this, this);
+    }
+
+    @Override
+    public CharSequence getProviderWarning(ProviderType type)
+    {
+        CharSequence warning = null;
+        switch (type) {
+        case GDRIVE: {
+            switch (itsGDriveState) {
+            case OK: {
+                break;
+            }
+            case AUTH_REQUIRED: {
+                warning = getText(R.string.gdrive_state_auth_required);
+                break;
+            }
+            case PENDING_AUTH: {
+                warning = getText(R.string.gdrive_state_pending_auth);
+                break;
+            }
+            }
+            break;
+        }
+        case DROPBOX: {
+            boolean authorized = getDbxProvider().isAccountAuthorized();
+            if (!authorized) {
+                warning = getText(R.string.dropbox_acct_unlinked);
+            }
+            break;
+        }
+        case BOX: {
+            boolean authorized = getBoxProvider().isAccountAuthorized();
+            if (!authorized) {
+                warning = getText(R.string.box_acct_unlinked);
+            }
+            break;
+        }
+        case ONEDRIVE: {
+            boolean authorized = getOnedriveProvider().isAccountAuthorized();
+            if (!authorized) {
+                warning = getText(R.string.onedrive_acct_unlinked);
+            }
+            break;
+        }
+        case OWNCLOUD: {
+            boolean authorized = getOwncloudProvider().isAccountAuthorized();
+            if (!authorized) {
+                warning = getText(R.string.owncloud_auth_required);
+            }
+            break;
+        }
+        }
+        return warning;
+    }
+
+    @Override
+    public boolean isActivityRunning()
+    {
+        return itsIsRunning;
+    }
+
+    @Override
     public void updateGDriveState(GDriveState state)
     {
-        TextView warning = findViewById(R.id.gdrive_sync_warning);
-        assert warning != null;
-        switch (state) {
-        case OK: {
-            warning.setVisibility(View.GONE);
-            break;
-        }
-        case AUTH_REQUIRED: {
-            warning.setVisibility(View.VISIBLE);
-            warning.setText(R.string.gdrive_state_auth_required);
-            break;
-        }
-        case PENDING_AUTH: {
-            warning.setVisibility(View.VISIBLE);
-            warning.setText(R.string.gdrive_state_pending_auth);
-            break;
-        }
-        }
+        itsGDriveState = state;
+        LoaderManager lm = getSupportLoaderManager();
+        lm.restartLoader(LOADER_PROVIDERS, null, this);
+
+        // TODO: trigger reload as well when other sync services change
+        // authorized state for warning messages
     }
 
     /**
@@ -727,185 +680,6 @@ public class MainActivity extends AppCompatActivity
         itsUpdateTasks.remove(task);
     }
 
-    /** Update the UI when the Google Drive account is changed */
-    private void updateGdriveAccount(Cursor cursor)
-    {
-        boolean haveCursor = (cursor != null);
-        GuiUtils.setVisible(findViewById(R.id.gdrive_container), haveCursor);
-        GuiUtils.setVisible(findViewById(R.id.gdrive_separator), haveCursor);
-        if (haveCursor) {
-            long id = cursor.getLong(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_ID);
-            String acct = PasswdSafeContract.Providers.getDisplayName(cursor);
-            int freqVal = cursor.getInt(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_SYNC_FREQ);
-            ProviderSyncFreqPref freq =
-                    ProviderSyncFreqPref.freqValueOf(freqVal);
-            itsGDrivePlayUri = ContentUris.withAppendedId(
-                    PasswdSafeContract.Providers.CONTENT_URI, id);
-
-            TextView acctView = findViewById(R.id.gdrive_acct);
-            assert acctView != null;
-            acctView.setText(acct);
-
-            View freqSpinLabel = findViewById(R.id.gdrive_interval_label);
-            assert freqSpinLabel != null;
-            Spinner freqSpin = findViewById(R.id.gdrive_interval);
-            assert freqSpin != null;
-            freqSpin.setSelection(freq.getDisplayIdx());
-            freqSpin.setEnabled(true);
-            freqSpinLabel.setEnabled(true);
-        } else {
-            itsGDrivePlayUri = null;
-        }
-    }
-
-    /** Update the UI when the Dropbox account is changed */
-    private void updateDropboxAccount(Cursor cursor)
-    {
-        boolean haveCursor = (cursor != null);
-        GuiUtils.setVisible(findViewById(R.id.dropbox_container), haveCursor);
-        GuiUtils.setVisible(findViewById(R.id.dropbox_separator), haveCursor);
-        if (haveCursor) {
-            long id = cursor.getLong(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_ID);
-            String acct = PasswdSafeContract.Providers.getDisplayName(cursor);
-            int freqVal = cursor.getInt(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_SYNC_FREQ);
-            ProviderSyncFreqPref freq =
-                    ProviderSyncFreqPref.freqValueOf(freqVal);
-            itsDropboxUri = ContentUris.withAppendedId(
-                    PasswdSafeContract.Providers.CONTENT_URI, id);
-            boolean authorized = getDbxProvider().isAccountAuthorized();
-
-            TextView acctView = findViewById(R.id.dropbox_acct);
-            assert acctView != null;
-            acctView.setText(acct);
-            View chooseFilesBtn = findViewById(R.id.dropbox_choose_files);
-            assert chooseFilesBtn != null;
-            chooseFilesBtn.setEnabled(authorized);
-
-            View freqSpinLabel = findViewById(R.id.dropbox_interval_label);
-            assert freqSpinLabel != null;
-            Spinner freqSpin = findViewById(R.id.dropbox_interval);
-            assert freqSpin != null;
-            freqSpin.setSelection(freq.getDisplayIdx());
-            freqSpin.setEnabled(true);
-            freqSpinLabel.setEnabled(true);
-
-            GuiUtils.setVisible(findViewById(R.id.dropbox_acct_unlink),
-                                !authorized);
-        } else {
-            itsDropboxUri = null;
-        }
-    }
-
-    /** Update the UI when the Box account is changed */
-    private void updateBoxAccount(Cursor cursor)
-    {
-        boolean haveCursor = (cursor != null);
-        GuiUtils.setVisible(findViewById(R.id.box_container), haveCursor);
-        GuiUtils.setVisible(findViewById(R.id.box_separator), haveCursor);
-        if (haveCursor) {
-            long id = cursor.getLong(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_ID);
-            String acct = PasswdSafeContract.Providers.getDisplayName(cursor);
-            int freqVal = cursor.getInt(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_SYNC_FREQ);
-            ProviderSyncFreqPref freq =
-                    ProviderSyncFreqPref.freqValueOf(freqVal);
-            itsBoxUri = ContentUris.withAppendedId(
-                    PasswdSafeContract.Providers.CONTENT_URI, id);
-            boolean authorized = getBoxProvider().isAccountAuthorized();
-
-            TextView acctView = findViewById(R.id.box_acct);
-            assert acctView != null;
-            acctView.setText(acct);
-
-            View freqSpinLabel = findViewById(R.id.box_interval_label);
-            assert freqSpinLabel != null;
-            Spinner freqSpin = findViewById(R.id.box_interval);
-            assert freqSpin != null;
-            freqSpin.setSelection(freq.getDisplayIdx());
-            freqSpin.setEnabled(true);
-            freqSpinLabel.setEnabled(true);
-
-            GuiUtils.setVisible(findViewById(R.id.box_acct_unlink),
-                                !authorized);
-        } else {
-            itsBoxUri = null;
-        }
-    }
-    
-    /** Update the UI when the OneDrive account is changed */
-    private void updateOnedriveAccount(Cursor cursor) 
-    {
-        boolean haveCursor = (cursor != null);
-        GuiUtils.setVisible(findViewById(R.id.onedrive_container), haveCursor);
-        GuiUtils.setVisible(findViewById(R.id.onedrive_separator), haveCursor);
-        if (haveCursor) {
-            long id = cursor.getLong(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_ID);
-            String acct = PasswdSafeContract.Providers.getDisplayName(cursor);
-            int freqVal = cursor.getInt(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_SYNC_FREQ);
-            ProviderSyncFreqPref freq =
-                    ProviderSyncFreqPref.freqValueOf(freqVal);
-            itsOnedriveUri = ContentUris.withAppendedId(
-                    PasswdSafeContract.Providers.CONTENT_URI, id);
-
-            Provider provider = getOnedriveProvider();
-            boolean authorized = provider.isAccountAuthorized();
-
-            TextView acctView = findViewById(R.id.onedrive_acct);
-            assert acctView != null;
-            acctView.setText(acct);
-
-            GuiUtils.setVisible(findViewById(R.id.onedrive_auth_required),
-                                !authorized);
-
-            View freqSpinLabel = findViewById(R.id.onedrive_interval_label);
-            assert freqSpinLabel != null;
-            Spinner freqSpin = findViewById(R.id.onedrive_interval);
-            assert freqSpin != null;
-            freqSpin.setSelection(freq.getDisplayIdx());
-
-            freqSpin.setEnabled(true);
-            freqSpinLabel.setEnabled(true);
-        } else {
-            itsOnedriveUri = null;
-        }
-    }
-
-    /** Update the UI when the ownCloud account is changed */
-    private void updateOwncloudAccount(Cursor cursor)
-    {
-        boolean haveCursor = (cursor != null);
-        GuiUtils.setVisible(findViewById(R.id.owncloud_container), haveCursor);
-        GuiUtils.setVisible(findViewById(R.id.owncloud_separator), haveCursor);
-        if (haveCursor) {
-            long id = cursor.getLong(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_ID);
-            String acct = PasswdSafeContract.Providers.getDisplayName(cursor);
-            itsOwncloudSyncFreq = cursor.getInt(
-                    PasswdSafeContract.Providers.PROJECTION_IDX_SYNC_FREQ);
-            itsOwncloudUri = ContentUris.withAppendedId(
-                    PasswdSafeContract.Providers.CONTENT_URI, id);
-
-            OwncloudProvider provider = getOwncloudProvider();
-            boolean authorized = provider.isAccountAuthorized();
-
-            TextView acctView = findViewById(R.id.owncloud_acct);
-            assert acctView != null;
-            acctView.setText(acct);
-
-            GuiUtils.setVisible(findViewById(R.id.owncloud_auth_required),
-                                !authorized);
-        } else {
-            itsOwncloudUri = null;
-        }
-    }
-
     /** Remove an account */
     private void removeAccount(Uri currAcct)
     {
@@ -917,22 +691,6 @@ public class MainActivity extends AppCompatActivity
                 if (itsAccountUri != null) {
                     cr.delete(itsAccountUri, null, null);
                 }
-            }
-        }.startTask(this, this);
-    }
-
-    /** Update the sync frequency for an account */
-    private void updateSyncFreq(final ProviderSyncFreqPref freq, Uri acct)
-    {
-        new AccountUpdateTask(acct, getString(R.string.updating_account))
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                ContentValues values = new ContentValues();
-                values.put(PasswdSafeContract.Providers.COL_SYNC_FREQ,
-                           freq.getFreq());
-                cr.update(itsAccountUri, values, null, null);
             }
         }.startTask(this, this);
     }
@@ -969,10 +727,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Update a menu item based on the presence of a provider */
-    private void setProviderMenuEnabled(Menu menu, int id, Uri providerUri)
+    private void setProviderMenuEnabled(Menu menu, int id, int hasProviderBit)
     {
         MenuItem item = menu.findItem(id);
-        item.setEnabled(providerUri == null);
+        item.setEnabled(!itsMenuOptions.get(hasProviderBit));
     }
 
     /**
@@ -982,6 +740,16 @@ public class MainActivity extends AppCompatActivity
     {
         AboutDialog dlg = AboutDialog.newInstance();
         dlg.show(getSupportFragmentManager(), "AboutDialog");
+    }
+
+    /**
+     * Get the provider URI cached during the account link
+     */
+    private Uri getAccountLinkUri(int requestCode)
+    {
+        Uri uri = itsAccountLinkUris.get(requestCode);
+        itsAccountLinkUris.remove(requestCode);
+        return uri;
     }
 
     /** Dialog to prompt when an account is cleared */

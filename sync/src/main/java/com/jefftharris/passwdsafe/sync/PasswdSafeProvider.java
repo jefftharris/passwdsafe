@@ -480,6 +480,13 @@ public class PasswdSafeProvider extends ContentProvider
                       String selection,
                       String[] selectionArgs)
     {
+        Context ctx = getContext();
+        if (ctx == null) {
+            Log.e(TAG, "Null ctx");
+            return 0;
+        }
+        ContentResolver cr = ctx.getContentResolver();
+
         switch (PasswdSafeContract.MATCHER.match(uri)) {
         case PasswdSafeContract.MATCH_PROVIDER: {
             PasswdSafeUtil.dbginfo(TAG, "Update provider: %s", uri);
@@ -499,6 +506,8 @@ public class PasswdSafeProvider extends ContentProvider
                                                syncFreq);
                         updateSyncFreq(provider, syncFreq, db);
                     }
+
+                    cr.notifyChange(uri, null);
                     return 1;
                 });
             } catch (Exception e) {
@@ -518,11 +527,6 @@ public class PasswdSafeProvider extends ContentProvider
                 return SyncDb.useDb(db -> {
                     File tmpFile = null;
                     try {
-                        Context ctx = getContext();
-                        if (ctx == null) {
-                            throw new NullPointerException("ctx");
-                        }
-
                         long providerId =
                                 PasswdSafeContract.Providers.getId(uri);
                         long id = PasswdSafeContract.Files.getId(uri);
@@ -538,7 +542,6 @@ public class PasswdSafeProvider extends ContentProvider
                         tmpFile = File.createTempFile("passwd", ".tmp",
                                                       ctx.getFilesDir());
 
-                        ContentResolver cr = ctx.getContentResolver();
                         writeToFile(cr.openInputStream(Uri.parse(updateUri)),
                                     tmpFile);
 
