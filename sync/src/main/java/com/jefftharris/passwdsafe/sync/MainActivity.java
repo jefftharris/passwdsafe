@@ -21,7 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -39,6 +38,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.sync.dropbox.DropboxFilesActivity;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
@@ -394,8 +394,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
-        // TODO: use PasswdCursorLoader like FileListNavDrawerFragment
-        return new CursorLoader(
+        return new PasswdCursorLoader(
                 this, PasswdSafeContract.Providers.CONTENT_URI,
                 PasswdSafeContract.Providers.PROJECTION,
                 null, null, PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
@@ -404,6 +403,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
     {
+        if (!PasswdCursorLoader.checkResult(loader)) {
+            return;
+        }
         boolean hasAccounts = false;
         itsMenuOptions.clear();
         for (boolean more = (cursor != null) && cursor.moveToFirst(); more;
