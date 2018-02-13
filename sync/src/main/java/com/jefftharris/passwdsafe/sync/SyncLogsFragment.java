@@ -156,7 +156,7 @@ public class SyncLogsFragment extends ListFragment
                 String selection = itsIsShowAll ? null :
                     PasswdSafeContract.SyncLogs.DEFAULT_SELECTION;
                 return new PasswdCursorLoader(
-                        getActivity(),
+                        getContext(),
                         PasswdSafeContract.SyncLogs.CONTENT_URI,
                         PasswdSafeContract.SyncLogs.PROJECTION,
                         selection, null,
@@ -166,7 +166,7 @@ public class SyncLogsFragment extends ListFragment
             @Override
             public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
             {
-                if (PasswdCursorLoader.checkResult(loader)) {
+                if (PasswdCursorLoader.checkResult(loader, getActivity())) {
                     itsLogsAdapter.changeCursor(cursor);
                 }
             }
@@ -174,9 +174,7 @@ public class SyncLogsFragment extends ListFragment
             @Override
             public void onLoaderReset(Loader<Cursor> loader)
             {
-                if (PasswdCursorLoader.checkResult(loader)) {
-                    itsLogsAdapter.changeCursor(null);
-                }
+                onLoadFinished(loader, null);
             }
         };
         LoaderManager lm = getLoaderManager();

@@ -213,7 +213,7 @@ public class FileListNavDrawerFragment
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
         return new PasswdCursorLoader(
-                getActivity(), PasswdSafeContract.Providers.CONTENT_URI,
+                getContext(), PasswdSafeContract.Providers.CONTENT_URI,
                 PasswdSafeContract.Providers.PROJECTION,
                 null, null, PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
     }
@@ -221,7 +221,7 @@ public class FileListNavDrawerFragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
     {
-        if (PasswdCursorLoader.checkResult(loader)) {
+        if (PasswdCursorLoader.checkResult(loader, getActivity())) {
             updateProviders(cursor);
         }
     }
@@ -229,9 +229,7 @@ public class FileListNavDrawerFragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader)
     {
-        if (PasswdCursorLoader.checkResult(loader)) {
-            updateProviders(null);
-        }
+        onLoadFinished(loader, null);
     }
 
     @Override

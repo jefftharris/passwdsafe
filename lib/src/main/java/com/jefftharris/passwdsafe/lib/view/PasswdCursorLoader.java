@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.lib.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.CursorLoader;
@@ -21,23 +22,23 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
  */
 public class PasswdCursorLoader extends CursorLoader
 {
-    private final Activity itsActivity;
     private Exception itsLoadException;
 
     /** Constructor */
     public PasswdCursorLoader(
-            Activity activity, Uri uri, String[] projection, String selection,
+            Context ctx, Uri uri, String[] projection, String selection,
             @SuppressWarnings("SameParameterValue") String[] selectionArgs,
             String sortOrder)
     {
-        super(activity, uri, projection, selection, selectionArgs, sortOrder);
-        itsActivity = activity;
+        super(ctx.getApplicationContext(), uri, projection,
+              selection, selectionArgs, sortOrder);
     }
 
     /** Load the cursor in the background */
     @Override
     public Cursor loadInBackground()
     {
+        //noinspection ConstantConditions
         if (getUri() == null) {
             return null;
         }
@@ -56,14 +57,14 @@ public class PasswdCursorLoader extends CursorLoader
     }
 
     /** Check the result of the load and show an error if needed */
-    public static boolean checkResult(Loader<Cursor> loader)
+    public static boolean checkResult(Loader<Cursor> loader, Activity activity)
     {
         if (loader instanceof PasswdCursorLoader) {
             PasswdCursorLoader pwloader = (PasswdCursorLoader)loader;
             if (pwloader.itsLoadException != null) {
                 Exception e = pwloader.itsLoadException;
                 pwloader.itsLoadException = null;
-                PasswdSafeUtil.showFatalMsg(e, pwloader.itsActivity);
+                PasswdSafeUtil.showFatalMsg(e, activity);
                 return false;
             }
         }

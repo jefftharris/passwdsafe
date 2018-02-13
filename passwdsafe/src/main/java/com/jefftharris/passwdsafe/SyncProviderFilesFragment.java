@@ -158,7 +158,7 @@ public class SyncProviderFilesFragment extends ListFragment
                 public Loader<Cursor> onCreateLoader(int id, Bundle args)
                 {
                     return new PasswdCursorLoader(
-                            getActivity(), itsProviderUri,
+                            getContext(), itsProviderUri,
                             PasswdSafeContract.Providers.PROJECTION,
                             null, null, null);
                 }
@@ -166,7 +166,8 @@ public class SyncProviderFilesFragment extends ListFragment
                 @Override
                 public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
                 {
-                    if (!PasswdCursorLoader.checkResult(loader)) {
+                    if (!PasswdCursorLoader.checkResult(loader,
+                                                        getActivity())) {
                         return;
                     }
                     View view = getView();
@@ -204,7 +205,7 @@ public class SyncProviderFilesFragment extends ListFragment
                  public Loader<Cursor> onCreateLoader(int id, Bundle args)
                  {
                      return new PasswdCursorLoader(
-                             getActivity(), itsFilesUri,
+                             getContext(), itsFilesUri,
                              PasswdSafeContract.Files.PROJECTION,
                              PasswdSafeContract.Files.NOT_DELETED_SELECTION,
                              null, PasswdSafeContract.Files.TITLE_SORT_ORDER);
@@ -213,7 +214,8 @@ public class SyncProviderFilesFragment extends ListFragment
                  @Override
                  public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
                  {
-                     if (PasswdCursorLoader.checkResult(loader)) {
+                     if (PasswdCursorLoader.checkResult(loader,
+                                                        getActivity())) {
                          itsProviderAdapter.changeCursor(cursor);
                      }
                  }
@@ -221,9 +223,7 @@ public class SyncProviderFilesFragment extends ListFragment
                  @Override
                  public void onLoaderReset(Loader<Cursor> loader)
                  {
-                     if (PasswdCursorLoader.checkResult(loader)) {
-                         itsProviderAdapter.changeCursor(null);
-                     }
+                     onLoadFinished(loader, null);
                  }
             });
     }

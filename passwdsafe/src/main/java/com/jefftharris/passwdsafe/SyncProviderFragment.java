@@ -212,7 +212,7 @@ public class SyncProviderFragment extends ListFragment
     {
         Uri uri = PasswdSafeContract.Providers.CONTENT_URI;
         return new PasswdCursorLoader(
-                 getActivity(), uri, PasswdSafeContract.Providers.PROJECTION,
+                 getContext(), uri, PasswdSafeContract.Providers.PROJECTION,
                  null, null, PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
     }
 
@@ -223,7 +223,7 @@ public class SyncProviderFragment extends ListFragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
     {
-        if (PasswdCursorLoader.checkResult(loader)) {
+        if (PasswdCursorLoader.checkResult(loader, getActivity())) {
             itsProviderAdapter.changeCursor(cursor);
         }
     }
@@ -235,9 +235,7 @@ public class SyncProviderFragment extends ListFragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader)
     {
-        if (PasswdCursorLoader.checkResult(loader)) {
-            itsProviderAdapter.changeCursor(null);
-        }
+        onLoadFinished(loader, null);
     }
 
     /**

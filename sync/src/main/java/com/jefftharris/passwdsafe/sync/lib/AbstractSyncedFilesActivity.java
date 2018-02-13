@@ -298,25 +298,12 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader,
-                                   Cursor cursor)
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
         {
-            if (PasswdCursorLoader.checkResult(loader)) {
-                updateProvider(cursor);
+            if (!PasswdCursorLoader.checkResult(
+                    loader, AbstractSyncedFilesActivity.this)) {
+                return;
             }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader)
-        {
-            if (PasswdCursorLoader.checkResult(loader)) {
-                updateProvider(null);
-            }
-        }
-
-        /** Update the information for a provider */
-        private void updateProvider(Cursor cursor)
-        {
             String name;
             if ((cursor != null) && cursor.moveToFirst()) {
                 name = PasswdSafeContract.Providers.getDisplayName(cursor);
@@ -332,6 +319,12 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
             TextView title = (TextView)findViewById(R.id.title);
             assert title != null;
             title.setText(name);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader)
+        {
+            onLoadFinished(loader, null);
         }
     }
 
@@ -350,39 +343,32 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader,
-                                   Cursor cursor)
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
         {
-            if (PasswdCursorLoader.checkResult(loader)) {
-                updateFiles(cursor);
+            if (!PasswdCursorLoader.checkResult(
+                    loader, AbstractSyncedFilesActivity.this)) {
+                return;
             }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader)
-        {
-            if (PasswdCursorLoader.checkResult(loader)) {
-                updateFiles(null);
-            }
-        }
-
-        /** Update the files for a provider */
-        private void updateFiles(Cursor cursor)
-        {
             itsSyncedFiles.clear();
             if (cursor != null) {
                 for (boolean more = cursor.moveToFirst(); more;
-                        more = cursor.moveToNext()) {
+                     more = cursor.moveToNext()) {
                     long id = cursor.getLong(
-                        PasswdSafeContract.RemoteFiles.PROJECTION_IDX_ID);
+                            PasswdSafeContract.RemoteFiles.PROJECTION_IDX_ID);
                     String remoteId = cursor.getString(
-                        PasswdSafeContract.RemoteFiles.PROJECTION_IDX_REMOTE_ID);
+                            PasswdSafeContract.RemoteFiles.PROJECTION_IDX_REMOTE_ID);
 
                     PasswdSafeUtil.dbginfo(TAG, "sync file: %s", remoteId);
                     itsSyncedFiles.put(remoteId, id);
                 }
             }
             updateSyncedFiles();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader)
+        {
+            onLoadFinished(loader, null);
         }
     }
 

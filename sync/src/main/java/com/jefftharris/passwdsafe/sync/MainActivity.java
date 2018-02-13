@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
     {
-        if (!PasswdCursorLoader.checkResult(loader)) {
+        if (!PasswdCursorLoader.checkResult(loader, this)) {
             return;
         }
         boolean hasAccounts = false;
