@@ -172,8 +172,7 @@ public class MainActivity extends AppCompatActivity
             itsNewAccountTask.startTask(this, this);
             itsNewAccountTask = null;
         }
-        LoaderManager lm = getSupportLoaderManager();
-        lm.restartLoader(LOADER_PROVIDERS, null, this);
+        reloadProviders();
         SyncApp.get(this).setSyncUpdateHandler(this);
     }
 
@@ -386,8 +385,7 @@ public class MainActivity extends AppCompatActivity
     {
         getOwncloudProvider().setSettings(url);
         updateProviderSyncFreq(providerUri, freq);
-        LoaderManager lm = getSupportLoaderManager();
-        lm.restartLoader(LOADER_PROVIDERS, null, this);
+        reloadProviders();
     }
 
 
@@ -657,11 +655,13 @@ public class MainActivity extends AppCompatActivity
     public void updateGDriveState(GDriveState state)
     {
         itsGDriveState = state;
-        LoaderManager lm = getSupportLoaderManager();
-        lm.restartLoader(LOADER_PROVIDERS, null, this);
+        reloadProviders();
+    }
 
-        // TODO: trigger reload as well when other sync services change
-        // authorized state for warning messages
+    @Override
+    public void updateProviderNotAuthorized()
+    {
+        reloadProviders();
     }
 
     /**
@@ -742,6 +742,15 @@ public class MainActivity extends AppCompatActivity
     {
         AboutDialog dlg = AboutDialog.newInstance();
         dlg.show(getSupportFragmentManager(), "AboutDialog");
+    }
+
+    /**
+     * Reload the providers
+     */
+    private void reloadProviders()
+    {
+        LoaderManager lm = getSupportLoaderManager();
+        lm.restartLoader(LOADER_PROVIDERS, null, this);
     }
 
     /**

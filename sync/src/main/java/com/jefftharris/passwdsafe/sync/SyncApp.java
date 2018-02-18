@@ -10,6 +10,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.WorkerThread;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -76,14 +77,29 @@ public class SyncApp extends Application
         }
     }
 
-    /** Update the state of a Google Drive sync.  This method can be
-     * called from a background thread. */
+    /**
+     * Update the state of a Google Drive sync
+     */
+    @WorkerThread
     public void updateGDriveSyncState(final SyncUpdateHandler.GDriveState state)
     {
         itsHandler.post(() -> {
             itsSyncGDriveState = state;
             if (itsSyncUpdateHandler != null) {
                 itsSyncUpdateHandler.updateGDriveState(state);
+            }
+        });
+    }
+
+    /**
+     * Update after a provider is not authorized after syncing
+     */
+    @WorkerThread
+    public void updateProviderNotAuthorized()
+    {
+        itsHandler.post(() -> {
+            if (itsSyncUpdateHandler != null) {
+                itsSyncUpdateHandler.updateProviderNotAuthorized();
             }
         });
     }

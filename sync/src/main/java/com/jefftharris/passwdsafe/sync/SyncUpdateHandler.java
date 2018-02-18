@@ -7,6 +7,8 @@
 package com.jefftharris.passwdsafe.sync;
 
 
+import android.support.annotation.MainThread;
+
 /**
  *  The SyncUpdateHandler interface defines callbacks for the UI when the sync
  *  state of a provider changes.
@@ -20,7 +22,15 @@ public interface SyncUpdateHandler
         PENDING_AUTH
     }
 
-    /** Update the state of Google Drive syncing.  Will be called from the
-     * main thread */
+    /**
+     * Update the state of Google Drive syncing
+     */
+    @MainThread
     void updateGDriveState(SyncUpdateHandler.GDriveState state);
+
+    /**
+     * Update after a provider is not authorized after syncing
+     */
+    @MainThread
+    void updateProviderNotAuthorized();
 }

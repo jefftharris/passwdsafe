@@ -24,6 +24,7 @@ import android.util.Log;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
@@ -347,6 +348,9 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                 user.useOneDrive(service);
             } finally {
                 releaseOnedriveService();
+                if (!isAccountAuthorized()) {
+                    SyncApp.get(getContext()).updateProviderNotAuthorized();
+                }
             }
         }
     }

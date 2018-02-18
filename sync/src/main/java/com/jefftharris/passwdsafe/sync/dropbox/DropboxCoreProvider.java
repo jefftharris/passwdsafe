@@ -31,6 +31,7 @@ import com.dropbox.core.v2.users.FullAccount;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
@@ -271,8 +272,9 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
      */
     private void useDropboxService(DropboxUser user) throws Exception
     {
+        boolean authorized = false;
         try {
-            boolean authorized = isAccountAuthorized();
+            authorized = isAccountAuthorized();
             PasswdSafeUtil.dbginfo(TAG, "account authorized: %b", authorized);
             if (authorized) {
                 user.useDropbox();
@@ -282,6 +284,10 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             saveAuthData(null);
             updateDropboxAcct();
             throw e;
+        } finally {
+            if (authorized && !isAccountAuthorized()) {
+                SyncApp.get(getContext()).updateProviderNotAuthorized();
+            }
         }
     }
 

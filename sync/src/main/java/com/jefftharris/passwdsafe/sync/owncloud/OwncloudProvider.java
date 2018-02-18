@@ -28,6 +28,7 @@ import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.R;
+import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.AccountChooserDlg;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
@@ -325,6 +326,9 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
             return;
         }
         user.useOwncloud(getClient(getContext()));
+        if (!isAccountAuthorized()) {
+            SyncApp.get(getContext()).updateProviderNotAuthorized();
+        }
     }
 
     /** Update the ownCloud account client based on availability of

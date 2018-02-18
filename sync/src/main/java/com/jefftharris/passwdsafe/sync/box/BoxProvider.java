@@ -29,6 +29,7 @@ import com.box.androidsdk.content.models.BoxSession;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
@@ -282,8 +283,9 @@ public class BoxProvider extends AbstractSyncTimerProvider
      */
     private void useBoxService(BoxUser user) throws Exception
     {
+        boolean authorized = false;
         try {
-            boolean authorized = isAccountAuthorized();
+            authorized = isAccountAuthorized();
             PasswdSafeUtil.dbginfo(TAG, "account authorized: %b", authorized);
             if (authorized) {
                 user.useBox();
@@ -297,6 +299,10 @@ public class BoxProvider extends AbstractSyncTimerProvider
                 }
             }
             throw e;
+        } finally {
+            if (authorized && !isAccountAuthorized()) {
+                SyncApp.get(getContext()).updateProviderNotAuthorized();
+            }
         }
     }
 
