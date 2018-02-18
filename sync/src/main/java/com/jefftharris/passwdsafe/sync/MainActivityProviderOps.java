@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.sync;
 import android.net.Uri;
 
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 
 /**
  * Provider operations for the MainActivity
@@ -43,6 +44,11 @@ interface MainActivityProviderOps
      */
     void updateProviderSyncFreq(Uri providerUri,
                                 ProviderSyncFreqPref freq);
+
+    /**
+     * Get the results of the syncs for a provider
+     */
+    SyncResults getProviderSyncResults(ProviderType type);
 
     /**
      * Get a warning message to show for the provider

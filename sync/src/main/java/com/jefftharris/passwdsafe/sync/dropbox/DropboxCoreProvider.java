@@ -286,7 +286,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             throw e;
         } finally {
             if (authorized && !isAccountAuthorized()) {
-                SyncApp.get(getContext()).updateProviderNotAuthorized();
+                SyncApp.get(getContext()).updateProviderState();
             }
         }
     }

@@ -13,7 +13,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="8dp"
-    app:cardUseCompatPadding="true">
+    app:cardUseCompatPadding="true"
+    tools:context=".MainActivityProviderHolder">
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,14 +54,64 @@
             android:id="@+id/account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintBottom_toTopOf="@+id/sync"
+            app:layout_constraintBottom_toTopOf="@+id/last_success"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title"
+            />
+
+        <TextView
+            android:id="@+id/last_success_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/last_success_label"
+            app:layout_constraintBaseline_toBaselineOf="@+id/last_success"
+            app:layout_constraintEnd_toStartOf="@+id/last_success"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/last_success"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/last_failure"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/last_success_label"
+            app:layout_constraintTop_toBottomOf="@+id/account"
+            />
+
+        <TextView
+            android:id="@+id/last_failure_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/last_failure_label"
+            app:layout_constraintBaseline_toBaselineOf="@+id/last_failure"
+            app:layout_constraintEnd_toStartOf="@+id/last_failure"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/last_failure"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/sync"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/last_failure_label"
+            app:layout_constraintTop_toBottomOf="@+id/last_success"
             />
 
         <ImageButton
@@ -72,7 +123,7 @@
             android:contentDescription="@string/sync"
             app:layout_constraintBottom_toTopOf="@+id/choose_files"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/account"
+            app:layout_constraintTop_toBottomOf="@+id/last_failure"
             app:srcCompat="@drawable/ic_action_sync"
             />
 

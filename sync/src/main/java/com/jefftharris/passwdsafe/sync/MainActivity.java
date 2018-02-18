@@ -43,6 +43,7 @@ import com.jefftharris.passwdsafe.sync.dropbox.DropboxFilesActivity;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
+import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 import com.jefftharris.passwdsafe.sync.onedrive.OnedriveFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudEditDialog;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudFilesActivity;
@@ -455,29 +456,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void handleProviderSync(ProviderType type, Uri providerUri)
     {
-        Provider provider = null;
-        switch (type) {
-        case GDRIVE: {
-            provider = getGDrivePlayProvider();
-            break;
-        }
-        case DROPBOX: {
-            provider = getDbxProvider();
-            break;
-        }
-        case BOX: {
-            provider = getBoxProvider();
-            break;
-        }
-        case ONEDRIVE: {
-            provider = getOnedriveProvider();
-            break;
-        }
-        case OWNCLOUD: {
-            provider = getOwncloudProvider();
-            break;
-        }
-        }
+        Provider provider = getProvider(type);
         if (provider == null) {
             return;
         }
@@ -593,6 +572,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public SyncResults getProviderSyncResults(ProviderType type)
+    {
+        Provider provider = getProvider(type);
+        return (provider != null) ? provider.getSyncResults() : null;
+    }
+
+    @Override
     public CharSequence getProviderWarning(ProviderType type)
     {
         CharSequence warning = null;
@@ -659,7 +645,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void updateProviderNotAuthorized()
+    public void updateProviderState()
     {
         reloadProviders();
     }
@@ -726,6 +712,31 @@ public class MainActivity extends AppCompatActivity
     private Provider getOnedriveProvider()
     {
         return ProviderFactory.getProvider(ProviderType.ONEDRIVE, this);
+    }
+
+    /**
+     * Get the provider
+     */
+    private Provider getProvider(ProviderType type)
+    {
+        switch (type) {
+        case GDRIVE: {
+            return getGDrivePlayProvider();
+        }
+        case DROPBOX: {
+            return getDbxProvider();
+        }
+        case BOX: {
+            return getBoxProvider();
+        }
+        case ONEDRIVE: {
+            return getOnedriveProvider();
+        }
+        case OWNCLOUD: {
+            return getOwncloudProvider();
+        }
+        }
+        return null;
     }
 
     /** Update a menu item based on the presence of a provider */

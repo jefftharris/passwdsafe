@@ -10,12 +10,27 @@ import java.io.File;
 
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 /**
  * Provides common Provider operations for local file management
  */
 public abstract class AbstractProvider implements Provider
 {
+    private final SyncResults itsSyncResults = new SyncResults();
+
+    @Override
+    public void setLastSyncResult(boolean success, long syncEndTime)
+    {
+        itsSyncResults.setResult(success, syncEndTime);
+    }
+
+    @Override
+    public @NonNull SyncResults getSyncResults()
+    {
+        return itsSyncResults;
+    }
+
     @Override
     public long insertLocalFile(long providerId,
                                 String title,

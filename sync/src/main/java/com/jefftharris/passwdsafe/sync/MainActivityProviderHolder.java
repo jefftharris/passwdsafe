@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.sync;
 
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +22,9 @@ import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 
 /**
  * RecyclerView holder class for a provider in the MainActivity
@@ -34,6 +37,10 @@ class MainActivityProviderHolder
     private final MainActivityProviderOps itsProviderOps;
     private final TextView itsTitle;
     private final TextView itsAccount;
+    private final View itsLastSuccessLabel;
+    private final TextView itsLastSuccess;
+    private final View itsLastFailureLabel;
+    private final TextView itsLastFailure;
     private final TextView itsWarning;
     private final View itsFreqLabel;
     private final Spinner itsFreqSpin;
@@ -55,6 +62,10 @@ class MainActivityProviderHolder
         itsProviderOps = ops;
         itsTitle = view.findViewById(R.id.title);
         itsAccount = view.findViewById(R.id.account);
+        itsLastSuccessLabel = view.findViewById(R.id.last_success_label);
+        itsLastSuccess = view.findViewById(R.id.last_success);
+        itsLastFailureLabel = view.findViewById(R.id.last_failure_label);
+        itsLastFailure = view.findViewById(R.id.last_failure);
         itsWarning = view.findViewById(R.id.warning);
         itsFreqLabel = view.findViewById(R.id.interval_label);
         itsFreqSpin = view.findViewById(R.id.interval);
@@ -74,6 +85,8 @@ class MainActivityProviderHolder
      */
     public void updateView(Cursor item)
     {
+        Context ctx = itemView.getContext();
+        
         long id = item.getLong(
                 PasswdSafeContract.Providers.PROJECTION_IDX_ID);
         String typeStr = item.getString(
@@ -88,10 +101,24 @@ class MainActivityProviderHolder
 
         itsTitle.setCompoundDrawablesWithIntrinsicBounds(
                 itsType.getIconId(false), 0, 0, 0);
-        itsTitle.setText(itsType.getName(itemView.getContext()));
+        itsTitle.setText(itsType.getName(ctx));
 
         String acct = PasswdSafeContract.Providers.getDisplayName(item);
         itsAccount.setText(acct);
+
+        String lastSuccess = null;
+        String lastFailure = null;
+        SyncResults syncRes = itsProviderOps.getProviderSyncResults(itsType);
+        if (syncRes != null) {
+            if (syncRes.hasLastSuccess()) {
+                lastSuccess = Utils.formatDate(syncRes.getLastSuccess(), ctx);
+            }
+            if (syncRes.hasLastFailure()) {
+                lastFailure = Utils.formatDate(syncRes.getLastFailure(), ctx);
+            }
+        }
+        updateLast(itsLastSuccessLabel, itsLastSuccess, lastSuccess);
+        updateLast(itsLastFailureLabel, itsLastFailure, lastFailure);
 
         boolean hasChooseFiles = false;
         boolean hasEditDialog = false;
@@ -157,5 +184,16 @@ class MainActivityProviderHolder
     @Override
     public void onNothingSelected(AdapterView<?> parent)
     {
+    }
+
+    /**
+     * Update the last times
+     */
+    private void updateLast(View label, TextView time, String timeStr)
+    {
+        boolean hasLast = !TextUtils.isEmpty(timeStr);
+        GuiUtils.setVisible(label, hasLast);
+        GuiUtils.setVisible(time, hasLast);
+        time.setText(timeStr);
     }
 }

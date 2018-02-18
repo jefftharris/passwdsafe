@@ -26,6 +26,7 @@ import com.jefftharris.passwdsafe.lib.BuildConfig;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.R;
+import com.jefftharris.passwdsafe.sync.SyncApp;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -379,6 +380,13 @@ public class ProviderSync
                     SyncDb.addSyncLog(itsLogrec, db, itsContext);
                     return null;
                 });
+
+                if (!itsLogrec.isNotConnected()) {
+                    itsProviderImpl.setLastSyncResult(
+                            itsLogrec.getFailures().isEmpty(),
+                            itsLogrec.getEndTime());
+                    SyncApp.get(itsContext).updateProviderState();
+                }
             } catch (Exception e) {
                 Log.e(TAG, "Sync write log error", e);
             } finally {

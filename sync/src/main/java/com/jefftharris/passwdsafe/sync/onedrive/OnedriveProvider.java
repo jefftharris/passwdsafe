@@ -349,7 +349,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             } finally {
                 releaseOnedriveService();
                 if (!isAccountAuthorized()) {
-                    SyncApp.get(getContext()).updateProviderNotAuthorized();
+                    SyncApp.get(getContext()).updateProviderState();
                 }
             }
         }

@@ -301,7 +301,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
             throw e;
         } finally {
             if (authorized && !isAccountAuthorized()) {
-                SyncApp.get(getContext()).updateProviderNotAuthorized();
+                SyncApp.get(getContext()).updateProviderState();
             }
         }
     }

@@ -29,8 +29,8 @@ public interface SyncUpdateHandler
     void updateGDriveState(SyncUpdateHandler.GDriveState state);
 
     /**
-     * Update after a provider is not authorized after syncing
+     * Update after a provider's state may have changed
      */
     @MainThread
-    void updateProviderNotAuthorized();
+    void updateProviderState();
 }

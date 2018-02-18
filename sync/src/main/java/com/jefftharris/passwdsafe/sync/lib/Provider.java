@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 
 /**
@@ -74,6 +75,16 @@ public interface Provider
               SyncConnectivityResult connResult,
               SyncLogRecord logrec)
             throws Exception;
+
+    /**
+     * Set the result of the last sync operation
+     */
+    void setLastSyncResult(boolean success, long syncEndTime);
+
+    /**
+     * Get the results of the syncs for the provider
+     */
+    @NonNull SyncResults getSyncResults();
 
     /** Insert a local file */
     long insertLocalFile(long providerId, String title, SQLiteDatabase db)

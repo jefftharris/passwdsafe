@@ -327,7 +327,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         }
         user.useOwncloud(getClient(getContext()));
         if (!isAccountAuthorized()) {
-            SyncApp.get(getContext()).updateProviderNotAuthorized();
+            SyncApp.get(getContext()).updateProviderState();
         }
     }
 

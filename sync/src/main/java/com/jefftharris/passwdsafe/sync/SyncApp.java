@@ -92,14 +92,14 @@ public class SyncApp extends Application
     }
 
     /**
-     * Update after a provider is not authorized after syncing
+     * Update after a provider's state may have changed
      */
     @WorkerThread
-    public void updateProviderNotAuthorized()
+    public void updateProviderState()
     {
         itsHandler.post(() -> {
             if (itsSyncUpdateHandler != null) {
-                itsSyncUpdateHandler.updateProviderNotAuthorized();
+                itsSyncUpdateHandler.updateProviderState();
             }
         });
     }

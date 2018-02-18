@@ -28,6 +28,8 @@
     <string name="gdrive_state_pending_auth">Google account authentication is pending.  Select the sign-in request notification and sync again.</string>
     <string name="google_acct_not_available">Google account not available</string>
     <string name="interval">Interval</string>
+    <string name="last_failure_label">Last failure:</string>
+    <string name="last_success_label">Last success:</string>
     <string name="logs">Logs</string>
     <string name="manual">Manual</string>
     <string name="network_connected">Network connected</string>
@@ -76,6 +78,9 @@
     <string name="updating_account">Updating account&#8230;</string>
 
     <string name="release_notes">
+        I18N - last_success_label, last_failure_label
+        &lt;b&gt;3.5.0&lt;/b&gt; - Update UI and notifications
+        \n\n
         &lt;b&gt;3.4.3&lt;/b&gt; - Fix Box account registration error
         \n\n
         &lt;b&gt;3.4.2&lt;/b&gt; - Fix Box account registration error
