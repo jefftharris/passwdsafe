@@ -314,6 +314,10 @@ public class ProviderSync
             }
             if (online) {
                 try {
+                    if (SyncApp.get(itsContext).isForceSyncFailure()) {
+                        throw new Exception("Forced failure");
+                    }
+
                     connResult =
                             itsProviderImpl.checkSyncConnectivity(itsAccount);
                     itsLogrec.checkSyncInterrupted();

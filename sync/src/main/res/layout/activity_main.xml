@@ -37,6 +37,15 @@
 
         </LinearLayout>
 
+        <CheckBox
+            android:id="@+id/force_sync_failure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Force sync failure"
+            android:visibility="gone"
+            tools:ignore="HardcodedText"
+            />
+
         <TextView
             android:id="@+id/no_accounts_msg"
             android:layout_width="match_parent"

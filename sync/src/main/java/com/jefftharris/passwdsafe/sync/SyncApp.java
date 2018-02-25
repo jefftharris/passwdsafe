@@ -27,6 +27,7 @@ public class SyncApp extends Application
     private SyncUpdateHandler itsSyncUpdateHandler;
     private SyncUpdateHandler.GDriveState itsSyncGDriveState =
             SyncUpdateHandler.GDriveState.OK;
+    private boolean itsIsForceSyncFailure = false;
 
     /* (non-Javadoc)
      * @see android.app.Application#onCreate()
@@ -102,5 +103,21 @@ public class SyncApp extends Application
                 itsSyncUpdateHandler.updateProviderState();
             }
         });
+    }
+
+    /**
+     * Get whether to force a sync failure
+     */
+    public boolean isForceSyncFailure()
+    {
+        return BuildConfig.DEBUG && itsIsForceSyncFailure;
+    }
+
+    /**
+     * Set whether to force a sync failure
+     */
+    public void setIsForceSyncFailure(boolean forceFailure)
+    {
+        itsIsForceSyncFailure = forceFailure;
     }
 }

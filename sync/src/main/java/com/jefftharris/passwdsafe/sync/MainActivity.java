@@ -29,6 +29,7 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -119,6 +120,15 @@ public class MainActivity extends AppCompatActivity
 
         LoaderManager lm = getSupportLoaderManager();
         lm.initLoader(LOADER_PROVIDERS, null, this);
+
+        if (BuildConfig.DEBUG) {
+            CheckBox success = findViewById(R.id.force_sync_failure);
+            GuiUtils.setVisible(success, true);
+            success.setChecked(SyncApp.get(this).isForceSyncFailure());
+            success.setOnCheckedChangeListener(
+                    (buttonView, isChecked) ->
+                            SyncApp.get(this).setIsForceSyncFailure(isChecked));
+        }
     }
 
     /* (non-Javadoc)
