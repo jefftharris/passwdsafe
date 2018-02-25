@@ -51,16 +51,16 @@ public class SyncLogRecord
         return itsStartTime;
     }
 
+    /** Does the record represent a successful sync */
+    public boolean isSuccess()
+    {
+        return itsFailures.isEmpty();
+    }
+
     /** Add an exception failure */
     public void addFailure(Exception e)
     {
         itsFailures.add(e);
-    }
-
-    /** Get the exception failures */
-    public List<Exception> getFailures()
-    {
-        return itsFailures;
     }
 
     /** Get the end time for a sync */

@@ -184,6 +184,7 @@ public class GDriveProvider extends AbstractProvider
     @Override
     public void updateSyncFreq(Account acct, int freq)
     {
+        super.updateSyncFreq(acct, freq);
         if (acct != null) {
             ContentResolver.removePeriodicSync(acct,
                                                PasswdSafeContract.AUTHORITY,

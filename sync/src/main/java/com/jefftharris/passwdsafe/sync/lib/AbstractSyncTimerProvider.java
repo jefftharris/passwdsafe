@@ -75,6 +75,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     @Override
     public void updateSyncFreq(Account acct, final int freq)
     {
+        super.updateSyncFreq(acct, freq);
         itsHandler.post(() -> {
             String userId = getAccountUserId();
             PasswdSafeUtil.dbginfo(itsTag, "updateSyncFreq acct %s, freq %d",

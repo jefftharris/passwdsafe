@@ -7,15 +7,22 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.sync.ProviderSyncFreqPref;
+
 /**
  * Results of the syncs for a provider
  */
 public final class SyncResults
 {
-    private static final long UNKNOWN = 0;
+    private static final long UNKNOWN = Long.MIN_VALUE;
+
+    private static final String TAG = "SyncResults";
 
     private long itsLastSuccess = UNKNOWN;
+    private long itsFirstFailure = UNKNOWN;
     private long itsLastFailure = UNKNOWN;
+    private int itsSyncFreq = 0;
 
     /**
      * Set the result of a sync
@@ -24,9 +31,21 @@ public final class SyncResults
     {
         if (success) {
             itsLastSuccess = syncTime;
+            itsFirstFailure = UNKNOWN;
         } else {
+            if (itsFirstFailure == UNKNOWN) {
+                itsFirstFailure = syncTime;
+            }
             itsLastFailure = syncTime;
         }
+    }
+
+    /**
+     * Set the sync frequency
+     */
+    public synchronized void setSyncFreq(int syncFreq)
+    {
+        itsSyncFreq = syncFreq;
     }
 
     /**
@@ -59,5 +78,25 @@ public final class SyncResults
     public synchronized long getLastFailure()
     {
         return itsLastFailure;
+    }
+
+    /**
+     * Have there been repeated sync failures
+     */
+    public synchronized boolean isRepeatedFailure()
+    {
+        if (itsFirstFailure == UNKNOWN) {
+            return false;
+        }
+        long now = System.currentTimeMillis();
+        long failureDuration = now - itsFirstFailure;
+        int freq1daySecs = ProviderSyncFreqPref.FREQ_1_DAY.getFreq();
+        PasswdSafeUtil.dbginfo(
+                TAG, "isRepeatedFailure dur %d, first %d last %d now %d",
+                failureDuration, itsFirstFailure, itsLastFailure, now);
+        if (itsSyncFreq < freq1daySecs) {
+            return (failureDuration >= (freq1daySecs * 1000));
+        }
+        return (failureDuration >= (3 * freq1daySecs * 1000));
     }
 }

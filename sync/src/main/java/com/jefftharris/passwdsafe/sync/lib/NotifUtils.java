@@ -30,7 +30,8 @@ public final class NotifUtils
         BOX_MIGRATGED(2),
         SYNC_PROGRESS(3),
         SYNC_RESULTS(4),
-        SYNC_CONFLICT(5);
+        SYNC_CONFLICT(5),
+        SYNC_REPEAT_FAILURES(6);
 
         public final int itsNotifId;
 
@@ -48,7 +49,8 @@ public final class NotifUtils
         case OWNCLOUD_CERT_TRUSTED:
         case SYNC_PROGRESS:
         case SYNC_RESULTS:
-        case SYNC_CONFLICT: {
+        case SYNC_CONFLICT:
+        case SYNC_REPEAT_FAILURES: {
             break;
         }
         case DROPBOX_MIGRATED:
@@ -92,7 +94,8 @@ public final class NotifUtils
             break;
         }
         case SYNC_RESULTS:
-        case SYNC_CONFLICT: {
+        case SYNC_CONFLICT:
+        case SYNC_REPEAT_FAILURES: {
             activityClass = SyncLogsActivity.class;
         }
         }
@@ -138,6 +141,9 @@ public final class NotifUtils
         }
         case SYNC_CONFLICT: {
             return ctx.getString(R.string.sync_conflict);
+        }
+        case SYNC_REPEAT_FAILURES: {
+            return ctx.getString(R.string.repeated_sync_failures);
         }
         }
         return null;

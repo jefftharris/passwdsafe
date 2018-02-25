@@ -8,8 +8,10 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import java.io.File;
 
+import android.accounts.Account;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 /**
@@ -18,6 +20,13 @@ import android.support.annotation.NonNull;
 public abstract class AbstractProvider implements Provider
 {
     private final SyncResults itsSyncResults = new SyncResults();
+
+    @Override
+    @CallSuper
+    public void updateSyncFreq(Account acct, int freq)
+    {
+        itsSyncResults.setSyncFreq(freq);
+    }
 
     @Override
     public void setLastSyncResult(boolean success, long syncEndTime)

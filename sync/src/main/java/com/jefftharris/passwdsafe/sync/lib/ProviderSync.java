@@ -25,7 +25,6 @@ import android.util.Log;
 import com.jefftharris.passwdsafe.lib.BuildConfig;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.sync.R;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 
 import java.text.SimpleDateFormat;
@@ -162,35 +161,28 @@ public class ProviderSync
      */
     private void showResultNotifs(SyncLogRecord logrec)
     {
-        List<String> results = new ArrayList<>();
-        boolean success = true;
-        for (Exception failure: logrec.getFailures()) {
-            String err = failure.getLocalizedMessage();
-            if (TextUtils.isEmpty(err)) {
-                err = failure.toString();
+        if (logrec.isSuccess()) {
+            if (itsIsShowNotifs) {
+                List<String> results = new ArrayList<>(logrec.getEntries());
+                if (!results.isEmpty()) {
+                    showResultNotif(NotifUtils.Type.SYNC_RESULTS,
+                                    true, results);
+                }
             }
-            results.add(itsContext.getString(R.string.error_fmt, err));
-            success = false;
-        }
 
-        boolean lastFailure;
-        synchronized (itsLastProviderFailures) {
-            lastFailure = itsLastProviderFailures.contains(itsNotifTag);
-            if (lastFailure && success) {
-                itsLastProviderFailures.remove(itsNotifTag);
-            } else if (!lastFailure && !success) {
+            synchronized (itsLastProviderFailures) {
+                if (itsLastProviderFailures.contains(itsNotifTag)) {
+                    NotifUtils.cancelNotif(NotifUtils.Type.SYNC_REPEAT_FAILURES,
+                                           itsNotifTag, itsContext);
+                    itsLastProviderFailures.remove(itsNotifTag);
+                }
+            }
+        } else if (itsProviderImpl.getSyncResults().isRepeatedFailure()) {
+            showResultNotif(NotifUtils.Type.SYNC_REPEAT_FAILURES, false, null);
+
+            synchronized (itsLastProviderFailures) {
                 itsLastProviderFailures.add(itsNotifTag);
             }
-        }
-
-        if (itsIsShowNotifs) {
-            results.addAll(logrec.getEntries());
-        }
-        if (!results.isEmpty()) {
-            showResultNotif(NotifUtils.Type.SYNC_RESULTS, success, results);
-        } else if (lastFailure && success) {
-            NotifUtils.cancelNotif(NotifUtils.Type.SYNC_RESULTS, itsNotifTag,
-                                   itsContext);
         }
 
         List<String> conflicts = logrec.getConflictFiles();
@@ -222,7 +214,9 @@ public class ProviderSync
             builder.setCategory(NotificationCompat.CATEGORY_ERROR);
         }
 
-        GuiUtils.setInboxStyle(builder, title, content, results);
+        if (results != null) {
+            GuiUtils.setInboxStyle(builder, title, content, results);
+        }
         NotifUtils.showNotif(builder, type, itsNotifTag, itsContext);
     }
 
@@ -365,8 +359,9 @@ public class ProviderSync
                     itsAccount.name, !itsLogrec.isNotConnected(),
                     itsIsCanceled);
             itsLogrec.setEndTime();
+            boolean isSuccess = itsLogrec.isSuccess();
 
-            if (itsSaveTraces || (itsLogrec.getFailures().size() > 0)) {
+            if (itsSaveTraces || !isSuccess) {
                 for (Pair<String, Long> entry : itsTraces) {
                     itsLogrec.addEntry(entry.first);
                 }
@@ -381,10 +376,9 @@ public class ProviderSync
                     return null;
                 });
 
-                if (!itsLogrec.isNotConnected()) {
-                    itsProviderImpl.setLastSyncResult(
-                            itsLogrec.getFailures().isEmpty(),
-                            itsLogrec.getEndTime());
+                if (!itsLogrec.isNotConnected() || !isSuccess) {
+                    itsProviderImpl.setLastSyncResult(isSuccess,
+                                                      itsLogrec.getEndTime());
                     SyncApp.get(itsContext).updateProviderState();
                 }
             } catch (Exception e) {
@@ -404,7 +398,8 @@ public class ProviderSync
 
             long now = System.currentTimeMillis();
             if (itsTraces.size() > 0) {
-                long prev = itsTraces.get(itsTraces.size() - 1).second;
+                @SuppressWarnings("ConstantConditions") long prev =
+                        itsTraces.get(itsTraces.size() - 1).second;
                 if ((now - prev) > 20000) {
                     itsSaveTraces = true;
                 }
