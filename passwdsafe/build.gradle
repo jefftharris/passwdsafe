@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
         minSdkVersion 14
-        resConfigs "de", "fr"
+        resConfigs "de", "fr", "nb"
         targetSdkVersion 27
         // <major><minor><bugfix><beta>
         versionCode 6140000

@@ -80,6 +80,7 @@
 
     <string name="release_notes">
         I18N - last_success_label, last_failure_label, repeated_sync_failures
+        - Add Norwegian translation.
         &lt;b&gt;3.5.0&lt;/b&gt; - Update UI and notifications
         \n\n
         &lt;b&gt;3.4.3&lt;/b&gt; - Fix Box account registration error
