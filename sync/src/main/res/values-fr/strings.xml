@@ -28,6 +28,8 @@
     <string name="gdrive_state_pending_auth">Authentification de compte Google est en cours. Sélectionnez la notification de la demande de session.</string>
     <string name="google_acct_not_available">Compte Google n\'est pas disponible</string>
     <string name="interval">Intervalle</string>
+    <string name="last_failure_label">Dernier échec:</string>
+    <string name="last_success_label">Dernier succès:</string>
     <string name="logs">Archives</string>
     <string name="manual">Manuel</string>
     <string name="network_connected">Réseau connecté</string>
@@ -62,6 +64,7 @@
     <string name="recreated_local_copy">Copie locale recréé</string>
     <string name="remove_account">Supprimer un compte?</string>
     <string name="removing_account">Retrait de compte&#8230;</string>
+    <string name="repeated_sync_failures">Échecs répétés</string>
     <string name="show_all">Afficher Tout</string>
     <string name="show_sync_notifications">Afficher les notifications de synchronisation</string>
     <string name="sync">Synchroniser</string>
@@ -79,6 +82,10 @@
     <string name="updating_account">Mise à jour compte&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.5.0&lt;/b&gt; - Ajout traduction norvégien.  Maj
+        notification échec synchronisation uniquement si plusieurs échecs.
+        Modernisation interface utilisateur.
+        \n\n
         &lt;b&gt;3.4.3&lt;/b&gt; - Correction erreur enregistrement compte BOX
         \n\n
         &lt;b&gt;3.4.2&lt;/b&gt; - Correction erreur enregistrement compte BOX

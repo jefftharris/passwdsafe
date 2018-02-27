@@ -28,6 +28,8 @@
     <string name="gdrive_state_pending_auth">Warten auf Authenfizierung mit Google-Konto. Klicken Sie auf die Anmelde-Aufforderung in den Mitteilungen.</string>
     <string name="google_acct_not_available">Google-Konto nicht verfügbar</string>
     <string name="interval">Intervall</string>
+    <string name="last_failure_label">Zuletzt fehlgeschlagen:</string>
+    <string name="last_success_label">Zuletzt erfolgreich:</string>
     <string name="logs">Log</string>
     <string name="manual">Manuell</string>
     <string name="network_connected">Netzwerk verbunden</string>
@@ -60,6 +62,7 @@
     <string name="recreated_local_copy">Erstellt lokale Kopie</string>
     <string name="remove_account">Konto löschen?</string>
     <string name="removing_account">Lösche Konto &#8230;</string>
+    <string name="repeated_sync_failures">Wiederholte Fehlschläge bei Synchronisierung</string>
     <string name="show_all">Alles anzeigen</string>
     <string name="show_sync_notifications">Synchronisierungsmitteilung anzeigen</string>
     <string name="sync">Synchronisierung</string>
@@ -77,6 +80,10 @@
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.5.0&lt;/b&gt; - Norwegische Übersetzung hinzugefügt.
+        Benachrichtigt nur noch über ein wiederholtes Fehlschlagen der
+        Synchronisation.  Änderung an Benutzeroberläche.
+        \n\n
         &lt;b&gt;3.4.3&lt;/b&gt; - Fehler bei Box-Kontoregistrierung behoben
         \n\n
         &lt;b&gt;3.4.2&lt;/b&gt; - Fehler bei Box-Kontoregistrierung behoben
