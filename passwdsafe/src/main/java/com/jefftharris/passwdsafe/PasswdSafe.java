@@ -22,8 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.Pair;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -250,13 +248,13 @@ public class PasswdSafe extends AppCompatActivity
         itsNavDrawerFrag = (PasswdSafeNavDrawerFragment)
                 getSupportFragmentManager().findFragmentById(
                         R.id.navigation_drawer);
-        itsNavDrawerFrag.setUp((DrawerLayout)findViewById(R.id.drawer_layout));
+        itsNavDrawerFrag.setUp(findViewById(R.id.drawer_layout));
 
         itsQueryPanel = findViewById(R.id.query_panel);
         View queryClearBtn = findViewById(R.id.query_clear_btn);
         assert queryClearBtn != null;
         queryClearBtn.setOnClickListener(this);
-        itsQuery = (TextView)findViewById(R.id.query);
+        itsQuery = findViewById(R.id.query);
 
         itsExpiryPanel = findViewById(R.id.expiry_panel);
         assert itsExpiryPanel != null;
@@ -265,7 +263,7 @@ public class PasswdSafe extends AppCompatActivity
         View expiryClearBtn = findViewById(R.id.expiry_clear_btn);
         assert expiryClearBtn != null;
         expiryClearBtn.setOnClickListener(this);
-        itsExpiry = (TextView)findViewById(R.id.expiry);
+        itsExpiry = findViewById(R.id.expiry);
 
         FragmentManager fragMgr = getSupportFragmentManager();
         itsFileDataFrag = (PasswdSafeFileDataFragment)
@@ -336,7 +334,7 @@ public class PasswdSafe extends AppCompatActivity
             break;
         }
         case PasswdSafeUtil.SEARCH_VIEW_INTENT: {
-            MenuItemCompat.collapseActionView(itsSearchItem);
+            itsSearchItem.collapseActionView();
             final String uuid =
                     intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
             PasswdLocation loc = useFileData(fileData -> {
@@ -418,10 +416,9 @@ public class PasswdSafe extends AppCompatActivity
         SearchManager searchManager =
                 (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         itsSearchItem = menu.findItem(R.id.menu_search);
-        MenuItemCompat.collapseActionView(itsSearchItem);
+        itsSearchItem.collapseActionView();
         if (searchManager != null) {
-            SearchView searchView = (SearchView)
-                    MenuItemCompat.getActionView(itsSearchItem);
+            SearchView searchView = (SearchView)itsSearchItem.getActionView();
             searchView.setSearchableInfo(
                     searchManager.getSearchableInfo(getComponentName()));
             searchView.setIconifiedByDefault(true);
@@ -1167,8 +1164,8 @@ public class PasswdSafe extends AppCompatActivity
         GuiUtils.setVisible(itsQueryPanel, (filter != null));
 
         if ((itsSearchItem != null) && (filter != null) &&
-            MenuItemCompat.isActionViewExpanded(itsSearchItem)) {
-            MenuItemCompat.collapseActionView(itsSearchItem);
+            itsSearchItem.isActionViewExpanded()) {
+            itsSearchItem.collapseActionView();
         }
 
         changeOpenView(new PasswdLocation(), true);
