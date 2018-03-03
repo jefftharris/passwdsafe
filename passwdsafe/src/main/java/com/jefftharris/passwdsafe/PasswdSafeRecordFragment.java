@@ -83,7 +83,7 @@ public class PasswdSafeRecordFragment
         View root = inflater.inflate(R.layout.fragment_passwdsafe_record,
                                      container, false);
 
-        final ViewPager viewPager = (ViewPager)root.findViewById(R.id.viewpager);
+        final ViewPager viewPager = root.findViewById(R.id.viewpager);
         viewPager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener()
                 {
@@ -140,7 +140,7 @@ public class PasswdSafeRecordFragment
         });
         viewPager.setCurrentItem(itsLastSelectedTab);
 
-        itsTabs = (TabLayout)root.findViewById(R.id.tabs);
+        itsTabs = root.findViewById(R.id.tabs);
         itsTabs.post(() -> {
             if (!isAdded()) {
                 return;

@@ -76,7 +76,7 @@ public class PasswdSafeNavDrawerFragment
         View fragView = doCreateView(inflater, container,
                                      R.layout.fragment_passwdsafe_nav_drawer);
         View header = getNavView().getHeaderView(0);
-        itsFileName = (TextView)header.findViewById(R.id.file_name);
+        itsFileName = header.findViewById(R.id.file_name);
         return fragView;
     }
 

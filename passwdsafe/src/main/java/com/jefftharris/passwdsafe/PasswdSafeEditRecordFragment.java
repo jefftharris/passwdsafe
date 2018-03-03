@@ -196,34 +196,31 @@ public class PasswdSafeEditRecordFragment
         View rootView = inflater.inflate(
                 R.layout.fragment_passwdsafe_edit_record, container, false);
         itsTypeGroup = rootView.findViewById(R.id.type_group);
-        itsType = (Spinner)rootView.findViewById(R.id.type);
+        itsType = rootView.findViewById(R.id.type);
         itsType.setOnItemSelectedListener(this);
-        itsTypeError = (TextView)rootView.findViewById(R.id.type_error);
-        itsLinkRef = (TextView)rootView.findViewById(R.id.link_ref);
+        itsTypeError = rootView.findViewById(R.id.type_error);
+        itsLinkRef = rootView.findViewById(R.id.link_ref);
         itsLinkRef.setOnClickListener(this);
-        itsTitleInput =
-                (TextInputLayout)rootView.findViewById(R.id.title_input);
-        itsTitle = (TextView)rootView.findViewById(R.id.title);
+        itsTitleInput = rootView.findViewById(R.id.title_input);
+        itsTitle = rootView.findViewById(R.id.title);
         itsValidator.registerTextView(itsTitle);
-        itsGroup = (Spinner)rootView.findViewById(R.id.group);
+        itsGroup = rootView.findViewById(R.id.group);
         itsGroup.setOnItemSelectedListener(this);
-        itsGroupError = (TextView)rootView.findViewById(R.id.group_error);
-        itsUser = (TextView)rootView.findViewById(R.id.user);
+        itsGroupError = rootView.findViewById(R.id.group_error);
+        itsUser = rootView.findViewById(R.id.user);
         itsValidator.registerTextView(itsUser);
         itsUrlInput = rootView.findViewById(R.id.url_input);
-        itsUrl = (TextView)rootView.findViewById(R.id.url);
+        itsUrl = rootView.findViewById(R.id.url);
         itsEmailInput = rootView.findViewById(R.id.email_input);
-        itsEmail = (TextView)rootView.findViewById(R.id.email);
+        itsEmail = rootView.findViewById(R.id.email);
 
         // Password
         itsPasswordLabel = rootView.findViewById(R.id.password_label);
         itsPasswordFields = rootView.findViewById(R.id.password_fields);
-        itsPasswordCurrent = (TextView)
-                rootView.findViewById(R.id.password_current);
+        itsPasswordCurrent = rootView.findViewById(R.id.password_current);
         TypefaceUtils.setMonospace(itsPasswordCurrent, ctx);
-        itsPasswordInput = (TextInputLayout)
-                rootView.findViewById(R.id.password_input);
-        itsPassword = (TextView)rootView.findViewById(R.id.password);
+        itsPasswordInput = rootView.findViewById(R.id.password_input);
+        itsPassword = rootView.findViewById(R.id.password);
         TypefaceUtils.setMonospace(itsPassword, ctx);
         View passwordVisibility =
                 rootView.findViewById(R.id.password_visibility);
@@ -234,55 +231,47 @@ public class PasswdSafeEditRecordFragment
         passwordGenerate.setOnClickListener(this);
         passwordGenerate.setOnLongClickListener(this);
         itsValidator.registerTextView(itsPassword);
-        itsPasswordConfirmInput = (TextInputLayout)
+        itsPasswordConfirmInput =
                 rootView.findViewById(R.id.password_confirm_input);
-        itsPasswordConfirm = (TextView)
-                rootView.findViewById(R.id.password_confirm);
+        itsPasswordConfirm = rootView.findViewById(R.id.password_confirm);
         TypefaceUtils.setMonospace(itsPasswordConfirm, ctx);
         itsValidator.registerTextView(itsPasswordConfirm);
 
         // Password policy
-        itsPolicy = (Spinner)rootView.findViewById(R.id.policy);
+        itsPolicy = rootView.findViewById(R.id.policy);
         itsPolicy.setOnItemSelectedListener(this);
-        itsPasswdPolicyView = (PasswdPolicyView)
-                rootView.findViewById(R.id.policy_view);
-        itsPolicyEditBtn = (Button)rootView.findViewById(R.id.policy_edit);
+        itsPasswdPolicyView = rootView.findViewById(R.id.policy_view);
+        itsPolicyEditBtn = rootView.findViewById(R.id.policy_edit);
         itsPolicyEditBtn.setOnClickListener(this);
 
         // Password expiration
         itsExpireGroup = rootView.findViewById(R.id.expire_group);
-        itsExpire = (Spinner)rootView.findViewById(R.id.expire_choice);
+        itsExpire = rootView.findViewById(R.id.expire_choice);
         itsExpire.setOnItemSelectedListener(this);
         itsExpireDateFields = rootView.findViewById(R.id.expire_date_fields);
-        itsExpireDateTime = (TextView)
-                rootView.findViewById(R.id.expire_date_time);
+        itsExpireDateTime = rootView.findViewById(R.id.expire_date_time);
         itsExpireDateTime.setOnClickListener(this);
-        itsExpireDateDate = (TextView)
-                rootView.findViewById(R.id.expire_date_date);
+        itsExpireDateDate = rootView.findViewById(R.id.expire_date_date);
         itsExpireDateDate.setOnClickListener(this);
         itsExpireDateError = rootView.findViewById(R.id.expire_date_error);
         itsExpireIntervalFields =
                 rootView.findViewById(R.id.expire_interval_fields);
-        itsExpireIntervalInput = (TextInputLayout)
+        itsExpireIntervalInput =
                 rootView.findViewById(R.id.expire_interval_val_input);
-        itsExpireInterval = (TextView)
-                rootView.findViewById(R.id.expire_interval_val);
+        itsExpireInterval = rootView.findViewById(R.id.expire_interval_val);
         itsValidator.registerTextView(itsExpireInterval);
-        itsExpireIntervalRecurring = (CheckBox)
+        itsExpireIntervalRecurring =
                 rootView.findViewById(R.id.expire_interval_recurring);
 
         // Password history
         itsHistoryGroup = rootView.findViewById(R.id.history_group);
-        itsHistoryAddRemoveBtn = (Button)
-                rootView.findViewById(R.id.history_addremove);
+        itsHistoryAddRemoveBtn = rootView.findViewById(R.id.history_addremove);
         itsHistoryAddRemoveBtn.setOnClickListener(this);
-        itsHistoryEnabled = (CheckBox)
-                rootView.findViewById(R.id.history_enabled);
+        itsHistoryEnabled = rootView.findViewById(R.id.history_enabled);
         itsHistoryEnabled.setOnClickListener(this);
-        itsHistoryMaxSizeInput = (TextInputLayout)
+        itsHistoryMaxSizeInput =
                 rootView.findViewById(R.id.history_max_size_input);
-        itsHistoryMaxSize = (TextView)
-                rootView.findViewById(R.id.history_max_size);
+        itsHistoryMaxSize = rootView.findViewById(R.id.history_max_size);
         itsHistoryMaxSize.addTextChangedListener(
                 new AbstractTextWatcher()
                 {
@@ -292,12 +281,12 @@ public class PasswdSafeEditRecordFragment
                         historyMaxSizeChanged();
                     }
                 });
-        itsHistoryList = (ListView)rootView.findViewById(R.id.history);
+        itsHistoryList = rootView.findViewById(R.id.history);
         registerForContextMenu(itsHistoryList);
 
         // Notes
         itsNotesLabel = rootView.findViewById(R.id.notes_label);
-        itsNotes = (TextView)rootView.findViewById(R.id.notes);
+        itsNotes = rootView.findViewById(R.id.notes);
         PasswdSafeRecordNotesFragment.setNotesOptions(itsNotes, getActivity());
 
         initProtViews(rootView);

@@ -175,7 +175,7 @@ public class SyncProviderFilesFragment extends ListFragment
                         return;
                     }
                     String str;
-                    ImageView icon = (ImageView)view.findViewById(R.id.icon);
+                    ImageView icon = view.findViewById(R.id.icon);
                     if ((cursor != null) && cursor.moveToFirst()) {
                         str = PasswdSafeContract.Providers.getDisplayName(cursor);
                         String typeStr = cursor.getString(
@@ -189,7 +189,7 @@ public class SyncProviderFilesFragment extends ListFragment
                     } else {
                         str = getString(R.string.sync_account_deleted);
                     }
-                    TextView tv = (TextView)view.findViewById(R.id.title);
+                    TextView tv = view.findViewById(R.id.title);
                     tv.setText(str);
                 }
 

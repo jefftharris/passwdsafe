@@ -77,8 +77,8 @@ public class OwncloudEditDialog extends DialogFragment
         LayoutInflater factory = LayoutInflater.from(act);
         View view = factory.inflate(R.layout.fragment_owncloud_edit_dialog,
                                     null);
-        itsUrlEdit = (TextView)view.findViewById(R.id.url);
-        itsSyncInterval = (Spinner)view.findViewById(R.id.owncloud_interval);
+        itsUrlEdit = view.findViewById(R.id.url);
+        itsSyncInterval = view.findViewById(R.id.owncloud_interval);
 
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(getActivity());

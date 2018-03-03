@@ -107,7 +107,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
         @SuppressLint("InflateParams")
         View dlgView = factory.inflate(R.layout.confirm_prompt, null);
 
-        itsConfirmCb = (CheckBox)dlgView.findViewById(R.id.confirm);
+        itsConfirmCb = dlgView.findViewById(R.id.confirm);
         itsConfirmCb.setOnCheckedChangeListener(this);
 
         setCancelable(true);

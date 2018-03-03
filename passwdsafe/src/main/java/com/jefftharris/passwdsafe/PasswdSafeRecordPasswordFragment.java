@@ -73,24 +73,21 @@ public class PasswdSafeRecordPasswordFragment
         View root = inflater.inflate(
                 R.layout.fragment_passwdsafe_record_password, container, false);
         itsPolicyRow = root.findViewById(R.id.policy_row);
-        itsPolicy = (PasswdPolicyView)root.findViewById(R.id.policy);
+        itsPolicy = root.findViewById(R.id.policy);
         itsPolicy.setGenerateEnabled(false);
         itsPasswordTimesRow = root.findViewById(R.id.password_times_row);
         itsExpirationTimeRow = root.findViewById(R.id.expiration_time_row);
-        itsExpirationTime = (TextView)root.findViewById(R.id.expiration_time);
+        itsExpirationTime = root.findViewById(R.id.expiration_time);
         itsExpirationIntervalRow =
                 root.findViewById(R.id.expiration_interval_row);
-        itsExpirationInterval =
-                (TextView)root.findViewById(R.id.expiration_interval);
+        itsExpirationInterval = root.findViewById(R.id.expiration_interval);
         itsPasswordModTimeRow = root.findViewById(R.id.password_mod_time_row);
-        itsPasswordModTime =
-                (TextView)root.findViewById(R.id.password_mod_time);
-        itsHistoryEnabledCb = (CheckBox)root.findViewById(R.id.history_enabled);
+        itsPasswordModTime = root.findViewById(R.id.password_mod_time);
+        itsHistoryEnabledCb = root.findViewById(R.id.history_enabled);
         itsHistoryEnabledCb.setClickable(false);
-        itsHistoryMaxSizeLabel =
-                (TextView)root.findViewById(R.id.history_max_size_label);
-        itsHistoryMaxSize = (TextView)root.findViewById(R.id.history_max_size);
-        itsHistory = (ListView)root.findViewById(R.id.history);
+        itsHistoryMaxSizeLabel = root.findViewById(R.id.history_max_size_label);
+        itsHistoryMaxSize = root.findViewById(R.id.history_max_size);
+        itsHistory = root.findViewById(R.id.history);
         itsHistory.setEnabled(false);
         return root;
     }

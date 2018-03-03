@@ -107,7 +107,7 @@ public class FileListActivity extends AppCompatActivity
         itsNavDrawerFrag = (FileListNavDrawerFragment)
                 getSupportFragmentManager().findFragmentById(
                         R.id.navigation_drawer);
-        itsNavDrawerFrag.setUp((DrawerLayout)findViewById(R.id.drawer_layout));
+        itsNavDrawerFrag.setUp(findViewById(R.id.drawer_layout));
         itsFiles = findViewById(R.id.files);
         itsNoPermGroup = findViewById(R.id.no_permission_group);
 

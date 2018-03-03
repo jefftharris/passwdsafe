@@ -102,11 +102,11 @@ public class PasswdSafeIME extends InputMethodService
     {
         View view = getLayoutInflater().inflate(R.layout.input_method, null);
 
-        itsKeyboardView = (KeyboardView)view.findViewById(R.id.keyboard);
+        itsKeyboardView = view.findViewById(R.id.keyboard);
         itsKeyboardView.setPreviewEnabled(false);
         itsKeyboardView.setOnKeyboardActionListener(new KeyboardListener());
 
-        itsRecord = (TextView)view.findViewById(R.id.record);
+        itsRecord = view.findViewById(R.id.record);
         itsRecord.setOnClickListener(this);
         itsPasswordWarning = view.findViewById(R.id.password_warning);
 

@@ -75,18 +75,16 @@ public class PasswdSafeChangePasswordFragment
                 R.layout.fragment_passwdsafe_change_password, container, false);
         Context ctx = getContext();
 
-        itsTitle = (TextView)rootView.findViewById(R.id.title);
-        itsPasswordInput = (TextInputLayout)
-                rootView.findViewById(R.id.password_input);
-        itsPassword = (TextView)rootView.findViewById(R.id.password);
+        itsTitle = rootView.findViewById(R.id.title);
+        itsPasswordInput = rootView.findViewById(R.id.password_input);
+        itsPassword = rootView.findViewById(R.id.password);
         TypefaceUtils.setMonospace(itsPassword, ctx);
         itsValidator.registerTextView(itsPassword);
         itsPasswordInput.setTypeface(Typeface.DEFAULT);
 
-        itsPasswordConfirmInput = (TextInputLayout)
+        itsPasswordConfirmInput =
                 rootView.findViewById(R.id.password_confirm_input);
-        itsPasswordConfirm = (TextView)
-                rootView.findViewById(R.id.password_confirm);
+        itsPasswordConfirm = rootView.findViewById(R.id.password_confirm);
         TypefaceUtils.setMonospace(itsPasswordConfirm, ctx);
         itsValidator.registerTextView(itsPasswordConfirm);
         itsPasswordConfirmInput.setTypeface(Typeface.DEFAULT);

@@ -118,11 +118,11 @@ public class SyncedFilesFragment extends ListFragment
         View rootView = inflater.inflate(R.layout.fragment_synced_files,
                                          container, false);
 
-        TextView path = (TextView)rootView.findViewById(R.id.path);
+        TextView path = rootView.findViewById(R.id.path);
         path.setText(getString(R.string.choose_sync_files_from_dir,
                                itsPathDisplay));
 
-        itsProgressBar = (ProgressBar)rootView.findViewById(R.id.progress);
+        itsProgressBar = rootView.findViewById(R.id.progress);
         itsProgressBar.setVisibility(View.GONE);
 
         return rootView;
@@ -335,10 +335,10 @@ public class SyncedFilesFragment extends ListFragment
             /** Constructor */
             public ViewHolder(View view)
             {
-                itsText = (TextView)view.findViewById(R.id.text);
-                itsModDate = (TextView)view.findViewById(R.id.mod_date);
-                itsIcon = (ImageView)view.findViewById(R.id.icon);
-                itsSelected = (CheckBox)view.findViewById(R.id.selected);
+                itsText = view.findViewById(R.id.text);
+                itsModDate = view.findViewById(R.id.mod_date);
+                itsIcon = view.findViewById(R.id.icon);
+                itsSelected = view.findViewById(R.id.selected);
             }
         }
     }

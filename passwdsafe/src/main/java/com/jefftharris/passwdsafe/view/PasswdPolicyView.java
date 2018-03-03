@@ -58,7 +58,7 @@ public class PasswdPolicyView extends LinearLayout
         row.setVisibility((location == null) ? View.GONE : View.VISIBLE);
 
         if (location != null) {
-            TextView tv = (TextView)findViewById(R.id.policy_view_location);
+            TextView tv = findViewById(R.id.policy_view_location);
             tv.setText(location);
         }
     }
@@ -150,11 +150,10 @@ public class PasswdPolicyView extends LinearLayout
         showLocation(null);
         showPolicy(null, -1);
 
-        Button btn = (Button)findViewById(R.id.policy_view_generate);
+        Button btn = findViewById(R.id.policy_view_generate);
         btn.setOnClickListener(v -> generatePasswd());
 
-        itsGeneratedPasswd =
-            (TextView)findViewById(R.id.policy_view_generated_passwd);
+        itsGeneratedPasswd = findViewById(R.id.policy_view_generated_passwd);
         itsGeneratedPasswd.setOnCreateContextMenuListener(this);
         TypefaceUtils.setMonospace(itsGeneratedPasswd, context);
     }
@@ -178,7 +177,7 @@ public class PasswdPolicyView extends LinearLayout
     private void setTextStr(int id, int labelId, String str, boolean visible)
     {
         View label = findViewById(labelId);
-        TextView tv = (TextView)findViewById(id);
+        TextView tv = findViewById(id);
         if (visible) {
             label.setVisibility(View.VISIBLE);
             tv.setVisibility(View.VISIBLE);

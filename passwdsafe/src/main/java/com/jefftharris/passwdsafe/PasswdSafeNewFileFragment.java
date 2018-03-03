@@ -119,13 +119,12 @@ public class PasswdSafeNewFileFragment
         setupView(rootView);
 
         itsPsafe3Sfx = getString(R.string.psafe3_ext);
-        itsTitle = (TextView)rootView.findViewById(R.id.title);
+        itsTitle = rootView.findViewById(R.id.title);
         if (itsUseStorage) {
             itsTitle.setText(R.string.new_file);
         }
-        itsFileNameInput = (TextInputLayout)
-                rootView.findViewById(R.id.file_name_input);
-        itsFileName = (EditText)rootView.findViewById(R.id.file_name);
+        itsFileNameInput = rootView.findViewById(R.id.file_name_input);
+        itsFileName = rootView.findViewById(R.id.file_name);
         itsFileName.setText(itsPsafe3Sfx);
         itsFileName.setSelection(0);
         itsFileName.addTextChangedListener(new TextWatcher()
@@ -154,25 +153,23 @@ public class PasswdSafeNewFileFragment
         itsValidator.registerTextView(itsFileName);
 
         Context ctx = getContext();
-        itsPasswordInput = (TextInputLayout)
-                rootView.findViewById(R.id.password_input);
-        itsPassword = (TextView)rootView.findViewById(R.id.password);
+        itsPasswordInput = rootView.findViewById(R.id.password_input);
+        itsPassword = rootView.findViewById(R.id.password);
         TypefaceUtils.setMonospace(itsPassword, ctx);
         itsValidator.registerTextView(itsPassword);
         itsPasswordInput.setTypeface(Typeface.DEFAULT);
 
-        itsPasswordConfirmInput = (TextInputLayout)
+        itsPasswordConfirmInput =
                 rootView.findViewById(R.id.password_confirm_input);
-        itsPasswordConfirm = (TextView)
-                rootView.findViewById(R.id.password_confirm);
+        itsPasswordConfirm = rootView.findViewById(R.id.password_confirm);
         TypefaceUtils.setMonospace(itsPasswordConfirm, ctx);
         itsValidator.registerTextView(itsPasswordConfirm);
         itsPasswordConfirmInput.setTypeface(Typeface.DEFAULT);
         PasswordVisibilityMenuHandler.set(ctx, itsPassword, itsPasswordConfirm);
 
-        Button cancelBtn = (Button)rootView.findViewById(R.id.cancel);
+        Button cancelBtn = rootView.findViewById(R.id.cancel);
         cancelBtn.setOnClickListener(this);
-        itsOkBtn = (Button)rootView.findViewById(R.id.ok);
+        itsOkBtn = rootView.findViewById(R.id.ok);
         itsOkBtn.setOnClickListener(this);
         setValid(false);
 

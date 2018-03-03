@@ -400,7 +400,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
              */
             public ViewHolder(View view)
             {
-                itsTitle = (TextView)view.findViewById(R.id.title);
+                itsTitle = view.findViewById(R.id.title);
                 itsEditBtn = view.findViewById(R.id.edit);
                 itsEditBtn.setOnClickListener(this);
                 itsEditBtn.setOnLongClickListener(this);
@@ -408,8 +408,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
                 itsDeleteBtn.setOnClickListener(this);
                 itsDeleteBtn.setOnLongClickListener(this);
                 itsPolicyCard = view.findViewById(R.id.policy_card);
-                itsPolicyView =
-                        (PasswdPolicyView)view.findViewById(R.id.policy_view);
+                itsPolicyView = view.findViewById(R.id.policy_view);
             }
 
             /**

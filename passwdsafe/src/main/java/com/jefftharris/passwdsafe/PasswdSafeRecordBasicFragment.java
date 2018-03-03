@@ -123,18 +123,18 @@ public class PasswdSafeRecordBasicFragment
                                      container, false);
         itsBaseRow = root.findViewById(R.id.base_row);
         itsBaseRow.setOnClickListener(this);
-        itsBaseLabel = (TextView)root.findViewById(R.id.base_label);
-        itsBase = (TextView)root.findViewById(R.id.base);
+        itsBaseLabel = root.findViewById(R.id.base_label);
+        itsBase = root.findViewById(R.id.base);
         View baseBtn = root.findViewById(R.id.base_btn);
         baseBtn.setOnClickListener(this);
         itsGroupRow = root.findViewById(R.id.group_row);
-        itsGroup = (TextView)root.findViewById(R.id.group);
+        itsGroup = root.findViewById(R.id.group);
         itsUserRow = root.findViewById(R.id.user_row);
-        itsUser = (TextView)root.findViewById(R.id.user);
+        itsUser = root.findViewById(R.id.user);
         itsPasswordRow = root.findViewById(R.id.password_row);
         itsPasswordRow.setOnClickListener(this);
-        itsPassword = (TextView)root.findViewById(R.id.password);
-        itsPasswordSeek = (SeekBar)root.findViewById(R.id.password_seek);
+        itsPassword = root.findViewById(R.id.password);
+        itsPasswordSeek = root.findViewById(R.id.password_seek);
         itsPasswordSeek.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener()
                 {
@@ -158,13 +158,11 @@ public class PasswdSafeRecordBasicFragment
                     {
                     }
                 });
-        itsPasswordSubsetBtn = (CompoundButton)
-                root.findViewById(R.id.password_subset_btn);
+        itsPasswordSubsetBtn = root.findViewById(R.id.password_subset_btn);
         itsPasswordSubsetBtn.setOnCheckedChangeListener(this);
         itsPasswordSubsetBtn.setOnLongClickListener(this);
-        itsPasswordSubsetInput = (TextInputLayout)
-                root.findViewById(R.id.password_subset_input);
-        itsPasswordSubset = (TextView)root.findViewById(R.id.password_subset);
+        itsPasswordSubsetInput = root.findViewById(R.id.password_subset_input);
+        itsPasswordSubset = root.findViewById(R.id.password_subset);
         itsPasswordSubset.addTextChangedListener(new AbstractTextWatcher()
         {
             @Override
@@ -192,17 +190,17 @@ public class PasswdSafeRecordBasicFragment
         itsPasswordHideRun = () ->
                 updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
         itsUrlRow = root.findViewById(R.id.url_row);
-        itsUrl = (TextView)root.findViewById(R.id.url);
+        itsUrl = root.findViewById(R.id.url);
         itsEmailRow = root.findViewById(R.id.email_row);
-        itsEmail = (TextView)root.findViewById(R.id.email);
+        itsEmail = root.findViewById(R.id.email);
         itsTimesRow = root.findViewById(R.id.times_row);
         itsCreationTimeRow = root.findViewById(R.id.creation_time_row);
-        itsCreationTime = (TextView)root.findViewById(R.id.creation_time);
+        itsCreationTime = root.findViewById(R.id.creation_time);
         itsLastModTimeRow = root.findViewById(R.id.last_mod_time_row);
-        itsLastModTime = (TextView)root.findViewById(R.id.last_mod_time);
+        itsLastModTime = root.findViewById(R.id.last_mod_time);
         itsProtectedRow = root.findViewById(R.id.protected_row);
         itsReferencesRow = root.findViewById(R.id.references_row);
-        itsReferences = (ListView)root.findViewById(R.id.references);
+        itsReferences = root.findViewById(R.id.references);
         itsReferences.setOnItemClickListener(
                 (parent, view, position, id) -> showRefRec(false, position));
 

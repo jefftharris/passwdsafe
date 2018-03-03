@@ -67,21 +67,19 @@ public class AboutUtils
             version.append(" (DEBUG)");
         }
 
-        TextView tv = (TextView)detailsView.findViewById(R.id.version);
+        TextView tv = detailsView.findViewById(R.id.version);
         tv.setText(version);
-        tv = (TextView)detailsView.findViewById(R.id.build_id);
+        tv = detailsView.findViewById(R.id.build_id);
         tv.setText(BuildConfig.BUILD_ID);
-        tv = (TextView)detailsView.findViewById(R.id.build_date);
+        tv = detailsView.findViewById(R.id.build_date);
         tv.setText(BuildConfig.BUILD_DATE);
-        tv = (TextView)detailsView.findViewById(R.id.release_notes);
+        tv = detailsView.findViewById(R.id.release_notes);
         //noinspection deprecation
         tv.setText(
                 Html.fromHtml(tv.getText().toString().replace("\n", "<br>")));
 
-        ToggleButton btn =
-                (ToggleButton)detailsView.findViewById(R.id.toggle_license);
-        final TextView licenseView =
-                (TextView)detailsView.findViewById(R.id.license);
+        ToggleButton btn = detailsView.findViewById(R.id.toggle_license);
+        final TextView licenseView = detailsView.findViewById(R.id.license);
         btn.setOnCheckedChangeListener((buttonView, isChecked) -> {
             licenseView.setText(extraLicenseInfo);
             GuiUtils.setVisible(licenseView, isChecked);

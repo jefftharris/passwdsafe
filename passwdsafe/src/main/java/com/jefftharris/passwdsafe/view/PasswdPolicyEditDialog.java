@@ -99,23 +99,20 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
 
         itsIsNameEditable = true;
-        itsNameEdit = (TextView)itsView.findViewById(R.id.name);
-        itsLengthEdit = (TextView)itsView.findViewById(R.id.length);
-        itsOptions[0] = (CheckBox)itsView.findViewById(R.id.lowercase);
-        itsOptions[1] = (CheckBox)itsView.findViewById(R.id.uppercase);
-        itsOptions[2] = (CheckBox)itsView.findViewById(R.id.digits);
-        itsOptions[3] = (CheckBox)itsView.findViewById(R.id.symbols);
-        itsOptionLens[0] = (TextView)itsView.findViewById(R.id.lowercase_len);
-        itsOptionLens[1] = (TextView)itsView.findViewById(R.id.uppercase_len);
-        itsOptionLens[2] = (TextView)itsView.findViewById(R.id.digits_len);
-        itsOptionLens[3] = (TextView)itsView.findViewById(R.id.symbols_len);
-        itsUseCustomSymbols =
-            (CheckBox)itsView.findViewById(R.id.use_custom_symbols);
-        itsCustomSymbolsEdit =
-            (TextView)itsView.findViewById(R.id.symbols_custom);
+        itsNameEdit = itsView.findViewById(R.id.name);
+        itsLengthEdit = itsView.findViewById(R.id.length);
+        itsOptions[0] = itsView.findViewById(R.id.lowercase);
+        itsOptions[1] = itsView.findViewById(R.id.uppercase);
+        itsOptions[2] = itsView.findViewById(R.id.digits);
+        itsOptions[3] = itsView.findViewById(R.id.symbols);
+        itsOptionLens[0] = itsView.findViewById(R.id.lowercase_len);
+        itsOptionLens[1] = itsView.findViewById(R.id.uppercase_len);
+        itsOptionLens[2] = itsView.findViewById(R.id.digits_len);
+        itsOptionLens[3] = itsView.findViewById(R.id.symbols_len);
+        itsUseCustomSymbols = itsView.findViewById(R.id.use_custom_symbols);
+        itsCustomSymbolsEdit = itsView.findViewById(R.id.symbols_custom);
         TypefaceUtils.setMonospace(itsCustomSymbolsEdit, ctx);
-        itsGeneratedPasswd =
-                (TextView)itsView.findViewById(R.id.generated_passwd);
+        itsGeneratedPasswd = itsView.findViewById(R.id.generated_passwd);
         TypefaceUtils.setMonospace(itsGeneratedPasswd, ctx);
         itsDefaultSymbols = Preferences.getPasswdDefaultSymbolsPref(prefs);
 
@@ -213,7 +210,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         itsCustomSymbolsEdit.setText(customSymbols);
         itsValidator.registerTextView(itsCustomSymbolsEdit);
 
-        Button btn = (Button)itsView.findViewById(R.id.generate);
+        Button btn = itsView.findViewById(R.id.generate);
         btn.setOnClickListener(btnView -> generatePasswd());
 
         return dialog;
@@ -332,7 +329,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 
         itsType = type;
         if (init) {
-            Spinner typeSpin = (Spinner)itsView.findViewById(R.id.type);
+            Spinner typeSpin = itsView.findViewById(R.id.type);
             typeSpin.setSelection(itsType.itsStrIdx);
             typeSpin.setOnItemSelectedListener(new OnItemSelectedListener()
             {
@@ -442,7 +439,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         boolean visible = false;
         switch (itsType) {
         case NORMAL: {
-            CheckBox cb = (CheckBox)itsView.findViewById(R.id.symbols);
+            CheckBox cb = itsView.findViewById(R.id.symbols);
             visible = cb.isChecked();
             break;
         }
@@ -523,7 +520,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
     private void setTextView(@SuppressWarnings("SameParameterValue") int id,
                              String value)
     {
-        TextView tv = (TextView)itsView.findViewById(id);
+        TextView tv = itsView.findViewById(id);
         tv.setText(value);
     }
 

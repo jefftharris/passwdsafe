@@ -402,10 +402,8 @@ public final class FileListFragment extends ListFragment
             return;
         }
         View groupPanel = rootView.findViewById(R.id.current_group_panel);
-        TextView groupLabel =
-                (TextView)rootView.findViewById(R.id.current_group_label);
-        TextView emptyLabel =
-                (TextView)rootView.findViewById(android.R.id.empty);
+        TextView groupLabel = rootView.findViewById(R.id.current_group_label);
+        TextView emptyLabel = rootView.findViewById(android.R.id.empty);
         if (itsDir == null) {
             groupPanel.setVisibility(View.GONE);
             groupLabel.setText("");

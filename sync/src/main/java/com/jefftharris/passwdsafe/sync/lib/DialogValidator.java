@@ -57,7 +57,7 @@ public abstract class DialogValidator
      */
     private DialogValidator(View view)
     {
-        itsErrorMsgView = (TextView)view.findViewById(R.id.error_msg);
+        itsErrorMsgView = view.findViewById(R.id.error_msg);
         itsErrorFmt = view.getResources().getString(R.string.error_msg);
     }
 

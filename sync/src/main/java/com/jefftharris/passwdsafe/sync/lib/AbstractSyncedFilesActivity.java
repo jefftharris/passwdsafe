@@ -316,7 +316,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
                 name = getString(R.string.no_account);
             }
             PasswdSafeUtil.dbginfo(TAG, "provider: %s", name);
-            TextView title = (TextView)findViewById(R.id.title);
+            TextView title = findViewById(R.id.title);
             assert title != null;
             title.setText(name);
         }

@@ -61,7 +61,7 @@ public class PasswdSafeRecordNotesFragment
         setHasOptionsMenu(true);
         View root = inflater.inflate(R.layout.fragment_passwdsafe_record_notes,
                                      container, false);
-        itsNotes = (TextView)root.findViewById(R.id.notes);
+        itsNotes = root.findViewById(R.id.notes);
         GuiUtils.setTextSelectable(itsNotes);
         return root;
     }

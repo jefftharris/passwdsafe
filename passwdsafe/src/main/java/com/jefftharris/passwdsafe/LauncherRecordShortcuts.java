@@ -69,7 +69,7 @@ public class LauncherRecordShortcuts extends AppCompatActivity
         SharedPreferences prefs = Preferences.getSharedPrefs(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
 
-        itsFile = (TextView)findViewById(R.id.file);
+        itsFile = findViewById(R.id.file);
         itsFileDataView.onAttach(this, prefs);
 
         Intent intent = getIntent();

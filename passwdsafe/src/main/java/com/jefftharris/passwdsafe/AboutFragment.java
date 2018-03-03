@@ -80,15 +80,14 @@ public class AboutFragment extends Fragment
 
         AboutUtils.updateAboutFields(rootView, licenses, getActivity());
         itsFileDetailsGroup = rootView.findViewById(R.id.file_details_group);
-        itsFile = (TextView)rootView.findViewById(R.id.file);
-        itsPermissions = (TextView)rootView.findViewById(R.id.permissions);
-        itsNumRecords = (TextView)rootView.findViewById(R.id.num_records);
-        itsPasswordEnc = (TextView)
-                rootView.findViewById(R.id.password_encoding);
-        itsDatabaseVer = (TextView)rootView.findViewById(R.id.database_version);
-        itsLastSaveBy = (TextView)rootView.findViewById(R.id.last_save_by);
-        itsLastSaveApp = (TextView)rootView.findViewById(R.id.last_save_app);
-        itsLastSaveTime = (TextView)rootView.findViewById(R.id.last_save_time);
+        itsFile = rootView.findViewById(R.id.file);
+        itsPermissions = rootView.findViewById(R.id.permissions);
+        itsNumRecords = rootView.findViewById(R.id.num_records);
+        itsPasswordEnc = rootView.findViewById(R.id.password_encoding);
+        itsDatabaseVer = rootView.findViewById(R.id.database_version);
+        itsLastSaveBy = rootView.findViewById(R.id.last_save_by);
+        itsLastSaveApp = rootView.findViewById(R.id.last_save_app);
+        itsLastSaveTime = rootView.findViewById(R.id.last_save_time);
         return rootView;
     }
 

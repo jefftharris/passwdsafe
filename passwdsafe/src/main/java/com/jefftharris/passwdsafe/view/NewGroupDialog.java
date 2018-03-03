@@ -62,8 +62,7 @@ public class NewGroupDialog extends DialogFragment
                     @Override
                     public void onOkClicked(DialogInterface dialog)
                     {
-                        EditText newGroup = (EditText)
-                                view.findViewById(R.id.new_group);
+                        EditText newGroup = view.findViewById(R.id.new_group);
                         ((Listener)getTargetFragment()).handleNewGroup(
                                 newGroup.getText().toString());
                     }
@@ -82,7 +81,7 @@ public class NewGroupDialog extends DialogFragment
                 .setNegativeButton(R.string.cancel, dlgClick)
                 .setOnCancelListener(dlgClick);
         final AlertDialog alertDialog = builder.create();
-        TextView tv = (TextView)view.findViewById(R.id.new_group);
+        TextView tv = view.findViewById(R.id.new_group);
         GuiUtils.setupFormKeyboard(tv, tv, getContext(), () -> {
             Button btn = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
             if (btn.isEnabled()) {

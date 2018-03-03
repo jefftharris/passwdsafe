@@ -72,10 +72,9 @@ public class PasswdSafeExpirationsFragment
         View root = inflater.inflate(R.layout.fragment_passwdsafe_expirations,
                                      container, false);
 
-        itsEnableExpiryNotifs = (CheckBox)
-                root.findViewById(R.id.enable_expiry_notifs);
+        itsEnableExpiryNotifs = root.findViewById(R.id.enable_expiry_notifs);
         itsEnableExpiryNotifs.setOnCheckedChangeListener(this);
-        ListView expirations = (ListView)root.findViewById(R.id.expirations);
+        ListView expirations = root.findViewById(R.id.expirations);
         expirations.setOnItemClickListener(this);
 
         return root;

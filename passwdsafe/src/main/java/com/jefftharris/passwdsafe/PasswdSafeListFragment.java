@@ -153,8 +153,8 @@ public class PasswdSafeListFragment extends ListFragment
 
         itsGroupPanel = root.findViewById(R.id.current_group_panel);
         itsGroupPanel.setOnClickListener(this);
-        itsGroupLabel = (TextView)root.findViewById(R.id.current_group_label);
-        itsEmptyText = (TextView)root.findViewById(android.R.id.empty);
+        itsGroupLabel = root.findViewById(R.id.current_group_label);
+        itsEmptyText = root.findViewById(android.R.id.empty);
 
         return root;
     }
@@ -548,10 +548,10 @@ public class PasswdSafeListFragment extends ListFragment
             /** Constructor */
             public ViewHolder(View view)
             {
-                itsTitle = (TextView)view.findViewById(android.R.id.text1);
-                itsUser = (TextView)view.findViewById(android.R.id.text2);
-                itsMatch = (TextView)view.findViewById(R.id.match);
-                itsIcon = (ImageView)view.findViewById(R.id.icon);
+                itsTitle = view.findViewById(android.R.id.text1);
+                itsUser = view.findViewById(android.R.id.text2);
+                itsMatch = view.findViewById(R.id.match);
+                itsIcon = view.findViewById(R.id.icon);
                 itsSelection = view.findViewById(R.id.selection);
                 itsLastIconImage = -1;
             }

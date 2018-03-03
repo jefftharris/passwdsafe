@@ -317,9 +317,9 @@ public class PasswdHistory
                               boolean hasContextMenu,
                               Context ctx)
             {
-                itsPassword = (TextView)view.findViewById(R.id.password);
+                itsPassword = view.findViewById(R.id.password);
                 TypefaceUtils.setMonospace(itsPassword, ctx);
-                itsDate = (TextView)view.findViewById(R.id.date);
+                itsDate = view.findViewById(R.id.date);
 
                 view.setEnabled(enabled);
                 itsPassword.setEnabled(enabled);
