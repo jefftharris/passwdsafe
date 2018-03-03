@@ -18,7 +18,8 @@
 
         <LinearLayout android:id="@+id/base_row"
                       style="@style/RecordRow"
-                      android:clickable="true">
+                      android:clickable="true"
+                      android:focusable="true">
 
             <TextView android:id="@+id/base_label"
                       style="@style/RecordHeader"
@@ -67,7 +68,8 @@
 
         <LinearLayout android:id="@+id/password_row"
                       style="@style/RecordRow"
-                      android:clickable="true">
+                      android:clickable="true"
+                      android:focusable="true">
 
             <TextView style="@style/RecordHeader"
                       android:clickable="false"
