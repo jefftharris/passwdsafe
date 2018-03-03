@@ -243,14 +243,14 @@
 
         <receiver
             android:name=".ExpirationTimeoutReceiver"
-            tools:ignore="ExportedReceiver">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.jefftharris.passwdsafe.action.EXPIRATION_TIMEOUT"/>
             </intent-filter>
         </receiver>
+
         <receiver
-            android:name=".StartupReceiver"
-            tools:ignore="ExportedReceiver">
+            android:name=".lib.StartupReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>

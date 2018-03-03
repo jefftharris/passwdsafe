@@ -398,6 +398,8 @@ public class NotificationMgr implements PasswdFileDataObserver
             if (itsTimerIntent == null) {
                 Intent intent =
                     new Intent(PasswdSafeApp.EXPIRATION_TIMEOUT_INTENT);
+                intent.setClass(itsCtx.getApplicationContext(),
+                                ExpirationTimeoutReceiver.class);
                 itsTimerIntent = PendingIntent.getBroadcast(
                     itsCtx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             }

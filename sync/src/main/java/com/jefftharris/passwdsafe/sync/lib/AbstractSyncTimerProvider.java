@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.SyncExpirationReceiver;
 
 /**
  *  Abstract provider that uses a system timer to perform syncing
@@ -84,9 +85,11 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
             if ((userId != null) && (freq > 0)) {
                 if (itsSyncTimeoutIntent == null) {
                     Intent timeoutIntent =
-                            new Intent( ACTION_SYNC_EXPIRATION_TIMEOUT);
+                            new Intent(ACTION_SYNC_EXPIRATION_TIMEOUT);
                     timeoutIntent.putExtra(SYNC_EXPIRATION_TIMEOUT_EXTRA_TYPE,
                                            itsProviderType.toString());
+                    timeoutIntent.setClass(itsContext.getApplicationContext(),
+                                           SyncExpirationReceiver.class);
 
                     int requestCode;
                     switch (itsProviderType) {

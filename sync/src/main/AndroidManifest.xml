@@ -153,11 +153,17 @@
         </provider>
 
         <receiver
-            android:name=".ManifestBroadcastReceiver"
-            tools:ignore="ExportedReceiver">
+            android:name=".SyncExpirationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.jefftharris.passwdsafe.action.SYNC_EXPIRATION_TIMEOUT"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.jefftharris.passwdsafe.lib.StartupReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="com.jefftharris.passwdsafe.action.SYNC_EXPIRATION_TIMEOUT"/>
             </intent-filter>
         </receiver>
 

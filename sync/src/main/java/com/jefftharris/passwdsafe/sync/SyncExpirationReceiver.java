@@ -16,28 +16,22 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
 
 /**
- *  Receiver for the manifest broadcast events
+ *  Receiver for the sync expiration events
  */
-public class ManifestBroadcastReceiver extends BroadcastReceiver
+public class SyncExpirationReceiver extends BroadcastReceiver
 {
-    private static final String TAG = "ManifestBroadcastReceiver";
+    private static final String TAG = "SyncExpirationReceiver";
 
-    /* (non-Javadoc)
-     * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
-     */
     @Override
     public void onReceive(Context ctx, Intent intent)
     {
         PasswdSafeUtil.dbginfo(TAG, "onReceive: %s", intent);
         String action = intent.getAction();
-        //noinspection StatementWithEmptyBody
         if (Provider.ACTION_SYNC_EXPIRATION_TIMEOUT.equals(action)) {
             ProviderType type = ProviderType.fromString(intent.getStringExtra(
                     Provider.SYNC_EXPIRATION_TIMEOUT_EXTRA_TYPE));
             Provider providerImpl = ProviderFactory.getProvider(type, ctx);
             providerImpl.requestSync(false);
-        } else {
-            // The app is created in order to launch the receiver
         }
     }
 }
