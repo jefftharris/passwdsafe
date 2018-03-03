@@ -64,6 +64,15 @@ public class PasswdLocation implements Parcelable
         itsRecord = fileData.getUUID(rec);
     }
 
+    /** Constructor from a group */
+    public PasswdLocation(String group)
+    {
+        if (!TextUtils.isEmpty(group)) {
+            PasswdFileData.splitGroup(group, itsGroups);
+        }
+        itsRecord = null;
+    }
+
     /** Constructor from a parcel */
     private PasswdLocation(Parcel parcel)
     {

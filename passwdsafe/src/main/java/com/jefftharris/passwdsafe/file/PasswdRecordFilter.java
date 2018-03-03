@@ -41,6 +41,12 @@ public final class PasswdRecordFilter implements Closeable
     public static final int OPTS_NO_ALIAS =         1 << 0;
     /** Record can not have a shortcut referencing it */
     public static final int OPTS_NO_SHORTCUT =      1 << 1;
+    /** Record group not matched */
+    public static final int OPTS_NO_GROUP =         1 << 2;
+
+    /** Record can not have an alias or shortcut referencing it */
+    private static final int OPTS_NO_ALIASSHORT =
+            (OPTS_NO_ALIAS | OPTS_NO_SHORTCUT);
 
     /** Filter type */
     private final Type itsType;
@@ -67,6 +73,12 @@ public final class PasswdRecordFilter implements Closeable
     private static String QUERY_MATCH_URL;
     private static String QUERY_MATCH_EMAIL;
     private static String QUERY_MATCH_NOTES;
+    public static String QUERY_MATCH_GROUP;
+
+    /** Search view result data prefix for a record */
+    public static final String SEARCH_VIEW_RECORD = "REC:";
+    /** Search view result data prefix for a group */
+    public static final String SEARCH_VIEW_GROUP = "GRP:";
 
     /** Constructor for a query */
     public PasswdRecordFilter(Pattern query, int opts)
@@ -113,6 +125,7 @@ public final class PasswdRecordFilter implements Closeable
             QUERY_MATCH_URL = ctx.getString(R.string.url);
             QUERY_MATCH_EMAIL = ctx.getString(R.string.email);
             QUERY_MATCH_NOTES = ctx.getString(R.string.notes);
+            QUERY_MATCH_GROUP = ctx.getString(R.string.group);
         }
     }
 
@@ -141,6 +154,9 @@ public final class PasswdRecordFilter implements Closeable
                 } else if (filterField(
                         fileData.getNotes(rec, ctx).getNotes())) {
                     queryMatch = QUERY_MATCH_NOTES;
+                } else if (!hasOptions(OPTS_NO_GROUP) &&
+                           filterField(fileData.getGroup(rec))) {
+                    queryMatch = QUERY_MATCH_GROUP;
                 }
             } else {
                 queryMatch = QUERY_MATCH;
@@ -194,7 +210,7 @@ public final class PasswdRecordFilter implements Closeable
         }
 
         if ((queryMatch != null) &&
-            (itsOptions != PasswdRecordFilter.OPTS_DEFAULT)) {
+            hasOptions(PasswdRecordFilter.OPTS_NO_ALIASSHORT)) {
             if (passwdRec != null) {
                 for (PwsRecord ref: passwdRec.getRefsToRecord()) {
                     PasswdRecord passwdRef = fileData.getPasswdRecord(ref);
@@ -228,6 +244,30 @@ public final class PasswdRecordFilter implements Closeable
         return queryMatch;
     }
 
+    /**
+     * Match a record's group against the filter
+     * @return The group if matched; null otherwise
+     */
+    public final String matchGroup(PwsRecord rec, PasswdFileData fileData)
+    {
+        switch (itsType) {
+        case QUERY: {
+            if (itsSearchQuery != null) {
+                String group = fileData.getGroup(rec);
+                if (filterField(group)) {
+                    return group;
+                }
+            }
+            break;
+        }
+        case EXPIRATION:
+        case SIMILAR: {
+            break;
+        }
+        }
+
+        return null;
+    }
 
     /**
      * Is the filter's type a query

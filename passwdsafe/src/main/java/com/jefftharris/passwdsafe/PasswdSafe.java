@@ -335,15 +335,25 @@ public class PasswdSafe extends AppCompatActivity
         }
         case PasswdSafeUtil.SEARCH_VIEW_INTENT: {
             itsSearchItem.collapseActionView();
-            final String uuid =
-                    intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
-            PasswdLocation loc = useFileData(fileData -> {
-                PwsRecord rec = fileData.getRecord(uuid);
-                if (rec == null) {
-                    return null;
-                }
-                return new PasswdLocation(rec, fileData);
-            });
+            String data = intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
+            if (data == null) {
+                break;
+            }
+            PasswdLocation loc = null;
+            if (data.startsWith(PasswdRecordFilter.SEARCH_VIEW_RECORD)) {
+                int pfxlen = PasswdRecordFilter.SEARCH_VIEW_RECORD.length();
+                final String uuid = data.substring(pfxlen);
+                loc = useFileData(fileData -> {
+                    PwsRecord rec = fileData.getRecord(uuid);
+                    if (rec == null) {
+                        return null;
+                    }
+                    return new PasswdLocation(rec, fileData);
+                });
+            } else if (data.startsWith(PasswdRecordFilter.SEARCH_VIEW_GROUP)) {
+                int pfxlen = PasswdRecordFilter.SEARCH_VIEW_GROUP.length();
+                loc = new PasswdLocation(data.substring(pfxlen));
+            }
             if (loc != null) {
                 changeLocation(loc);
             }

@@ -206,8 +206,9 @@ public class PasswdClientProvider extends ContentProvider
                 queryPattern = Pattern.compile(query, itsSearchFlags);
                 comparator = itsSearchComp;
             }
+            // Groups are matched separately
             PasswdRecordFilter filter = new PasswdRecordFilter(
-                    queryPattern, PasswdRecordFilter.OPTS_DEFAULT);
+                    queryPattern, PasswdRecordFilter.OPTS_NO_GROUP);
             return PasswdSafeFileDataFragment.useOpenFileData(
                     new SuggestionsUser(filter, limit,
                                         comparator, getContext()));
@@ -288,14 +289,22 @@ public class PasswdClientProvider extends ContentProvider
         public Cursor useFileData(@NonNull PasswdFileData fileData)
         {
             ArrayList<RecordMatch> recs = new ArrayList<>();
+            Set<String> groups = new HashSet<>();
             for (PwsRecord rec: fileData.getRecords()) {
                 String match = itsFilter.filterRecord(rec, fileData,
                                                       itsContext);
                 if (match != null) {
                     recs.add(new RecordMatch(rec, match, fileData));
-                    if (recs.size() >= itsLimit) {
-                        break;
-                    }
+                }
+
+                String matchGroup = itsFilter.matchGroup(rec, fileData);
+                if ((matchGroup != null) && !groups.contains(matchGroup)) {
+                    groups.add(matchGroup);
+                    recs.add(new RecordMatch(matchGroup));
+                }
+
+                if (recs.size() >= itsLimit) {
+                    break;
                 }
             }
             Collections.sort(recs, itsComparator);
@@ -313,9 +322,8 @@ public class PasswdClientProvider extends ContentProvider
             int id = 0;
             for (RecordMatch match: recs) {
                 row[0] = id++;
-                row[1] = fileData.getUUID(match.itsRecord);
-                row[2] = PasswdRecord.getRecordId(null, match.itsTitle,
-                                                  match.itsUser);
+                row[1] = match.itsData;
+                row[2] = match.itsLabel;
                 row[3] = match.itsMatch;
                 cursor.addRow(row);
             }
@@ -331,11 +339,12 @@ public class PasswdClientProvider extends ContentProvider
     {
         public final String itsTitle;
         public final String itsUser;
+        public final String itsData;
+        public final String itsLabel;
         public final String itsMatch;
-        public final PwsRecord itsRecord;
 
         /**
-         * Constructor
+         * Constructor for a record
          */
         public RecordMatch(PwsRecord rec,
                            String match,
@@ -343,8 +352,22 @@ public class PasswdClientProvider extends ContentProvider
         {
             itsTitle = fileData.getTitle(rec);
             itsUser = fileData.getUsername(rec);
+            itsData = PasswdRecordFilter.SEARCH_VIEW_RECORD +
+                      fileData.getUUID(rec);
+            itsLabel = PasswdRecord.getRecordId(null, itsTitle, itsUser);
             itsMatch = match;
-            itsRecord = rec;
+        }
+
+        /**
+         * Constructor for a group
+         */
+        public RecordMatch(String group)
+        {
+            itsTitle = group;
+            itsUser = null;
+            itsData = PasswdRecordFilter.SEARCH_VIEW_GROUP + itsTitle;
+            itsLabel = itsTitle;
+            itsMatch = PasswdRecordFilter.QUERY_MATCH_GROUP;
         }
     }
 
