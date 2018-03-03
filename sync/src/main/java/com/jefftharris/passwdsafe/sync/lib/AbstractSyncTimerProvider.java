@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.SyncExpirationReceiver;
@@ -155,7 +156,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     protected synchronized final void doRequestSync(boolean manual)
     {
         if ((itsSyncTask == null) || itsSyncTask.isFinished()) {
-            itsSyncTask = new SyncRequestTask(manual);
+            itsSyncTask = new SyncRequestTask(this, manual);
         }
         itsSyncTask.checkSync();
     }
@@ -170,25 +171,34 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     }
 
     /** Background sync request for a timer provider */
-    private class SyncRequestTask extends AsyncTask<Void, Void, Void>
+    private static class SyncRequestTask extends AsyncTask<Void, Void, Void>
             implements Runnable
     {
+        private final ManagedRef<AbstractSyncTimerProvider> itsProviderRef;
         private final boolean itsIsManual;
         private boolean itsIsTimerPending = false;
         private boolean itsIsRunning = true;
 
         /** Constructor */
-        public SyncRequestTask(boolean manual)
+        public SyncRequestTask(AbstractSyncTimerProvider provider,
+                               boolean manual)
         {
+            itsProviderRef = new ManagedRef<>(provider);
             itsIsManual = manual;
         }
 
         /** Check the status of the sync */
         public synchronized void checkSync()
         {
+            AbstractSyncTimerProvider provider = itsProviderRef.get();
+            if (provider == null) {
+                return;
+            }
+
             Status status = getStatus();
             PasswdSafeUtil.dbginfo(
-                    itsTag, "SyncRequestTask checkSync status %s timer %b",
+                    provider.itsTag,
+                    "SyncRequestTask checkSync status %s timer %b",
                     status, itsIsTimerPending);
             long delay = 0;
             switch (status) {
@@ -204,7 +214,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
             }
             if (!itsIsTimerPending) {
                 itsIsTimerPending = true;
-                itsHandler.postDelayed(this, delay);
+                provider.itsHandler.postDelayed(this, delay);
             }
         }
 
@@ -218,8 +228,13 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         @Override
         public synchronized void run()
         {
+            AbstractSyncTimerProvider provider = itsProviderRef.get();
+            if (provider == null) {
+                return;
+            }
+
             Status status = getStatus();
-            PasswdSafeUtil.dbginfo(itsTag,
+            PasswdSafeUtil.dbginfo(provider.itsTag,
                                    "SyncRequestTask timer expired status %s",
                                    status);
             itsIsTimerPending = false;
@@ -230,7 +245,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
             }
             case RUNNING:
             case FINISHED: {
-                doRequestSync(itsIsManual);
+                provider.doRequestSync(itsIsManual);
                 break;
             }
             }
@@ -242,12 +257,17 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         @Override
         protected Void doInBackground(Void... params)
         {
-            String acctUserId = getAccountUserId();
+            AbstractSyncTimerProvider provider = itsProviderRef.get();
+            if (provider == null) {
+                return null;
+            }
+
+            String acctUserId = provider.getAccountUserId();
             if (acctUserId == null) {
                 return null;
             }
 
-            final Account account = getAccount(acctUserId);
+            final Account account = provider.getAccount(acctUserId);
             DbProvider dbprovider;
             try {
                 dbprovider = SyncDb.useDb(
@@ -257,13 +277,12 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
             }
 
             if (dbprovider == null) {
-                Log.e(itsTag, "No provider for sync of " + account);
+                Log.e(provider.itsTag, "No provider for sync of " + account);
                 return null;
             }
 
-            new ProviderSync(account, dbprovider,
-                             AbstractSyncTimerProvider.this,
-                             itsContext).sync(itsIsManual);
+            new ProviderSync(account, dbprovider, provider, provider.itsContext)
+                    .sync(itsIsManual);
             return null;
         }
 
