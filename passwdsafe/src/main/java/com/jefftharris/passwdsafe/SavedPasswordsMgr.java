@@ -41,7 +41,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.Collections;
+import java.util.Enumeration;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -325,10 +325,14 @@ public final class SavedPasswordsMgr
         if (isAvailable()) {
             try {
                 KeyStore keyStore = getKeystore();
-                for (String key: Collections.list(keyStore.aliases())) {
-                    PasswdSafeUtil.dbginfo(
-                            TAG, "removeAllSavedPasswords key: %s", key);
-                    keyStore.deleteEntry(key);
+                Enumeration<String> aliases = keyStore.aliases();
+                if (aliases != null) {
+                    while (aliases.hasMoreElements()) {
+                        String key = aliases.nextElement();
+                        PasswdSafeUtil.dbginfo(
+                                TAG, "removeAllSavedPasswords key: %s", key);
+                        keyStore.deleteEntry(key);
+                    }
                 }
             } catch (CertificateException | NoSuchAlgorithmException |
                     IOException | KeyStoreException e) {
