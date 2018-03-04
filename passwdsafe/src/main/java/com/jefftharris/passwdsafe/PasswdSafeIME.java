@@ -57,7 +57,7 @@ public class PasswdSafeIME extends InputMethodService
     public static final int PASSWDSAFE_KEY = -201;
     public static final int KEYBOARD_NEXT_KEY = -202;
     public static final int KEYBOARD_CHOOSE_KEY = -203;
-    public static final int DEL_KEY = -204;
+    private static final int DEL_KEY = -204;
 
     private static boolean itsResetKeyboard = false;
 
