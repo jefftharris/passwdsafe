@@ -198,7 +198,7 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
+    public void onSaveInstanceState(@NonNull Bundle outState)
     {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_SELECTED_RECORD, itsSelectedRecord);

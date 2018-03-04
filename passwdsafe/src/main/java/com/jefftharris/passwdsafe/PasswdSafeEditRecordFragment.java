@@ -188,7 +188,8 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState)
     {
         setHasOptionsMenu(true);
@@ -346,7 +347,7 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
+    public void onSaveInstanceState(@NonNull Bundle outState)
     {
         super.onSaveInstanceState(outState);
         if (itsExpiryDate != null) {
