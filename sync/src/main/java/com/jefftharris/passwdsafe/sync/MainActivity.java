@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
     private MainActivityProviderAdapter itsAccountsAdapter;
     private final BitSet itsMenuOptions = new BitSet();
     private GDriveState itsGDriveState = GDriveState.OK;
-    private SparseArray<Uri> itsAccountLinkUris = new SparseArray<>();
+    private final SparseArray<Uri> itsAccountLinkUris = new SparseArray<>();
     private boolean itsDropboxPendingAcctLink = false;
     private NewAccountTask itsNewAccountTask = null;
     private final List<AccountUpdateTask> itsUpdateTasks = new ArrayList<>();
