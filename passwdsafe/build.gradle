@@ -16,8 +16,8 @@ android {
         minSdkVersion 14
         resConfigs "de", "fr", "nb"
         targetSdkVersion 27
-        // <major><minor><bugfix><beta>
-        versionCode 6150000
+        // <major><minor><bugfix><beta/extra>
+        versionCode 6150001
         versionName "6.15.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
