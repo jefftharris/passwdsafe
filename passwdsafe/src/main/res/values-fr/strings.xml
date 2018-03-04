@@ -375,7 +375,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        &lt;b&gt;6.15.0&lt;/b&gt; - Ajout traduction norvégien
+        &lt;b&gt;6.15.0&lt;/b&gt; - Ajout traduction norvégien.  Inclus groupes
+        dans la recherche.
         \n\n
         &lt;b&gt;6.14.0&lt;/b&gt; - Amélioration des performances lors des
         chargements et écriture des fichiers.  Limite sur l\'affichage des

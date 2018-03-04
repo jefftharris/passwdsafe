@@ -366,7 +366,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        &lt;b&gt;6.15.0&lt;/b&gt; - Add Norwegian translation
+        &lt;b&gt;6.15.0&lt;/b&gt; - Add Norwegian translation.  Include group
+        in searches.
         \n\n
         &lt;b&gt;6.14.0&lt;/b&gt; - Improve file load and save performance.
         Limit displayed size of notes fields.
