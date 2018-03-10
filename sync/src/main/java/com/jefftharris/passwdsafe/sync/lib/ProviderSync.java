@@ -104,7 +104,7 @@ public class ProviderSync
                     task.cancel(true);
                 }
             } finally {
-                itsWakeLock.release();
+                releaseWakelock();
             }
         }
     }
@@ -221,6 +221,20 @@ public class ProviderSync
     }
 
     /**
+     * Release the wake lock
+     */
+    private void releaseWakelock()
+    {
+        if (itsWakeLock.isHeld()) {
+            try {
+                itsWakeLock.release();
+            } catch (Exception e) {
+                Log.i(TAG, "Wakelock release error", e);
+            }
+        }
+    }
+
+    /**
      * Runnable for doing a sync in a background thread
      */
     @WorkerThread
@@ -264,7 +278,7 @@ public class ProviderSync
                 sync();
             } finally {
                 addTrace("sync done");
-                itsWakeLock.release();
+                releaseWakelock();
             }
             addTrace("run done");
         }
