@@ -28,6 +28,7 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -136,7 +137,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     public void unlinkAccount()
     {
         if (itsClient != null) {
-            TokenRevokeTask task = new TokenRevokeTask();
+            TokenRevokeTask task = new TokenRevokeTask(this);
             task.execute(itsClient);
             itsRevokeTasks.add(task);
         }
@@ -439,8 +440,19 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     /**
      * Background task to revoke a token
      */
-    private class TokenRevokeTask extends AsyncTask<DbxClientV2, Void, Void>
+    private static class TokenRevokeTask
+            extends AsyncTask<DbxClientV2, Void, Void>
     {
+        private final ManagedRef<DropboxCoreProvider> itsProvider;
+
+        /**
+         * Constructor
+         */
+        public TokenRevokeTask(DropboxCoreProvider provider)
+        {
+            itsProvider = new ManagedRef<>(provider);
+        }
+
         @Override
         protected Void doInBackground(DbxClientV2... clients)
         {
@@ -452,14 +464,16 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
                     Log.e(TAG, "Error revoking auth token", e);
                 }
             }
-
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid)
         {
-            itsRevokeTasks.remove(this);
+            DropboxCoreProvider provider = itsProvider.get();
+            if (provider != null) {
+                provider.itsRevokeTasks.remove(this);
+            }
         }
     }
 }
