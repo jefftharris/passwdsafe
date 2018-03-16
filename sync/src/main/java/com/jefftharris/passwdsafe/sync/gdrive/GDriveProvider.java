@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe.sync.gdrive;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,7 +36,6 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.jefftharris.passwdsafe.lib.ActContext;
-import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -45,7 +43,7 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.R;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.SyncUpdateHandler;
-import com.jefftharris.passwdsafe.sync.lib.AbstractProvider;
+import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
@@ -58,7 +56,7 @@ import java.util.Collections;
 /**
  * The GDriveProvider class encapsulates Google Drive
  */
-public class GDriveProvider extends AbstractProvider
+public class GDriveProvider extends AbstractSyncTimerProvider
 {
     public static final String ABOUT_FIELDS = "user";
     public static final String FILE_FIELDS =
@@ -74,29 +72,23 @@ public class GDriveProvider extends AbstractProvider
 
     private static final String TAG = "GDriveProvider";
 
-    private final Context itsContext;
     private String itsAccountName;
 
     /** Constructor */
     public GDriveProvider(Context ctx)
     {
-        itsContext = ctx;
+        super(ProviderType.GDRIVE, ctx, TAG);
     }
 
 
     @Override
     public void init()
     {
+        super.init();
         checkMigration();
         updateAcct();
-        requestSync(false);
     }
 
-
-    @Override
-    public void fini()
-    {
-    }
 
     @Override
     public void startAccountLink(FragmentActivity activity, int requestCode)
@@ -108,7 +100,7 @@ public class GDriveProvider extends AbstractProvider
         try {
             activity.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
-            String msg = itsContext.getString(
+            String msg = getContext().getString(
                     R.string.google_acct_not_available);
             PasswdSafeUtil.showError(msg, TAG, e, new ActContext(activity));
         }
@@ -134,12 +126,30 @@ public class GDriveProvider extends AbstractProvider
         setAcctName(accountName);
         updateAcct();
         return new NewAccountTask(acctProviderUri, accountName,
-                                  ProviderType.GDRIVE, false, itsContext);
+                                  ProviderType.GDRIVE, false, getContext());
     }
 
     @Override
     public void unlinkAccount()
     {
+        Account acct = getAccount(itsAccountName);
+        setAcctName(null);
+        updateAcct();
+        if (acct != null) {
+            try {
+                Context ctx = getContext();
+                GoogleAccountCredential credential = getAcctCredential(ctx);
+                String token = GoogleAuthUtil.getTokenWithNotification(
+                        ctx, acct, credential.getScope(), null);
+                PasswdSafeUtil.dbginfo(TAG, "Remove token for %s", acct.name);
+                if (token != null) {
+                    GoogleAuthUtil.clearToken(ctx, token);
+                }
+            } catch (Exception e) {
+                PasswdSafeUtil.dbginfo(TAG, e, "No auth token for %s",
+                                       acct.name);
+            }
+        }
     }
 
     @Override
@@ -148,11 +158,10 @@ public class GDriveProvider extends AbstractProvider
         return !TextUtils.isEmpty(itsAccountName);
     }
 
-
     @Override
     public Account getAccount(String acctName)
     {
-        GoogleAccountManager acctMgr = new GoogleAccountManager(itsContext);
+        GoogleAccountManager acctMgr = new GoogleAccountManager(getContext());
         return acctMgr.getAccountByName(acctName);
     }
 
@@ -165,51 +174,23 @@ public class GDriveProvider extends AbstractProvider
     @Override
     public void cleanupOnDelete(String acctName)
     {
-        Account acct = getAccount(acctName);
-        setAcctName(null);
-        updateAcct();
-        try {
-            GoogleAccountCredential credential = getAcctCredential(itsContext);
-            String token = GoogleAuthUtil.getTokenWithNotification(
-                    itsContext, acct, credential.getScope(), null);
-            PasswdSafeUtil.dbginfo(TAG, "Remove token for %s", acctName);
-            if (token != null) {
-                GoogleAuthUtil.clearToken(itsContext, token);
-            }
-        } catch (Exception e) {
-            PasswdSafeUtil.dbginfo(TAG, e, "No auth token for %s", acctName);
-        }
+        unlinkAccount();
     }
 
     @Override
-    public void updateSyncFreq(Account acct, int freq)
+    protected String getAccountUserId()
     {
-        super.updateSyncFreq(acct, freq);
-        if (acct != null) {
-            ContentResolver.removePeriodicSync(acct,
-                                               PasswdSafeContract.AUTHORITY,
-                                               new Bundle());
-            ContentResolver.setSyncAutomatically(
-                    acct, PasswdSafeContract.AUTHORITY, false);
-            if (freq > 0) {
-                ContentResolver.setSyncAutomatically(
-                        acct, PasswdSafeContract.AUTHORITY, true);
-                ContentResolver.addPeriodicSync(acct,
-                                                PasswdSafeContract.AUTHORITY,
-                                                new Bundle(), freq);
-            }
-        }
+        return itsAccountName;
     }
 
     @Override
     public synchronized void requestSync(boolean manual)
     {
-        PasswdSafeUtil.dbginfo(TAG, "requestSync manual %b", manual);
-        if (isAccountAuthorized()) {
-            Account acct = getAccount(itsAccountName);
-            Bundle extras = new Bundle();
-            ApiCompat.requestManualSync(acct, PasswdSafeContract.CONTENT_URI,
-                                        extras);
+        boolean authorized = isAccountAuthorized();
+        PasswdSafeUtil.dbginfo(TAG, "requestSync authorized %b, manual %b",
+                               authorized, manual);
+        if (authorized) {
+                doRequestSync(manual);
         }
     }
 
@@ -234,7 +215,7 @@ public class GDriveProvider extends AbstractProvider
     {
         useDriveService(acct, drive -> {
             GDriveSyncer sync = new GDriveSyncer(
-                    drive, provider, connResult, logrec, itsContext);
+                    drive, provider, connResult, logrec, getContext());
             sync.sync();
             return sync.getSyncState();
         });
@@ -256,7 +237,8 @@ public class GDriveProvider extends AbstractProvider
      */
     private void useDriveService(Account acct, DriveUser user) throws Exception
     {
-        Pair<Drive, String> driveService = getDriveService(acct, itsContext);
+        Context ctx = getContext();
+        Pair<Drive, String> driveService = getDriveService(acct, ctx);
         SyncUpdateHandler.GDriveState syncState =
                 SyncUpdateHandler.GDriveState.OK;
         try {
@@ -267,14 +249,14 @@ public class GDriveProvider extends AbstractProvider
             }
         } catch (UserRecoverableAuthIOException e) {
             PasswdSafeUtil.dbginfo(TAG, e, "Recoverable google auth error");
-            GoogleAuthUtil.clearToken(itsContext, driveService.second);
+            GoogleAuthUtil.clearToken(ctx, driveService.second);
             syncState = SyncUpdateHandler.GDriveState.AUTH_REQUIRED;
         } catch (GoogleAuthIOException e) {
             Log.e(TAG, "Google auth error", e);
-            GoogleAuthUtil.clearToken(itsContext, driveService.second);
+            GoogleAuthUtil.clearToken(ctx, driveService.second);
             throw e;
         } finally {
-            SyncApp.get(itsContext).updateGDriveSyncState(syncState);
+            SyncApp.get(ctx).updateGDriveSyncState(syncState);
         }
     }
 
@@ -285,7 +267,7 @@ public class GDriveProvider extends AbstractProvider
     {
         PasswdSafeUtil.dbginfo(TAG, "setAcctName %s", acctName);
         SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(itsContext);
+                PreferenceManager.getDefaultSharedPreferences(getContext());
         prefs.edit().putString(PREF_ACCOUNT_NAME, acctName).apply();
     }
 
@@ -295,8 +277,18 @@ public class GDriveProvider extends AbstractProvider
     private synchronized void updateAcct()
     {
         SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(itsContext);
+                PreferenceManager.getDefaultSharedPreferences(getContext());
         itsAccountName = prefs.getString(PREF_ACCOUNT_NAME, null);
+        if (isAccountAuthorized()) {
+            try {
+                updateProviderSyncFreq(itsAccountName);
+            } catch (Exception e) {
+                Log.e(TAG, "updateAcct failure", e);
+            }
+            requestSync(false);
+        } else {
+            updateSyncFreq(null, 0);
+        }
     }
 
     /**
@@ -304,8 +296,18 @@ public class GDriveProvider extends AbstractProvider
      */
     private void checkMigration()
     {
+        // TODO: check migration for previous accounts
+        // TODO: remove sync from contentresolver
+
+        /*
+            ContentResolver.removePeriodicSync(acct,
+                                               PasswdSafeContract.AUTHORITY,
+                                               new Bundle());
+            ContentResolver.setSyncAutomatically(
+                    acct, PasswdSafeContract.AUTHORITY, false);
+        */
         SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(itsContext);
+                PreferenceManager.getDefaultSharedPreferences(getContext());
         int migration = prefs.getInt(PREF_MIGRATION, 0);
 
         if (migration < MIGRATION_V3API) {
@@ -331,7 +333,8 @@ public class GDriveProvider extends AbstractProvider
     private static GoogleAccountCredential getAcctCredential(Context ctx)
     {
         return GoogleAccountCredential.usingOAuth2(
-                ctx, Collections.singletonList(DriveScopes.DRIVE));
+                ctx.getApplicationContext(),
+                Collections.singletonList(DriveScopes.DRIVE));
     }
 
     /**
