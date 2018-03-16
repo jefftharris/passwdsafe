@@ -631,8 +631,6 @@ public class PasswdSafeProvider extends ContentProvider
         if (acct != null) {
             providerImpl.updateSyncFreq(acct, freq);
             providerImpl.requestSync(false);
-            ContentResolver.requestSync(acct, PasswdSafeContract.AUTHORITY,
-                                        new Bundle());
         }
         ctx.getContentResolver().notifyChange(
                 PasswdSafeContract.Providers.CONTENT_URI, null);

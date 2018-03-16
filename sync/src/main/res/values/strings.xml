@@ -24,6 +24,7 @@
     <string name="dropbox_acct_unlinked">App unlinked from Dropbox account.  Sync again to allow Dropbox access for PasswdSafe Sync.</string>
     <string name="dropbox_service_updated">Dropbox service updated</string>
     <string name="dropbox_synced_files">Dropbox Synced Files</string>
+    <string name="gdrive_reauth_required">Google Drive reauthorization required</string>
     <string name="gdrive_state_auth_required">Google account authentication required.  Sync again to begin the authentication process.</string>
     <string name="gdrive_state_pending_auth">Google account authentication is pending.  Select the sign-in request notification and sync again.</string>
     <string name="google_acct_not_available">Google account not available</string>
@@ -79,6 +80,8 @@
     <string name="updating_account">Updating account&#8230;</string>
 
     <string name="release_notes">
+        I18N: gdrive_reauth_required
+
         &lt;b&gt;3.5.0&lt;/b&gt; - Add Norwegian translation.  Update sync failure
         notifications to only show repeated failures.  UI modernization.
         \n\n

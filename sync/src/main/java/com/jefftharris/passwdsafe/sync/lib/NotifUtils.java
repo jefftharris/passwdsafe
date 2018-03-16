@@ -31,7 +31,8 @@ public final class NotifUtils
         SYNC_PROGRESS(3),
         SYNC_RESULTS(4),
         SYNC_CONFLICT(5),
-        SYNC_REPEAT_FAILURES(6);
+        SYNC_REPEAT_FAILURES(6),
+        DRIVE_REAUTH_REQUIRED(7);
 
         public final int itsNotifId;
 
@@ -54,7 +55,8 @@ public final class NotifUtils
             break;
         }
         case DROPBOX_MIGRATED:
-        case BOX_MIGRATGED: {
+        case BOX_MIGRATGED:
+        case DRIVE_REAUTH_REQUIRED: {
             content = ctx.getString(R.string.open_app_reauthorize);
             break;
         }
@@ -89,7 +91,8 @@ public final class NotifUtils
         case OWNCLOUD_CERT_TRUSTED:
         case DROPBOX_MIGRATED:
         case BOX_MIGRATGED:
-        case SYNC_PROGRESS: {
+        case SYNC_PROGRESS:
+        case DRIVE_REAUTH_REQUIRED: {
             activityClass = MainActivity.class;
             break;
         }
@@ -119,6 +122,14 @@ public final class NotifUtils
     }
 
     /**
+     * Cancel a notification
+     */
+    public static void cancelNotif(Type type, Context ctx)
+    {
+        cancelNotif(type, null, ctx);
+    }
+
+    /**
      * Get the title of a notification type
      */
     public static String getTitle(Type type, Context ctx)
@@ -144,6 +155,9 @@ public final class NotifUtils
         }
         case SYNC_REPEAT_FAILURES: {
             return ctx.getString(R.string.repeated_sync_failures);
+        }
+        case DRIVE_REAUTH_REQUIRED: {
+            return ctx.getString(R.string.gdrive_reauth_required);
         }
         }
         return null;

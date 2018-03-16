@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.sync.gdrive;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,6 +47,7 @@ import com.jefftharris.passwdsafe.sync.SyncUpdateHandler;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
+import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
@@ -69,10 +71,12 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     private static final String PREF_MIGRATION = "gdriveMigration";
 
     private static final int MIGRATION_V3API = 1;
+    private static final int MIGRATION_SERVICE = 2;
 
     private static final String TAG = "GDriveProvider";
 
     private String itsAccountName;
+    private boolean itsIsPendingAdd = false;
 
     /** Constructor */
     public GDriveProvider(Context ctx)
@@ -85,18 +89,30 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     public void init()
     {
         super.init();
-        checkMigration();
+        int migration = checkMigration();
         updateAcct();
+        checkMigrationWithAcct(migration);
     }
 
 
     @Override
     public void startAccountLink(FragmentActivity activity, int requestCode)
     {
+        Account selAccount = null;
+        boolean alwaysPrompt = true;
+        if (hasAcctName()) {
+            // Reauthorization, select the current account
+            NotifUtils.cancelNotif(NotifUtils.Type.DRIVE_REAUTH_REQUIRED,
+                                   getContext());
+            selAccount = new Account(itsAccountName,
+                                     GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+            alwaysPrompt = false;
+        }
+
         Intent intent = AccountPicker.newChooseAccountIntent(
-                null, null,
+                selAccount, null,
                 new String[] { GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE },
-                true, null, null, null, null);
+                alwaysPrompt, null, null, null, null);
         try {
             activity.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
@@ -123,10 +139,28 @@ public class GDriveProvider extends AbstractSyncTimerProvider
             return null;
         }
 
+        // Re-authorization, don't trigger a new account
+        if (TextUtils.equals(accountName, itsAccountName)) {
+            requestSync(false);
+            return null;
+        }
+
         setAcctName(accountName);
         updateAcct();
         return new NewAccountTask(acctProviderUri, accountName,
-                                  ProviderType.GDRIVE, false, getContext());
+                                  ProviderType.GDRIVE, false, getContext())
+        {
+            @Override
+            protected void doAccountUpdate(ContentResolver cr)
+            {
+                itsIsPendingAdd = true;
+                try {
+                    super.doAccountUpdate(cr);
+                } finally {
+                    itsIsPendingAdd = false;
+                }
+            }
+        };
     }
 
     @Override
@@ -155,7 +189,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     @Override
     public synchronized boolean isAccountAuthorized()
     {
-        return !TextUtils.isEmpty(itsAccountName);
+        return hasAcctName() && (getAccount(itsAccountName) != null);
     }
 
     @Override
@@ -174,7 +208,9 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     @Override
     public void cleanupOnDelete(String acctName)
     {
-        unlinkAccount();
+        if (!itsIsPendingAdd) {
+            unlinkAccount();
+        }
     }
 
     @Override
@@ -190,7 +226,9 @@ public class GDriveProvider extends AbstractSyncTimerProvider
         PasswdSafeUtil.dbginfo(TAG, "requestSync authorized %b, manual %b",
                                authorized, manual);
         if (authorized) {
-                doRequestSync(manual);
+            doRequestSync(manual);
+        } else {
+            checkReauthRequired();
         }
     }
 
@@ -272,6 +310,14 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     }
 
     /**
+     * Is an account name set
+     */
+    private synchronized boolean hasAcctName()
+    {
+        return !TextUtils.isEmpty(itsAccountName);
+    }
+
+    /**
      * Update the account from saved authentication information
      */
     private synchronized void updateAcct()
@@ -286,26 +332,32 @@ public class GDriveProvider extends AbstractSyncTimerProvider
                 Log.e(TAG, "updateAcct failure", e);
             }
             requestSync(false);
-        } else {
+        } else if (!checkReauthRequired()) {
             updateSyncFreq(null, 0);
         }
     }
 
     /**
+     * Check for whether an account has been selected but is no longer returned
+     * by the system.  If so, request a reauthorization.
+     */
+    private boolean checkReauthRequired()
+    {
+        if (!hasAcctName()) {
+            return false;
+        }
+        Context ctx = getContext();
+        NotifUtils.showNotif(NotifUtils.Type.DRIVE_REAUTH_REQUIRED, ctx);
+        SyncApp.get(ctx).updateGDriveSyncState(
+                SyncUpdateHandler.GDriveState.AUTH_REQUIRED);
+        return true;
+    }
+
+    /**
      * Check whether any migrations are needed
      */
-    private void checkMigration()
+    private int checkMigration()
     {
-        // TODO: check migration for previous accounts
-        // TODO: remove sync from contentresolver
-
-        /*
-            ContentResolver.removePeriodicSync(acct,
-                                               PasswdSafeContract.AUTHORITY,
-                                               new Bundle());
-            ContentResolver.setSyncAutomatically(
-                    acct, PasswdSafeContract.AUTHORITY, false);
-        */
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getContext());
         int migration = prefs.getInt(PREF_MIGRATION, 0);
@@ -326,6 +378,35 @@ public class GDriveProvider extends AbstractSyncTimerProvider
             }
 
             prefs.edit().putInt(PREF_MIGRATION, MIGRATION_V3API).apply();
+        }
+
+        return migration;
+    }
+
+    /**
+     * Check whether any migrations are needed after the account is available
+     */
+    private void checkMigrationWithAcct(int migration)
+    {
+        if (migration < MIGRATION_SERVICE) {
+            // If there was a previous account, remove the automatic sync
+            // from the sync service
+            if (hasAcctName()) {
+                try {
+                    Account acct = new Account(
+                            itsAccountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+                    ContentResolver.removePeriodicSync(
+                            acct, PasswdSafeContract.AUTHORITY, new Bundle());
+                    ContentResolver.setSyncAutomatically(
+                            acct, PasswdSafeContract.AUTHORITY, false);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error removing sync service", e);
+                }
+            }
+
+            SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences(getContext());
+            prefs.edit().putInt(PREF_MIGRATION, MIGRATION_SERVICE).apply();
         }
     }
 
