@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe.sync.dropbox;
 
 import android.accounts.Account;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
@@ -64,7 +64,6 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
 
     private DbxClientV2 itsClient;
     private String itsUserId = null;
-    private boolean itsIsPendingAdd = false;
     private final ArrayList<TokenRevokeTask> itsRevokeTasks = new ArrayList<>();
 
     /** Constructor */
@@ -129,25 +128,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             return null;
         }
 
-        return new NewAccountTask(providerAcctUri, null, ProviderType.DROPBOX,
-                                  false, getContext())
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                itsIsPendingAdd = true;
-                try {
-                    FullAccount acct = itsClient.users().getCurrentAccount();
-                    itsNewAcct = acct.getAccountId();
-                    setUserId(itsNewAcct);
-                    super.doAccountUpdate(cr);
-                } catch (DbxException e) {
-                    Log.e(TAG, "Error retrieving account", e);
-                } finally {
-                    itsIsPendingAdd = false;
-                }
-            }
-        };
+        return new NewDropboxTask(providerAcctUri, this);
     }
 
 
@@ -194,7 +175,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     @Override
     public void cleanupOnDelete(String acctName) throws Exception
     {
-        if (!itsIsPendingAdd) {
+        if (!isPendingAdd()) {
             unlinkAccount();
         }
     }
@@ -425,6 +406,33 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
                 NotifUtils.showNotif(NotifUtils.Type.DROPBOX_MIGRATED,
                                      getContext());
             }
+        }
+    }
+
+    /**
+     * New Dropbox account task
+     */
+    private static class NewDropboxTask
+            extends NewAccountTask<DropboxCoreProvider>
+    {
+        /**
+         * Constructor
+         */
+        public NewDropboxTask(Uri currAcctUri, DropboxCoreProvider provider)
+        {
+            super(currAcctUri, null, provider, false, provider.getContext(),
+                  TAG);
+        }
+
+        @Override
+        protected boolean doProviderUpdate(
+                @NonNull DropboxCoreProvider provider)
+                throws DbxException
+        {
+            FullAccount acct = provider.itsClient.users().getCurrentAccount();
+            itsNewAcct = acct.getAccountId();
+            provider.setUserId(itsNewAcct);
+            return true;
         }
     }
 

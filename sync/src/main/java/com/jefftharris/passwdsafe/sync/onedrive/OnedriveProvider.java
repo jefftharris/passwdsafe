@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
@@ -60,7 +60,6 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private AuthClient itsAuthClient;
     final private ReentrantLock itsServiceLock = new ReentrantLock();
     private String itsUserId = null;
-    private boolean itsIsPendingAdd = false;
 
     /** Constructor */
     public OnedriveProvider(Context ctx)
@@ -157,27 +156,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             return null;
         }
 
-        return new NewAccountTask(providerAcctUri, null, ProviderType.ONEDRIVE,
-                                  false, getContext())
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                itsIsPendingAdd = true;
-                try {
-                    IOneDriveService service = acquireOnedriveService();
-                    Drive drive = service.getDrive();
-                    itsNewAcct = drive.Owner.User.Id;
-                    setUserId(itsNewAcct);
-                    super.doAccountUpdate(cr);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error retrieving drive", e);
-                } finally {
-                    releaseOnedriveService();
-                    itsIsPendingAdd = false;
-                }
-            }
-        };
+        return new NewOneDriveTask(providerAcctUri, this);
     }
 
     /**
@@ -227,7 +206,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @Override
     public void cleanupOnDelete(String acctName) throws Exception
     {
-        if (!itsIsPendingAdd) {
+        if (!isPendingAdd()) {
             unlinkAccount();
         }
     }
@@ -457,5 +436,36 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PREF_USER_ID, itsUserId);
         editor.apply();
+    }
+
+    /**
+     * New OneDrive account task
+     */
+    private static class NewOneDriveTask
+            extends NewAccountTask<OnedriveProvider>
+    {
+        /**
+         * Constructor
+         */
+        public NewOneDriveTask(Uri currAcctUri, OnedriveProvider provider)
+        {
+            super(currAcctUri, null, provider, false, provider.getContext(),
+                  TAG);
+        }
+
+        @Override
+        protected boolean doProviderUpdate(@NonNull OnedriveProvider provider)
+                throws Exception
+        {
+            try {
+                IOneDriveService service = provider.acquireOnedriveService();
+                Drive drive = service.getDrive();
+                itsNewAcct = drive.Owner.User.Id;
+                provider.setUserId(itsNewAcct);
+            } finally {
+                provider.releaseOnedriveService();
+            }
+            return true;
+        }
     }
 }

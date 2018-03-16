@@ -76,7 +76,6 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     private static final String TAG = "GDriveProvider";
 
     private String itsAccountName;
-    private boolean itsIsPendingAdd = false;
 
     /** Constructor */
     public GDriveProvider(Context ctx)
@@ -147,20 +146,8 @@ public class GDriveProvider extends AbstractSyncTimerProvider
 
         setAcctName(accountName);
         updateAcct();
-        return new NewAccountTask(acctProviderUri, accountName,
-                                  ProviderType.GDRIVE, false, getContext())
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                itsIsPendingAdd = true;
-                try {
-                    super.doAccountUpdate(cr);
-                } finally {
-                    itsIsPendingAdd = false;
-                }
-            }
-        };
+        return new NewAccountTask<>(acctProviderUri, accountName,
+                                    this, false, getContext(), TAG);
     }
 
     @Override
@@ -208,7 +195,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     @Override
     public void cleanupOnDelete(String acctName)
     {
-        if (!itsIsPendingAdd) {
+        if (!isPendingAdd()) {
             unlinkAccount();
         }
     }

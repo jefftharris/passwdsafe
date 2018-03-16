@@ -11,7 +11,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +18,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -124,20 +124,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         if (accountName == null) {
             return null;
         }
-        return new NewAccountTask(providerAcctUri, accountName,
-                                  ProviderType.OWNCLOUD, true, getContext())
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                Activity act = getActivity();
-                String authToken =
-                        getAuthToken(getAccount(itsNewAcct), act, act);
-                if (authToken != null) {
-                    super.doAccountUpdate(cr);
-                }
-            }
-        };
+        return new NewOwncloudTask(providerAcctUri, accountName, this);
     }
 
     /* (non-Javadoc)
@@ -484,5 +471,33 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
 
         PasswdSafeUtil.dbginfo(TAG, "getAuthToken: %b", (authToken != null));
         return authToken;
+    }
+
+    /**
+     * New ownCloud account task
+     */
+    private static class NewOwncloudTask
+            extends NewAccountTask<OwncloudProvider>
+    {
+        /**
+         * Constructor
+         */
+        public NewOwncloudTask(Uri currAcctUri,
+                               String newAcct,
+                               OwncloudProvider provider)
+        {
+            super(currAcctUri, newAcct, provider, true, provider.getContext(),
+                  TAG);
+        }
+
+        @Override
+        protected boolean doProviderUpdate(@NonNull OwncloudProvider provider)
+                throws Exception
+        {
+            Activity act = getActivity();
+            String authToken = getAuthToken(provider.getAccount(itsNewAcct),
+                                            act, act);
+            return (authToken != null);
+        }
     }
 }

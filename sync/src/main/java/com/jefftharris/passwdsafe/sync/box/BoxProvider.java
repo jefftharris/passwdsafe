@@ -10,13 +10,13 @@ package com.jefftharris.passwdsafe.sync.box;
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -61,7 +61,6 @@ public class BoxProvider extends AbstractSyncTimerProvider
 
     private BoxSession itsClient;
     private PendingIntent itsAcctLinkIntent = null;
-    private boolean itsIsPendingAdd = false;
 
     /** Constructor */
     public BoxProvider(Context ctx)
@@ -127,22 +126,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
             return null;
         }
         updateBoxAcct();
-
-        return new NewAccountTask(acctProviderUri, null, ProviderType.BOX,
-                                  false, getContext())
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                itsIsPendingAdd = true;
-                try {
-                    itsNewAcct = itsClient.getUserId();
-                    super.doAccountUpdate(cr);
-                } finally {
-                    itsIsPendingAdd = false;
-                }
-            }
-        };
+        return new NewBoxTask(acctProviderUri, this);
     }
 
     @Override
@@ -186,7 +170,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
     @Override
     public void cleanupOnDelete(String acctName)
     {
-        if (!itsIsPendingAdd) {
+        if (!isPendingAdd()) {
             unlinkAccount();
         }
     }
@@ -331,5 +315,27 @@ public class BoxProvider extends AbstractSyncTimerProvider
     public static String boxToString(BoxJsonObject obj)
     {
         return (obj != null) ? obj.toJson() : null;
+    }
+
+    /**
+     * New Box account task
+     */
+    private static class NewBoxTask extends NewAccountTask<BoxProvider>
+    {
+        /**
+         * Constructor
+         */
+        public NewBoxTask(Uri currAcctUri, BoxProvider provider)
+        {
+            super(currAcctUri, null, provider, false, provider.getContext(),
+                  TAG);
+        }
+
+        @Override
+        protected boolean doProviderUpdate(@NonNull BoxProvider provider)
+        {
+            itsNewAcct = provider.itsClient.getUserId();
+            return true;
+        }
     }
 }

@@ -39,6 +39,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     private Handler itsHandler = null;
     private PendingIntent itsSyncTimeoutIntent = null;
     private SyncRequestTask itsSyncTask = null;
+    private boolean itsIsPendingAdd = false;
 
     protected AbstractSyncTimerProvider(ProviderType type,
                                         Context ctx, String tag)
@@ -70,6 +71,30 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
                 alarmMgr.cancel(itsSyncTimeoutIntent);
             }
         }
+    }
+
+    /**
+     * Get the provider type
+     */
+    public ProviderType getType()
+    {
+        return itsProviderType;
+    }
+
+    /**
+     * Get whether there is a pending add
+     */
+    protected synchronized boolean isPendingAdd()
+    {
+        return itsIsPendingAdd;
+    }
+
+    /**
+     * Set whether there is a pending add
+     */
+    public synchronized void setPendingAdd(boolean pending)
+    {
+        itsIsPendingAdd = pending;
     }
 
     /* (non-Javadoc)

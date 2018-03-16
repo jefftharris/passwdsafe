@@ -10,52 +10,81 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
-import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.R;
 
 /**
  * Task to complete the addition of a new account
  */
-public class NewAccountTask extends AccountUpdateTask
+public class NewAccountTask<ProviderT extends AbstractSyncTimerProvider>
+        extends AccountUpdateTask
 {
     protected String itsNewAcct;
-    private final ProviderType itsAcctType;
+    private final ManagedRef<ProviderT> itsProvider;
+    private final String itsTag;
 
     /** Constructor */
     public NewAccountTask(Uri currAcctUri,
                           String newAcct,
-                          ProviderType acctType,
+                          ProviderT provider,
                           boolean hasNotification,
-                          Context ctx)
+                          Context ctx,
+                          String tag)
     {
         super(currAcctUri,
               ctx.getString(hasNotification ?
                                 R.string.adding_account_notification :
                                 R.string.adding_account));
         itsNewAcct = newAcct;
-        itsAcctType = acctType;
+        itsProvider = new ManagedRef<>(provider);
+        itsTag = tag;
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask#doAccountUpdate(android.content.ContentResolver)
-     */
     @Override
-    protected void doAccountUpdate(ContentResolver cr)
+    protected final void doAccountUpdate(ContentResolver cr)
     {
-        // Stop syncing for the previously selected account.
-        if (itsAccountUri != null) {
-            cr.delete(itsAccountUri, null, null);
+        ProviderT provider = itsProvider.get();
+        if (provider == null) {
+            return;
         }
 
-        if (itsNewAcct != null) {
-            ContentValues values = new ContentValues();
-            values.put(PasswdSafeContract.Providers.COL_ACCT,
-                       itsNewAcct);
-            values.put(PasswdSafeContract.Providers.COL_TYPE,
-                       itsAcctType.name());
-            cr.insert(PasswdSafeContract.Providers.CONTENT_URI, values);
+        provider.setPendingAdd(true);
+        try {
+            if (!doProviderUpdate(provider)) {
+                return;
+            }
+
+            // Stop syncing for the previously selected account.
+            if (itsAccountUri != null) {
+                cr.delete(itsAccountUri, null, null);
+            }
+
+            if (itsNewAcct != null) {
+                ContentValues values = new ContentValues();
+                values.put(PasswdSafeContract.Providers.COL_ACCT,
+                           itsNewAcct);
+                values.put(PasswdSafeContract.Providers.COL_TYPE,
+                           provider.getType().name());
+                cr.insert(PasswdSafeContract.Providers.CONTENT_URI, values);
+            }
+        } catch (Exception e) {
+            Log.e(itsTag, "Error adding account: " + itsNewAcct, e);
+        } finally {
+            provider.setPendingAdd(false);
         }
+    }
+
+    /**
+     * Implement any provider-specific updates when adding the account
+     * @return false to cancel the add
+     */
+    protected boolean doProviderUpdate(@NonNull ProviderT provider)
+            throws Exception
+    {
+        return true;
     }
 }
