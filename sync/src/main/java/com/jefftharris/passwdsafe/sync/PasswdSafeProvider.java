@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -302,22 +303,7 @@ public class PasswdSafeProvider extends ContentProvider
         Context ctx = getContext();
         //noinspection ConstantConditions
         SyncDb.initializeDb(ctx.getApplicationContext());
-        itsListener = accounts -> new AsyncTask<Void, Void, Void>()
-        {
-            @Override
-            protected Void doInBackground(Void... params)
-            {
-                try {
-                    SyncDb.useDb((SyncDb.DbUser<Void>)db -> {
-                        validateAccounts(db);
-                        return null;
-                    });
-                } catch (Exception e) {
-                    Log.e(TAG, "Error validating accounts", e);
-                }
-                return null;
-            }
-        }.execute();
+        itsListener = accounts -> new AccountVerifier(this).execute();
         if (ActivityCompat.checkSelfPermission(
                 ctx, android.Manifest.permission.GET_ACCOUNTS) ==
             PackageManager.PERMISSION_GRANTED) {
@@ -814,6 +800,39 @@ public class PasswdSafeProvider extends ContentProvider
             fos.getFD().sync();
         } finally {
             Utils.closeStreams(is, os);
+        }
+    }
+
+    /**
+     * Task to verify accounts
+     */
+    private static class AccountVerifier extends AsyncTask<Void, Void, Void>
+    {
+        private final ManagedRef<PasswdSafeProvider> itsProvider;
+
+        /**
+         * Constructor
+         */
+        public AccountVerifier(PasswdSafeProvider provider)
+        {
+            itsProvider = new ManagedRef<>(provider);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids)
+        {
+            try {
+                SyncDb.useDb((SyncDb.DbUser<Void>)db -> {
+                    PasswdSafeProvider provider = itsProvider.get();
+                    if (provider != null) {
+                        provider.validateAccounts(db);
+                    }
+                    return null;
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error validating accounts", e);
+            }
+            return null;
         }
     }
 }
