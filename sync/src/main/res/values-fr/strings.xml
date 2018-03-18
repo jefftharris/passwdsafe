@@ -24,6 +24,7 @@
     <string name="dropbox_acct_unlinked">App dissociée de compte Dropbox. Synchronisez à nouveau pour permettre l\'accès Dropbox pour PasswdSafe Sync.</string>
     <string name="dropbox_service_updated">Service de Dropbox est mis à jour</string>
     <string name="dropbox_synced_files">Dropbox Fichiers Synchronisé</string>
+    <string name="gdrive_reauth_required">Re-autorisation requise pour Google drive</string>
     <string name="gdrive_state_auth_required">Compte Google authentification requise. Synchronisez à nouveau pour commencer le processus d\'authentification.</string>
     <string name="gdrive_state_pending_auth">Authentification de compte Google est en cours. Sélectionnez la notification de la demande de session.</string>
     <string name="google_acct_not_available">Compte Google n\'est pas disponible</string>
@@ -82,6 +83,8 @@
     <string name="updating_account">Mise à jour compte&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.5.1&lt;/b&gt; - Correction synchronisation google drive
+        \n\n
         &lt;b&gt;3.5.0&lt;/b&gt; - Ajout traduction norvégien.  Maj
         notification échec synchronisation uniquement si plusieurs échecs.
         Modernisation interface utilisateur.

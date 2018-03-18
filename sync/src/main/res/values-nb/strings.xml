@@ -16,6 +16,7 @@
   <string name="dropbox_acct_unlinked">Appen er ikke lenger lenket til Dropbox-kontoen. Synkroniser igjen for å gi PasswdSafe Sync tilgang til Dropbox.</string>
   <string name="dropbox_service_updated">Dropbox-tjeneste oppdatert</string>
   <string name="dropbox_synced_files">Dropbox-synkroniserte filer</string>
+  <string name="gdrive_reauth_required">Google Drive reauthorization required</string>
   <string name="gdrive_state_auth_required">Autentisering av Google-kontoen er påkrevd. Synkroniser igjen for å starte prosessen.</string>
   <string name="gdrive_state_pending_auth">Autentisering av Google-kontoen kommer. Velg varslingen om innloggingsforespørsel og synkroniser igjen.</string>
   <string name="google_acct_not_available">Google-konto er ikke tilgjengelig</string>
@@ -60,7 +61,9 @@
   <string name="syncing">Synkroniserer …</string>
   <string name="updating_account">Oppdaterer konto …</string>
 
-  <string name="release_notes">
+    <string name="release_notes">
+        &lt;b&gt;3.5.1&lt;/b&gt; - Fix Google Drive syncing
+        \n\n
         &lt;b&gt;3.5.0&lt;/b&gt; - La til norsk oversettelse.  Endret
         synkroniseringsvarsling slik at kun gjentatte feil vises.  Modernisert
         brukergrensesnitt.

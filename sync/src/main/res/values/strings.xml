@@ -80,8 +80,8 @@
     <string name="updating_account">Updating account&#8230;</string>
 
     <string name="release_notes">
-        I18N: gdrive_reauth_required
-
+        &lt;b&gt;3.5.1&lt;/b&gt; - Fix Google Drive syncing
+        \n\n
         &lt;b&gt;3.5.0&lt;/b&gt; - Add Norwegian translation.  Update sync failure
         notifications to only show repeated failures.  UI modernization.
         \n\n
