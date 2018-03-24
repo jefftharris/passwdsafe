@@ -463,7 +463,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         {
             switch (preference.getKey()) {
             case Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS: {
-                Activity act = getActivity();
+                Activity act = requireActivity();
                 PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
                 Bundle confirmArgs = new Bundle();
                 confirmArgs.putString(CONFIRM_ARG_ACTION,
@@ -472,7 +472,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                         act, confirmArgs);
                 dlg.setTargetFragment(PreferencesFragment.this,
                                       REQUEST_CLEAR_ALL_NOTIFS);
-                dlg.show(getFragmentManager(), "clearNotifsConfirm");
+                dlg.show(requireFragmentManager(), "clearNotifsConfirm");
                 return true;
             }
             case Preferences.PREF_PASSWD_CLEAR_ALL_SAVED: {
@@ -485,7 +485,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                         getString(R.string.clear), confirmArgs);
                 dlg.setTargetFragment(PreferencesFragment.this,
                                       REQUEST_CLEAR_ALL_SAVED);
-                dlg.show(getFragmentManager(), "clearSavedConfirm");
+                dlg.show(requireFragmentManager(), "clearSavedConfirm");
                 return true;
             }
             }
@@ -497,7 +497,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         {
             switch (action) {
             case CLEAR_ALL_NOTIFS: {
-                Activity act = getActivity();
+                Activity act = requireActivity();
                 PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
                 app.getNotifyMgr().handleClearAllConfirmed();
                 break;
