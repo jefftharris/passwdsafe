@@ -19,7 +19,6 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.jefftharris.passwdsafe.lib.AboutUtils;
 
 /**
@@ -46,7 +45,7 @@ public class AboutDialog extends AppCompatDialogFragment
     public @NonNull
     Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Activity act = getActivity();
+        Activity act = requireActivity();
         LayoutInflater factory = LayoutInflater.from(act);
         View detailsView = factory.inflate(R.layout.fragment_about, null);
 
@@ -58,10 +57,7 @@ public class AboutDialog extends AppCompatDialogFragment
                                        "license-icons.txt",
                                        "license-box.txt",
                                        "license-onedrive.txt",
-                                       "license-owncloud.txt") +
-                "\n\n" +
-                GoogleApiAvailability.getInstance()
-                                     .getOpenSourceSoftwareLicenseInfo(act);
+                                       "license-owncloud.txt");
         String name = AboutUtils.updateAboutFields(detailsView, licenses, act);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(act)
