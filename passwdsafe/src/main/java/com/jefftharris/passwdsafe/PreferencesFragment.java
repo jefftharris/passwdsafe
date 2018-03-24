@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -27,6 +28,7 @@ import android.util.Log;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
@@ -292,7 +294,9 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             }
             case Preferences.PREF_DEF_FILE: {
                 new DefaultFileResolver(
-                        Preferences.getDefFilePref(prefs)).execute();
+                        Preferences.getDefFilePref(prefs),
+                        this,
+                        PreferencesFragment.this).execute();
                 break;
             }
             case Preferences.PREF_FILE_CLOSE_TIMEOUT: {
@@ -358,72 +362,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             editor.putString(Preferences.PREF_DEF_FILE, prefVal);
             editor.apply();
             onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
-        }
-
-        /**
-         * Background task to resolve the default file URI and set the
-         * preference's summary
-         */
-        private final class DefaultFileResolver
-                extends AsyncTask<Void, Void, PasswdFileUri>
-        {
-            private PasswdFileUri.Creator itsUriCreator;
-
-            /**
-             * Constructor
-             */
-            public DefaultFileResolver(Uri fileUri)
-            {
-                if (fileUri != null) {
-                    itsUriCreator = new PasswdFileUri.Creator(fileUri,
-                                                              getContext());
-                }
-            }
-
-            @Override
-            protected final void onPreExecute()
-            {
-                super.onPreExecute();
-                if (itsUriCreator != null) {
-                    itsUriCreator.onPreExecute();
-                }
-            }
-
-            @Override
-            protected PasswdFileUri doInBackground(Void... params)
-            {
-                try {
-                    return (itsUriCreator != null) ?
-                           itsUriCreator.finishCreate() : null;
-                } catch (Throwable e) {
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(PasswdFileUri result)
-            {
-                if (!isResumed()) {
-                    return;
-                }
-                String summary;
-                if (result == null) {
-                    summary = getString(R.string.none);
-                    if (itsUriCreator != null) {
-                        Throwable resolveEx = itsUriCreator.getResolveEx();
-                        if (resolveEx != null) {
-                            Log.e(TAG, "Error resolving default file",
-                                  resolveEx);
-                            summary = getString(
-                                    R.string.file_not_found_perm_denied);
-                            setDefFilePref(null);
-                        }
-                    }
-                } else {
-                    summary = result.getIdentifier(getContext(), false);
-                }
-                itsDefFilePref.setSummary(summary);
-            }
         }
     }
 
@@ -626,6 +564,80 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                 break;
             }
             }
+        }
+    }
+
+    /**
+     * Background task to resolve the default file URI and set the
+     * preference's summary
+     */
+    private static class DefaultFileResolver
+            extends AsyncTask<Void, Void, PasswdFileUri>
+    {
+        private ManagedRef<FilesScreen> itsScreen;
+        private ManagedRef<Fragment> itsFrag;
+        private PasswdFileUri.Creator itsUriCreator;
+
+        /**
+         * Constructor
+         */
+        public DefaultFileResolver(Uri fileUri,
+                                   FilesScreen screen,
+                                   Fragment fragment)
+        {
+            itsScreen = new ManagedRef<>(screen);
+            itsFrag = new ManagedRef<>(fragment);
+            if (fileUri != null) {
+                itsUriCreator = new PasswdFileUri.Creator(
+                        fileUri, fragment.getContext());
+            }
+        }
+
+        @Override
+        protected final void onPreExecute()
+        {
+            super.onPreExecute();
+            if (itsUriCreator != null) {
+                itsUriCreator.onPreExecute();
+            }
+        }
+
+        @Override
+        protected PasswdFileUri doInBackground(Void... params)
+        {
+            try {
+                return (itsUriCreator != null) ?
+                        itsUriCreator.finishCreate() : null;
+            } catch (Throwable e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(PasswdFileUri result)
+        {
+            FilesScreen screen = itsScreen.get();
+            Fragment frag = itsFrag.get();
+            if ((screen == null) || (frag == null) || !frag.isResumed()) {
+                return;
+            }
+            String summary;
+            if (result == null) {
+                summary = frag.getString(R.string.none);
+                if (itsUriCreator != null) {
+                    Throwable resolveEx = itsUriCreator.getResolveEx();
+                    if (resolveEx != null) {
+                        Log.e(TAG, "Error resolving default file",
+                              resolveEx);
+                        summary = frag.getString(
+                                R.string.file_not_found_perm_denied);
+                        screen.setDefFilePref(null);
+                    }
+                }
+            } else {
+                summary = result.getIdentifier(frag.getContext(), false);
+            }
+            screen.itsDefFilePref.setSummary(summary);
         }
     }
 }
