@@ -15,7 +15,7 @@ import com.jefftharris.passwdsafe.sync.ProviderSyncFreqPref;
  */
 public final class SyncResults
 {
-    private static final long UNKNOWN = Long.MIN_VALUE;
+    public static final long UNKNOWN = Long.MIN_VALUE;
 
     private static final String TAG = "SyncResults";
 
@@ -23,6 +23,16 @@ public final class SyncResults
     private long itsFirstFailure = UNKNOWN;
     private long itsLastFailure = UNKNOWN;
     private int itsSyncFreq = 0;
+
+    /**
+     * Initialize the results
+     */
+    public synchronized void init(long lastSuccess, long lastFailure)
+    {
+        itsLastSuccess = lastSuccess;
+        itsFirstFailure = lastFailure;
+        itsLastFailure = lastFailure;
+    }
 
     /**
      * Set the result of a sync

@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -70,13 +71,10 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         super(ProviderType.OWNCLOUD, ctx, TAG);
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#init()
-     */
     @Override
-    public void init()
+    public void init(@Nullable DbProvider dbProvider)
     {
-        super.init();
+        super.init(dbProvider);
         updateOwncloudAcct();
     }
 

@@ -377,7 +377,7 @@ public class ProviderSync
                     itsAccount.name, !itsLogrec.isNotConnected(),
                     itsIsCanceled);
             itsLogrec.setEndTime();
-            boolean isSuccess = itsLogrec.isSuccess();
+            final boolean isSuccess = itsLogrec.isSuccess();
 
             if (itsSaveTraces || !isSuccess) {
                 for (Pair<String, Long> entry : itsTraces) {
@@ -386,15 +386,25 @@ public class ProviderSync
             }
 
             try {
+                final boolean setSyncResult =
+                        !itsLogrec.isNotConnected() || !isSuccess;
+
                 SyncDb.useDb((SyncDb.DbUser<Void>)db -> {
                     Log.i(TAG, itsLogrec.toString(itsContext));
                     SyncDb.deleteSyncLogs(System.currentTimeMillis()
                                           - 2 * DateUtils.WEEK_IN_MILLIS, db);
                     SyncDb.addSyncLog(itsLogrec, db, itsContext);
+
+                    if (setSyncResult) {
+                        SyncDb.updateProviderSyncTime(itsProvider.itsId,
+                                                      isSuccess,
+                                                      itsLogrec.getEndTime(),
+                                                      db);
+                    }
                     return null;
                 });
 
-                if (!itsLogrec.isNotConnected() || !isSuccess) {
+                if (setSyncResult) {
                     itsProviderImpl.setLastSyncResult(isSuccess,
                                                       itsLogrec.getEndTime());
                     SyncApp.get(itsContext).updateProviderState();

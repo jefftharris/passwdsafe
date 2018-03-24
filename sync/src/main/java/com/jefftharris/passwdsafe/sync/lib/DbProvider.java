@@ -19,18 +19,24 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
  */
 public class DbProvider
 {
+    public static final long UNKNOWN_SYNC_TIME = Long.MIN_VALUE;
+
     public final long itsId;
     public final ProviderType itsType;
     public final String itsAcct;
     public final int itsSyncFreq;
     public final String itsDisplayName;
+    public final long itsSyncLastSuccess;
+    public final long itsSyncLastFailure;
 
     public static final String[] QUERY_FIELDS = {
         SyncDb.DB_COL_PROVIDERS_ID,
         SyncDb.DB_COL_PROVIDERS_TYPE,
         SyncDb.DB_COL_PROVIDERS_ACCT,
         SyncDb.DB_COL_PROVIDERS_SYNC_FREQ,
-        SyncDb.DB_COL_PROVIDERS_DISPLAY_NAME };
+        SyncDb.DB_COL_PROVIDERS_DISPLAY_NAME,
+        SyncDb.DB_COL_PROVIDERS_SYNC_LAST_SUCCESS,
+        SyncDb.DB_COL_PROVIDERS_SYNC_LAST_FAILURE };
 
     /** Constructor */
     public DbProvider(Cursor cursor)
@@ -40,6 +46,10 @@ public class DbProvider
         itsAcct = cursor.getString(2);
         itsSyncFreq = cursor.getInt(3);
         itsDisplayName = cursor.getString(4);
+        itsSyncLastSuccess =
+                cursor.isNull(5) ? UNKNOWN_SYNC_TIME : cursor.getLong(5);
+        itsSyncLastFailure =
+                cursor.isNull(6) ? UNKNOWN_SYNC_TIME : cursor.getLong(6);
     }
 
     /** Get the type and display name */
@@ -63,7 +73,9 @@ public class DbProvider
     {
         return String.format(
                 Locale.US,
-                "{id:%d, type: %s, acct:%s, syncFreq:%d, dispName:%s}",
-                itsId, itsType, itsAcct, itsSyncFreq, itsDisplayName);
+                "{id:%d, type: %s, acct:%s, syncFreq:%d, dispName:%s, " +
+                "syncLastSuccess: %d, syncLastFailure: %d}",
+                itsId, itsType, itsAcct, itsSyncFreq, itsDisplayName,
+                itsSyncLastSuccess, itsSyncLastFailure);
     }
 }

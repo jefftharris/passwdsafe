@@ -15,6 +15,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 /**
@@ -29,7 +30,7 @@ public interface Provider
             "com.jefftharris.passwdsafe.extra.providerType";
 
     /** Initialize the provider */
-    void init();
+    void init(@Nullable DbProvider dbProvider);
 
     /** Finalize the provider */
     void fini();

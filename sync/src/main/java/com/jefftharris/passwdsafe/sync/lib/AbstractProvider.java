@@ -13,6 +13,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Provides common Provider operations for local file management
@@ -20,6 +21,24 @@ import android.support.annotation.NonNull;
 public abstract class AbstractProvider implements Provider
 {
     private final SyncResults itsSyncResults = new SyncResults();
+
+    @Override
+    @CallSuper
+    public void init(@Nullable DbProvider dbProvider)
+    {
+        long syncLastSuccess = SyncResults.UNKNOWN;
+        long syncLastFailure = SyncResults.UNKNOWN;
+        if (dbProvider != null) {
+            if (dbProvider.itsSyncLastSuccess != DbProvider.UNKNOWN_SYNC_TIME) {
+                syncLastSuccess = dbProvider.itsSyncLastSuccess;
+            }
+            if (dbProvider.itsSyncLastFailure != DbProvider.UNKNOWN_SYNC_TIME) {
+                syncLastFailure = dbProvider.itsSyncLastFailure;
+            }
+        }
+
+        itsSyncResults.init(syncLastSuccess, syncLastFailure);
+    }
 
     @Override
     @CallSuper

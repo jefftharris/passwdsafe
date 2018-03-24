@@ -11,10 +11,16 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *  Application class for PasswdSafe Sync
@@ -41,8 +47,17 @@ public class SyncApp extends Application
         SyncDb.initializeDb(getApplicationContext());
         itsHandler = new Handler(Looper.getMainLooper());
 
+        Map<ProviderType, DbProvider> providerMap = new HashMap<>();
+        try {
+            List<DbProvider> providers = SyncDb.useDb(SyncDb::getProviders);
+            for (DbProvider provider: providers) {
+                providerMap.put(provider.itsType, provider);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error reading providers", e);
+        }
         for (ProviderType type: ProviderType.values()) {
-            ProviderFactory.getProvider(type, this).init();
+            ProviderFactory.getProvider(type, this).init(providerMap.get(type));
         }
     }
 

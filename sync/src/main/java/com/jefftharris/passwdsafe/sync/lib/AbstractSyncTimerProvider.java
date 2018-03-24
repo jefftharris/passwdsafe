@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.CallSuper;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.ManagedRef;
@@ -49,18 +51,14 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         itsTag = tag;
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#init()
-     */
     @Override
-    public void init()
+    @CallSuper
+    public void init(@Nullable DbProvider dbProvider)
     {
+        super.init(dbProvider);
         itsHandler = new Handler(Looper.getMainLooper());
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#fini()
-     */
     @Override
     public void fini()
     {

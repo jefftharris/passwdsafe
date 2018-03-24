@@ -45,6 +45,10 @@ public class SyncDb
     private static final String DB_COL_PROVIDERS_SYNC_CHANGE = "sync_change";
     public static final String DB_COL_PROVIDERS_SYNC_FREQ = "sync_freq";
     public static final String DB_COL_PROVIDERS_DISPLAY_NAME = "display_name";
+    public static final String DB_COL_PROVIDERS_SYNC_LAST_SUCCESS =
+            "sync_last_success";
+    public static final String DB_COL_PROVIDERS_SYNC_LAST_FAILURE =
+            "sync_last_failure";
     public static final String DB_MATCH_PROVIDERS_ID =
         DB_COL_PROVIDERS_ID + " = ?";
     private static final String DB_MATCH_PROVIDERS_TYPE_ACCT =
@@ -200,6 +204,20 @@ public class SyncDb
     {
         ContentValues values = new ContentValues();
         values.put(DB_COL_PROVIDERS_SYNC_FREQ, freq);
+        updateProviderFields(id, values, db);
+    }
+
+    /** Update the last sync time for a provider */
+    public static void updateProviderSyncTime(long id,
+                                              boolean isSuccess,
+                                              long syncTime,
+                                              SQLiteDatabase db)
+            throws SQLException
+    {
+        ContentValues values = new ContentValues();
+        values.put(isSuccess ? DB_COL_PROVIDERS_SYNC_LAST_SUCCESS :
+                           DB_COL_PROVIDERS_SYNC_LAST_FAILURE,
+                   syncTime);
         updateProviderFields(id, values, db);
     }
 
@@ -587,7 +605,7 @@ public class SyncDb
     private static final class DbHelper extends SQLiteOpenHelper
     {
         private static final String DB_NAME = "sync.db";
-        private static final int DB_VERSION = 5;
+        private static final int DB_VERSION = 6;
 
         private final Context itsContext;
 
@@ -688,6 +706,16 @@ public class SyncDb
                 db.execSQL("ALTER TABLE " + DB_TABLE_SYNC_LOGS +
                            " ADD COLUMN " + DB_COL_SYNC_LOGS_STACK +
                            " TEXT;");
+            }
+
+            if (oldVersion < 6) {
+                PasswdSafeUtil.dbginfo(TAG, "Upgrade to v6");
+                db.execSQL("ALTER TABLE " + DB_TABLE_PROVIDERS +
+                           " ADD COLUMN " + DB_COL_PROVIDERS_SYNC_LAST_SUCCESS +
+                           " INTEGER;");
+                db.execSQL("ALTER TABLE " + DB_TABLE_PROVIDERS +
+                           " ADD COLUMN " + DB_COL_PROVIDERS_SYNC_LAST_FAILURE +
+                           " INTEGER;");
             }
         }
 

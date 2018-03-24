@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
@@ -75,9 +76,9 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
 
 
     @Override
-    public void init()
+    public void init(@Nullable DbProvider dbProvider)
     {
-        super.init();
+        super.init(dbProvider);
         doMigration();
         updateDropboxAcct();
     }
