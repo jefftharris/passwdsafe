@@ -15,6 +15,7 @@ import android.support.v4.content.ContentResolverCompat;
 import android.support.v4.os.CancellationSignal;
 import android.util.Log;
 
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
@@ -40,7 +41,8 @@ public class ProviderSyncTask
     public void start(Uri provider, Context ctx)
     {
         cancel();
-        itsSyncTask = new AsyncSyncTask(provider, ctx.getContentResolver());
+        itsSyncTask = new AsyncSyncTask(provider, ctx.getContentResolver(),
+                                        this);
         itsSyncTask.execute();
     }
 
@@ -58,16 +60,19 @@ public class ProviderSyncTask
     /**
      * Background task
      */
-    private class AsyncSyncTask extends AsyncTask<Void, Void, Void>
+    private static class AsyncSyncTask extends AsyncTask<Void, Void, Void>
     {
         private final String[] itsProviderArgs;
         private final ContentResolver itsContentResolver;
         private final CancellationSignal itsCancelSignal;
+        private final ManagedRef<ProviderSyncTask> itsSyncTask;
 
         /**
          * Constructor
          */
-        public AsyncSyncTask(Uri provider, ContentResolver resolver)
+        public AsyncSyncTask(Uri provider,
+                             ContentResolver resolver,
+                             ProviderSyncTask task)
         {
             if (provider != null) {
                 itsProviderArgs = new String[] {
@@ -79,6 +84,7 @@ public class ProviderSyncTask
             }
             itsContentResolver = resolver;
             itsCancelSignal = new CancellationSignal();
+            itsSyncTask = new ManagedRef<>(task);
         }
 
         /**
@@ -108,14 +114,20 @@ public class ProviderSyncTask
         @Override
         protected void onPostExecute(Void result)
         {
-            itsSyncTask = null;
+            ProviderSyncTask task = itsSyncTask.get();
+            if (task != null) {
+                task.itsSyncTask = null;
+            }
         }
 
         @Override
         protected void onCancelled(Void result)
         {
             PasswdSafeUtil.dbginfo(TAG, "onCancelled");
-            itsSyncTask = null;
+            ProviderSyncTask task = itsSyncTask.get();
+            if (task != null) {
+                task.itsSyncTask = null;
+            }
         }
     }
 }
