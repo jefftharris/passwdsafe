@@ -39,7 +39,8 @@
         <item name="android:background">?colorAccent</item>
     </style>
 
-    <style name="Preference_TextAppearanceMaterialBody2">
+    <style name="Preference_TextAppearanceMaterialBody2"
+           tools:ignore="PrivateResource">
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-medium</item>
         <item name="android:textStyle">bold</item>
