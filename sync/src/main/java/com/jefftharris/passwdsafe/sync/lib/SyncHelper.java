@@ -31,42 +31,35 @@ public class SyncHelper
     public static DbProvider getDbProviderForAcct(Account acct,
                                                   SQLiteDatabase db)
     {
-        DbProvider provider;
-        try {
-            db.beginTransaction();
-            ProviderType providerType;
-            switch (acct.type) {
-            case SyncDb.GDRIVE_ACCOUNT_TYPE: {
-                providerType = ProviderType.GDRIVE;
-                break;
-            }
-            case SyncDb.DROPBOX_ACCOUNT_TYPE: {
-                providerType = ProviderType.DROPBOX;
-                break;
-            }
-            case SyncDb.BOX_ACCOUNT_TYPE: {
-                providerType = ProviderType.BOX;
-                break;
-            }
-            case SyncDb.ONEDRIVE_ACCOUNT_TYPE: {
-                providerType = ProviderType.ONEDRIVE;
-                break;
-            }
-            case SyncDb.OWNCLOUD_ACCOUNT_TYPE: {
-                providerType = ProviderType.OWNCLOUD;
-                break;
-            }
-            default: {
-                PasswdSafeUtil.dbginfo(TAG, "Unknown account type: ",
-                                       acct.type);
-                return null;
-            }
-            }
-            provider = SyncDb.getProvider(acct.name, providerType, db);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
+        ProviderType providerType;
+        switch (acct.type) {
+        case SyncDb.GDRIVE_ACCOUNT_TYPE: {
+            providerType = ProviderType.GDRIVE;
+            break;
         }
+        case SyncDb.DROPBOX_ACCOUNT_TYPE: {
+            providerType = ProviderType.DROPBOX;
+            break;
+        }
+        case SyncDb.BOX_ACCOUNT_TYPE: {
+            providerType = ProviderType.BOX;
+            break;
+        }
+        case SyncDb.ONEDRIVE_ACCOUNT_TYPE: {
+            providerType = ProviderType.ONEDRIVE;
+            break;
+        }
+        case SyncDb.OWNCLOUD_ACCOUNT_TYPE: {
+            providerType = ProviderType.OWNCLOUD;
+            break;
+        }
+        default: {
+            PasswdSafeUtil.dbginfo(TAG, "Unknown account type: ",
+                                   acct.type);
+            return null;
+        }
+        }
+        DbProvider provider = SyncDb.getProvider(acct.name, providerType, db);
         if (provider == null) {
             PasswdSafeUtil.dbginfo(TAG, "No provider for %s", acct.name);
         }
