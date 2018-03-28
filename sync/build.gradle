@@ -52,23 +52,23 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':lib')
-    compile project(':lib-owncloud')
-    compile project(':lib-onedrive:authenticate')
-    compile project(':lib-onedrive:onedriveaccess')
-    compile project(':lib-onedrive')
-    compile 'com.google.android.gms:play-services-auth:11.6.2'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':lib')
+    implementation project(':lib-owncloud')
+    implementation project(':lib-onedrive:authenticate')
+    implementation project(':lib-onedrive:onedriveaccess')
+    implementation project(':lib-onedrive')
+    implementation 'com.google.android.gms:play-services-auth:11.6.2'
     // Google Drive
-    compile('com.google.api-client:google-api-client-android:1.22.0') {
+    implementation('com.google.api-client:google-api-client-android:1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    compile('com.google.apis:google-api-services-drive:v3-rev58-1.22.0') {
+    implementation('com.google.apis:google-api-services-drive:v3-rev58-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
     // Dropbox
-    compile 'com.dropbox.core:dropbox-core-sdk:3.0.3'
+    implementation 'com.dropbox.core:dropbox-core-sdk:3.0.3'
     // Box
-    compile 'com.box:box-android-sdk:4.0.10'
+    implementation 'com.box:box-android-sdk:4.0.10'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }

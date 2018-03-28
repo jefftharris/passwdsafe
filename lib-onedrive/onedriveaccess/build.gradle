@@ -44,11 +44,11 @@ task checkstyle(type: Checkstyle) {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.code.gson:gson:2.4'
-    compile 'com.squareup.retrofit:retrofit:1.6.1'
-    compile 'com.squareup.okhttp:okhttp:2.0.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
-    compile 'joda-time:joda-time:2.3'
-    compile project(':lib-onedrive:authenticate')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api 'com.google.code.gson:gson:2.4'
+    api 'com.squareup.retrofit:retrofit:1.6.1'
+    api 'com.squareup.okhttp:okhttp:2.0.0'
+    api 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+    api 'joda-time:joda-time:2.3'
+    api project(':lib-onedrive:authenticate')
 }
