@@ -45,6 +45,8 @@
         <item name="drawablePersonOutline">@drawable/ic_action_person_outline</item>
         <item name="textColorError">@color/textinput_error_color_light</item>
         <item name="textColorGreen">@color/text_color_green_dark</item>
+        <item name="textAppearanceSearchResultTitle">@style/AppTheme.SearchResultTitle</item>
+        <item name="textAppearanceSearchResultSubtitle">@style/AppTheme.SearchResultSubtitle</item>
     </style>
 
     <style name="AppTheme_Dialog" parent="AppBaseTheme_Dialog">
@@ -84,6 +86,8 @@
         <item name="drawablePersonOutline">@drawable/ic_action_person_outline_light</item>
         <item name="textColorError">@color/textinput_error_color_dark</item>
         <item name="textColorGreen">@color/text_color_green_light</item>
+        <item name="textAppearanceSearchResultTitle">@style/AppTheme.SearchResultTitle.Dark</item>
+        <item name="textAppearanceSearchResultSubtitle">@style/AppTheme.SearchResultSubtitle.Dark</item>
     </style>
 
     <style name="AppThemeDark_Dialog" parent="AppBaseThemeDark_Dialog">
@@ -115,6 +119,23 @@
         <item name="android:textColor">?colorAccent</item>
         <item name="android:paddingTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="AppTheme.SearchResultTitle"
+           parent="TextAppearance.AppCompat.SearchResult.Title">
+        <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="AppTheme.SearchResultTitle.Dark">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+    <style name="AppTheme.SearchResultSubtitle"
+        parent="TextAppearance.AppCompat.SearchResult.Subtitle">
+        <item name="android:textColor">?android:attr/textColorSecondaryInverse</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+    <style name="AppTheme.SearchResultSubtitle.Dark">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
     <style name="InputMethodText">
