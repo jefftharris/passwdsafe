@@ -71,6 +71,7 @@ public class PasswdSafe extends AppCompatActivity
         implements AbstractPasswdSafeRecordFragment.Listener,
                    AboutFragment.Listener,
                    View.OnClickListener,
+                   MenuItem.OnActionExpandListener,
                    ConfirmPromptDialog.Listener,
                    PasswdSafeChangePasswordFragment.Listener,
                    PasswdSafeEditRecordFragment.Listener,
@@ -334,7 +335,7 @@ public class PasswdSafe extends AppCompatActivity
             break;
         }
         case PasswdSafeUtil.SEARCH_VIEW_INTENT: {
-            itsSearchItem.collapseActionView();
+            collapseSearch();
             String data = intent.getStringExtra(SearchManager.EXTRA_DATA_KEY);
             if (data == null) {
                 break;
@@ -426,7 +427,8 @@ public class PasswdSafe extends AppCompatActivity
         SearchManager searchManager =
                 (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         itsSearchItem = menu.findItem(R.id.menu_search);
-        itsSearchItem.collapseActionView();
+        itsSearchItem.setOnActionExpandListener(this);
+        collapseSearch();
         if (searchManager != null) {
             SearchView searchView = (SearchView)itsSearchItem.getActionView();
             searchView.setSearchableInfo(
@@ -484,6 +486,9 @@ public class PasswdSafe extends AppCompatActivity
             }
             return null;
         });
+        if ((itsSearchItem != null) && itsSearchItem.isActionViewExpanded()) {
+            options.clear(MENU_BIT_CAN_ADD);
+        }
 
         MenuItem item = menu.findItem(R.id.menu_add);
         if (item != null) {
@@ -670,6 +675,20 @@ public class PasswdSafe extends AppCompatActivity
             break;
         }
         }
+    }
+
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem item)
+    {
+        invalidateOptionsMenu();
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem item)
+    {
+        invalidateOptionsMenu();
+        return true;
     }
 
     @Override
@@ -1170,15 +1189,23 @@ public class PasswdSafe extends AppCompatActivity
         if (filter != null) {
             itsQuery.setText(getString(R.string.query_label,
                                        filter.toString(this)));
+            GuiUtils.setVisible(itsQuery, true);
+            collapseSearch();
+        } else {
+            GuiUtils.setVisible(itsQuery, false);
         }
-        GuiUtils.setVisible(itsQueryPanel, (filter != null));
+        changeOpenView(new PasswdLocation(), true);
+    }
 
-        if ((itsSearchItem != null) && (filter != null) &&
-            itsSearchItem.isActionViewExpanded()) {
+    /**
+     * Collapse the search view
+     */
+    private void collapseSearch()
+    {
+        if ((itsSearchItem != null) && itsSearchItem.isActionViewExpanded()) {
             itsSearchItem.collapseActionView();
         }
-
-        changeOpenView(new PasswdLocation(), true);
+        invalidateOptionsMenu();
     }
 
     /**
