@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
+import com.jefftharris.passwdsafe.file.PasswdHistory;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -35,6 +36,8 @@ import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.Pair;
 
 import org.pwsafe.lib.file.PwsRecord;
+
+import java.util.List;
 
 /**
  *  Input method for selecting fields from a record
@@ -46,11 +49,12 @@ public class PasswdSafeIME extends InputMethodService
 {
     // Password fields
     private static final int USER_KEY = -100;
-    private static final int PASSWORD_KEY = -101;
+    public static final int PASSWORD_KEY = -101;
     private static final int URL_KEY = -102;
     private static final int EMAIL_KEY = -103;
     private static final int TITLE_KEY = -104;
     private static final int NOTES_KEY = -105;
+    private static final int PREVIOUS_PASSWORD_KEY = -106;
 
     // Control keys
     public static final int ENTER_KEY = -200;
@@ -286,7 +290,8 @@ public class PasswdSafeIME extends InputMethodService
         case TITLE_KEY:
         case URL_KEY:
         case EMAIL_KEY:
-        case NOTES_KEY: {
+        case NOTES_KEY:
+        case PREVIOUS_PASSWORD_KEY: {
             String keyStr = refresh((fileData, rec) -> {
                 if ((fileData == null) || (rec == null)) {
                     return null;
@@ -321,6 +326,17 @@ public class PasswdSafeIME extends InputMethodService
                 }
                 case NOTES_KEY: {
                     return fileData.getNotes(rec, this).getNotes();
+                }
+                case PREVIOUS_PASSWORD_KEY: {
+                    PasswdHistory hist = fileData.getPasswdHistory(rec);
+                    if (hist == null) {
+                        return null;
+                    }
+                    List<PasswdHistory.Entry> entries = hist.getPasswds();
+                    if (entries.size() == 0) {
+                        return null;
+                    }
+                    return entries.get(0).getPasswd();
                 }
                 }
                 return null;
@@ -461,10 +477,14 @@ public class PasswdSafeIME extends InputMethodService
                             PasswdSafeIME.this, true);
 
                     PwsRecord rec = null;
+                    boolean hasPrevious = false;
                     String uuid =
                             PasswdSafeFileDataFragment.getLastViewedRecord();
                     if (uuid != null) {
                         rec = fileData.getRecord(uuid);
+                        PasswdHistory history = fileData.getPasswdHistory(rec);
+                        hasPrevious =
+                                (history != null) && (history.getMaxSize() > 0);
                     }
 
                     String recLabel;
@@ -476,23 +496,28 @@ public class PasswdSafeIME extends InputMethodService
 
                     RetT ret = (user != null) ?
                                user.refresh(fileData, rec) : null;
-                    return new RefreshResult<>(fileLabel, recLabel, ret);
+                    return new RefreshResult<>(fileLabel, recLabel,
+                                               hasPrevious, ret);
                 });
 
         StringBuilder label = new StringBuilder();
+        boolean hasPreviousPassword;
         RetT ret;
         if (rc != null) {
             label.append(getString(R.string.record)).append(": ");
             label.append(rc.itsFileLabel);
             label.append(" - ");
             label.append(rc.itsRecordLabel);
+            hasPreviousPassword = rc.itsHasPreviousPassword;
             ret = rc.itsResult;
         } else {
             label.append(getString(R.string.file)).append(": ")
                     .append(getString(R.string.none_selected_open));
+            hasPreviousPassword = false;
             ret = (user != null) ? user.refresh(null, null) : null;
         }
         itsRecord.setText(label.toString());
+        itsPasswdSafeKeyboard.setHasPreviousPassword(hasPreviousPassword);
         return ret;
     }
 
@@ -539,15 +564,20 @@ public class PasswdSafeIME extends InputMethodService
     {
         public final String itsFileLabel;
         public final String itsRecordLabel;
+        public final boolean itsHasPreviousPassword;
         public final RetT itsResult;
 
         /**
          * Constructor
          */
-        public RefreshResult(String fileLabel, String recLabel, RetT result)
+        public RefreshResult(String fileLabel,
+                             String recLabel,
+                             boolean hasPreviousPassword,
+                             RetT result)
         {
             itsFileLabel = fileLabel;
             itsRecordLabel = recLabel;
+            itsHasPreviousPassword = hasPreviousPassword;
             itsResult = result;
         }
     }
