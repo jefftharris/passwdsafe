@@ -9,20 +9,20 @@
     <LinearLayout android:id="@+id/current_group_panel"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:orientation="vertical"
                   android:background="?attr/selectableItemBackground"
                   android:clickable="true"
-                  android:focusable="true">
+                  android:focusable="true"
+                  android:orientation="vertical">
 
         <TextView android:id="@+id/current_group_label"
                   android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:drawableLeft="?attr/drawableFolderUp"
-                  android:drawableStart="?attr/drawableFolderUp"
                   android:drawablePadding="8dp"
+                  android:drawableStart="?attr/drawableFolderUp"
                   android:gravity="center_vertical"
-                  android:text="@string/group"
                   android:minHeight="?android:attr/listPreferredItemHeight"
+                  android:text="@string/group"
                   android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <View style="@style/Separator.Accent"/>
@@ -33,9 +33,9 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:layout_weight="1"
-              android:drawSelectorOnTop="false"
-              android:fastScrollEnabled="true"
-              android:choiceMode="singleChoice"/>
+              android:choiceMode="singleChoice"
+              android:fastScrollAlwaysVisible="false"
+              android:fastScrollEnabled="true"/>
 
     <TextView android:id="@android:id/empty"
               android:layout_width="match_parent"
