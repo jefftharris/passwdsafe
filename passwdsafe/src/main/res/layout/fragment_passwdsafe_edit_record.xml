@@ -431,6 +431,7 @@
         <EditText android:id="@+id/notes"
                   android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
+                  android:hint="@string/notes"
                   android:inputType="textCapSentences|textMultiLine|textLongMessage|textAutoCorrect"
                   android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
     </LinearLayout>
