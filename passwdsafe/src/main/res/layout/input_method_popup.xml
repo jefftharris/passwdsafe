@@ -19,8 +19,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:keyPreviewLayout="@null"
-        android:keyTextSize="22sp"
-        android:popupLayout="@layout/input_method_popup"/>
+        android:keyTextSize="22sp"/>
 
     <ImageButton
         android:id="@android:id/closeButton"
