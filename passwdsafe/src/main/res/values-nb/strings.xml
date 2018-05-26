@@ -206,6 +206,7 @@
   <string name="press_again_close_warning">Trykk igjen for å lukke filen</string>
   <string name="press_password_warning">Trykk Passord igjen for å lime inn i synlig felt</string>
   <string name="press_yubikey">Trykk YubiKey</string>
+  <string name="previous">Forrige</string>
   <string name="protect_all">Beskytt alle oppføringer</string>
   <string name="protect_group">Beskytt gruppeoppføringer</string>
   <string name="protected_record">Beskyttet</string>

@@ -270,6 +270,7 @@
     <string name="press_again_close_warning">Erneut drücken, um die Datei zu schließen</string>
     <string name="press_password_warning">Passwort erneut berühren, um es in ein sichtbares Feld zu kopieren</string>
     <string name="press_yubikey">Drücken Sie die YubiKey</string>
+    <string name="previous">Vorheriges</string>
     <string name="protect_all">Alle Einträge schützen</string>
     <string name="protect_group">Gruppe schützen</string>
     <string name="protected_record">Geschützt</string>
