@@ -367,6 +367,11 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.16.0&lt;/b&gt; - Schnelles Scrollen für lange Listen
+        hinzugefügt.  Benutzt jetzt kleinere Schrift für Suchvorschläge.
+        Kopieren durch langes drücken beim ersten Eintrag des Passwortverlaufs
+        hinzugefügt.
+        \n\n
         &lt;b&gt;6.15.0&lt;/b&gt; - Norwegische Übersetzung hinzugefügt.  Suche
         umfasst auch die Gruppen.
         \n\n

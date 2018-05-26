@@ -367,8 +367,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        I18N - previous
-
+        &lt;b&gt;6.16.0&lt;/b&gt; - Add fast scrolling for long lists of
+        records.  Use smaller font for search suggestions.  Add keyboard support
+        to long-press the password field to copy the first history password.
+        \n\n
         &lt;b&gt;6.15.0&lt;/b&gt; - Add Norwegian translation.  Include group
         in searches.
         \n\n
