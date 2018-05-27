@@ -79,7 +79,7 @@ public class NotificationMgr implements PasswdFileDataObserver
             new LongSparseArray<>();
     private final HashSet<Uri> itsNotifUris = new HashSet<>();
     private int itsNextNotifId = 1;
-    private PasswdExpiryFilter itsExpiryFilter = null;
+    private PasswdExpiryFilter itsExpiryFilter;
     private PendingIntent itsTimerIntent;
 
     /** Constructor */
