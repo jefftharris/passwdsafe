@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -288,6 +289,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
    /** Loader callbacks for the provider */
     private class ProviderLoaderCb implements LoaderCallbacks<Cursor>
     {
+        @NonNull
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args)
         {
@@ -298,7 +300,8 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+        public void onLoadFinished(@NonNull Loader<Cursor> loader,
+                                   Cursor cursor)
         {
             if (!PasswdCursorLoader.checkResult(
                     loader, AbstractSyncedFilesActivity.this)) {
@@ -322,7 +325,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public void onLoaderReset(Loader<Cursor> loader)
+        public void onLoaderReset(@NonNull Loader<Cursor> loader)
         {
             onLoadFinished(loader, null);
         }
@@ -332,6 +335,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
     /** Loader callbacks for the synced remote files for a provider */
     private class FilesLoaderCb implements LoaderCallbacks<Cursor>
     {
+        @NonNull
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args)
         {
@@ -343,7 +347,8 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+        public void onLoadFinished(@NonNull Loader<Cursor> loader,
+                                   Cursor cursor)
         {
             if (!PasswdCursorLoader.checkResult(
                     loader, AbstractSyncedFilesActivity.this)) {
@@ -366,7 +371,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public void onLoaderReset(Loader<Cursor> loader)
+        public void onLoaderReset(@NonNull Loader<Cursor> loader)
         {
             onLoadFinished(loader, null);
         }

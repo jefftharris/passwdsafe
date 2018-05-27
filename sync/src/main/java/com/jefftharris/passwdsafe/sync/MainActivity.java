@@ -400,6 +400,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
@@ -410,7 +411,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor)
     {
         if (!PasswdCursorLoader.checkResult(loader, this)) {
             return;
@@ -458,7 +459,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader)
+    public void onLoaderReset(@NonNull Loader<Cursor> loader)
     {
         onLoadFinished(loader, null);
     }

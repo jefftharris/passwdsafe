@@ -210,6 +210,7 @@ public class FileListNavDrawerFragment
         return true;
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
@@ -220,7 +221,7 @@ public class FileListNavDrawerFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor)
     {
         if (PasswdCursorLoader.checkResult(loader, getActivity())) {
             updateProviders(cursor);
@@ -228,7 +229,7 @@ public class FileListNavDrawerFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader)
+    public void onLoaderReset(@NonNull Loader<Cursor> loader)
     {
         onLoadFinished(loader, null);
     }

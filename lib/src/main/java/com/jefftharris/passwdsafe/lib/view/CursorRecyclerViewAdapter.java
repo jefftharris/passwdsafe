@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.lib.view;
 
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 /**
@@ -80,7 +81,8 @@ public abstract class CursorRecyclerViewAdapter
     }
 
     @Override
-    public final void onBindViewHolder(ViewHolder holder, int position)
+    public final void onBindViewHolder(@NonNull ViewHolder holder,
+                                       int position)
     {
         if (itsIsValid && (itsCursor.moveToPosition(position))) {
             onBindViewHolder(holder, itsCursor);

@@ -151,6 +151,7 @@ public class SyncLogsFragment extends ListFragment
 
         itsLogsCbs = new LoaderCallbacks<Cursor>()
         {
+            @NonNull
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args)
             {
@@ -165,7 +166,8 @@ public class SyncLogsFragment extends ListFragment
             }
 
             @Override
-            public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+            public void onLoadFinished(@NonNull Loader<Cursor> loader,
+                                       Cursor cursor)
             {
                 if (PasswdCursorLoader.checkResult(loader, getActivity())) {
                     itsLogsAdapter.changeCursor(cursor);
@@ -173,7 +175,7 @@ public class SyncLogsFragment extends ListFragment
             }
 
             @Override
-            public void onLoaderReset(Loader<Cursor> loader)
+            public void onLoaderReset(@NonNull Loader<Cursor> loader)
             {
                 onLoadFinished(loader, null);
             }

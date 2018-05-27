@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -286,15 +287,16 @@ public final class FileListFragment extends ListFragment
 
     /** Callback when a loader is finished */
     @Override
-    public void onLoadFinished(Loader<List<Map<String, Object>>> loader,
-                               List<Map<String, Object>> data)
+    public void onLoadFinished(
+            @NonNull Loader<List<Map<String, Object>>> loader,
+            List<Map<String, Object>> data)
     {
         updateFiles(data);
     }
 
     /** Callback when a loader is reset */
     @Override
-    public void onLoaderReset(Loader<List<Map<String, Object>>> loader)
+    public void onLoaderReset(@NonNull Loader<List<Map<String, Object>>> loader)
     {
         updateFiles(null);
     }

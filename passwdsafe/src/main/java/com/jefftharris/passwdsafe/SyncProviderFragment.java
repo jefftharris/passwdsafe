@@ -13,6 +13,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -63,9 +64,6 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-     */
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
@@ -87,9 +85,6 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
@@ -141,15 +136,13 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onDetach()
-     */
     @Override
     public void onDetach()
     {
         super.onDetach();
         itsListener = null;
     }
+
 
     @Override
     public void onStop()
@@ -158,9 +151,7 @@ public class SyncProviderFragment extends ListFragment
         itsSyncTask.cancel();
     }
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onCreateOptionsMenu(android.view.Menu, android.view.MenuInflater)
-     */
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
@@ -169,9 +160,6 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onOptionsItemSelected(android.view.MenuItem)
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -187,9 +175,6 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.ListFragment#onListItemClick(android.widget.ListView, android.view.View, int, long)
-     */
     @Override
     public void onListItemClick(ListView l, View v, int position, long id)
     {
@@ -204,9 +189,7 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onCreateLoader(int, android.os.Bundle)
-     */
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
@@ -217,11 +200,8 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoadFinished(android.support.v4.content.Loader, java.lang.Object)
-     */
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor)
     {
         if (PasswdCursorLoader.checkResult(loader, getActivity())) {
             itsProviderAdapter.changeCursor(cursor);
@@ -229,11 +209,8 @@ public class SyncProviderFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoaderReset(android.support.v4.content.Loader)
-     */
     @Override
-    public void onLoaderReset(Loader<Cursor> loader)
+    public void onLoaderReset(@NonNull Loader<Cursor> loader)
     {
         onLoadFinished(loader, null);
     }

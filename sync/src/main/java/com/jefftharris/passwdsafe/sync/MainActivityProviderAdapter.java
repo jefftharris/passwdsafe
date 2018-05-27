@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.sync;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,9 +38,11 @@ class MainActivityProviderAdapter
         holder.updateView(item);
     }
 
+    @NonNull
     @Override
-    public MainActivityProviderHolder onCreateViewHolder(ViewGroup parent,
-                                                         int viewType)
+    public MainActivityProviderHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType)
     {
         View v = LayoutInflater
                 .from(parent.getContext())

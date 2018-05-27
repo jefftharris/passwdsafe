@@ -16,6 +16,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -266,13 +267,14 @@ public final class StorageFileListFragment extends ListFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor)
+    public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader,
+                               Cursor cursor)
     {
         itsFilesAdapter.changeCursor(cursor);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader)
+    public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader)
     {
         itsFilesAdapter.changeCursor(null);
     }
