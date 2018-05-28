@@ -289,6 +289,8 @@
   <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.16.1&lt;/b&gt; - Feilrettinger.
+        \n\n
         &lt;b&gt;6.16.0&lt;/b&gt; -  La til rask rulling for lange lister med
         oppføringer.  Bruker mindre skrift for søkeforslag.  La til
         tastaturstøtte for å kopiere det første passordet i historien ved å
