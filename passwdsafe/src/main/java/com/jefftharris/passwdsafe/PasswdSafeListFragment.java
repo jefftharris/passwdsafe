@@ -481,7 +481,8 @@ public class PasswdSafeListFragment extends ListFragment
                 for (PasswdRecordListData item : data) {
                     add(item);
 
-                    String str = item.itsTitle.substring(0, 1).toUpperCase();
+                    String str = TextUtils.isEmpty(item.itsTitle) ?
+                        " " : item.itsTitle.substring(0, 1).toUpperCase();
                     if ((idx == 0) ||
                         !TextUtils.equals(currSection.itsTitle, str)) {
                         currSection = new ItemSection(str, idx);
