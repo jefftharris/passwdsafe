@@ -14,12 +14,12 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/new_group">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/new_group"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/new_group"
             android:imeOptions="actionGo"
             android:inputType="textCapSentences|textAutoCorrect"
             android:maxLines="1"/>
