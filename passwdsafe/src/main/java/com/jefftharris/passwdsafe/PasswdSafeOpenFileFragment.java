@@ -57,6 +57,7 @@ import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -346,7 +347,7 @@ public class PasswdSafeOpenFileFragment
                 View help = root.findViewById(R.id.file_open_help_text);
                 help.setVisibility((help.getVisibility() == View.VISIBLE) ?
                                            View.GONE : View.VISIBLE);
-                GuiUtils.setKeyboardVisible(itsPasswordEdit, getContext(),
+                GuiUtils.setKeyboardVisible(itsPasswordEdit, requireContext(),
                                             false);
             }
             return true;
@@ -372,7 +373,7 @@ public class PasswdSafeOpenFileFragment
     {
         switch (view.getId()) {
         case R.id.cancel: {
-            Activity act = getActivity();
+            Activity act = requireActivity();
             GuiUtils.setKeyboardVisible(itsPasswordEdit, act, false);
             cancelFragment(true);
             break;
@@ -518,7 +519,8 @@ public class PasswdSafeOpenFileFragment
         }
         case YUBIKEY: {
             View root = getView();
-            setVisibility(R.id.yubi_progress_text, false, root);
+            setVisibility(R.id.yubi_progress_text, false,
+                          Objects.requireNonNull(root));
             setProgressVisible(false, false);
             setFieldsDisabled(true);
             itsYubiMgr.stop();
@@ -1249,8 +1251,9 @@ public class PasswdSafeOpenFileFragment
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
             try {
-                itsSavedPasswordsMgr.addSavedPassword(getPasswdFileUri(),
-                                                      itsUserPassword, cipher);
+                itsSavedPasswordsMgr.addSavedPassword(
+                        getPasswdFileUri(), itsUserPassword,
+                        Objects.requireNonNull(cipher));
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_saved));
             } catch (Exception e) {
