@@ -168,8 +168,6 @@ public class PasswdSafeNewFileFragment
         itsPasswordConfirmInput.setTypeface(Typeface.DEFAULT);
         PasswordVisibilityMenuHandler.set(ctx, itsPassword, itsPasswordConfirm);
 
-        Button cancelBtn = rootView.findViewById(R.id.cancel);
-        cancelBtn.setOnClickListener(this);
         itsOkBtn = rootView.findViewById(R.id.ok);
         itsOkBtn.setOnClickListener(this);
         setValid(false);
@@ -206,12 +204,6 @@ public class PasswdSafeNewFileFragment
     public void onClick(View view)
     {
         switch (view.getId()) {
-        case R.id.cancel: {
-            if (itsListener != null) {
-                itsListener.handleFileNewCanceled();
-            }
-            break;
-        }
         case R.id.ok: {
             String fileName = itsFileName.getText().toString();
             if (itsUseStorage) {

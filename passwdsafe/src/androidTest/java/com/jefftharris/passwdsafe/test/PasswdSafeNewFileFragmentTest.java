@@ -88,8 +88,6 @@ public class PasswdSafeNewFileFragmentTest
         onView(withId(R.id.password_confirm_input))
                 .check(matches(withTextInputError(null)));
 
-        onView(withId(R.id.cancel))
-                .check(matches(isEnabled()));
         onView(withId(R.id.ok))
                 .check(matches(not(isEnabled())));
     }
