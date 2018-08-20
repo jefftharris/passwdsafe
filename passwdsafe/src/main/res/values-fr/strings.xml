@@ -296,7 +296,6 @@
     <string name="record_sort_order">Ordre de tri des entrées</string>
     <string name="record_type">Type d\'entrée</string>
     <string name="read_only_about">Lecture seule</string>
-    <string name="read_only_file">Lecture seule</string>
     <string name="read_only_media">Le fichier se trouve sur support en lecture seule. Cette situation peut se produire avec Kitkat et plus sur des cartes SD amovibles.</string>
     <string name="read_only_provider">
         Le fournisseur du fichier ne supporte pas les écritures ou n\'a pas

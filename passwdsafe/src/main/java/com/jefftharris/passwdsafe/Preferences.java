@@ -53,10 +53,6 @@ public class Preferences
         "fileCloseClearClipboardPref";
     public static final boolean PREF_FILE_CLOSE_CLEAR_CLIPBOARD_DEF = true;
 
-    private static final String PREF_FILE_OPEN_READ_ONLY =
-        "fileOpenReadOnly";
-    private static final boolean PREF_FILE_OPEN_READ_ONLY_DEF = false;
-
     private static final String PREF_FILE_OPEN_YUBIKEY = "fileOpenYubikey";
     private static final boolean PREF_FILE_OPEN_YUBIKEY_DEF = false;
 
@@ -188,20 +184,6 @@ public class Preferences
     {
         return prefs.getBoolean(PREF_FILE_CLOSE_CLEAR_CLIPBOARD,
                                 PREF_FILE_CLOSE_CLEAR_CLIPBOARD_DEF);
-    }
-
-    public static boolean getFileOpenReadOnlyPref(SharedPreferences prefs)
-    {
-        return prefs.getBoolean(PREF_FILE_OPEN_READ_ONLY,
-                                PREF_FILE_OPEN_READ_ONLY_DEF);
-    }
-
-    public static void setFileOpenReadOnlyPref(boolean readonly,
-                                               SharedPreferences prefs)
-    {
-        SharedPreferences.Editor prefsEdit = prefs.edit();
-        prefsEdit.putBoolean(PREF_FILE_OPEN_READ_ONLY, readonly);
-        prefsEdit.apply();
     }
 
     /**

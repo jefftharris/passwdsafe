@@ -121,11 +121,12 @@ public class PasswdSafeOpenFileFragment
     private TextView itsPasswordEdit;
     private TextView itsSavedPasswordMsg;
     private int itsSavedPasswordTextColor;
-    private CheckBox itsReadonlyCb;
     private TextView itsReadonlyMsg;
     private CheckBox itsSavePasswdCb;
     private CheckBox itsYubikeyCb;
-    private Button itsOkBtn;
+    private Button itsViewBtn;
+    private Button itsModifyBtn;
+    private boolean itsIsOpenReadonly = true;
     private SavedPasswordsMgr itsSavedPasswordsMgr;
     private boolean itsIsPasswordSaved = false;
     private SavePasswordChange itsSaveChange = SavePasswordChange.NONE;
@@ -196,14 +197,15 @@ public class PasswdSafeOpenFileFragment
         TypefaceUtils.setMonospace(itsPasswordEdit, ctx);
         itsPasswordEdit.setEnabled(false);
 
-        itsReadonlyCb = rootView.findViewById(R.id.read_only);
+        itsIsOpenReadonly = true;
         itsReadonlyMsg = rootView.findViewById(R.id.read_only_msg);
         GuiUtils.setVisible(itsReadonlyMsg, false);
-        Button cancelBtn = rootView.findViewById(R.id.cancel);
-        cancelBtn.setOnClickListener(this);
-        itsOkBtn = rootView.findViewById(R.id.ok);
-        itsOkBtn.setOnClickListener(this);
-        itsOkBtn.setEnabled(false);
+        itsModifyBtn = rootView.findViewById(R.id.modify);
+        itsModifyBtn.setOnClickListener(this);
+        itsModifyBtn.setEnabled(false);
+        itsViewBtn = rootView.findViewById(R.id.view);
+        itsViewBtn.setOnClickListener(this);
+        itsViewBtn.setEnabled(false);
 
         itsSavedPasswordMsg = rootView.findViewById(R.id.saved_password);
         itsSavedPasswordTextColor = itsSavedPasswordMsg.getCurrentTextColor();
@@ -371,14 +373,11 @@ public class PasswdSafeOpenFileFragment
     @Override
     public void onClick(View view)
     {
-        switch (view.getId()) {
-        case R.id.cancel: {
-            Activity act = requireActivity();
-            GuiUtils.setKeyboardVisible(itsPasswordEdit, act, false);
-            cancelFragment(true);
-            break;
-        }
-        case R.id.ok: {
+        int id = view.getId();
+        switch (id) {
+        case R.id.view:
+        case R.id.modify: {
+            itsIsOpenReadonly = (id == R.id.view);
             if (itsYubikeyCb.isChecked()) {
                 setPhase(Phase.YUBIKEY);
             } else {
@@ -431,7 +430,7 @@ public class PasswdSafeOpenFileFragment
     @Override
     protected final void doResolveTaskFinished()
     {
-        doSetFieldsEnabled(itsOkBtn.isEnabled());
+        doSetFieldsEnabled(itsViewBtn.isEnabled());
         setPhase(Phase.WAITING_PASSWORD);
     }
 
@@ -458,14 +457,14 @@ public class PasswdSafeOpenFileFragment
     protected final void doSetFieldsEnabled(boolean enabled)
     {
         itsPasswordEdit.setEnabled(enabled);
-        itsOkBtn.setEnabled(enabled);
+        itsViewBtn.setEnabled(enabled);
 
-        boolean readonlyEnabled = enabled;
+        boolean modifyEnabled = enabled;
         boolean savePasswdEnabled = enabled;
         PasswdFileUri passwdFileUri = getPasswdFileUri();
         if (enabled && (passwdFileUri != null)) {
             Pair<Boolean, Integer> rc = getPasswdFileUri().isWritable();
-            readonlyEnabled = rc.first;
+            modifyEnabled = rc.first;
 
             switch (passwdFileUri.getType()) {
             case EMAIL: {
@@ -479,7 +478,7 @@ public class PasswdSafeOpenFileFragment
             }
             }
         }
-        itsReadonlyCb.setEnabled(readonlyEnabled);
+        itsModifyBtn.setEnabled(modifyEnabled);
         itsSavePasswdCb.setEnabled(savePasswdEnabled);
 
         switch (itsYubiState) {
@@ -522,13 +521,13 @@ public class PasswdSafeOpenFileFragment
             setVisibility(R.id.yubi_progress_text, false,
                           Objects.requireNonNull(root));
             setProgressVisible(false, false);
-            setFieldsDisabled(true);
+            setFieldsDisabled(false);
             itsYubiMgr.stop();
             break;
         }
         case SAVING_PASSWORD: {
             setProgressVisible(false, false);
-            setFieldsDisabled(true);
+            setFieldsDisabled(false);
             cancelSavedPasswordUsers();
             break;
         }
@@ -552,7 +551,7 @@ public class PasswdSafeOpenFileFragment
             View root = getView();
             setVisibility(R.id.yubi_progress_text, true, root);
             setProgressVisible(true, false);
-            setFieldsDisabled(false);
+            setFieldsDisabled(true);
             break;
         }
         case OPENING: {
@@ -560,7 +559,7 @@ public class PasswdSafeOpenFileFragment
             break;
         }
         case SAVING_PASSWORD: {
-            setFieldsDisabled(false);
+            setFieldsDisabled(true);
             setProgressVisible(true, false);
             break;
         }
@@ -586,15 +585,9 @@ public class PasswdSafeOpenFileFragment
         PasswdFileUri uri = getPasswdFileUri();
         if (uri != null) {
             Pair<Boolean, Integer> rc = uri.isWritable();
-            if (rc.first) {
-                itsReadonlyCb.setChecked(
-                        Preferences.getFileOpenReadOnlyPref(prefs));
-            } else {
-                itsReadonlyCb.setChecked(true);
-                if (rc.second != null) {
-                    itsReadonlyMsg.setText(getString(rc.second));
-                    GuiUtils.setVisible(itsReadonlyMsg, true);
-                }
+            if (!rc.first && (rc.second != null)) {
+                itsReadonlyMsg.setText(getString(rc.second));
+                GuiUtils.setVisible(itsReadonlyMsg, true);
             }
         }
 
@@ -636,7 +629,7 @@ public class PasswdSafeOpenFileFragment
         }
 
         GuiUtils.setupFormKeyboard(itsIsPasswordSaved ? null : itsPasswordEdit,
-                                   itsPasswordEdit, itsOkBtn, getContext());
+                                   itsPasswordEdit, itsViewBtn, getContext());
         GuiUtils.setVisible(itsSavedPasswordMsg, itsIsPasswordSaved);
         if (itsIsPasswordSaved) {
             cancelSavedPasswordUsers();
@@ -659,9 +652,7 @@ public class PasswdSafeOpenFileFragment
         setTitle(R.string.loading_file);
         TextInputUtils.setTextInputError(null, itsPasswordInput);
 
-        boolean readonly = itsReadonlyCb.isChecked();
         SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
-        Preferences.setFileOpenReadOnlyPref(readonly, prefs);
         Preferences.setFileOpenYubikeyPref(itsYubikeyCb.isChecked(), prefs);
 
         boolean doSave = itsSavePasswdCb.isChecked();
@@ -676,7 +667,7 @@ public class PasswdSafeOpenFileFragment
         Owner<PwsPassword> passwd =
                 new Owner<>(new PwsPassword(itsPasswordEdit.getText()));
         try {
-            startTask(new OpenTask(passwd.pass(), readonly, this));
+            startTask(new OpenTask(passwd.pass(), itsIsOpenReadonly, this));
         } finally {
             passwd.close();
         }
@@ -798,10 +789,9 @@ public class PasswdSafeOpenFileFragment
         //noinspection ConstantConditions
         if ((PasswdSafeApp.DEBUG_AUTO_FILE != null) &&
             (getFileUri().getPath().equals(PasswdSafeApp.DEBUG_AUTO_FILE))) {
-            itsReadonlyCb.setChecked(false);
             itsYubikeyCb.setChecked(false);
             itsPasswordEdit.setText("test123");
-            itsOkBtn.performClick();
+            itsModifyBtn.performClick();
         }
     }
 
