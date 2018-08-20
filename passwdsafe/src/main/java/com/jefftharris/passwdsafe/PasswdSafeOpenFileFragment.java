@@ -973,6 +973,7 @@ public class PasswdSafeOpenFileFragment
         private Runnable itsPendingAction;
         private boolean itsIsCancelTimeout = false;
         private boolean itsIsFinished = false;
+        private boolean itsIsIgnoreErrorAfterCancel = false;
 
         /**
          * Constructor
@@ -1002,11 +1003,22 @@ public class PasswdSafeOpenFileFragment
         }
 
         @Override
+        public final void cancel()
+        {
+            cancelPendingAction();
+            super.cancel();
+        }
+
+        @Override
         public final void onAuthenticationError(int errMsgId,
                                                 CharSequence errString)
         {
-            PasswdSafeUtil.dbginfo(itsTag, "error: %s", errString);
-            finish(SavedPasswordFinish.ERROR, errString);
+            if (itsIsIgnoreErrorAfterCancel) {
+                itsIsIgnoreErrorAfterCancel = false;
+            } else {
+                PasswdSafeUtil.dbginfo(itsTag, "error: %s", errString);
+                finish(SavedPasswordFinish.ERROR, errString);
+            }
         }
 
         @Override
@@ -1039,9 +1051,14 @@ public class PasswdSafeOpenFileFragment
         public final void onCancel()
         {
             PasswdSafeUtil.dbginfo(itsTag, "onCancel");
-            finish(itsIsCancelTimeout ? SavedPasswordFinish.TIMEOUT :
-                                        SavedPasswordFinish.FRAGMENT_CANCEL,
-                   getString(R.string.canceled));
+            SavedPasswordFinish finishMode;
+            if (itsIsCancelTimeout) {
+                itsIsIgnoreErrorAfterCancel = true;
+                finishMode = SavedPasswordFinish.TIMEOUT;
+            } else {
+                finishMode = SavedPasswordFinish.FRAGMENT_CANCEL;
+            }
+            finish(finishMode, getString(R.string.canceled));
         }
 
         /**
@@ -1050,7 +1067,6 @@ public class PasswdSafeOpenFileFragment
         protected final void finish(SavedPasswordFinish finishMode,
                                     CharSequence msg)
         {
-            cancelPendingAction();
             if (itsIsFinished) {
                 return;
             }
