@@ -96,7 +96,7 @@ public final class StorageFileListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        itsRecentFilesDb = new RecentFilesDb(getActivity());
+        itsRecentFilesDb = new RecentFilesDb(requireActivity());
         itsRecentFilesDbRef = new ManagedRef<>(itsRecentFilesDb);
     }
 
@@ -280,7 +280,7 @@ public final class StorageFileListFragment extends ListFragment
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
     {
-        return new FileLoader(itsRecentFilesDbRef, getContext());
+        return new FileLoader(itsRecentFilesDbRef, requireContext());
     }
 
     @Override
@@ -320,7 +320,7 @@ public final class StorageFileListFragment extends ListFragment
                     (Intent.FLAG_GRANT_READ_URI_PERMISSION |
                      Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         String title = RecentFilesDb.getSafDisplayName(uri, ctx);
         RecentFilesDb.updateOpenedSafFile(uri, flags, ctx);
         if (title != null) {
