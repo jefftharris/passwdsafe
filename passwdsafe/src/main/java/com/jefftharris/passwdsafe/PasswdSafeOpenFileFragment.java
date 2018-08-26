@@ -1209,14 +1209,7 @@ public class PasswdSafeOpenFileFragment
             setProgressVisible(false, false);
             switch (finishMode) {
             case SUCCESS: {
-                doDelayed(() -> {
-                    itsLoadSavedPasswordUser = null;
-                    if (itsYubikeyCb.isChecked()) {
-                        setPhase(Phase.YUBIKEY);
-                    } else {
-                        setPhase(Phase.OPENING);
-                    }
-                });
+                doDelayed(() -> itsLoadSavedPasswordUser = null);
                 break;
             }
             case ERROR:
