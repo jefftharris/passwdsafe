@@ -49,7 +49,8 @@ import java.util.List;
  */
 @TargetApi(19)
 public final class StorageFileListFragment extends ListFragment
-        implements LoaderManager.LoaderCallbacks<Cursor>
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+                   View.OnClickListener
 {
     // TODO: recent sync files
     // TODO: swipe to remove an individual recent item
@@ -111,8 +112,13 @@ public final class StorageFileListFragment extends ListFragment
             setHasOptionsMenu(true);
         }
 
-        return inflater.inflate(R.layout.fragment_storage_file_list,
-                                container, false);
+        View rootView = inflater.inflate(R.layout.fragment_storage_file_list,
+                                         container, false);
+
+        View fab = rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+
+        return rootView;
     }
 
     @Override
@@ -192,6 +198,17 @@ public final class StorageFileListFragment extends ListFragment
         }
         default: {
             super.onActivityResult(requestCode, resultCode, data);
+            break;
+        }
+        }
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        switch (v.getId()) {
+        case R.id.fab: {
+            startOpenFile();
             break;
         }
         }

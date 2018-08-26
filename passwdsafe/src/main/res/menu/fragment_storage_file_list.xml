@@ -11,8 +11,7 @@
 
     <item android:id="@+id/menu_file_open"
           android:icon="@drawable/ic_passwdsafe_light"
-          android:title="@string/open"
-          app:showAsAction="ifRoom"/>
+          android:title="@string/open"/>
 
     <item android:id="@+id/menu_file_new"
           android:icon="@drawable/ic_action_add"
