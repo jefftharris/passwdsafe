@@ -215,7 +215,7 @@ public class FileListNavDrawerFragment
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
         return new PasswdCursorLoader(
-                getContext(), PasswdSafeContract.Providers.CONTENT_URI,
+                requireContext(), PasswdSafeContract.Providers.CONTENT_URI,
                 PasswdSafeContract.Providers.PROJECTION,
                 null, null, PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
     }
@@ -295,7 +295,7 @@ public class FileListNavDrawerFragment
             }
 
             if ((nextProviderId == Menu.FIRST) &&
-                SyncProviderFragment.checkProvider(getContext())) {
+                SyncProviderFragment.checkProvider(requireContext())) {
                 MenuItem item = menu.add(R.id.menu_group_main,
                                          nextProviderId, 10,
                                          R.string.select_accounts);
