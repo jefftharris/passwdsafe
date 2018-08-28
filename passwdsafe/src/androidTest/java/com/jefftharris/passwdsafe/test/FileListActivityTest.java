@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +101,7 @@ public class FileListActivityTest
     }
 
     @Test
-    public void testLaunchFileNew() throws MalformedURLException
+    public void testLaunchFileNew()
     {
         verifyDrawerClosed();
 
