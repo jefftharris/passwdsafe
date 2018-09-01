@@ -23,6 +23,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -50,9 +51,6 @@ public final class StorageFileListFragment extends Fragment
                    View.OnClickListener,
                    StorageFileListOps
 {
-    // TODO: recent sync files
-    // TODO: swipe to remove an individual recent item
-
     /** Listener interface for the owning activity */
     public interface Listener
     {
@@ -117,6 +115,28 @@ public final class StorageFileListFragment extends Fragment
         itsFilesAdapter = new StorageFileListAdapter(this);
         RecyclerView files = rootView.findViewById(R.id.files);
         files.setAdapter(itsFilesAdapter);
+
+        ItemTouchHelper.SimpleCallback swipeCb =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
+                                                      ItemTouchHelper.RIGHT)
+        {
+            @Override
+            public boolean onMove(RecyclerView recyclerView,
+                                  RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target)
+            {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder,
+                                 int direction)
+            {
+                removeFile(((StorageFileListHolder)viewHolder).getUri());
+            }
+        };
+        ItemTouchHelper swipeHelper = new ItemTouchHelper(swipeCb);
+        swipeHelper.attachToRecyclerView(files);
 
         View fab = rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
@@ -317,6 +337,27 @@ public final class StorageFileListFragment extends Fragment
         }
 
         itsListener.openFile(uri, title);
+    }
+
+    /**
+     * Remove a recent file entry
+     */
+    private void removeFile(String uristr)
+    {
+        try {
+            Uri uri = Uri.parse(uristr);
+            itsRecentFilesDb.removeUri(uri);
+
+            ContentResolver cr = requireContext().getContentResolver();
+            int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+            ApiCompat.releasePersistableUriPermission(cr, uri, flags);
+
+            getLoaderManager().restartLoader(LOADER_FILES, null, this);
+        } catch (Exception e) {
+            PasswdSafeUtil.showFatalMsg(e, "Remove recent file error",
+                                        requireActivity());
+        }
     }
 
 

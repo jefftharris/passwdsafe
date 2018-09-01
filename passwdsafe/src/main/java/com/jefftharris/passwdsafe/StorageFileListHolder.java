@@ -64,4 +64,12 @@ public final class StorageFileListHolder
     {
         itsOps.storageFileClicked(itsUri, itsTitle);
     }
+
+    /**
+     * Get the URI for the file
+     */
+    public String getUri()
+    {
+        return itsUri;
+    }
 }
