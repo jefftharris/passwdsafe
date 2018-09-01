@@ -18,11 +18,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -31,15 +31,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
-import com.jefftharris.passwdsafe.lib.Utils;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
 import java.util.List;
 
@@ -48,9 +45,10 @@ import java.util.List;
  *  the storage access framework on Kitkat and higher
  */
 @TargetApi(19)
-public final class StorageFileListFragment extends ListFragment
+public final class StorageFileListFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
-                   View.OnClickListener
+                   View.OnClickListener,
+                   StorageFileListOps
 {
     // TODO: recent sync files
     // TODO: swipe to remove an individual recent item
@@ -77,7 +75,8 @@ public final class StorageFileListFragment extends ListFragment
     private Listener itsListener;
     private RecentFilesDb itsRecentFilesDb;
     private ManagedRef<RecentFilesDb> itsRecentFilesDbRef;
-    private SimpleCursorAdapter itsFilesAdapter;
+    private View itsEmptyText;
+    private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
 
     @Override
@@ -100,11 +99,8 @@ public final class StorageFileListFragment extends ListFragment
         itsRecentFilesDbRef = new ManagedRef<>(itsRecentFilesDb);
     }
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-     */
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -114,6 +110,13 @@ public final class StorageFileListFragment extends ListFragment
 
         View rootView = inflater.inflate(R.layout.fragment_storage_file_list,
                                          container, false);
+
+        itsEmptyText = rootView.findViewById(R.id.empty);
+        GuiUtils.setVisible(itsEmptyText, false);
+
+        itsFilesAdapter = new StorageFileListAdapter(this);
+        RecyclerView files = rootView.findViewById(R.id.files);
+        files.setAdapter(itsFilesAdapter);
 
         View fab = rootView.findViewById(R.id.fab);
         fab.setOnClickListener(this);
@@ -129,37 +132,6 @@ public final class StorageFileListFragment extends ListFragment
         if (ctx == null) {
             return;
         }
-        itsFilesAdapter = new SimpleCursorAdapter(
-                ctx, R.layout.file_list_item, null,
-                new String[] { RecentFilesDb.DB_COL_FILES_TITLE,
-                               RecentFilesDb.DB_COL_FILES_ID,
-                               RecentFilesDb.DB_COL_FILES_DATE },
-                new int[] { R.id.text, R.id.icon, R.id.mod_date }, 0);
-        itsFilesAdapter.setViewBinder((view, cursor, columnIdx) -> {
-            switch (view.getId()) {
-            case R.id.text: {
-                TextView tv = (TextView)view;
-                String title = cursor.getString(columnIdx);
-                tv.setText(title);
-                tv.requestLayout();
-                return false;
-            }
-            case R.id.icon: {
-                ImageView iv = (ImageView)view;
-                iv.setImageResource(itsFileIcon);
-                return true;
-            }
-            case R.id.mod_date: {
-                TextView tv = (TextView)view;
-                long date = cursor.getLong(RecentFilesDb.QUERY_COL_DATE);
-                tv.setText(Utils.formatDate(date, getActivity()));
-                return true;
-            }
-            }
-            return false;
-        });
-
-        setListAdapter(itsFilesAdapter);
 
         LoaderManager lm = getLoaderManager();
         lm.initLoader(LOADER_FILES, null, this);
@@ -169,6 +141,8 @@ public final class StorageFileListFragment extends ListFragment
     public void onResume()
     {
         super.onResume();
+        LoaderManager lm = getLoaderManager();
+        lm.restartLoader(LOADER_FILES, null, this);
         itsListener.updateViewFiles();
     }
 
@@ -181,9 +155,6 @@ public final class StorageFileListFragment extends ListFragment
         itsRecentFilesDbRef = null;
     }
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onActivityResult(int, int, android.content.Intent)
-     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -215,13 +186,16 @@ public final class StorageFileListFragment extends ListFragment
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id)
+    public void storageFileClicked(String uristr, String title)
     {
-        Cursor item = (Cursor)l.getItemAtPosition(position);
-        String uristr = item.getString(RecentFilesDb.QUERY_COL_URI);
-        String title = item.getString(RecentFilesDb.QUERY_COL_TITLE);
         Uri uri = Uri.parse(uristr);
         openUri(uri, title);
+    }
+
+    @Override
+    public int getStorageFileIcon()
+    {
+        return itsFileIcon;
     }
 
     @Override
@@ -287,13 +261,15 @@ public final class StorageFileListFragment extends ListFragment
     public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader,
                                Cursor cursor)
     {
+        GuiUtils.setVisible(itsEmptyText,
+                            (cursor == null) || (cursor.getCount() == 0));
         itsFilesAdapter.changeCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader)
     {
-        itsFilesAdapter.changeCursor(null);
+        onLoadFinished(cursorLoader, null);
     }
 
     /** Start the intent to open a file */
