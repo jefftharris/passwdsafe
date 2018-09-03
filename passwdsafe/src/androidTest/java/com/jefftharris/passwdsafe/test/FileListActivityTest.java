@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.test;
 
 import android.os.Environment;
 import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.runner.AndroidJUnit4;
@@ -17,6 +18,7 @@ import android.view.Gravity;
 import com.jefftharris.passwdsafe.BuildConfig;
 import com.jefftharris.passwdsafe.FileListActivity;
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.test.util.ChildCheckedViewAction;
 
 import junit.framework.Assert;
 
@@ -32,6 +34,7 @@ import java.util.Map;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.open;
@@ -42,6 +45,7 @@ import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.toPackage;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.jefftharris.passwdsafe.test.util.TestUtils.withAdaptedData;
@@ -67,9 +71,10 @@ public class FileListActivityTest
             new IntentsTestRule<>(FileListActivity.class);
 
     @Test
-    public void testFiles()
+    public void testLegacyFiles()
     {
         verifyDrawerClosed();
+        setLegacyFileChooser(true);
 
         onView(withId(android.R.id.list));
         onTestFile("test.psafe3").check(matches(anything()));
@@ -81,9 +86,10 @@ public class FileListActivityTest
     }
 
     @Test
-    public void testFileNav()
+    public void testLegacyFileNav()
     {
         verifyDrawerClosed();
+        setLegacyFileChooser(true);
 
         Assert.assertTrue(
                 DIR.equals(new File("/storage/emulated/0")) ||
@@ -101,9 +107,10 @@ public class FileListActivityTest
     }
 
     @Test
-    public void testLaunchFileNew()
+    public void testLegacyLaunchFileNew()
     {
         verifyDrawerClosed();
+        setLegacyFileChooser(true);
 
         onView(withId(R.id.menu_file_new))
                 .perform(click());
@@ -126,6 +133,39 @@ public class FileListActivityTest
 
         onView(withId(R.id.version))
                 .check(matches(withText(BuildConfig.VERSION_NAME + " (DEBUG)")));
+    }
+
+    /**
+     * Set whether the legacy file chooser is used
+     */
+    private static void setLegacyFileChooser(boolean showLegacy)
+    {
+        verifyDrawerClosed();
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.START)))
+                .perform(open());
+        onView(withId(R.id.navigation_drawer))
+                .perform(navigateTo(R.id.menu_drawer_preferences));
+
+        onView(withId(R.id.list))
+                .perform(RecyclerViewActions.actionOnItem(
+                        hasDescendant(allOf(withId(android.R.id.title),
+                                            withText(R.string.files))),
+                        click()));
+
+        ChildCheckedViewAction legacyCheckAction =
+                new ChildCheckedViewAction(android.R.id.checkbox, showLegacy);
+        onView(withId(R.id.list))
+                .perform(RecyclerViewActions.actionOnItem(
+                        hasDescendant(
+                                allOf(withId(android.R.id.title),
+                                      withText(R.string.legacy_file_chooser))),
+                        legacyCheckAction));
+        pressBack();
+        if (legacyCheckAction.isPrevChecked() == showLegacy) {
+            pressBack();
+        }
     }
 
     /**
@@ -178,7 +218,7 @@ public class FileListActivityTest
     /**
      * Verify the nav drawer is closed
      */
-    private void verifyDrawerClosed()
+    private static void verifyDrawerClosed()
     {
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.START)));
