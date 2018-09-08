@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.BoundedMatcher;
@@ -20,7 +21,6 @@ import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.view.View;
 
 import com.jefftharris.passwdsafe.BuildConfig;
 import com.jefftharris.passwdsafe.FileListActivity;
@@ -186,14 +186,12 @@ public class FileListActivityTest
          closeSoftKeyboard();
          pressBack();
 
-         Matcher<View> filesMatcher = allOf(withId(R.id.files),
-                                            instanceOf(RecyclerView.class));
-         onView(filesMatcher)
+         onNewFileList()
                  .check(matches(withEffectiveVisibility(
                          ViewMatchers.Visibility.VISIBLE)));
-         onView(filesMatcher)
+         onNewFileList()
                  .check(withRecyclerViewCount(1));
-         onView(filesMatcher)
+         onNewFileList()
                  .check(hasRecyclerViewItemAtPosition(
                          0,
                          hasDescendant(allOf(withId(R.id.text),
@@ -228,22 +226,19 @@ public class FileListActivityTest
 
     private static void clearRecents()
     {
-         openActionBarOverflowOrOptionsMenu(
-                 getInstrumentation().getTargetContext());
-         onView(withText(R.string.clear_recent))
-                 .perform(click());
+        openActionBarOverflowOrOptionsMenu(
+                getInstrumentation().getTargetContext());
+        onView(withText(R.string.clear_recent))
+                .perform(click());
 
-         Matcher<View> filesMatcher = allOf(withId(R.id.files),
-                                            instanceOf(RecyclerView.class));
-         onView(filesMatcher)
-                 .check(matches(withEffectiveVisibility(
-                         ViewMatchers.Visibility.VISIBLE)));
-         onView(filesMatcher)
-                 .check(withRecyclerViewCount(0));
-         onView(withId(R.id.empty))
-                 .check(matches(withEffectiveVisibility(
-                         ViewMatchers.Visibility.VISIBLE)));
-
+        onNewFileList()
+                .check(matches(withEffectiveVisibility(
+                        ViewMatchers.Visibility.VISIBLE)));
+        onNewFileList()
+                .check(withRecyclerViewCount(0));
+        onView(withId(R.id.empty))
+                .check(matches(withEffectiveVisibility(
+                        ViewMatchers.Visibility.VISIBLE)));
     }
 
     /**
@@ -288,6 +283,15 @@ public class FileListActivityTest
         return onData(allOf(is(instanceOf(HashMap.class)),
                             withFileData(fileTitle)))
                 .inAdapterView(withId(android.R.id.list));
+    }
+
+    /**
+     * Test on the file list in the new file chooser
+     */
+    private static ViewInteraction onNewFileList()
+    {
+        return onView(allOf(withId(R.id.files),
+                            instanceOf(RecyclerView.class)));
     }
 
     /**
