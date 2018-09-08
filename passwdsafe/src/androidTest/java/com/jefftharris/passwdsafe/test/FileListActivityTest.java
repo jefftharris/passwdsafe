@@ -7,17 +7,26 @@
  */
 package com.jefftharris.passwdsafe.test;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.test.espresso.DataInteraction;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.BoundedMatcher;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.view.View;
 
 import com.jefftharris.passwdsafe.BuildConfig;
 import com.jefftharris.passwdsafe.FileListActivity;
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.test.util.ChildCheckedViewAction;
 
 import junit.framework.Assert;
@@ -29,11 +38,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.closeSoftKeyboard;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -42,12 +55,18 @@ import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.contrib.NavigationViewActions.navigateTo;
 import static android.support.test.espresso.intent.Checks.checkNotNull;
 import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCategories;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasType;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.jefftharris.passwdsafe.test.util.RecyclerViewAssertions.hasRecyclerViewItemAtPosition;
+import static com.jefftharris.passwdsafe.test.util.RecyclerViewAssertions.withRecyclerViewCount;
 import static com.jefftharris.passwdsafe.test.util.TestUtils.withAdaptedData;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
@@ -65,6 +84,7 @@ import static org.hamcrest.Matchers.not;
 public class FileListActivityTest
 {
     public static final File DIR = Environment.getExternalStorageDirectory();
+    private static final String TEST_FILE = "test.psafe3";
 
     @Rule
     public IntentsTestRule<FileListActivity> itsActivityRule =
@@ -77,10 +97,10 @@ public class FileListActivityTest
         setLegacyFileChooser(true);
 
         onView(withId(android.R.id.list));
-        onTestFile("test.psafe3").check(matches(anything()));
+        onTestFile(TEST_FILE).check(matches(anything()));
 
         onView(withId(android.R.id.list))
-                .check(matches(withAdaptedData(withFileData("test.psafe3"))));
+                .check(matches(withAdaptedData(withFileData(TEST_FILE))));
         onView(withId(android.R.id.list))
                 .check(matches(not(withAdaptedData(withFileData("none.psafe3")))));
     }
@@ -122,6 +142,77 @@ public class FileListActivityTest
     }
 
     @Test
+    public void testNewLaunchFileNew()
+    {
+        verifyDrawerClosed();
+        setLegacyFileChooser(false);
+
+        onView(withId(R.id.menu_file_new))
+                .perform(click());
+
+        intended(allOf(
+                hasAction(equalTo("com.jefftharris.passwdsafe.action.NEW")),
+                toPackage("com.jefftharris.passwdsafe")));
+     }
+
+     @Test
+     public void testNewFileOpen()
+     {
+         itsActivityRule.getActivity().setIsTesting(true);
+         verifyDrawerClosed();
+         setLegacyFileChooser(false);
+         clearRecents();
+
+         Uri fileUri = Uri.fromFile(new File(DIR, TEST_FILE));
+         Intent openResponse =
+                 new Intent().setData(fileUri)
+                             .putExtra("__test_display_name", TEST_FILE);
+
+         intending(allOf(
+                 hasAction(equalTo(
+                         DocumentsContractCompat.INTENT_ACTION_OPEN_DOCUMENT)),
+                 hasCategories(
+                         Collections.singleton(Intent.CATEGORY_OPENABLE)),
+                 hasType("application/*")))
+                 .respondWith(new Instrumentation.ActivityResult(
+                         Activity.RESULT_OK, openResponse));
+
+         onView(withId(R.id.fab))
+                 .perform(click());
+         intended(allOf(hasAction(PasswdSafeUtil.VIEW_INTENT),
+                        toPackage("com.jefftharris.passwdsafe"),
+                        hasData(fileUri)));
+
+         closeSoftKeyboard();
+         pressBack();
+
+         Matcher<View> filesMatcher = allOf(withId(R.id.files),
+                                            instanceOf(RecyclerView.class));
+         onView(filesMatcher)
+                 .check(matches(withEffectiveVisibility(
+                         ViewMatchers.Visibility.VISIBLE)));
+         onView(filesMatcher)
+                 .check(withRecyclerViewCount(1));
+         onView(filesMatcher)
+                 .check(hasRecyclerViewItemAtPosition(
+                         0,
+                         hasDescendant(allOf(withId(R.id.text),
+                                             withText(TEST_FILE)))));
+
+         onView(withId(R.id.empty))
+                 .check(matches(withEffectiveVisibility(
+                         ViewMatchers.Visibility.GONE)));
+     }
+
+     @Test
+     public void testNewClearRecents()
+     {
+         verifyDrawerClosed();
+         setLegacyFileChooser(false);
+         clearRecents();
+     }
+
+    @Test
     public void testAbout()
     {
         onView(withId(R.id.drawer_layout))
@@ -133,6 +224,26 @@ public class FileListActivityTest
 
         onView(withId(R.id.version))
                 .check(matches(withText(BuildConfig.VERSION_NAME + " (DEBUG)")));
+    }
+
+    private static void clearRecents()
+    {
+         openActionBarOverflowOrOptionsMenu(
+                 getInstrumentation().getTargetContext());
+         onView(withText(R.string.clear_recent))
+                 .perform(click());
+
+         Matcher<View> filesMatcher = allOf(withId(R.id.files),
+                                            instanceOf(RecyclerView.class));
+         onView(filesMatcher)
+                 .check(matches(withEffectiveVisibility(
+                         ViewMatchers.Visibility.VISIBLE)));
+         onView(filesMatcher)
+                 .check(withRecyclerViewCount(0));
+         onView(withId(R.id.empty))
+                 .check(matches(withEffectiveVisibility(
+                         ViewMatchers.Visibility.VISIBLE)));
+
     }
 
     /**

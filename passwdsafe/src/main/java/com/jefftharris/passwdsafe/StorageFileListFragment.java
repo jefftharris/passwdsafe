@@ -62,6 +62,10 @@ public final class StorageFileListFragment extends Fragment
 
         /** Update the view for a list of files */
         void updateViewFiles();
+
+        /** Is the fragment running while testing */
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+        boolean isTesting();
     }
 
     private static final String TAG = "StorageFileListFragment";
@@ -76,12 +80,14 @@ public final class StorageFileListFragment extends Fragment
     private View itsEmptyText;
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
+    private boolean itsIsCheckPermissions;
 
     @Override
     public void onAttach(Context ctx)
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
+        itsIsCheckPermissions = !itsListener.isTesting();
 
         Resources.Theme theme = ctx.getTheme();
         TypedValue attr = new TypedValue();
@@ -243,18 +249,22 @@ public final class StorageFileListFragment extends Fragment
                 if (ctx == null) {
                     return true;
                 }
-                ContentResolver cr = ctx.getContentResolver();
-                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
                 List<Uri> recentUris = itsRecentFilesDb.clear();
-                for (Uri uri: recentUris) {
-                    ApiCompat.releasePersistableUriPermission(cr, uri, flags);
-                }
+                if (itsIsCheckPermissions) {
+                    ContentResolver cr = ctx.getContentResolver();
+                    int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                    for (Uri uri : recentUris) {
+                        ApiCompat.releasePersistableUriPermission(cr, uri,
+                                                                  flags);
+                    }
 
-                List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
-                for (Uri permUri: permUris) {
-                    ApiCompat.releasePersistableUriPermission(cr, permUri,
-                                                              flags);
+                    List<Uri> permUris =
+                            ApiCompat.getPersistedUriPermissions(cr);
+                    for (Uri permUri : permUris) {
+                        ApiCompat.releasePersistableUriPermission(cr, permUri,
+                                                                  flags);
+                    }
                 }
 
                 getLoaderManager().restartLoader(LOADER_FILES, null, this);
@@ -274,7 +284,8 @@ public final class StorageFileListFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
     {
-        return new FileLoader(itsRecentFilesDbRef, requireContext());
+        return new FileLoader(itsRecentFilesDbRef, itsIsCheckPermissions,
+                              requireContext());
     }
 
     @Override
@@ -318,7 +329,13 @@ public final class StorageFileListFragment extends Fragment
 
         Context ctx = requireContext();
         String title = RecentFilesDb.getSafDisplayName(uri, ctx);
-        RecentFilesDb.updateOpenedSafFile(uri, flags, ctx);
+        if (itsIsCheckPermissions) {
+            RecentFilesDb.updateOpenedSafFile(uri, flags, ctx);
+        } else {
+            if (title == null) {
+                title = openIntent.getStringExtra("__test_display_name");
+            }
+        }
         if (title != null) {
             openUri(uri, title);
         }
@@ -348,10 +365,12 @@ public final class StorageFileListFragment extends Fragment
             Uri uri = Uri.parse(uristr);
             itsRecentFilesDb.removeUri(uri);
 
-            ContentResolver cr = requireContext().getContentResolver();
-            int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-            ApiCompat.releasePersistableUriPermission(cr, uri, flags);
+            if (itsIsCheckPermissions) {
+                ContentResolver cr = requireContext().getContentResolver();
+                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                ApiCompat.releasePersistableUriPermission(cr, uri, flags);
+            }
 
             getLoaderManager().restartLoader(LOADER_FILES, null, this);
         } catch (Exception e) {
@@ -367,14 +386,18 @@ public final class StorageFileListFragment extends Fragment
     private static final class FileLoader extends AsyncTaskLoader<Cursor>
     {
         private final ManagedRef<RecentFilesDb> itsRecentFilesDb;
+        private final boolean itsIsCheckPermissions;
 
         /**
          * Constructor
          */
-        public FileLoader(ManagedRef<RecentFilesDb> recentFilesDb, Context ctx)
+        public FileLoader(ManagedRef<RecentFilesDb> recentFilesDb,
+                          boolean checkPermissions,
+                          Context ctx)
         {
             super(ctx.getApplicationContext());
             itsRecentFilesDb = recentFilesDb;
+            itsIsCheckPermissions = checkPermissions;
         }
 
         /** Handle when the loader is reset */
@@ -410,29 +433,32 @@ public final class StorageFileListFragment extends Fragment
                 return null;
             }
 
-            int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-            ContentResolver cr = getContext().getContentResolver();
-            List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
-            for (Uri permUri: permUris) {
-                PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s",
-                                       permUri);
-                Cursor cursor = null;
-                try {
-                    cursor = cr.query(permUri, null, null, null, null);
-                    if ((cursor != null) && (cursor.moveToFirst())) {
-                        ApiCompat.takePersistableUriPermission(cr, permUri,
-                                                               flags);
-                    } else {
-                        ApiCompat.releasePersistableUriPermission(cr, permUri,
-                                                                  flags);
-                        recentFilesDb.removeUri(permUri);
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "File remove error: " + permUri, e);
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
+            if (itsIsCheckPermissions) {
+                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                ContentResolver cr = getContext().getContentResolver();
+                List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
+                for (Uri permUri : permUris) {
+                    PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s",
+                                           permUri);
+                    Cursor cursor = null;
+                    try {
+                        cursor = cr.query(permUri, null, null, null, null);
+                        if ((cursor != null) && (cursor.moveToFirst())) {
+                            ApiCompat.takePersistableUriPermission(cr, permUri,
+                                                                   flags);
+                        } else {
+                            ApiCompat.releasePersistableUriPermission(cr,
+                                                                      permUri,
+                                                                      flags);
+                            recentFilesDb.removeUri(permUri);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "File remove error: " + permUri, e);
+                    } finally {
+                        if (cursor != null) {
+                            cursor.close();
+                        }
                     }
                 }
             }

@@ -149,6 +149,12 @@ public class LauncherFileShortcuts extends AppCompatActivity
     }
 
     @Override
+    public boolean isTesting()
+    {
+        return false;
+    }
+
+    @Override
     public void updateViewSyncFiles(Uri syncFilesUri)
     {
     }
