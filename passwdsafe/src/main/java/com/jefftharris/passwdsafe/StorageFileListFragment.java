@@ -87,7 +87,6 @@ public final class StorageFileListFragment extends Fragment
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
-        itsIsCheckPermissions = !itsListener.isTesting();
 
         Resources.Theme theme = ctx.getTheme();
         TypedValue attr = new TypedValue();
@@ -167,6 +166,7 @@ public final class StorageFileListFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        itsIsCheckPermissions = !itsListener.isTesting();
         LoaderManager lm = getLoaderManager();
         lm.restartLoader(LOADER_FILES, null, this);
         itsListener.updateViewFiles();
