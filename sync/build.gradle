@@ -12,7 +12,7 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
-        minSdkVersion 14
+        minSdkVersion 16
         resConfigs "de", "fr", "nb"
         targetSdkVersion 27
         // <major><minor><bugfix><beta/extra>
@@ -69,6 +69,6 @@ dependencies {
     // Dropbox
     implementation 'com.dropbox.core:dropbox-core-sdk:3.0.3'
     // Box
-    implementation 'com.box:box-android-sdk:4.0.10'
+    implementation 'com.box:box-android-sdk:4.2.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 }
