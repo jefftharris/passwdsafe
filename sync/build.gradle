@@ -70,5 +70,4 @@ dependencies {
     implementation 'com.dropbox.core:dropbox-core-sdk:3.0.10'
     // Box
     implementation 'com.box:box-android-sdk:4.2.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 }
