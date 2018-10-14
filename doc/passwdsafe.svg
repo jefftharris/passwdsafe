@@ -16,10 +16,10 @@
    height="793.70081"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    inkscape:export-filename="/home/jharris/src/PasswdSafe/image.png"
-   inkscape:export-xdpi="307.76999"
-   inkscape:export-ydpi="307.76999"
+   inkscape:export-xdpi="20.49"
+   inkscape:export-ydpi="20.49"
    style="enable-background:new">
   <sodipodi:namedview
      id="base"
@@ -29,16 +29,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="234.35187"
+     inkscape:cx="544.75983"
      inkscape:cy="395.55536"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="true"
      inkscape:snap-bbox="true"
-     inkscape:window-width="1514"
-     inkscape:window-height="1130"
-     inkscape:window-x="1642"
-     inkscape:window-y="17"
+     inkscape:window-width="1765"
+     inkscape:window-height="1380"
+     inkscape:window-x="968"
+     inkscape:window-y="479"
      inkscape:window-maximized="0"
      inkscape:snap-global="true"
      showguides="true"
@@ -1016,7 +1016,7 @@
      style="display:inline">
     <g
        id="g4116"
-       transform="matrix(0.83333334,0,0,0.83333334,0,187.08661)"
+       transform="matrix(0.82560298,0,0,0.83437508,0,185.91724)"
        style="filter:url(#filter4072)">
       <path
          inkscape:connector-curvature="0"
@@ -1049,15 +1049,15 @@
     </g>
   </g>
   <g
-     inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Sync"
-     style="display:inline">
+     style="display:inline"
+     inkscape:groupmode="layer">
     <g
        inkscape:label="Layer 1"
        id="layer1-2"
-       transform="matrix(5.5779714,0,0,5.8434411,249.73647,245.12773)"
-       style="filter:url(#filter11556)">
+       transform="matrix(5.5779714,0,0,5.8434411,249.73647,247.12773)"
+       style="display:inline;filter:url(#filter11556)">
       <ellipse
          inkscape:r_cx="true"
          inkscape:r_cy="true"
