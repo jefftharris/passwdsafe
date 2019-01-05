@@ -11,15 +11,15 @@ import android.content.Context;
 
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.microsoft.onedriveaccess.IOneDriveService;
-
-import retrofit.RetrofitError;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
+import com.microsoft.graph.extensions.IGraphServiceClient;
 
 /**
  * An OneDrive sync operation to remove a file
  */
 public class OnedriveRmFileOper
-        extends AbstractRmSyncOper<IOneDriveService>
+        extends AbstractRmSyncOper<IGraphServiceClient>
 {
     private static final String TAG = "OnedriveRmFileOper";
 
@@ -31,15 +31,16 @@ public class OnedriveRmFileOper
 
     /** Remove the remote file */
     @Override
-    protected void doRemoteRemove(IOneDriveService providerClient,
-                                  Context ctx) throws RetrofitError
+    protected void doRemoteRemove(IGraphServiceClient providerClient,
+                                  Context ctx) throws ClientException
     {
         try {
-            providerClient.deleteItemByPath(itsFile.itsRemoteId);
-        } catch (RetrofitError e) {
-            if (OnedriveSyncer.isNot404Error(e)) {
-                throw e;
-            }
+            IDriveItemRequestBuilder rootRequest =
+                    OnedriveProvider.getFilePathRequest(providerClient,
+                                                        itsFile.itsRemoteId);
+            rootRequest.buildRequest().delete();
+        } catch (ClientException e) {
+            OnedriveSyncer.check404Error(e);
         }
     }
 }

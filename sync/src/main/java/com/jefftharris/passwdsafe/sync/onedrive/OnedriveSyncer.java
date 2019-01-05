@@ -20,25 +20,25 @@ import com.jefftharris.passwdsafe.sync.lib.ProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.jefftharris.passwdsafe.sync.lib.SyncRemoteFiles;
-import com.microsoft.onedriveaccess.IOneDriveService;
-import com.microsoft.onedriveaccess.model.Drive;
-import com.microsoft.onedriveaccess.model.Item;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.extensions.DriveItem;
+import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
+import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.graph.extensions.User;
 
 import java.util.List;
-
-import retrofit.RetrofitError;
 
 /**
  * The OnedriveSyncer class encapsulates an OneDrive sync operation
  */
-public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
+public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
 {
     private static final String TAG = "OnedriveSyncer";
 
     /**
      * Constructor
      */
-    public OnedriveSyncer(IOneDriveService service,
+    public OnedriveSyncer(IGraphServiceClient service,
                           DbProvider provider,
                           SyncConnectivityResult connResult,
                           SyncLogRecord logrec, Context ctx)
@@ -50,24 +50,22 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
     /**
      * Get the account display name
      */
-    public static String getDisplayName(IOneDriveService client)
-            throws RetrofitError
+    public static String getDisplayName(IGraphServiceClient client)
     {
-        Drive drive = client.getDrive();
-        if ((drive != null) && (drive.Owner != null) &&
-            (drive.Owner.User != null)) {
-            return drive.Owner.User.DisplayName;
-        } else {
-            return null;
-        }
+        User user = client.getMe().buildRequest().get();
+        return user.displayName;
     }
 
-    /** Is the error a 404 not-found error */
-    public static boolean isNot404Error(RetrofitError e)
+    /**
+     * Check whether the exception is a 404 not found exception
+     * @throws ClientException if not a 404 error
+     */
+    public static void check404Error(ClientException e)
+            throws ClientException
     {
-        return (e.isNetworkError() ||
-                (e.getResponse() == null) ||
-                (e.getResponse().getStatus() != 404));
+        if (!e.getMessage().contains("\n404 : Not Found\n")) {
+            throw e;
+        }
     }
 
 
@@ -85,7 +83,7 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
         SyncRemoteFiles files = new SyncRemoteFiles();
         for (DbFile dbfile: dbfiles) {
             if (dbfile.itsRemoteId == null) {
-                Item item = getRemoteFile(createRemoteIdFromLocal(dbfile));
+                DriveItem item = getRemoteFile(createRemoteIdFromLocal(dbfile));
                 if (item != null) {
                     files.addRemoteFileForNew(dbfile.itsId,
                                               new OnedriveProviderFile(item));
@@ -95,7 +93,7 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
                 case NO_CHANGE:
                 case ADDED:
                 case MODIFIED: {
-                    Item item = getRemoteFile(dbfile.itsRemoteId);
+                    DriveItem item = getRemoteFile(dbfile.itsRemoteId);
                     if (item != null) {
                         files.addRemoteFile(new OnedriveProviderFile(item));
                     }
@@ -115,7 +113,7 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
      * Create an operation to sync local to remote
      */
     @Override
-    protected AbstractLocalToRemoteSyncOper<IOneDriveService>
+    protected AbstractLocalToRemoteSyncOper<IGraphServiceClient>
     createLocalToRemoteOper(DbFile dbfile)
     {
         return new OnedriveLocalToRemoteOper(dbfile);
@@ -126,7 +124,7 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
      * Create an operation to sync remote to local
      */
     @Override
-    protected AbstractRemoteToLocalSyncOper<IOneDriveService>
+    protected AbstractRemoteToLocalSyncOper<IGraphServiceClient>
     createRemoteToLocalOper(DbFile dbfile)
     {
         return new OnedriveRemoteToLocalOper(dbfile);
@@ -137,7 +135,7 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
      * Create an operation to remove a file
      */
     @Override
-    protected AbstractRmSyncOper<IOneDriveService>
+    protected AbstractRmSyncOper<IGraphServiceClient>
     createRmFileOper(DbFile dbfile)
     {
         return new OnedriveRmFileOper(dbfile);
@@ -148,18 +146,19 @@ public class OnedriveSyncer extends ProviderSyncer<IOneDriveService>
      * Get a remote file's entry from OneDrive
      * @return The file's entry if found; null if not found or deleted
      */
-    private Item getRemoteFile(String remoteId) throws RetrofitError
+    private DriveItem getRemoteFile(String remoteId) throws ClientException
     {
         try {
-            Item item = itsProviderClient.getItemByPath(remoteId, null);
-            if (item.Deleted != null) {
+            IDriveItemRequestBuilder rootRequest =
+                    OnedriveProvider.getFilePathRequest(itsProviderClient,
+                                                        remoteId);
+            DriveItem item = rootRequest.buildRequest().get();
+            if ((item != null) && (item.deleted != null)) {
                 return null;
             }
             return item;
-        } catch (RetrofitError e) {
-            if (isNot404Error(e)) {
-                throw e;
-            }
+        } catch (ClientException e) {
+            check404Error(e);
             return null;
         }
     }

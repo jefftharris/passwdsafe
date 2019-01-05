@@ -10,7 +10,7 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 import android.net.Uri;
 
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
-import com.microsoft.onedriveaccess.model.Item;
+import com.microsoft.graph.extensions.DriveItem;
 
 /**
  *  Abstraction of an OneDrive remote file
@@ -19,26 +19,30 @@ public class OnedriveProviderFile implements ProviderRemoteFile
 {
     private static final String DRIVE_ROOT_PATH = "/drive/root:";
 
-    private final Item itsItem;
+    private final DriveItem itsItem;
     private final String itsRemoteId;
     private final String itsPath;
 
     /**
      * Constructor
      */
-    public OnedriveProviderFile(Item item)
+    public OnedriveProviderFile(DriveItem item)
     {
         itsItem = item;
         Uri.Builder builder = new Uri.Builder();
-        if (itsItem.ParentReference != null) {
+        if (itsItem.parentReference != null) {
             builder.encodedPath(
-                    itsItem.ParentReference.Path.substring(
+                    itsItem.parentReference.path.substring(
                             DRIVE_ROOT_PATH.length()));
         }
-        builder.appendPath(itsItem.Name);
+        builder.appendPath(itsItem.name);
         Uri uri = builder.build();
         itsPath = uri.getPath();
-        itsRemoteId = uri.getEncodedPath().toLowerCase();
+        String remoteId = uri.getEncodedPath();
+        if (remoteId != null) {
+            remoteId = remoteId.toLowerCase();
+        }
+        itsRemoteId = remoteId;
     }
 
     /**
@@ -65,7 +69,7 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public String getTitle()
     {
-        return itsItem.Name;
+        return itsItem.name;
     }
 
     /**
@@ -88,7 +92,7 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public long getModTime()
     {
-        return itsItem.LastModifiedDateTime.getTime();
+        return itsItem.lastModifiedDateTime.getTimeInMillis();
     }
 
     /**
@@ -97,8 +101,8 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public String getHash()
     {
-        return (itsItem.File != null) ?
-                itsItem.File.Hashes.Sha1Hash : itsItem.ETag;
+        return (itsItem.file != null) ?
+                itsItem.file.hashes.sha1Hash : itsItem.eTag;
     }
 
     /**
@@ -107,7 +111,7 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public boolean isFolder()
     {
-        return (itsItem.Folder != null);
+        return (itsItem.folder != null);
     }
 
     /**
@@ -118,10 +122,10 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     {
         return String.format(
                 "{name: %s, parent: %s, id: %s, folder: %b, remid: %s, mod: %s}",
-                itsItem.Name,
-                (itsItem.ParentReference != null) ?
-                        itsItem.ParentReference.Path : "null",
-                itsItem.Id, itsRemoteId,
-                (itsItem.Folder != null), itsItem.LastModifiedDateTime);
+                itsItem.name,
+                (itsItem.parentReference != null) ?
+                        itsItem.parentReference.path : "null",
+                itsItem.id, itsRemoteId,
+                (itsItem.folder != null), itsItem.lastModifiedDateTime);
     }
 }

@@ -8,8 +8,6 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.accounts.Account;
-import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
@@ -32,17 +31,19 @@ import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
-import com.microsoft.authenticate.AuthClient;
-import com.microsoft.authenticate.AuthException;
-import com.microsoft.authenticate.AuthListener;
-import com.microsoft.authenticate.AuthSession;
-import com.microsoft.authenticate.AuthStatus;
-import com.microsoft.onedriveaccess.IOneDriveService;
-import com.microsoft.onedriveaccess.ODConnection;
-import com.microsoft.onedriveaccess.OneDriveOAuthConfig;
-import com.microsoft.onedriveaccess.model.Drive;
+import com.microsoft.graph.authentication.IAuthenticationProvider;
+import com.microsoft.graph.core.DefaultClientConfig;
+import com.microsoft.graph.core.IClientConfig;
+import com.microsoft.graph.extensions.GraphServiceClient;
+import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
+import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.identity.client.AuthenticationCallback;
+import com.microsoft.identity.client.AuthenticationResult;
+import com.microsoft.identity.client.IAccount;
+import com.microsoft.identity.client.Logger;
+import com.microsoft.identity.client.PublicClientApplication;
+import com.microsoft.identity.client.exception.MsalException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -53,14 +54,19 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class OnedriveProvider extends AbstractSyncTimerProvider
 {
-    private static final String CLIENT_ID = "00000000401589B9";
-    private static final String PREF_USER_ID = "onedriveUserId";
+    // TODO: use for upgrade?
+    //private static final String PREF_USER_ID = "onedriveUserId";
+
+    private static final String PREF_HOME_ACCT_ID = "onedriveHomeAcctId";
 
     private static final String TAG = "OnedriveProvider";
 
-    private AuthClient itsAuthClient;
+    // TODO: lock around itsClientApp use
+    private PublicClientApplication itsClientApp = null;
+    private String itsHomeAccountId = null;
     final private ReentrantLock itsServiceLock = new ReentrantLock();
-    private String itsUserId = null;
+    private boolean itsIsAddingAcct = false;
+    private final Object itsNewAcctLock = new Object();
 
     /** Constructor */
     public OnedriveProvider(Context ctx)
@@ -72,7 +78,14 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     public void init(@Nullable DbProvider dbProvider)
     {
         super.init(dbProvider);
-        createAuthClient();
+
+        itsClientApp = new PublicClientApplication(
+                getContext().getApplicationContext(), Constants.CLIENT_ID);
+
+        // TODO: nice down
+        Logger.getInstance().setLogLevel(Logger.LogLevel.INFO);
+
+        updateOnedriveAcct(null);
     }
 
     /**
@@ -83,59 +96,53 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                                  final int requestCode)
     {
         Runnable loginTask = () -> {
-            if (itsAuthClient.hasPendingLogin()) {
-                createAuthClient();
-            }
-            itsAuthClient.login(activity, null, new AuthListener()
-            {
-                @Override
-                public void onAuthComplete(AuthStatus status,
-                                           AuthSession session,
-                                           Object userState)
-                {
-                    PasswdSafeUtil.dbginfo(TAG, "login ok status %s, sess [%s]",
-                                           status, session);
-                    boolean success = false;
+            itsIsAddingAcct = true;
+            itsClientApp.acquireToken(
+                    activity, Constants.SCOPES,
+                    new AuthenticationCallback()
+                    {
+                        @Override
+                        public void onSuccess(AuthenticationResult authResult)
+                        {
+                            PasswdSafeUtil.dbginfo(TAG, "login ok res %s",
+                                                   authResult);
+                            updateAcctId(authResult.getAccount());
+                        }
 
-                    switch (status) {
-                    case CONNECTED: {
-                        success = true;
-                        break;
-                    }
-                    case NOT_CONNECTED:
-                    case UNKNOWN: {
-                        Log.e(TAG, "Auth complete, bad status: " + status);
-                        break;
-                    }
-                    }
-                    sendResult(success);
-                }
+                        @Override
+                        public void onError(MsalException exception)
+                        {
+                            Log.e(TAG, "Auth error", exception);
+                            updateAcctId(null);
+                        }
 
-                @Override
-                public void onAuthError(AuthException exception,
-                                        Object userState)
-                {
-                    Log.e(TAG, "Auth error", exception);
-                    sendResult(false);
-                }
+                        @Override
+                        public void onCancel()
+                        {
+                            Log.e(TAG, "Auth canceled");
+                            updateAcctId(null);
+                        }
 
-                /**
-                 * Send the result of the login
-                 */
-                private void sendResult(boolean success)
-                {
-                    Intent intent = new Intent();
-                    PendingIntent pendIntent = activity.createPendingResult(
-                            requestCode, intent, PendingIntent.FLAG_ONE_SHOT);
-                    try {
-                        pendIntent.send(success ? Activity.RESULT_OK :
-                                        Activity.RESULT_CANCELED);
-                    } catch (PendingIntent.CanceledException e) {
-                        Log.e(TAG, "login intent send failed", e);
-                    }
-                }
-            });
-        };
+                        /**
+                         * Update the account id when the authentication is
+                         * finished
+                         */
+                        private void updateAcctId(IAccount acct)
+                        {
+                            synchronized (itsNewAcctLock) {
+                                if (acct != null) {
+                                    itsHomeAccountId =
+                                            acct.getHomeAccountIdentifier()
+                                                .getIdentifier();
+                                } else {
+                                    itsHomeAccountId = null;
+                                }
+                                itsIsAddingAcct = false;
+                                itsNewAcctLock.notifyAll();
+                            }
+                        }
+                    });
+            };
 
         if (isAccountAuthorized()) {
             unlinkAccount(loginTask);
@@ -148,15 +155,13 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      * Finish the process of linking to an account
      */
     @Override
-    public NewAccountTask finishAccountLink(int activityResult,
+    public NewAccountTask finishAccountLink(int activityRequestCode,
+                                            int activityResult,
                                             Intent activityData,
                                             Uri providerAcctUri)
     {
-        if ((activityResult != Activity.RESULT_OK) || !isAccountAuthorized()) {
-            Log.e(TAG, "finishAccountLink auth failed");
-            return null;
-        }
-
+        itsClientApp.handleInteractiveRequestRedirect(
+                activityRequestCode, activityResult, activityData);
         return new NewOneDriveTask(providerAcctUri, this);
     }
 
@@ -175,7 +180,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @Override
     public boolean isAccountAuthorized()
     {
-        return itsAuthClient.hasRefreshToken();
+        return (getODAccount() != null);
     }
 
     /**
@@ -205,7 +210,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      * Cleanup a provider when deleted
      */
     @Override
-    public void cleanupOnDelete(String acctName) throws Exception
+    public void cleanupOnDelete(String acctName)
     {
         if (!isPendingAdd()) {
             unlinkAccount();
@@ -253,10 +258,45 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     }
 
     /**
-     * Get a OneDrive service for the client
+     * Get a request builder for accessing a file path
      */
-    public IOneDriveService acquireOnedriveService()
-            throws Exception
+    public static IDriveItemRequestBuilder getFilePathRequest(
+            IGraphServiceClient client,
+            String path)
+    {
+        // TODO: move OD utils to separate class
+        IDriveItemRequestBuilder rootRequest =
+                client.getMe().getDrive().getRoot();
+        if (path.length() > 1) {
+            rootRequest = rootRequest.getItemWithPath(path.substring(1));
+        }
+        return rootRequest;
+    }
+
+    /**
+     * Get the account user identifier
+     */
+    @Override
+    protected String getAccountUserId()
+    {
+        return itsHomeAccountId;
+    }
+
+    /**
+     * Interface for users of the OneDrive service
+     */
+    public interface OneDriveUser
+    {
+        /**
+         * Callback to use the service
+         */
+        void useOneDrive(IGraphServiceClient client) throws Exception;
+    }
+
+    /**
+     * Use the OneDrive service
+     */
+    public void useOneDriveService(OneDriveUser user) throws Exception
     {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new Exception("Can't invoke getOnedriveService in ui thread");
@@ -266,71 +306,85 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             throw new Exception("Timeout waiting for OneDrive service");
         }
 
-        if (itsAuthClient.getSession().isExpired()) {
-            PasswdSafeUtil.dbginfo(TAG, "sync refreshing auth token");
-            itsAuthClient.getSession().refresh();
-        }
+        try {
+            IAccount acct = getODAccount();
+            if (acct == null) {
+                throw new Exception(TAG + " useOneDriveService not authorized");
+            }
 
-        ODConnection conn = new ODConnection(itsAuthClient);
-        conn.setVerboseLogcatOutput(false);
-        return conn.getService();
-    }
+            final ObjectHolder<ObjectHolder<AuthenticationResult>> authResult =
+                    new ObjectHolder<>();
 
-    /**
-     * Release the OneDrive service
-     */
-    public void releaseOnedriveService()
-    {
-        itsServiceLock.unlock();
-    }
+            itsClientApp.acquireTokenSilentAsync(
+                    Constants.SCOPES,
+                    itsClientApp.getAccount(itsHomeAccountId),
+                    new AuthenticationCallback()
+                    {
+                        @Override
+                        public void onSuccess(AuthenticationResult authResult)
+                        {
+                            PasswdSafeUtil.dbginfo(
+                                    TAG, "useOneDriveService auth ok");
+                            onAuthDone(authResult);
+                        }
 
-    /**
-     * Get the account user identifier
-     */
-    @Override
-    protected String getAccountUserId()
-    {
-        return itsUserId;
-    }
+                        @Override
+                        public void onError(MsalException exception)
+                        {
+                            Log.e(TAG, "useOneDriveService auth error",
+                                  exception);
+                            onAuthDone(null);
+                        }
 
-    /**
-     * Interface for users of the OneDrive service
-     */
-    private interface OneDriveUser
-    {
-        /**
-         * Callback to use the service
-         */
-        void useOneDrive(IOneDriveService client) throws Exception;
-    }
+                        @Override
+                        public void onCancel()
+                        {
+                            Log.e(TAG, "useOneDriveService auth cancel");
+                            onAuthDone(null);
+                        }
 
-    /**
-     * Create an authentication client
-     */
-    private void createAuthClient()
-    {
-        itsAuthClient = new AuthClient(getContext(),
-                                       OneDriveOAuthConfig.getInstance(),
-                                       CLIENT_ID);
-        updateOnedriveAcct(null);
-    }
+                        /**
+                         * Handle when authentication is finished
+                         */
+                        private void onAuthDone(AuthenticationResult result)
+                        {
+                            synchronized (authResult) {
+                                ObjectHolder<AuthenticationResult> resHolder =
+                                        new ObjectHolder<>();
+                                resHolder.set(result);
+                                authResult.set(resHolder);
+                                authResult.notifyAll();
+                            }
+                        }
+                    });
 
-    /**
-     * Use the OneDrive service
-     */
-    private void useOneDriveService(OneDriveUser user) throws Exception
-    {
-        boolean authorized = isAccountAuthorized();
-        PasswdSafeUtil.dbginfo(TAG, "account authorized: %b", authorized);
-        if (authorized) {
-            try {
-                IOneDriveService service = acquireOnedriveService();
-                user.useOneDrive(service);
-            } finally {
-                releaseOnedriveService();
-                if (!isAccountAuthorized()) {
-                    SyncApp.get(getContext()).updateProviderState();
+            synchronized (authResult) {
+                while (authResult.get() == null) {
+                    // todo: timeout
+                    authResult.wait(15000);
                 }
+            }
+            if (authResult.get().get() == null) {
+                throw new Exception("Not authorized");
+            }
+
+            String auth = "Bearer " + authResult.get().get().getAccessToken();
+            IAuthenticationProvider authProvider =
+                    request -> request.addHeader("Authorization", auth);
+
+            // TODO: use custom client config to nice down debug logs?
+            final IClientConfig clientConfig =
+                    DefaultClientConfig.createWithAuthenticationProvider(
+                            authProvider);
+            IGraphServiceClient service = new GraphServiceClient.Builder()
+                    .fromConfig(clientConfig)
+                    .buildClient();
+
+            user.useOneDrive(service);
+        } finally {
+            itsServiceLock.unlock();
+            if (!isAccountAuthorized()) {
+                SyncApp.get(getContext()).updateProviderState();
             }
         }
     }
@@ -341,24 +395,12 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      */
     private void unlinkAccount(final Runnable completeCb)
     {
-        itsAuthClient.logout(new AuthListener()
-        {
-            @Override
-            public void onAuthComplete(AuthStatus status,
-                                       AuthSession session,
-                                       Object userState)
-            {
-                setUserId(null);
-                updateOnedriveAcct(completeCb);
-            }
-
-            @Override
-            public void onAuthError(AuthException exception, Object userState)
-            {
-                Log.e(TAG, "logout auth error", exception);
-                completeCb.run();
-            }
-        });
+        IAccount acct = getODAccount();
+        if (acct != null) {
+            itsClientApp.removeAccount(acct);
+        }
+        setHomeAcctId(null);
+        updateOnedriveAcct(completeCb);
     }
 
     /**
@@ -368,74 +410,49 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      */
     private synchronized void updateOnedriveAcct(final Runnable completeCb)
     {
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        itsHomeAccountId = prefs.getString(PREF_HOME_ACCT_ID, null);
         if (isAccountAuthorized()) {
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences(getContext());
-            itsUserId = prefs.getString(PREF_USER_ID, null);
-            if (itsUserId != null) {
-                try {
-                    updateProviderSyncFreq(itsUserId);
-                } catch (Exception e) {
-                    Log.e(TAG, "updateOnedriveAcct failure", e);
-                }
+            try {
+                updateProviderSyncFreq(itsHomeAccountId);
+                requestSync(false);
+            } catch (Exception e) {
+                Log.e(TAG, "updateOnedriveAcct failure", e);
             }
+        } else {
+            itsHomeAccountId = null;
+            updateSyncFreq(null, 0);
         }
 
-        AuthListener authCb = new AuthListener()
-        {
-            @Override
-            public void onAuthComplete(AuthStatus status,
-                                       AuthSession session,
-                                       Object userState)
-            {
-                PasswdSafeUtil.dbginfo(
-                        TAG, "update acct complete: %s, session expire: %s",
-                        status,
-                        (session != null) ? session.getExpiresIn() : "(none)");
-                switch (status) {
-                case CONNECTED: {
-                    requestSync(false);
-                    break;
-                }
-                case NOT_CONNECTED:
-                case UNKNOWN: {
-                    itsUserId = null;
-                    updateSyncFreq(null, 0);
-                    break;
-                }
-                }
+        if (completeCb != null) {
+            completeCb.run();
+        }
+    }
 
-                if (completeCb != null) {
-                    completeCb.run();
-                }
-            }
-
-            @Override
-            public void onAuthError(AuthException exception,
-                                    Object userState)
-            {
-                Log.e(TAG, "update auth error", exception);
-                if (completeCb != null) {
-                    completeCb.run();
-                }
-            }
-        };
-        itsAuthClient.initialize(
-                Arrays.asList("wl.signin", "wl.offline_access",
-                              "onedrive.readwrite"),
-                authCb, null, null);
+    /**
+     * Get the OneDrive account for the active account
+     */
+    @Nullable
+    private synchronized IAccount getODAccount()
+    {
+        if (TextUtils.isEmpty(itsHomeAccountId)) {
+            return null;
+        }
+        return itsClientApp.getAccount(itsHomeAccountId);
     }
 
     /** Update the account's user ID */
-    private synchronized void setUserId(String user)
+    private synchronized void setHomeAcctId(String homeAcctId)
     {
-        PasswdSafeUtil.dbginfo(TAG, "updateUserId: %s", user);
-        itsUserId = user;
+        PasswdSafeUtil.dbginfo(TAG, "updateHomeAcctId: %s", homeAcctId);
+        itsHomeAccountId = homeAcctId;
 
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PREF_USER_ID, itsUserId);
+        editor.putString(PREF_HOME_ACCT_ID, itsHomeAccountId);
         editor.apply();
     }
 
@@ -458,14 +475,16 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         protected boolean doProviderUpdate(@NonNull OnedriveProvider provider)
                 throws Exception
         {
-            try {
-                IOneDriveService service = provider.acquireOnedriveService();
-                Drive drive = service.getDrive();
-                itsNewAcct = drive.Owner.User.Id;
-                provider.setUserId(itsNewAcct);
-            } finally {
-                provider.releaseOnedriveService();
+            synchronized (provider.itsNewAcctLock) {
+                while (provider.itsIsAddingAcct) {
+                    provider.itsNewAcctLock.wait(30000);
+                    // TODO: check timeout
+                }
             }
+            // TODO: treat home account id from the acquireToken callback as
+            // transient until here
+            itsNewAcct = provider.itsHomeAccountId;
+            provider.setHomeAcctId(provider.itsHomeAccountId);
             return true;
         }
     }

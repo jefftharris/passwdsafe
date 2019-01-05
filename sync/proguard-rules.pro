@@ -127,6 +127,7 @@
 
 # OkHttp
 -dontwarn com.squareup.okhttp.internal.huc.**
+-dontwarn okio.BufferedSink
 -dontwarn okio.DeflaterSink
 -dontwarn okio.Okio
 -dontwarn org.joda.time.**
@@ -134,7 +135,9 @@
 -dontnote org.joda.time.DateTimeZone
 
 # OneDrive
--keep,includedescriptorclasses class com.microsoft.onedriveaccess.model.Item
+-dontwarn com.nimbusds.jose.crypto.LegacyAESGCM
+-dontwarn com.nimbusds.jose.jwk.ECKey
+-dontwarn com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton
 
 # Retrofit library
 -dontwarn retrofit.RestMethodInfo$RxSupport
@@ -153,6 +156,8 @@
 
 # Dropbox unused dependencies
 -dontwarn okhttp3.**
+-dontwarn com.dropbox.core.http.OkHttp3Requestor$*
+-dontwarn com.dropbox.core.http.OkHttpRequestor$*
 -dontwarn com.squareup.okhttp.**
 -dontwarn com.google.appengine.**
 -dontwarn javax.servlet.**

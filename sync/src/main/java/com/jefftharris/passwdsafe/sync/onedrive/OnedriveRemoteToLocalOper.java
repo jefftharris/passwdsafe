@@ -12,8 +12,9 @@ import android.content.Context;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.microsoft.onedriveaccess.IOneDriveService;
-import com.microsoft.onedriveaccess.model.Item;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
+import com.microsoft.graph.extensions.IGraphServiceClient;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,16 +22,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import retrofit.RetrofitError;
 
 /**
  * An OneDrive sync operation to sync a remote file to a local one
  */
 public class OnedriveRemoteToLocalOper
-        extends AbstractRemoteToLocalSyncOper<IOneDriveService>
+        extends AbstractRemoteToLocalSyncOper<IGraphServiceClient>
 {
     private static final String TAG = "OnedriveRemoteToLocalOp";
 
@@ -42,28 +39,22 @@ public class OnedriveRemoteToLocalOper
 
     @Override
     protected final void doDownload(File destFile,
-                                    IOneDriveService providerClient,
+                                    IGraphServiceClient providerClient,
                                     Context ctx)
-            throws RetrofitError, IOException
+            throws IOException, ClientException
     {
         OutputStream os = null;
         InputStream is = null;
-        HttpURLConnection urlConn = null;
         try {
-            Item item = providerClient.getItemByPath(itsFile.itsRemoteId, null);
-            URL url = new URL(item.Content_downloadUrl);
-            urlConn = (HttpURLConnection)url.openConnection();
-            urlConn.setInstanceFollowRedirects(true);
-            is = urlConn.getInputStream();
+            IDriveItemRequestBuilder rootRequest =
+                    OnedriveProvider.getFilePathRequest(providerClient,
+                                                        itsFile.itsRemoteId);
+            is = rootRequest.getContent().buildRequest().get();
 
             os = new BufferedOutputStream(new FileOutputStream(destFile));
             Utils.copyStream(is, os);
         } finally {
             Utils.closeStreams(is, os);
-
-            if (urlConn != null) {
-                urlConn.disconnect();
-            }
         }
     }
 }

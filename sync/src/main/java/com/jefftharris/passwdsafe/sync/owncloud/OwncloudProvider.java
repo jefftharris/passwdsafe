@@ -91,11 +91,9 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         dialog.show(activity.getSupportFragmentManager(), null);
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#finishAccountLink(int, android.content.Intent, android.net.Uri)
-     */
     @Override
-    public NewAccountTask finishAccountLink(int activityResult,
+    public NewAccountTask finishAccountLink(int activityRequestCode,
+                                            int activityResult,
                                             Intent activityData,
                                             Uri providerAcctUri)
     {

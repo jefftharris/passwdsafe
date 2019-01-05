@@ -49,6 +49,7 @@ import com.jefftharris.passwdsafe.sync.onedrive.OnedriveFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudEditDialog;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudProvider;
+import com.microsoft.identity.common.internal.providers.oauth2.AuthorizationStrategy;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -65,7 +66,8 @@ public class MainActivity extends AppCompatActivity
 
     private static final int DROPBOX_LINK_RC = 1;
     private static final int BOX_AUTH_RC = 2;
-    private static final int ONEDRIVE_LINK_RC = 3;
+    private static final int ONEDRIVE_LINK_RC =
+            AuthorizationStrategy.BROWSER_FLOW;
     private static final int OWNCLOUD_LINK_RC = 4;
     private static final int PERMISSIONS_RC = 5;
     private static final int APP_SETTINGS_RC = 6;
@@ -175,8 +177,8 @@ public class MainActivity extends AppCompatActivity
         if (itsDropboxPendingAcctLink) {
             itsDropboxPendingAcctLink = false;
             itsNewAccountTask = getDbxProvider().finishAccountLink(
-                    Activity.RESULT_OK, null,
-                    getAccountLinkUri(DROPBOX_LINK_RC));
+                    DROPBOX_LINK_RC, Activity.RESULT_OK,
+                    null, getAccountLinkUri(DROPBOX_LINK_RC));
         }
 
         if (itsNewAccountTask != null) {
@@ -193,22 +195,26 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode) {
         case BOX_AUTH_RC: {
             itsNewAccountTask = getBoxProvider().finishAccountLink(
-                    resultCode, data, getAccountLinkUri(BOX_AUTH_RC));
+                    requestCode, resultCode, data,
+                    getAccountLinkUri(BOX_AUTH_RC));
             break;
         }
         case ONEDRIVE_LINK_RC: {
             itsNewAccountTask = getOnedriveProvider().finishAccountLink(
-                    resultCode, null, getAccountLinkUri(ONEDRIVE_LINK_RC));
+                    requestCode, resultCode, data,
+                    getAccountLinkUri(ONEDRIVE_LINK_RC));
             break;
         }
         case OWNCLOUD_LINK_RC: {
             itsNewAccountTask = getOwncloudProvider().finishAccountLink(
-                    resultCode, data, getAccountLinkUri(OWNCLOUD_LINK_RC));
+                    requestCode, resultCode, data,
+                    getAccountLinkUri(OWNCLOUD_LINK_RC));
             break;
         }
         case GDRIVE_PLAY_LINK_RC: {
             itsNewAccountTask = getGDrivePlayProvider().finishAccountLink(
-                    resultCode, data, getAccountLinkUri(GDRIVE_PLAY_LINK_RC));
+                    requestCode, resultCode, data,
+                    getAccountLinkUri(GDRIVE_PLAY_LINK_RC));
             break;
         }
         case GDRIVE_PLAY_SERVICES_ERROR_RC: {

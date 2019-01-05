@@ -14,13 +14,15 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.ProviderFactory;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncedFilesActivity;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
-import com.microsoft.onedriveaccess.IOneDriveService;
-import com.microsoft.onedriveaccess.model.Item;
+import com.microsoft.graph.extensions.DriveItem;
+import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
+import com.microsoft.graph.options.Option;
+import com.microsoft.graph.options.QueryOption;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  *  Activity for managing files synced from OneDrive
@@ -29,14 +31,10 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
 {
     private final OnedriveProvider itsProvider;
 
-    private static final Map<String, String> QUERY_OPTIONS;
-
-    static {
-        QUERY_OPTIONS = new HashMap<>();
-        QUERY_OPTIONS.put("expand", "children");
-        QUERY_OPTIONS.put("select", "id,name,lastModifiedDateTime,eTag," +
-                                    "parentReference,children,folder,file");
-    }
+    private static final List<Option> QUERY_OPTIONS = Arrays.asList(
+            new QueryOption("$expand", "children"),
+            new QueryOption("$select", "id,name,lastModifiedDateTime,eTag," +
+                                       "parentReference,children,folder,file"));
 
     /**
      * Constructor
@@ -75,9 +73,6 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
         }
 
 
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(java.lang.Object[])
-         */
         @Override
         protected Pair<List<ProviderRemoteFile>, Exception>
         doInBackground(String... params)
@@ -90,17 +85,20 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
             }
 
             try {
-                IOneDriveService service = itsProvider.acquireOnedriveService();
-                Item item = service.getItemByPath(params[0], QUERY_OPTIONS);
-                if (item.Children != null) {
-                    for (Item child : item.Children) {
-                        files.add(new OnedriveProviderFile(child));
+                itsProvider.useOneDriveService(client -> {
+                    IDriveItemRequestBuilder rootRequest =
+                            OnedriveProvider.getFilePathRequest(client,
+                                                                params[0]);
+                    DriveItem item =
+                            rootRequest.buildRequest(QUERY_OPTIONS).get();
+                    if (item.children != null) {
+                        for (DriveItem child: item.children.getCurrentPage()) {
+                            files.add(new OnedriveProviderFile(child));
+                        }
                     }
-                }
+                });
             } catch (Exception e) {
                 result = Pair.create(null, e);
-            } finally {
-                itsProvider.releaseOnedriveService();
             }
             return result;
         }

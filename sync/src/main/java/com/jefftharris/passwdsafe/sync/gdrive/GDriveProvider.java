@@ -123,7 +123,8 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     }
 
     @Override
-    public NewAccountTask finishAccountLink(int activityResult,
+    public NewAccountTask finishAccountLink(int activityRequestCode,
+                                            int activityResult,
                                             Intent activityData,
                                             Uri acctProviderUri)
     {

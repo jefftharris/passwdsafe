@@ -11,20 +11,27 @@ import android.content.Context;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.microsoft.onedriveaccess.IOneDriveService;
-import com.microsoft.onedriveaccess.model.Item;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.extensions.DriveItem;
+import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
+import com.microsoft.graph.extensions.IDriveItemStreamRequest;
+import com.microsoft.graph.extensions.IGraphServiceClient;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-
-import retrofit.mime.TypedFile;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * An OneDrive sync operation to sync a local file to a remote one
  */
 public class OnedriveLocalToRemoteOper
-        extends AbstractLocalToRemoteSyncOper<IOneDriveService>
+        extends AbstractLocalToRemoteSyncOper<IGraphServiceClient>
 {
     private static final String TAG = "OnedriveLocalToRemoteOp";
 
@@ -36,12 +43,14 @@ public class OnedriveLocalToRemoteOper
 
     /** Perform the sync operation */
     @Override
-    public void doOper(IOneDriveService providerClient,
-                       Context ctx) throws Exception
+    public void doOper(IGraphServiceClient providerClient,
+                       Context ctx) throws IOException, ClientException
     {
         PasswdSafeUtil.dbginfo(TAG, "syncLocalToRemote %s", itsFile);
 
         File tmpFile = null;
+        InputStream is = null;
+        ByteArrayOutputStream os = null;
         try {
             File uploadFile;
             String remotePath;
@@ -61,11 +70,20 @@ public class OnedriveLocalToRemoteOper
                 remotePath = OnedriveSyncer.createRemoteIdFromLocal(itsFile);
             }
 
-            Item updatedItem = providerClient.uploadItemByPath(
-                    remotePath,
-                    new TypedFile(PasswdSafeUtil.MIME_TYPE_PSAFE3, uploadFile));
+            is = new BufferedInputStream(new FileInputStream(uploadFile));
+            os = new ByteArrayOutputStream();
+            Utils.copyStream(is, os);
+
+            IDriveItemRequestBuilder requestBuilder =
+                    OnedriveProvider.getFilePathRequest(providerClient,
+                                                        remotePath);
+            IDriveItemStreamRequest request =
+                    requestBuilder.getContent().buildRequest();
+            request.addHeader("Content-Type", PasswdSafeUtil.MIME_TYPE_PSAFE3);
+            DriveItem updatedItem = request.put(os.toByteArray());
             setUpdatedFile(new OnedriveProviderFile(updatedItem));
         } finally {
+            Utils.closeStreams(is, os);
             if ((tmpFile != null) && !tmpFile.delete()) {
                 Log.e(TAG, "Can't delete temp file " + tmpFile);
             }

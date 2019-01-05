@@ -133,6 +133,17 @@
             android:configChanges="orientation|screenSize"
             android:exported="true"/>
 
+        <activity
+            android:name="com.microsoft.identity.client.BrowserTabActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="msalXXX"
+                      android:host="auth" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".PasswdSafeProvider"
             android:authorities="com.jefftharris.passwdsafe.sync.provider"
@@ -160,6 +171,7 @@
             </intent-filter>
         </receiver>
 
+        <!-- TODO fix startup class not found -->
         <receiver
             android:name="com.jefftharris.passwdsafe.lib.StartupReceiver">
             <intent-filter>

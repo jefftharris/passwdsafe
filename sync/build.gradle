@@ -12,7 +12,7 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
-        minSdkVersion 16
+        minSdkVersion 21
         resConfigs "de", "fr", "nb"
         targetSdkVersion 27
         // <major><minor><bugfix><beta/extra>
@@ -55,9 +55,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
     implementation project(':lib-owncloud')
-    implementation project(':lib-onedrive:authenticate')
-    implementation project(':lib-onedrive:onedriveaccess')
-    implementation project(':lib-onedrive')
+
     implementation 'com.google.android.gms:play-services-auth:11.6.2'
     // Google Drive
     implementation('com.google.api-client:google-api-client-android:1.22.0') {
@@ -70,4 +68,12 @@ dependencies {
     implementation 'com.dropbox.core:dropbox-core-sdk:3.0.10'
     // Box
     implementation 'com.box:box-android-sdk:4.2.0'
+    // OneDrive
+    implementation 'com.microsoft.graph:msgraph-sdk-android:1.7.0'
+    implementation('com.microsoft.identity.client:msal:0.2.1') {
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+        exclude group: 'com.google.com.gson'
+    }
+    implementation 'com.google.code.gson:gson:2.8.4'
+    // Other
 }
