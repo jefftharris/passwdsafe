@@ -1,7 +1,4 @@
 include ':lib'
-include ':lib-onedrive'
-include ':lib-onedrive:authenticate'
-include ':lib-onedrive:onedriveaccess'
 include ':lib-owncloud'
 include ':passwdsafe'
 include ':sync'
