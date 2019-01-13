@@ -32,11 +32,11 @@ import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.microsoft.graph.authentication.IAuthenticationProvider;
-import com.microsoft.graph.core.DefaultClientConfig;
 import com.microsoft.graph.core.IClientConfig;
 import com.microsoft.graph.extensions.GraphServiceClient;
 import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
 import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.graph.logger.LoggerLevel;
 import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.IAccount;
 import com.microsoft.identity.client.Logger;
@@ -57,6 +57,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
 
     private static final String PREF_HOME_ACCT_ID = "onedriveHomeAcctId";
 
+    private static final boolean VERBOSE_LOGS = false;
+
     private static final String TAG = "OnedriveProvider";
 
     private final PublicClientApplication itsClientApp;
@@ -71,8 +73,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         itsClientApp = new PublicClientApplication(
                 getContext().getApplicationContext(), Constants.CLIENT_ID);
 
-        // TODO: nice down
-        Logger.getInstance().setLogLevel(Logger.LogLevel.INFO);
+        Logger.getInstance().setLogLevel(
+                VERBOSE_LOGS ? Logger.LogLevel.VERBOSE : Logger.LogLevel.INFO);
     }
 
     @Override
@@ -285,10 +287,9 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             IAuthenticationProvider authProvider =
                     request -> request.addHeader("Authorization", auth);
 
-            // TODO: use custom client config to nice down debug logs?
-            final IClientConfig clientConfig =
-                    DefaultClientConfig.createWithAuthenticationProvider(
-                            authProvider);
+            final IClientConfig clientConfig = new ClientConfig(
+                    authProvider,
+                    VERBOSE_LOGS ? LoggerLevel.Debug : LoggerLevel.Error);
             IGraphServiceClient service = new GraphServiceClient.Builder()
                     .fromConfig(clientConfig)
                     .buildClient();
