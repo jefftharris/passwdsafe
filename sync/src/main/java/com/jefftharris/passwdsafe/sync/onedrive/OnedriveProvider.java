@@ -194,7 +194,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                 new ObjectHolder<>();
         useOneDriveService(client -> {
             String displayName = OnedriveSyncer.getDisplayName(client);
-            connResult.set(new SyncConnectivityResult(displayName));
+            connResult.set(
+                    new OnedriveSyncConnectivityResult(displayName, client));
         });
         return connResult.get();
     }
@@ -208,9 +209,12 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                      final SyncConnectivityResult connResult,
                      final SyncLogRecord logrec) throws Exception
     {
+        OnedriveSyncConnectivityResult odConnResult =
+                (OnedriveSyncConnectivityResult)connResult;
         useOneDriveService(
                 client -> new OnedriveSyncer(client, provider, connResult,
-                                             logrec, getContext()).sync());
+                                             logrec, getContext()).sync(),
+                odConnResult.getService());
     }
 
     /**
@@ -238,6 +242,16 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      */
     public void useOneDriveService(OneDriveUser user) throws Exception
     {
+        useOneDriveService(user, null);
+    }
+
+    /**
+     * Use the OneDrive service with optional provided service
+     */
+    private void useOneDriveService(OneDriveUser user,
+                                    IGraphServiceClient service)
+        throws Exception
+    {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new Exception("Can't invoke getOnedriveService in ui thread");
         }
@@ -247,35 +261,37 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         }
 
         try {
-            AcquireTokenCallback tokenCb = new AcquireTokenCallback();
+            if (service == null) {
+                AcquireTokenCallback tokenCb = new AcquireTokenCallback();
 
-            synchronized(this) {
-                IAccount acct = getODAccount();
-                if (acct == null) {
-                    throw new Exception(TAG +
-                                        " useOneDriveService not authorized");
+                synchronized (this) {
+                    IAccount acct = getODAccount();
+                    if (acct == null) {
+                        throw new Exception(
+                                TAG + " useOneDriveService not authorized");
+                    }
+
+                    itsClientApp.acquireTokenSilentAsync(
+                            Constants.SCOPES,
+                            itsClientApp.getAccount(itsHomeAccountId), tokenCb);
                 }
 
-                itsClientApp.acquireTokenSilentAsync(
-                        Constants.SCOPES,
-                        itsClientApp.getAccount(itsHomeAccountId), tokenCb);
+                AuthenticationResult authResult = tokenCb.getResult();
+                if (authResult == null) {
+                    throw new Exception("Not authorized");
+                }
+
+                String auth = "Bearer " + authResult.getAccessToken();
+                IAuthenticationProvider authProvider =
+                        request -> request.addHeader("Authorization", auth);
+
+                final IClientConfig clientConfig = new ClientConfig(
+                        authProvider,
+                        VERBOSE_LOGS ? LoggerLevel.Debug : LoggerLevel.Error);
+                service = new GraphServiceClient.Builder()
+                        .fromConfig(clientConfig)
+                        .buildClient();
             }
-
-            AuthenticationResult authResult = tokenCb.getResult();
-            if (authResult == null) {
-                throw new Exception("Not authorized");
-            }
-
-            String auth = "Bearer " + authResult.getAccessToken();
-            IAuthenticationProvider authProvider =
-                    request -> request.addHeader("Authorization", auth);
-
-            final IClientConfig clientConfig = new ClientConfig(
-                    authProvider,
-                    VERBOSE_LOGS ? LoggerLevel.Debug : LoggerLevel.Error);
-            IGraphServiceClient service = new GraphServiceClient.Builder()
-                    .fromConfig(clientConfig)
-                    .buildClient();
 
             user.useOneDrive(service);
         } finally {
