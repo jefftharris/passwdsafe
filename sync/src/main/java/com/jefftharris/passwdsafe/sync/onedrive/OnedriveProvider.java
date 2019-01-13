@@ -37,12 +37,10 @@ import com.microsoft.graph.core.IClientConfig;
 import com.microsoft.graph.extensions.GraphServiceClient;
 import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
 import com.microsoft.graph.extensions.IGraphServiceClient;
-import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.IAccount;
 import com.microsoft.identity.client.Logger;
 import com.microsoft.identity.client.PublicClientApplication;
-import com.microsoft.identity.client.exception.MsalException;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,8 +62,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private final PublicClientApplication itsClientApp;
     private final ReentrantLock itsServiceLock = new ReentrantLock();
     private String itsHomeAccountId = null;
-    private boolean itsIsAddingAcct = false;
-    private final Object itsNewAcctLock = new Object();
+    private AcquireTokenCallback itsNewAcctCb;
 
     /** Constructor */
     public OnedriveProvider(Context ctx)
@@ -94,52 +91,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                                               final int requestCode)
     {
         Runnable loginTask = () -> {
-            itsIsAddingAcct = true;
-            itsClientApp.acquireToken(
-                    activity, Constants.SCOPES,
-                    new AuthenticationCallback()
-                    {
-                        @Override
-                        public void onSuccess(AuthenticationResult authResult)
-                        {
-                            PasswdSafeUtil.dbginfo(TAG, "login ok res %s",
-                                                   authResult);
-                            updateAcctId(authResult.getAccount());
-                        }
-
-                        @Override
-                        public void onError(MsalException exception)
-                        {
-                            Log.e(TAG, "Auth error", exception);
-                            updateAcctId(null);
-                        }
-
-                        @Override
-                        public void onCancel()
-                        {
-                            Log.e(TAG, "Auth canceled");
-                            updateAcctId(null);
-                        }
-
-                        /**
-                         * Update the account id when the authentication is
-                         * finished
-                         */
-                        private void updateAcctId(IAccount acct)
-                        {
-                            synchronized (itsNewAcctLock) {
-                                if (acct != null) {
-                                    itsHomeAccountId =
-                                            acct.getHomeAccountIdentifier()
-                                                .getIdentifier();
-                                } else {
-                                    itsHomeAccountId = null;
-                                }
-                                itsIsAddingAcct = false;
-                                itsNewAcctLock.notifyAll();
-                            }
-                        }
-                    });
+            itsNewAcctCb = new AcquireTokenCallback();
+            itsClientApp.acquireToken(activity, Constants.SCOPES, itsNewAcctCb);
             };
 
         if (isAccountAuthorized()) {
@@ -161,7 +114,9 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     {
         itsClientApp.handleInteractiveRequestRedirect(
                 activityRequestCode, activityResult, activityData);
-        return new NewOneDriveTask(providerAcctUri, this);
+        AcquireTokenCallback tokenCb = itsNewAcctCb;
+        itsNewAcctCb = null;
+        return new NewOneDriveTask(providerAcctUri, tokenCb, this);
     }
 
     /**
@@ -402,7 +357,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     }
 
     /** Update the account's user ID */
-    private void setHomeAcctId(String homeAcctId)
+    private synchronized void setHomeAcctId(String homeAcctId)
     {
         PasswdSafeUtil.dbginfo(TAG, "updateHomeAcctId: %s", homeAcctId);
         itsHomeAccountId = homeAcctId;
@@ -420,29 +375,35 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private static class NewOneDriveTask
             extends NewAccountTask<OnedriveProvider>
     {
+        private final AcquireTokenCallback itsTokenCb;
+
         /**
          * Constructor
          */
-        public NewOneDriveTask(Uri currAcctUri, OnedriveProvider provider)
+        public NewOneDriveTask(Uri currAcctUri,
+                               AcquireTokenCallback tokenCb,
+                               OnedriveProvider provider)
         {
             super(currAcctUri, null, provider, false, provider.getContext(),
                   TAG);
+            itsTokenCb = tokenCb;
         }
 
         @Override
         protected boolean doProviderUpdate(@NonNull OnedriveProvider provider)
                 throws Exception
         {
-            synchronized (provider.itsNewAcctLock) {
-                while (provider.itsIsAddingAcct) {
-                    provider.itsNewAcctLock.wait(30000);
-                    // TODO: check timeout
+            String acctId = null;
+            AuthenticationResult authResult = itsTokenCb.getResult();
+            if (authResult != null) {
+                IAccount acct = authResult.getAccount();
+                if (acct != null) {
+                    acctId = acct.getHomeAccountIdentifier().getIdentifier();
                 }
             }
-            // TODO: treat home account id from the acquireToken callback as
-            // transient until here
-            itsNewAcct = provider.itsHomeAccountId;
-            provider.setHomeAcctId(provider.itsHomeAccountId);
+
+            itsNewAcct = acctId;
+            provider.setHomeAcctId(acctId);
             return true;
         }
     }
