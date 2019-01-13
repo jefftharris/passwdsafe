@@ -29,11 +29,12 @@ public class SyncApp extends Application
 {
     private static final String TAG = "SyncApp";
 
-    private Handler itsHandler = null;
     private SyncUpdateHandler itsSyncUpdateHandler;
     private SyncUpdateHandler.GDriveState itsSyncGDriveState =
             SyncUpdateHandler.GDriveState.OK;
     private boolean itsIsForceSyncFailure = false;
+    private static final Handler itsUIHandler =
+            new Handler(Looper.getMainLooper());
 
     /* (non-Javadoc)
      * @see android.app.Application#onCreate()
@@ -45,7 +46,6 @@ public class SyncApp extends Application
         super.onCreate();
 
         SyncDb.initializeDb(getApplicationContext());
-        itsHandler = new Handler(Looper.getMainLooper());
 
         Map<ProviderType, DbProvider> providerMap = new HashMap<>();
         try {
@@ -99,7 +99,7 @@ public class SyncApp extends Application
     @WorkerThread
     public void updateGDriveSyncState(final SyncUpdateHandler.GDriveState state)
     {
-        itsHandler.post(() -> {
+        runOnUiThread(() -> {
             itsSyncGDriveState = state;
             if (itsSyncUpdateHandler != null) {
                 itsSyncUpdateHandler.updateGDriveState(state);
@@ -113,7 +113,7 @@ public class SyncApp extends Application
     @WorkerThread
     public void updateProviderState()
     {
-        itsHandler.post(() -> {
+        runOnUiThread(() -> {
             if (itsSyncUpdateHandler != null) {
                 itsSyncUpdateHandler.updateProviderState();
             }
@@ -134,5 +134,13 @@ public class SyncApp extends Application
     public void setIsForceSyncFailure(boolean forceFailure)
     {
         itsIsForceSyncFailure = forceFailure;
+    }
+
+    /**
+     * Run the given task on the UI thread
+     */
+    public static void runOnUiThread(Runnable run)
+    {
+        itsUIHandler.post(run);
     }
 }

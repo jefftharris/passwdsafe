@@ -12,8 +12,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.NotificationCompat;
@@ -42,8 +40,6 @@ public class ProviderSync
 {
     private static final HashSet<String> itsLastProviderFailures =
             new HashSet<>();
-    private static final Handler itsUIHandler =
-            new Handler(Looper.getMainLooper());
     private static final Object itsLock = new Object();
     private static final int SYNC_TIMEOUT_MINS = 1;
 
@@ -91,7 +87,7 @@ public class ProviderSync
             }
 
             itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                                               "sync");
+                                               "passwdsafe:sync");
             itsWakeLock.acquire(TimeUnit.MINUTES.toMillis(SYNC_TIMEOUT_MINS));
             try {
                 FutureTask<Void> task = new FutureTask<>(sync, null);
@@ -114,7 +110,7 @@ public class ProviderSync
      */
     private void updateUIBegin()
     {
-        itsUIHandler.post(() -> {
+        SyncApp.runOnUiThread(() -> {
             if (itsIsShowNotifs) {
                 showProgressNotif();
             }
@@ -126,7 +122,7 @@ public class ProviderSync
      */
     private void updateUIEnd(final SyncLogRecord logrec)
     {
-        itsUIHandler.post(() -> {
+        SyncApp.runOnUiThread(() -> {
             if (itsIsShowNotifs) {
                 NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
                                        itsNotifTag, itsContext);
