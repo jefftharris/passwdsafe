@@ -75,8 +75,8 @@ public class OnedriveLocalToRemoteOper
             Utils.copyStream(is, os);
 
             IDriveItemRequestBuilder requestBuilder =
-                    OnedriveProvider.getFilePathRequest(providerClient,
-                                                        remotePath);
+                    OnedriveUtils.getFilePathRequest(providerClient,
+                                                     remotePath);
             IDriveItemStreamRequest request =
                     requestBuilder.getContent().buildRequest();
             request.addHeader("Content-Type", PasswdSafeUtil.MIME_TYPE_PSAFE3);

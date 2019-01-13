@@ -150,8 +150,8 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
     {
         try {
             IDriveItemRequestBuilder rootRequest =
-                    OnedriveProvider.getFilePathRequest(itsProviderClient,
-                                                        remoteId);
+                    OnedriveUtils.getFilePathRequest(itsProviderClient,
+                                                     remoteId);
             DriveItem item = rootRequest.buildRequest().get();
             if ((item != null) && (item.deleted != null)) {
                 return null;

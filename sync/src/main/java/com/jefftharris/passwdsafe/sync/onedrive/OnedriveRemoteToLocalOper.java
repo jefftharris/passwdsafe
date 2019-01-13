@@ -47,8 +47,8 @@ public class OnedriveRemoteToLocalOper
         InputStream is = null;
         try {
             IDriveItemRequestBuilder rootRequest =
-                    OnedriveProvider.getFilePathRequest(providerClient,
-                                                        itsFile.itsRemoteId);
+                    OnedriveUtils.getFilePathRequest(providerClient,
+                                                     itsFile.itsRemoteId);
             is = rootRequest.getContent().buildRequest().get();
 
             os = new BufferedOutputStream(new FileOutputStream(destFile));

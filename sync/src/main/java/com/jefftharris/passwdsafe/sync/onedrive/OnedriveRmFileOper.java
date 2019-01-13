@@ -36,8 +36,8 @@ public class OnedriveRmFileOper
     {
         try {
             IDriveItemRequestBuilder rootRequest =
-                    OnedriveProvider.getFilePathRequest(providerClient,
-                                                        itsFile.itsRemoteId);
+                    OnedriveUtils.getFilePathRequest(providerClient,
+                                                     itsFile.itsRemoteId);
             rootRequest.buildRequest().delete();
         } catch (ClientException e) {
             OnedriveSyncer.check404Error(e);

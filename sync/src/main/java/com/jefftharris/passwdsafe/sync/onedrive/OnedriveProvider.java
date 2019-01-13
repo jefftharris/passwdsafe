@@ -34,7 +34,6 @@ import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.microsoft.graph.authentication.IAuthenticationProvider;
 import com.microsoft.graph.core.IClientConfig;
 import com.microsoft.graph.extensions.GraphServiceClient;
-import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
 import com.microsoft.graph.extensions.IGraphServiceClient;
 import com.microsoft.graph.logger.LoggerLevel;
 import com.microsoft.identity.client.AuthenticationResult;
@@ -212,22 +211,6 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         useOneDriveService(
                 client -> new OnedriveSyncer(client, provider, connResult,
                                              logrec, getContext()).sync());
-    }
-
-    /**
-     * Get a request builder for accessing a file path
-     */
-    public static IDriveItemRequestBuilder getFilePathRequest(
-            IGraphServiceClient client,
-            String path)
-    {
-        // TODO: move OD utils to separate class
-        IDriveItemRequestBuilder rootRequest =
-                client.getMe().getDrive().getRoot();
-        if (path.length() > 1) {
-            rootRequest = rootRequest.getItemWithPath(path.substring(1));
-        }
-        return rootRequest;
     }
 
     /**

@@ -87,8 +87,7 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
             try {
                 itsProvider.useOneDriveService(client -> {
                     IDriveItemRequestBuilder rootRequest =
-                            OnedriveProvider.getFilePathRequest(client,
-                                                                params[0]);
+                            OnedriveUtils.getFilePathRequest(client, params[0]);
                     DriveItem item =
                             rootRequest.buildRequest(QUERY_OPTIONS).get();
                     if (item.children != null) {
