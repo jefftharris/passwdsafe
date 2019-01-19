@@ -12,6 +12,8 @@ import android.net.Uri;
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
 import com.microsoft.graph.extensions.DriveItem;
 
+import java.util.Locale;
+
 /**
  *  Abstraction of an OneDrive remote file
  */
@@ -120,12 +122,16 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public String toDebugString()
     {
+        long modtime = itsItem.lastModifiedDateTime.getTimeInMillis();
         return String.format(
-                "{name: %s, parent: %s, id: %s, folder: %b, remid: %s, mod: %s}",
+                Locale.US,
+                "{name: %s, parent: %s, id: %s, folder: %b, remid: %s, " +
+                "mod: %tc(%d)}",
                 itsItem.name,
                 (itsItem.parentReference != null) ?
                         itsItem.parentReference.path : "null",
                 itsItem.id, itsRemoteId,
-                (itsItem.folder != null), itsItem.lastModifiedDateTime);
+                (itsItem.folder != null),
+                modtime, modtime);
     }
 }
