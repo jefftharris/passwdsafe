@@ -22,12 +22,14 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
+import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
+import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
@@ -51,9 +53,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class OnedriveProvider extends AbstractSyncTimerProvider
 {
-    // TODO: use for upgrade?
-    //private static final String PREF_USER_ID = "onedriveUserId";
-
+    private static final String PREF_OLD_USER_ID = "onedriveUserId";
     private static final String PREF_HOME_ACCT_ID = "onedriveHomeAcctId";
 
     private static final boolean VERBOSE_LOGS = false;
@@ -64,6 +64,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private final ReentrantLock itsServiceLock = new ReentrantLock();
     private String itsHomeAccountId = null;
     private AcquireTokenCallback itsNewAcctCb;
+    private boolean itsHasOldAcct = false;
 
     /** Constructor */
     public OnedriveProvider(Context ctx)
@@ -80,6 +81,16 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     public synchronized void init(@Nullable DbProvider dbProvider)
     {
         super.init(dbProvider);
+
+        Context ctx = getContext();
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(ctx);
+        String oldUserId = prefs.getString(PREF_OLD_USER_ID, null);
+        if (oldUserId != null) {
+            PasswdSafeUtil.dbginfo(TAG, "old acct %s", oldUserId);
+            itsHasOldAcct = true;
+            NotifUtils.showNotif(NotifUtils.Type.ONEDRIVE_MIGRATED, ctx);
+        }
 
         updateOnedriveAcct(null);
     }
@@ -117,7 +128,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                 activityRequestCode, activityResult, activityData);
         AcquireTokenCallback tokenCb = itsNewAcctCb;
         itsNewAcctCb = null;
-        return new NewOneDriveTask(providerAcctUri, tokenCb, this);
+        return new NewOneDriveTask(providerAcctUri, tokenCb,
+                                   itsHasOldAcct, this);
     }
 
     /**
@@ -362,10 +374,17 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         PasswdSafeUtil.dbginfo(TAG, "updateHomeAcctId: %s", homeAcctId);
         itsHomeAccountId = homeAcctId;
 
+        Context ctx = getContext();
         SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(getContext());
+                PreferenceManager.getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PREF_HOME_ACCT_ID, itsHomeAccountId);
+        if (itsHasOldAcct && !TextUtils.isEmpty(homeAcctId)) {
+            PasswdSafeUtil.dbginfo(TAG, "Remove old acct");
+            editor.remove(PREF_OLD_USER_ID);
+            itsHasOldAcct = false;
+            NotifUtils.cancelNotif(NotifUtils.Type.ONEDRIVE_MIGRATED, ctx);
+        }
         editor.apply();
     }
 
@@ -376,17 +395,20 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             extends NewAccountTask<OnedriveProvider>
     {
         private final AcquireTokenCallback itsTokenCb;
+        private final boolean itsIsReauth;
 
         /**
          * Constructor
          */
         public NewOneDriveTask(Uri currAcctUri,
                                AcquireTokenCallback tokenCb,
+                               boolean reauthorization,
                                OnedriveProvider provider)
         {
             super(currAcctUri, null, provider, false, provider.getContext(),
                   TAG);
             itsTokenCb = tokenCb;
+            itsIsReauth = reauthorization;
         }
 
         @Override
@@ -404,7 +426,21 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
 
             itsNewAcct = acctId;
             provider.setHomeAcctId(acctId);
-            return true;
+            if (itsIsReauth && !TextUtils.isEmpty(itsNewAcct)) {
+                // Change account identifier
+                SyncDb.useDb(db -> {
+                    long id = PasswdSafeContract.Providers.getId(itsAccountUri);
+                    DbProvider dbprovider = SyncDb.getProvider(id, db);
+                    if ((dbprovider != null) &&
+                        !TextUtils.equals(dbprovider.itsAcct, itsNewAcct)) {
+                        SyncDb.updateProviderAccount(id, itsNewAcct, db);
+                    }
+                    return null;
+                });
+                provider.updateOnedriveAcct(null);
+            }
+
+            return !itsIsReauth;
         }
     }
 }

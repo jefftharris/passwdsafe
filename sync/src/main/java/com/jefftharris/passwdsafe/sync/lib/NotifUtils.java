@@ -32,7 +32,8 @@ public final class NotifUtils
         SYNC_RESULTS(4),
         SYNC_CONFLICT(5),
         SYNC_REPEAT_FAILURES(6),
-        DRIVE_REAUTH_REQUIRED(7);
+        DRIVE_REAUTH_REQUIRED(7),
+        ONEDRIVE_MIGRATED(8);
 
         public final int itsNotifId;
 
@@ -56,7 +57,8 @@ public final class NotifUtils
         }
         case DROPBOX_MIGRATED:
         case BOX_MIGRATGED:
-        case DRIVE_REAUTH_REQUIRED: {
+        case DRIVE_REAUTH_REQUIRED:
+        case ONEDRIVE_MIGRATED: {
             content = ctx.getString(R.string.open_app_reauthorize);
             break;
         }
@@ -92,7 +94,8 @@ public final class NotifUtils
         case DROPBOX_MIGRATED:
         case BOX_MIGRATGED:
         case SYNC_PROGRESS:
-        case DRIVE_REAUTH_REQUIRED: {
+        case DRIVE_REAUTH_REQUIRED:
+        case ONEDRIVE_MIGRATED: {
             activityClass = MainActivity.class;
             break;
         }
@@ -158,6 +161,9 @@ public final class NotifUtils
         }
         case DRIVE_REAUTH_REQUIRED: {
             return ctx.getString(R.string.gdrive_reauth_required);
+        }
+        case ONEDRIVE_MIGRATED: {
+             return ctx.getString(R.string.onedrive_service_updated);
         }
         }
         return null;

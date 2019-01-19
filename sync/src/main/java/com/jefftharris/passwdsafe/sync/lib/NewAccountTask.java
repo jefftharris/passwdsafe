@@ -55,6 +55,7 @@ public class NewAccountTask<ProviderT extends AbstractSyncTimerProvider>
         provider.setPendingAdd(true);
         try {
             if (!doProviderUpdate(provider)) {
+                cr.notifyChange(itsAccountUri, null);
                 return;
             }
 

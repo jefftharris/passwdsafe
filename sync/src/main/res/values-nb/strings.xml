@@ -34,6 +34,7 @@
   <string name="no_owncloud_accts">Ingen ownCloud-kontoer tilgjengelig. Legg til en konto i ownCloud-appen først. Deretter kan den velges her I PasswdSafe Sync.</string>
   <string name="notifications">Varslinger</string>
   <string name="onedrive_acct_unlinked">Appen er ikke lenger lenket til OneDrive-kontoen. Synkroniser igjen for å gi PasswdSafe Sync tilgang til OneDrive.</string>
+  <string name="onedrive_service_updated">OneDrive-tjeneste oppdatert</string>
   <string name="onedrive_synced_files">OneDrive-synkroniserte filer</string>
   <string name="open_app_reauthorize">Åpne appen for å autorisere på nytt</string>
   <string name="owncloud_auth_required">Autorisering kreves for tilgang til ownCloud-kontoen. Velg den kommende varslingen for å aktivere tilgang og deretter synkroniser kontoen.</string>
