@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 import android.content.Context;
 import android.net.Uri;
 
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
@@ -85,8 +86,10 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
             if (dbfile.itsRemoteId == null) {
                 DriveItem item = getRemoteFile(createRemoteIdFromLocal(dbfile));
                 if (item != null) {
-                    files.addRemoteFileForNew(dbfile.itsId,
-                                              new OnedriveProviderFile(item));
+                    ProviderRemoteFile odfile = new OnedriveProviderFile(item);
+                    PasswdSafeUtil.dbginfo(TAG, "file for local: %s",
+                                           odfile.toDebugString());
+                    files.addRemoteFileForNew(dbfile.itsId, odfile);
                 }
             } else {
                 switch (dbfile.itsRemoteChange) {
@@ -95,7 +98,11 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
                 case MODIFIED: {
                     DriveItem item = getRemoteFile(dbfile.itsRemoteId);
                     if (item != null) {
-                        files.addRemoteFile(new OnedriveProviderFile(item));
+                        ProviderRemoteFile odfile =
+                                new OnedriveProviderFile(item);
+                        PasswdSafeUtil.dbginfo(TAG, "file: %s",
+                                               odfile.toDebugString());
+                        files.addRemoteFile(odfile);
                     }
                     break;
                 }
