@@ -15,3 +15,5 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keep,includedescriptorclasses class com.jefftharris.passwdsafe.lib.StartupReceiver

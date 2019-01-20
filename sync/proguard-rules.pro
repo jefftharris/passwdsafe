@@ -24,6 +24,7 @@
 -keepattributes *Annotation*
 
 -keep,includedescriptorclasses class com.jefftharris.passwdsafe.lib.ProviderType
+-keep,includedescriptorclasses class com.jefftharris.passwdsafe.lib.StartupReceiver
 -keep,includedescriptorclasses class com.jefftharris.passwdsafe.sync.PasswdSafeProvider
 
 # Serializable classes
