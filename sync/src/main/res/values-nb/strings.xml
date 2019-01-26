@@ -63,6 +63,9 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.6.0&lt;/b&gt; - Oppdaterte OneDrive-biblioteket. Nåværende
+        kontoer må reautorisere.
+        \n\n
         &lt;b&gt;3.5.3&lt;/b&gt; - Oppdaterte Box- og Dropbox-bibliotekene
         \n\n
         &lt;b&gt;3.5.2&lt;/b&gt; - Feilrettinger
