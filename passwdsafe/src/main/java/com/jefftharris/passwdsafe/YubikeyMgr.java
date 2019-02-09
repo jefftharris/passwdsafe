@@ -46,6 +46,8 @@ public class YubikeyMgr
 
     private static final int SHA1_MAX_BLOCK_SIZE = 64;
 
+    private static final boolean TEST = false;//PasswdSafeUtil.DEBUG;
+
     private static final String TAG = "YubikeyMgr";
 
     private User itsUser = null;
@@ -76,6 +78,10 @@ public class YubikeyMgr
     /** Get the state of support for the Yubikey */
     public YubiState getState(Activity act)
     {
+        if (TEST) {
+            return YubiState.ENABLED;
+        }
+
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(act);
         if (adapter == null) {
             return YubiState.UNAVAILABLE;
@@ -100,7 +106,22 @@ public class YubikeyMgr
             itsTagIntent = PendingIntent.getActivity(act, 0, intent, 0);
         }
 
-        if (!itsIsRegistered) {
+        if (TEST) {
+            new CountDownTimer(5000, 5000) {
+                @Override
+                public void onTick(long millisUntilFinished)
+                {
+                }
+
+                @Override
+                public void onFinish()
+                {
+                    if (itsUser != null) {
+                        stopUser(itsUser.getUserPassword().toLowerCase(), null);
+                    }
+                }
+            }.start();
+        } else if (!itsIsRegistered) {
             NfcAdapter adapter = NfcAdapter.getDefaultAdapter(act);
             if (adapter == null) {
                 Toast.makeText(act, "NO NFC", Toast.LENGTH_LONG).show();
@@ -242,6 +263,8 @@ public class YubikeyMgr
                 checkResponse(resp);
 
                 // Prune response bytes and convert
+
+                // TODO: use PwsPassword
                 String pwstr = Util.bytesToHex(resp, 0, resp.length - 2);
 //                PasswdSafeUtil.dbginfo(TAG, "Pw: " + pwstr);
                 stopUser(pwstr, null);
