@@ -254,7 +254,7 @@ public class FileListActivityTest
         onView(withId(R.id.navigation_drawer))
                 .perform(navigateTo(R.id.menu_drawer_preferences));
 
-        onView(withId(R.id.list))
+        onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.actionOnItem(
                         hasDescendant(allOf(withId(android.R.id.title),
                                             withText(R.string.files))),
@@ -262,7 +262,7 @@ public class FileListActivityTest
 
         ChildCheckedViewAction legacyCheckAction =
                 new ChildCheckedViewAction(android.R.id.checkbox, showLegacy);
-        onView(withId(R.id.list))
+        onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.actionOnItem(
                         hasDescendant(
                                 allOf(withId(android.R.id.title),
