@@ -70,6 +70,15 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
     }
 
 
+    /**
+     * Does the exception represent a 401 unauthorized exception
+     */
+    public static boolean is401Error(ClientException e)
+    {
+        return e.getMessage().contains("\n401 : Unauthorized");
+    }
+
+
     /** Create a remote identifier from the local name of a file */
     public static String createRemoteIdFromLocal(DbFile dbfile)
     {

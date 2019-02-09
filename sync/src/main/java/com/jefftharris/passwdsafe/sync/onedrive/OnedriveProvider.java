@@ -37,6 +37,7 @@ import com.microsoft.graph.authentication.IAuthenticationProvider;
 import com.microsoft.graph.core.IClientConfig;
 import com.microsoft.graph.extensions.GraphServiceClient;
 import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.graph.http.GraphServiceException;
 import com.microsoft.graph.logger.LoggerLevel;
 import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.IAccount;
@@ -124,8 +125,12 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             Intent activityData,
             Uri providerAcctUri)
     {
-        itsClientApp.handleInteractiveRequestRedirect(
-                activityRequestCode, activityResult, activityData);
+        try {
+            itsClientApp.handleInteractiveRequestRedirect(
+                    activityRequestCode, activityResult, activityData);
+        } catch (NullPointerException npe) {
+            itsNewAcctCb.onCancel();
+        }
         AcquireTokenCallback tokenCb = itsNewAcctCb;
         itsNewAcctCb = null;
         return new NewOneDriveTask(providerAcctUri, tokenCb,
@@ -273,45 +278,65 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         }
 
         try {
-            if (service == null) {
-                AcquireTokenCallback tokenCb = new AcquireTokenCallback();
-
-                synchronized (this) {
-                    IAccount acct = getODAccount();
-                    if (acct == null) {
-                        throw new Exception(
-                                TAG + " useOneDriveService not authorized");
-                    }
-
-                    itsClientApp.acquireTokenSilentAsync(
-                            Constants.SCOPES,
-                            itsClientApp.getAccount(itsHomeAccountId), tokenCb);
+            try {
+                useOneDriveServiceImpl(user, service);
+            } catch (GraphServiceException e) {
+                if (OnedriveSyncer.is401Error(e)) {
+                    Log.i(TAG, "Unauthorized, retrying", e);
+                    Thread.sleep(5000);
+                    useOneDriveServiceImpl(user, null);
+                } else {
+                    throw e;
                 }
-
-                AuthenticationResult authResult = tokenCb.getResult();
-                if (authResult == null) {
-                    throw new Exception("Not authorized");
-                }
-
-                String auth = "Bearer " + authResult.getAccessToken();
-                IAuthenticationProvider authProvider =
-                        request -> request.addHeader("Authorization", auth);
-
-                final IClientConfig clientConfig = new ClientConfig(
-                        authProvider,
-                        VERBOSE_LOGS ? LoggerLevel.Debug : LoggerLevel.Error);
-                service = new GraphServiceClient.Builder()
-                        .fromConfig(clientConfig)
-                        .buildClient();
             }
-
-            user.useOneDrive(service);
         } finally {
             itsServiceLock.unlock();
             if (!isAccountAuthorized()) {
                 SyncApp.get(getContext()).updateProviderState();
             }
         }
+    }
+
+    /**
+     * Implementation of using the OneDrive service which can be retried
+     */
+    private void useOneDriveServiceImpl(OneDriveUser user,
+                                        IGraphServiceClient service)
+        throws Exception
+    {
+        if (service == null) {
+            AcquireTokenCallback tokenCb = new AcquireTokenCallback();
+
+            synchronized (this) {
+                IAccount acct = getODAccount();
+                if (acct == null) {
+                    throw new Exception(
+                            TAG + " useOneDriveService not authorized");
+                }
+
+                itsClientApp.acquireTokenSilentAsync(
+                        Constants.SCOPES,
+                        itsClientApp.getAccount(itsHomeAccountId), tokenCb);
+            }
+
+            AuthenticationResult authResult = tokenCb.getResult();
+            if (authResult == null) {
+                throw new Exception("Not authorized");
+            }
+
+            String auth = "Bearer " + authResult.getAccessToken();
+            IAuthenticationProvider authProvider =
+                    request -> request.addHeader("Authorization", auth);
+
+            final IClientConfig clientConfig = new ClientConfig(
+                    authProvider,
+                    VERBOSE_LOGS ? LoggerLevel.Debug : LoggerLevel.Error);
+            service = new GraphServiceClient.Builder()
+                    .fromConfig(clientConfig)
+                    .buildClient();
+        }
+
+        user.useOneDrive(service);
     }
 
     /**
