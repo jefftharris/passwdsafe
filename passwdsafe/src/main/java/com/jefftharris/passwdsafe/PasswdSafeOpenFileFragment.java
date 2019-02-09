@@ -512,6 +512,7 @@ public class PasswdSafeOpenFileFragment
             break;
         }
         case WAITING_PASSWORD: {
+            // TODO: itsUserPassword needed?  for yubikey + save password?
             itsUserPassword = itsPasswordEdit.getText().toString();
             cancelSavedPasswordUsers();
             break;
@@ -920,6 +921,7 @@ public class PasswdSafeOpenFileFragment
             itsYubiUser = null;
             if (password != null) {
                 itsIsYubikey = true;
+                // TODO: don't set password on edit field
                 itsPasswordEdit.setText(password);
                 setPhase(Phase.OPENING);
             } else if (e != null) {
@@ -1171,6 +1173,7 @@ public class PasswdSafeOpenFileFragment
         {
             super(R.string.touch_sensor_to_load_saved_password,
                   "LoadSavedPasswordUser");
+            doSetFieldsEnabled(false);
         }
 
         @Override
@@ -1207,6 +1210,7 @@ public class PasswdSafeOpenFileFragment
         protected void handleFinish(SavedPasswordFinish finishMode)
         {
             setProgressVisible(false, false);
+            doSetFieldsEnabled(true);
             switch (finishMode) {
             case SUCCESS: {
                 doDelayed(() -> itsLoadSavedPasswordUser = null);

@@ -248,6 +248,8 @@ public final class SavedPasswordsMgr
     /**
      * Load a saved password for a file
      */
+    // TODO: use PwsPassword
+
     public String loadSavedPassword(PasswdFileUri fileUri, Cipher cipher)
             throws IOException, BadPaddingException, IllegalBlockSizeException
     {
