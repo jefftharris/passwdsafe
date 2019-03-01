@@ -8,8 +8,11 @@
 package com.jefftharris.passwdsafe;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.pwsafe.lib.Util;
+import org.pwsafe.lib.file.Owner;
+import org.pwsafe.lib.file.PwsPassword;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -21,6 +24,8 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.support.annotation.CheckResult;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -46,7 +51,7 @@ public class YubikeyMgr
 
     private static final int SHA1_MAX_BLOCK_SIZE = 64;
 
-    private static final boolean TEST = false;//PasswdSafeUtil.DEBUG;
+    private static final boolean TEST = PasswdSafeUtil.DEBUG;
 
     private static final String TAG = "YubikeyMgr";
 
@@ -62,13 +67,13 @@ public class YubikeyMgr
         Activity getActivity();
 
         /// Get the password to be sent to the key
-        String getUserPassword();
+        @CheckResult Owner<PwsPassword> getUserPassword();
 
         /// Get the slot number to use on the key
         int getSlotNum();
 
         /// Finish interaction with the key
-        void finish(String password, Exception e);
+        void finish(Owner<PwsPassword>.Param password, Exception e);
 
         /// Handle an update on the timer until the start times out
         void timerTick(@SuppressWarnings("SameParameterValue") int totalTime,
@@ -117,7 +122,18 @@ public class YubikeyMgr
                 public void onFinish()
                 {
                     if (itsUser != null) {
-                        stopUser(itsUser.getUserPassword().toLowerCase(), null);
+                        try (Owner<PwsPassword> password =
+                                     itsUser.getUserPassword()) {
+                            byte[] bytes = password.get().getBytes("UTF-8");
+                            String passwordStr =
+                                    new String(bytes, "UTF-8").toLowerCase();
+                            try (Owner<PwsPassword> newPassword =
+                                         PwsPassword.create(passwordStr)) {
+                                stopUser(newPassword.pass(), null);
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            Log.e(TAG, "encode error", e);
+                        }
                     }
                 }
             }.start();
@@ -207,11 +223,16 @@ public class YubikeyMgr
         IsoDep isotag = IsoDep.get(tag);
         try {
             isotag.connect();
-            try {
+
+            byte[] cmdbytes = null;
+            try (Owner<PwsPassword> userPassword = itsUser.getUserPassword()) {
                 byte[] resp = isotag.transceive(SELECT_CMD);
                 checkResponse(resp);
 
-                String pw = itsUser.getUserPassword();
+                //String pw = itsUser.getUserPassword();
+                PwsPassword pw = userPassword.get();
+
+                // TODO: clear cmd bytes...
                 ByteArrayOutputStream cmd = new ByteArrayOutputStream();
                 cmd.write(HASH_CMD);
 
@@ -248,7 +269,7 @@ public class YubikeyMgr
                     cmd.write(0);
                 }
 
-                byte[] cmdbytes = cmd.toByteArray();
+                cmdbytes = cmd.toByteArray();
                 int slot = itsUser.getSlotNum();
                 if (slot == 1) {
                     cmdbytes[2] = SLOT_CHAL_HMAC1;
@@ -256,19 +277,22 @@ public class YubikeyMgr
                     cmdbytes[2] = SLOT_CHAL_HMAC2;
                 }
                 cmdbytes[HASH_CMD.length] = datalen;
-//                PasswdSafeUtil.dbginfo(TAG, "cmd: %s",
-//                                       Util.bytesToHex(cmdbytes));
-
                 resp = isotag.transceive(cmdbytes);
                 checkResponse(resp);
 
                 // Prune response bytes and convert
 
-                // TODO: use PwsPassword
-                String pwstr = Util.bytesToHex(resp, 0, resp.length - 2);
-//                PasswdSafeUtil.dbginfo(TAG, "Pw: " + pwstr);
-                stopUser(pwstr, null);
+                char[] pwstr = Util.bytesToHexChars(resp, 0, resp.length - 2);
+                try (Owner<PwsPassword> newPassword =
+                             PwsPassword.create(pwstr)) {
+                    stopUser(newPassword.pass(), null);
+                } finally {
+                    Util.clearArray(resp);
+                }
             } finally {
+                if (cmdbytes != null) {
+                    Util.clearArray(cmdbytes);
+                }
                 Utils.closeStreams(isotag);
             }
         } catch (Exception e) {
@@ -294,7 +318,7 @@ public class YubikeyMgr
     /**
      * Stop interaction with the user
      */
-    private void stopUser(String password, Exception e)
+    private void stopUser(Owner<PwsPassword>.Param password, Exception e)
     {
         if (itsTimer != null) {
             itsTimer.cancel();

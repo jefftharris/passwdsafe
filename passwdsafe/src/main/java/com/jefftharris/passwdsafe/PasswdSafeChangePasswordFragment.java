@@ -158,15 +158,12 @@ public class PasswdSafeChangePasswordFragment
             return;
         }
 
-        final Owner<PwsPassword> passwd =
-                new Owner<>(new PwsPassword(itsPassword.getText()));
-        try {
+        try (Owner<PwsPassword> passwd =
+                     PwsPassword.create(itsPassword.getText())) {
             useFileData((PasswdFileDataUser<Void>)fileData -> {
                 fileData.changePasswd(passwd.pass());
                 return null;
             });
-        } finally {
-            passwd.close();
         }
         getListener().finishChangePassword();
     }

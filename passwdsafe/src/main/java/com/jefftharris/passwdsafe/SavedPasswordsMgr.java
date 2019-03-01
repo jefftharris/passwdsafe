@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v4.os.CancellationSignal;
@@ -30,6 +31,10 @@ import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
+
+import org.pwsafe.lib.Util;
+import org.pwsafe.lib.file.Owner;
+import org.pwsafe.lib.file.PwsPassword;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -248,9 +253,8 @@ public final class SavedPasswordsMgr
     /**
      * Load a saved password for a file
      */
-    // TODO: use PwsPassword
-
-    public String loadSavedPassword(PasswdFileUri fileUri, Cipher cipher)
+    public @CheckResult
+    Owner<PwsPassword> loadSavedPassword(PasswdFileUri fileUri, Cipher cipher)
             throws IOException, BadPaddingException, IllegalBlockSizeException
     {
         SavedPassword saved = null;
@@ -269,21 +273,30 @@ public final class SavedPasswordsMgr
 
         byte[] enc = Base64.decode(saved.itsEncPasswd, Base64.NO_WRAP);
         byte[] decPassword = cipher.doFinal(enc);
-        return new String(decPassword, "UTF-8");
+        try {
+            return PwsPassword.create(decPassword, "UTF-8");
+        } finally {
+            Util.clearArray(decPassword);
+            Util.clearArray(enc);
+        }
     }
 
     /**
      * Add a saved password for a file
      */
     public void addSavedPassword(PasswdFileUri fileUri,
-                                 String password, Cipher cipher)
+                                 Owner<PwsPassword>.Param passwordParam,
+                                 Cipher cipher)
             throws Exception
     {
-        byte[] enc = cipher.doFinal(password.getBytes("UTF-8"));
-        String encStr = Base64.encodeToString(enc, Base64.NO_WRAP);
-        String ivStr = Base64.encodeToString(cipher.getIV(), Base64.NO_WRAP);
+        try (Owner<PwsPassword> password = passwordParam.use()) {
+            byte[] enc = cipher.doFinal(password.get().getBytes("UTF-8"));
+            String encStr = Base64.encodeToString(enc, Base64.NO_WRAP);
+            String ivStr = Base64
+                    .encodeToString(cipher.getIV(), Base64.NO_WRAP);
 
-        itsDb.addSavedPassword(fileUri, ivStr, encStr, itsContext);
+            itsDb.addSavedPassword(fileUri, ivStr, encStr, itsContext);
+        }
     }
 
     /**

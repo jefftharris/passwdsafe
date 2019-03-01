@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Looper;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
@@ -34,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -118,7 +120,8 @@ public class PasswdSafeOpenFileFragment
     private String itsRecToOpen;
     private TextView itsTitle;
     private TextInputLayout itsPasswordInput;
-    private TextView itsPasswordEdit;
+    // TODO: clear password edit fields on pause
+    private EditText itsPasswordEdit;
     private TextView itsSavedPasswordMsg;
     private int itsSavedPasswordTextColor;
     private TextView itsReadonlyMsg;
@@ -137,7 +140,7 @@ public class PasswdSafeOpenFileFragment
     private YubiState itsYubiState = YubiState.UNAVAILABLE;
     private int itsYubiSlot = 2;
     private boolean itsIsYubikey = false;
-    private String itsUserPassword;
+    private Owner<PwsPassword> itsOpenPassword;
     private int itsRetries = 0;
     private Phase itsPhase = Phase.INITIAL;
     private TextWatcher itsErrorClearingWatcher;
@@ -284,6 +287,7 @@ public class PasswdSafeOpenFileFragment
         if (itsYubiMgr != null) {
             itsYubiMgr.stop();
         }
+        setOpenPassword(null);
         setPhase(Phase.INITIAL);
     }
 
@@ -512,8 +516,10 @@ public class PasswdSafeOpenFileFragment
             break;
         }
         case WAITING_PASSWORD: {
-            // TODO: itsUserPassword needed?  for yubikey + save password?
-            itsUserPassword = itsPasswordEdit.getText().toString();
+            try (Owner<PwsPassword> password =
+                         PwsPassword.create(itsPasswordEdit)) {
+                setOpenPassword(password.pass());
+            }
             cancelSavedPasswordUsers();
             break;
         }
@@ -568,7 +574,11 @@ public class PasswdSafeOpenFileFragment
             PasswdSafeIME.resetKeyboard();
             break;
         }
-        case INITIAL:
+        case INITIAL: {
+            setOpenPassword(null);
+            itsPasswordEdit.getText().clear();
+            break;
+        }
         case RESOLVING: {
             break;
         }
@@ -665,13 +675,8 @@ public class PasswdSafeOpenFileFragment
             itsSaveChange = SavePasswordChange.NONE;
         }
 
-        Owner<PwsPassword> passwd =
-                new Owner<>(new PwsPassword(itsPasswordEdit.getText()));
-        try {
-            startTask(new OpenTask(passwd.pass(), itsIsOpenReadonly, this));
-        } finally {
-            passwd.close();
-        }
+        startTask(new OpenTask(itsOpenPassword.pass(),
+                               itsIsOpenReadonly, this));
     }
 
     /**
@@ -797,6 +802,20 @@ public class PasswdSafeOpenFileFragment
     }
 
     /**
+     * Set the password used to open a file
+     */
+    private void setOpenPassword(Owner<PwsPassword>.Param password)
+    {
+        if (itsOpenPassword != null) {
+            itsOpenPassword.close();
+            itsOpenPassword = null;
+        }
+        if (password != null) {
+            itsOpenPassword = password.use();
+        }
+    }
+
+    /**
      * Set visibility of a field
      */
     private static void setVisibility(int id, boolean visible, View parent)
@@ -908,21 +927,20 @@ public class PasswdSafeOpenFileFragment
             return PasswdSafeOpenFileFragment.this.getActivity();
         }
 
-        @Override
-        public String getUserPassword()
+        @Override @CheckResult
+        public Owner<PwsPassword> getUserPassword()
         {
-            return itsUserPassword;
+            return itsOpenPassword.pass().use();
         }
 
         @Override
-        public void finish(String password, Exception e)
+        public void finish(Owner<PwsPassword>.Param password, Exception e)
         {
             boolean haveUser = (itsYubiUser != null);
             itsYubiUser = null;
             if (password != null) {
                 itsIsYubikey = true;
-                // TODO: don't set password on edit field
-                itsPasswordEdit.setText(password);
+                setOpenPassword(password);
                 setPhase(Phase.OPENING);
             } else if (e != null) {
                 Activity act = getActivity();
@@ -1186,10 +1204,11 @@ public class PasswdSafeOpenFileFragment
             }
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
-            try {
-                String password = itsSavedPasswordsMgr.loadSavedPassword(
-                        getPasswdFileUri(), cipher);
-                itsPasswordEdit.setText(password);
+            try (Owner<PwsPassword> password =
+                         itsSavedPasswordsMgr.loadSavedPassword(
+                                 getPasswdFileUri(), cipher)) {
+                // TODO: store saved password locally and don't use edit
+                password.get().setInto(itsPasswordEdit);
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_loaded));
             } catch (IllegalBlockSizeException | BadPaddingException |
@@ -1253,9 +1272,10 @@ public class PasswdSafeOpenFileFragment
             }
             PasswdSafeUtil.dbginfo(itsTag, "success");
             Cipher cipher = result.getCryptoObject().getCipher();
-            try {
+            try (Owner<PwsPassword> savePassword =
+                         PwsPassword.create(itsPasswordEdit)) {
                 itsSavedPasswordsMgr.addSavedPassword(
-                        getPasswdFileUri(), itsUserPassword,
+                        getPasswdFileUri(), savePassword.pass(),
                         Objects.requireNonNull(cipher));
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_saved));

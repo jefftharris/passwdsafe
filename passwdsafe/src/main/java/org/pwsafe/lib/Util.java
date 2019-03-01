@@ -118,18 +118,25 @@ public final class Util
      */
     public static String bytesToHex(byte[] b, int offset, int length)
     {
+        return new String(bytesToHexChars(b, offset, length));
+    }
+
+    /**
+     * Converts a byte array to hexadecimal characters
+     */
+    public static char[] bytesToHexChars(byte[] b, int offset, int length)
+    {
         if (length < 0) {
             throw new IllegalArgumentException(
                     "Length must be not be negative.");
         }
 
-        final StringBuilder sb = new StringBuilder(length << 1);
-
-        for (int ii = offset; ii < (offset + length); ++ii) {
-            sb.append(HEX_CHARS[(b[ii] >>> 4) & 0x0f]);
-            sb.append(HEX_CHARS[b[ii] & 0x0f]);
+        final char[] chars = new char[length << 1];
+        for (int ii = offset, pos = 0; ii < (offset + length); ++ii) {
+            chars[pos++] = HEX_CHARS[(b[ii] >>> 4) & 0x0f];
+            chars[pos++] = HEX_CHARS[b[ii] & 0x0f];
         }
-        return sb.toString();
+        return chars;
     }
 
     /**
@@ -373,5 +380,15 @@ public final class Util
         Arrays.fill(array, (byte)0xA5);
         Arrays.fill(array, (byte)0x5A);
         Arrays.fill(array, (byte)0x00);
+    }
+
+    /**
+     * Clear the contents of a char array
+     */
+    public static void clearArray(char[] array)
+    {
+        Arrays.fill(array, (char)0xA5A5);
+        Arrays.fill(array, (char)0x5A5A);
+        Arrays.fill(array, (char)0x0000);
     }
 }

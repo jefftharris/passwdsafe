@@ -220,12 +220,12 @@ public class PasswdSafeNewFileFragment
 
                 startActivityForResult(createIntent, CREATE_DOCUMENT_REQUEST);
              } else {
-                Owner<PwsPassword> passwd =
-                        new Owner<>(new PwsPassword(itsPassword.getText()));
-                try {
+
+                // TODO: Make sure textview to pwspassword clears the text view
+                // and does a gc.
+                try (Owner<PwsPassword> passwd =
+                             PwsPassword.create(itsPassword.getText())) {
                     startTask(new NewTask(fileName, passwd.pass(), this));
-                } finally {
-                    passwd.close();
                 }
             }
             break;
@@ -290,12 +290,9 @@ public class PasswdSafeNewFileFragment
     {
         if (itsUseStorage) {
             String fileName = itsFileName.getText().toString();
-            Owner<PwsPassword> passwd =
-                    new Owner<>(new PwsPassword(itsPassword.getText()));
-            try {
+            try (Owner<PwsPassword> passwd =
+                         PwsPassword.create(itsPassword.getText())) {
                 startTask(new NewTask(fileName, passwd.pass(), this));
-            } finally {
-                passwd.close();
             }
         } else {
             int titleId = R.string.new_file;

@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;
 import org.pwsafe.lib.file.PwsRecord;
 
@@ -25,7 +26,7 @@ public final class RecordSimilarFields implements Closeable
 {
     private final String itsTitle;
     private final String itsUserName;
-    private final List<PwsPassword> itsPasswords;
+    private final List<Owner<PwsPassword>> itsPasswords;
     private final String itsUrl;
     private final String itsEmail;
     private final String itsRecUuid;
@@ -46,7 +47,7 @@ public final class RecordSimilarFields implements Closeable
         itsRecUuid = passwdRec.getUUID();
         itsIsCaseSensitive = caseSensitive;
 
-        List<PwsPassword> passwords =
+        List<Owner<PwsPassword>> passwords =
                 addPassword(null, passwdRec.getPassword(fileData));
         PasswdHistory history = fileData.getPasswdHistory(rec);
         if (history != null) {
@@ -131,7 +132,7 @@ public final class RecordSimilarFields implements Closeable
     public void close()
     {
         if (itsPasswords != null) {
-            for (PwsPassword password: itsPasswords) {
+            for (Owner<PwsPassword> password: itsPasswords) {
                 password.close();
             }
         }
@@ -161,8 +162,8 @@ public final class RecordSimilarFields implements Closeable
      */
     private boolean matchPassword(@NonNull String recPassword)
     {
-        for (PwsPassword password: itsPasswords) {
-            if (password.equals(recPassword)) {
+        for (Owner<PwsPassword> password: itsPasswords) {
+            if (password.get().equals(recPassword)) {
                 return true;
             }
         }
@@ -172,8 +173,9 @@ public final class RecordSimilarFields implements Closeable
     /**
      * Add a password to the list, creating the list if needed
      */
-    private static List<PwsPassword> addPassword(List<PwsPassword> passwords,
-                                                 @Nullable String password)
+    private static List<Owner<PwsPassword>> addPassword(
+            List<Owner<PwsPassword>> passwords,
+            @Nullable String password)
     {
         if (TextUtils.isEmpty(password)) {
             return passwords;
@@ -182,7 +184,7 @@ public final class RecordSimilarFields implements Closeable
         if (passwords == null) {
             passwords = new ArrayList<>();
         }
-        passwords.add(new PwsPassword(password));
+        passwords.add(PwsPassword.create(password));
         return passwords;
     }
 }
