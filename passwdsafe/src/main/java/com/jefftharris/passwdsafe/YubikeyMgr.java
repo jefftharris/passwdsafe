@@ -51,7 +51,7 @@ public class YubikeyMgr
 
     private static final int SHA1_MAX_BLOCK_SIZE = 64;
 
-    private static final boolean TEST = PasswdSafeUtil.DEBUG;
+    private static final boolean TEST = false;//PasswdSafeUtil.DEBUG;
 
     private static final String TAG = "YubikeyMgr";
 
