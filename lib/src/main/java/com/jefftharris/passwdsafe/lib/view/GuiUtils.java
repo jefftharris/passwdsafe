@@ -110,6 +110,16 @@ public final class GuiUtils
     }
 
 
+    /**
+     * Clear the contents of an EditText
+     */
+    public static void clearEditText(EditText tv)
+    {
+        tv.getText().clear();
+        Runtime.getRuntime().gc();
+    }
+
+
     /** Set whether a view is visible */
     public static void setVisible(View view, boolean visible)
     {

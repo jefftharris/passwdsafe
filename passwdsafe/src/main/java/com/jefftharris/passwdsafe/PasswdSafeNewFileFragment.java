@@ -71,9 +71,9 @@ public class PasswdSafeNewFileFragment
     private TextInputLayout itsFileNameInput;
     private EditText itsFileName;
     private TextInputLayout itsPasswordInput;
-    private TextView itsPassword;
+    private EditText itsPassword;
     private TextInputLayout itsPasswordConfirmInput;
-    private TextView itsPasswordConfirm;
+    private EditText itsPasswordConfirm;
     private Button itsOkBtn;
     private final CountedBool itsBackgroundDisable = new CountedBool();
     private final Validator itsValidator = new Validator();
@@ -194,9 +194,20 @@ public class PasswdSafeNewFileFragment
     }
 
     @Override
+    public void onPause()
+    {
+        super.onPause();
+        GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
+        GuiUtils.clearEditText(itsPassword);
+        GuiUtils.clearEditText(itsPasswordConfirm);
+    }
+
+    @Override
     public void onDetach()
     {
         super.onDetach();
+        itsValidator.unregisterTextView(itsPassword);
+        itsValidator.unregisterTextView(itsPasswordConfirm);
         itsListener = null;
     }
 
@@ -220,9 +231,6 @@ public class PasswdSafeNewFileFragment
 
                 startActivityForResult(createIntent, CREATE_DOCUMENT_REQUEST);
              } else {
-
-                // TODO: Make sure textview to pwspassword clears the text view
-                // and does a gc.
                 try (Owner<PwsPassword> passwd =
                              PwsPassword.create(itsPassword.getText())) {
                     startTask(new NewTask(fileName, passwd.pass(), this));
@@ -449,6 +457,14 @@ public class PasswdSafeNewFileFragment
         public void registerTextView(TextView tv)
         {
             tv.addTextChangedListener(itsTextWatcher);
+        }
+
+        /**
+         * Unregister a text view
+         */
+        public void unregisterTextView(TextView tv)
+        {
+            tv.removeTextChangedListener(itsTextWatcher);
         }
 
         /**

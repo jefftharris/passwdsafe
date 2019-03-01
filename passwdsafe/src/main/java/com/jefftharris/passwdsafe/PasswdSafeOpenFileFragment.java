@@ -120,7 +120,6 @@ public class PasswdSafeOpenFileFragment
     private String itsRecToOpen;
     private TextView itsTitle;
     private TextInputLayout itsPasswordInput;
-    // TODO: clear password edit fields on pause
     private EditText itsPasswordEdit;
     private TextView itsSavedPasswordMsg;
     private int itsSavedPasswordTextColor;
@@ -576,7 +575,7 @@ public class PasswdSafeOpenFileFragment
         }
         case INITIAL: {
             setOpenPassword(null);
-            itsPasswordEdit.getText().clear();
+            GuiUtils.clearEditText(itsPasswordEdit);
             break;
         }
         case RESOLVING: {

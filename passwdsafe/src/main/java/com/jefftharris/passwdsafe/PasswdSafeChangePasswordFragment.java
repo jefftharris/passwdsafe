@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
@@ -54,9 +55,9 @@ public class PasswdSafeChangePasswordFragment
 
     private TextView itsTitle;
     private TextInputLayout itsPasswordInput;
-    private TextView itsPassword;
+    private EditText itsPassword;
     private TextInputLayout itsPasswordConfirmInput;
-    private TextView itsPasswordConfirm;
+    private EditText itsPasswordConfirm;
     private final Validator itsValidator = new Validator();
 
     /**
@@ -116,6 +117,16 @@ public class PasswdSafeChangePasswordFragment
     {
         super.onPause();
         GuiUtils.setKeyboardVisible(itsPassword, getContext(), false);
+        GuiUtils.clearEditText(itsPassword);
+        GuiUtils.clearEditText(itsPasswordConfirm);
+    }
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        itsValidator.unregisterTextView(itsPassword);
+        itsValidator.unregisterTextView(itsPasswordConfirm);
     }
 
     @Override
@@ -181,6 +192,14 @@ public class PasswdSafeChangePasswordFragment
         public void registerTextView(TextView tv)
         {
             tv.addTextChangedListener(this);
+        }
+
+        /**
+         * Unregister a text view
+         */
+        public void unregisterTextView(TextView tv)
+        {
+            tv.removeTextChangedListener(this);
         }
 
         /**
