@@ -7,7 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.pwsafe.lib.Util;
@@ -30,6 +29,7 @@ import android.widget.Toast;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
+import com.jefftharris.passwdsafe.util.ClearingByteArrayOutputStream;
 import com.jefftharris.passwdsafe.util.YubiState;
 
 
@@ -124,9 +124,10 @@ public class YubikeyMgr
                     if (itsUser != null) {
                         try (Owner<PwsPassword> password =
                                      itsUser.getUserPassword()) {
-                            byte[] bytes = password.get().getBytes("UTF-8");
+                            String utf8 = "UTF-8";
+                            byte[] bytes = password.get().getBytes(utf8);
                             String passwordStr =
-                                    new String(bytes, "UTF-8").toLowerCase();
+                                    new String(bytes, utf8).toLowerCase();
                             try (Owner<PwsPassword> newPassword =
                                          PwsPassword.create(passwordStr)) {
                                 stopUser(newPassword.pass(), null);
@@ -224,16 +225,15 @@ public class YubikeyMgr
         try {
             isotag.connect();
 
-            byte[] cmdbytes = null;
+            ClearingByteArrayOutputStream cmd =
+                    new ClearingByteArrayOutputStream();
+            byte[] resp = null;
             try (Owner<PwsPassword> userPassword = itsUser.getUserPassword()) {
-                byte[] resp = isotag.transceive(SELECT_CMD);
+                resp = isotag.transceive(SELECT_CMD);
                 checkResponse(resp);
+                Util.clearArray(resp);
 
-                //String pw = itsUser.getUserPassword();
                 PwsPassword pw = userPassword.get();
-
-                // TODO: clear cmd bytes...
-                ByteArrayOutputStream cmd = new ByteArrayOutputStream();
                 cmd.write(HASH_CMD);
 
                 // Placeholder for length
@@ -269,16 +269,20 @@ public class YubikeyMgr
                     cmd.write(0);
                 }
 
-                cmdbytes = cmd.toByteArray();
-                int slot = itsUser.getSlotNum();
-                if (slot == 1) {
-                    cmdbytes[2] = SLOT_CHAL_HMAC1;
-                } else {
-                    cmdbytes[2] = SLOT_CHAL_HMAC2;
+                byte[] cmdbytes = cmd.toByteArray();
+                try {
+                    int slot = itsUser.getSlotNum();
+                    if (slot == 1) {
+                        cmdbytes[2] = SLOT_CHAL_HMAC1;
+                    } else {
+                        cmdbytes[2] = SLOT_CHAL_HMAC2;
+                    }
+                    cmdbytes[HASH_CMD.length] = datalen;
+                    resp = isotag.transceive(cmdbytes);
+                    checkResponse(resp);
+                } finally {
+                    Util.clearArray(cmdbytes);
                 }
-                cmdbytes[HASH_CMD.length] = datalen;
-                resp = isotag.transceive(cmdbytes);
-                checkResponse(resp);
 
                 // Prune response bytes and convert
 
@@ -290,10 +294,11 @@ public class YubikeyMgr
                     Util.clearArray(resp);
                 }
             } finally {
-                if (cmdbytes != null) {
-                    Util.clearArray(cmdbytes);
+                if (resp != null) {
+                    Util.clearArray(resp);
                 }
-                Utils.closeStreams(isotag);
+                Utils.closeStreams(cmd, isotag);
+                Runtime.getRuntime().gc();
             }
         } catch (Exception e) {
             PasswdSafeUtil.dbginfo(TAG, e, "handleKeyIntent");
