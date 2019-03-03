@@ -1206,7 +1206,6 @@ public class PasswdSafeOpenFileFragment
             try (Owner<PwsPassword> password =
                          itsSavedPasswordsMgr.loadSavedPassword(
                                  getPasswdFileUri(), cipher)) {
-                // TODO: store saved password locally and don't use edit
                 password.get().setInto(itsPasswordEdit);
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_loaded));
