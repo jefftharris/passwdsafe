@@ -185,6 +185,7 @@
     <string name="max_size_label">Anzahl:</string>
     <string name="menu">Menü</string>
     <string name="modified">Geändert</string>
+    <string name="modify">Bearbeiten</string>
     <string name="monospace">Monospace-Schrift</string>
     <string name="n_a">N/A</string>
     <string name="name">Name</string>
@@ -356,6 +357,7 @@
     <string name="use_uppercase">Großbuchstaben</string>
     <string name="username_header">BENUTZERNAME</string>
     <string name="vibrate_keyboard_on_press">Vibrieren bei Tastendruck</string>
+    <string name="view">Ansehen</string>
     <string name="view_password_expirations">Passwortlaufzeiten anzeigen</string>
     <string name="word_wrap">Zeilenumbruch</string>
     <string name="yes">Ja</string>
@@ -366,6 +368,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.17.0&lt;/b&gt; - Dialog fürs Datei-Öffnen und Neue Datei
+        aktualisiert
+        \n\n
         &lt;b&gt;6.16.1&lt;/b&gt; - Fehlerbehebungen.
         \n\n
         &lt;b&gt;6.16.0&lt;/b&gt; - Schnelles Scrollen für lange Listen

@@ -134,6 +134,7 @@
     <string name="max_size_label">Maksimum størrelse:</string>
     <string name="menu">Meny</string>
     <string name="modified">Endret</string>
+    <string name="modify">Endre</string>
     <string name="monospace">Med fast tegnbredde</string>
     <string name="n_a">N/A</string>
     <string name="name">Navn</string>
@@ -278,6 +279,7 @@
     <string name="use_uppercase">Store bokstaver</string>
     <string name="username_header">BRUKERNAVN</string>
     <string name="vibrate_keyboard_on_press">Vibrer ved tastetrykk</string>
+    <string name="view">Se</string>
     <string name="view_password_expirations">Vis passordutløp</string>
     <string name="word_wrap">Linjebryting</string>
     <string name="yes">Ja</string>
@@ -288,6 +290,9 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.17.0&lt;/b&gt; - Oppdaterte grensesnitt for å åpne og
+        opprette filer
+        \n\n
         &lt;b&gt;6.16.1&lt;/b&gt; - Feilrettinger.
         \n\n
         &lt;b&gt;6.16.0&lt;/b&gt; -  La til rask rulling for lange lister med
