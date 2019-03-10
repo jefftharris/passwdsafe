@@ -251,7 +251,7 @@ public class PasswdSafeNewFileFragment
                 break;
             }
 
-            Context ctx = getContext();
+            Context ctx = requireContext();
             Uri newUri = data.getData();
             String title = RecentFilesDb.getSafDisplayName(newUri, ctx);
             String error = validateFileName(title);
@@ -270,7 +270,7 @@ public class PasswdSafeNewFileFragment
                     newUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION |
                              Intent.FLAG_GRANT_WRITE_URI_PERMISSION),
                     ctx);
-            if (title != null) {
+            if (!TextUtils.isEmpty(title)) {
                 RecentFilesDb recentFilesDb = new RecentFilesDb(ctx);
                 try {
                     recentFilesDb.insertOrUpdateFile(newUri, title);
@@ -356,7 +356,7 @@ public class PasswdSafeNewFileFragment
     @Override
     protected final void doCancelFragment(boolean userCancel)
     {
-        GuiUtils.setKeyboardVisible(itsPasswordInput, getActivity(), false);
+        GuiUtils.setKeyboardVisible(itsPasswordInput, requireContext(), false);
         if (userCancel && itsListener != null) {
             itsListener.handleFileNewCanceled();
         }
@@ -400,7 +400,7 @@ public class PasswdSafeNewFileFragment
      */
     private String validateFileName(String fileName)
     {
-        if (!fileName.endsWith(itsPsafe3Sfx)) {
+        if ((fileName == null) || !fileName.endsWith(itsPsafe3Sfx)) {
             return getString(R.string.invalid_file_name);
         }
 
