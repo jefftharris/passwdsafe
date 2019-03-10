@@ -115,7 +115,6 @@ public final class GuiUtils
      */
     public static void clearEditText(EditText tv)
     {
-        tv.getText().clearSpans();
         tv.getText().clear();
         Runtime.getRuntime().gc();
     }
