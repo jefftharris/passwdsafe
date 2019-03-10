@@ -194,20 +194,19 @@ public class PasswdSafeNewFileFragment
     }
 
     @Override
-    public void onPause()
+    public void onDestroyView()
     {
-        super.onPause();
-        GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
+        super.onDestroyView();
         GuiUtils.clearEditText(itsPassword);
         GuiUtils.clearEditText(itsPasswordConfirm);
+        itsValidator.unregisterTextView(itsPassword);
+        itsValidator.unregisterTextView(itsPasswordConfirm);
     }
 
     @Override
     public void onDetach()
     {
         super.onDetach();
-        itsValidator.unregisterTextView(itsPassword);
-        itsValidator.unregisterTextView(itsPasswordConfirm);
         itsListener = null;
     }
 
@@ -216,6 +215,7 @@ public class PasswdSafeNewFileFragment
     {
         switch (view.getId()) {
         case R.id.ok: {
+            GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
             String fileName = itsFileName.getText().toString();
             if (itsUseStorage) {
                 Intent createIntent = new Intent(
@@ -418,11 +418,13 @@ public class PasswdSafeNewFileFragment
             }
         }
 
-        PasswdFileUri uri = getPasswdFileUri();
-        if (uri != null) {
-            String error = uri.validateNewChild(fileNameBase, getContext());
-            if (error != null) {
-                return error;
+        if (!itsUseStorage) {
+            PasswdFileUri uri = getPasswdFileUri();
+            if (uri != null) {
+                String error = uri.validateNewChild(fileNameBase, getContext());
+                if (error != null) {
+                    return error;
+                }
             }
         }
 
