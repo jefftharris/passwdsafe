@@ -44,6 +44,7 @@ public final class RecyclerViewAssertions
 
             RecyclerView rv = (RecyclerView)view;
             RecyclerView.Adapter adapter = rv.getAdapter();
+            Assert.assertNotNull(adapter);
             assertThat(adapter.getItemCount(), matcher);
         };
     }
@@ -61,9 +62,10 @@ public final class RecyclerViewAssertions
             }
 
             RecyclerView rv = (RecyclerView)view;
-            Assert.assertThat(
-                    rv.findViewHolderForAdapterPosition(index).itemView,
-                    viewMatcher);
+            RecyclerView.ViewHolder holder =
+                    rv.findViewHolderForAdapterPosition(index);
+            Assert.assertNotNull(holder);
+            Assert.assertThat(holder.itemView, viewMatcher);
         };
     }
 }
