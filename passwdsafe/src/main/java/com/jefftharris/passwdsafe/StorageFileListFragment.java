@@ -62,10 +62,6 @@ public final class StorageFileListFragment extends Fragment
 
         /** Update the view for a list of files */
         void updateViewFiles();
-
-        /** Is the fragment running while testing */
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-        boolean isTesting();
     }
 
     private static final String TAG = "StorageFileListFragment";
@@ -80,7 +76,6 @@ public final class StorageFileListFragment extends Fragment
     private View itsEmptyText;
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
-    private boolean itsIsCheckPermissions;
 
     @Override
     public void onAttach(Context ctx)
@@ -166,7 +161,6 @@ public final class StorageFileListFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        itsIsCheckPermissions = !itsListener.isTesting();
         LoaderManager lm = getLoaderManager();
         lm.restartLoader(LOADER_FILES, null, this);
         itsListener.updateViewFiles();
@@ -250,7 +244,7 @@ public final class StorageFileListFragment extends Fragment
                     return true;
                 }
                 List<Uri> recentUris = itsRecentFilesDb.clear();
-                if (itsIsCheckPermissions) {
+                if (isCheckPermissions()) {
                     ContentResolver cr = ctx.getContentResolver();
                     int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
                                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
@@ -284,8 +278,7 @@ public final class StorageFileListFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
     {
-        return new FileLoader(itsRecentFilesDbRef, itsIsCheckPermissions,
-                              requireContext());
+        return new FileLoader(itsRecentFilesDbRef, requireContext());
     }
 
     @Override
@@ -329,7 +322,7 @@ public final class StorageFileListFragment extends Fragment
 
         Context ctx = requireContext();
         String title = RecentFilesDb.getSafDisplayName(uri, ctx);
-        if (itsIsCheckPermissions) {
+        if (isCheckPermissions()) {
             RecentFilesDb.updateOpenedSafFile(uri, flags, ctx);
         } else {
             if (title == null) {
@@ -365,7 +358,7 @@ public final class StorageFileListFragment extends Fragment
             Uri uri = Uri.parse(uristr);
             itsRecentFilesDb.removeUri(uri);
 
-            if (itsIsCheckPermissions) {
+            if (isCheckPermissions()) {
                 ContentResolver cr = requireContext().getContentResolver();
                 int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
@@ -379,6 +372,13 @@ public final class StorageFileListFragment extends Fragment
         }
     }
 
+    /**
+     *  Whether permissions should be checked
+     */
+    private static boolean isCheckPermissions()
+    {
+        return !PasswdSafeUtil.isTesting();
+    }
 
     /**
      * Background file loader
@@ -386,18 +386,15 @@ public final class StorageFileListFragment extends Fragment
     private static final class FileLoader extends AsyncTaskLoader<Cursor>
     {
         private final ManagedRef<RecentFilesDb> itsRecentFilesDb;
-        private final boolean itsIsCheckPermissions;
 
         /**
          * Constructor
          */
         public FileLoader(ManagedRef<RecentFilesDb> recentFilesDb,
-                          boolean checkPermissions,
                           Context ctx)
         {
             super(ctx.getApplicationContext());
             itsRecentFilesDb = recentFilesDb;
-            itsIsCheckPermissions = checkPermissions;
         }
 
         /** Handle when the loader is reset */
@@ -433,7 +430,7 @@ public final class StorageFileListFragment extends Fragment
                 return null;
             }
 
-            if (itsIsCheckPermissions) {
+            if (isCheckPermissions()) {
                 int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
                 ContentResolver cr = getContext().getContentResolver();

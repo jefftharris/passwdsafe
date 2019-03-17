@@ -95,7 +95,6 @@ public class FileListActivity extends AppCompatActivity
     private boolean itsIsLegacyChooser =
             Preferences.PREF_FILE_LEGACY_FILE_CHOOSER_DEF;
     private boolean itsIsLegacyChooserChanged = false;
-    private boolean itsIsTesting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -365,18 +364,6 @@ public class FileListActivity extends AppCompatActivity
     {
         doChangeView(ViewChange.PREFERENCES,
                      PreferencesFragment.newInstance(null));
-    }
-
-    @Override
-    public boolean isTesting()
-    {
-        return PasswdSafeUtil.DEBUG && itsIsTesting;
-    }
-
-    /** Set whether the activity is running while testing */
-    public void setIsTesting(boolean testing)
-    {
-        itsIsTesting = testing;
     }
 
     /**

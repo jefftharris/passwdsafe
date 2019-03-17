@@ -29,10 +29,10 @@ import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.test.util.ChildCheckedViewAction;
 
-import junit.framework.Assert;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +76,7 @@ import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * UI tests for FileListActivity
@@ -89,6 +90,12 @@ public class FileListActivityTest
     @Rule
     public IntentsTestRule<FileListActivity> itsActivityRule =
             new IntentsTestRule<>(FileListActivity.class);
+
+    @After
+    public void teardown()
+    {
+        PasswdSafeUtil.setIsTesting(false);
+    }
 
     @Test
     public void testLegacyFiles()
@@ -152,13 +159,14 @@ public class FileListActivityTest
 
         intended(allOf(
                 hasAction(equalTo("com.jefftharris.passwdsafe.action.NEW")),
-                toPackage("com.jefftharris.passwdsafe")));
+                toPackage("com.jefftharris.passwdsafe"),
+                hasData(nullValue(Uri.class))));
      }
 
      @Test
      public void testNewFileOpen()
      {
-         itsActivityRule.getActivity().setIsTesting(true);
+         PasswdSafeUtil.setIsTesting(true);
          verifyDrawerClosed();
          setLegacyFileChooser(false);
          clearRecents();

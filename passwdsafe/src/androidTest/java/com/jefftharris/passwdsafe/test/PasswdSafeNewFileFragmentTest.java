@@ -10,40 +10,25 @@ package com.jefftharris.passwdsafe.test;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.view.Gravity;
 
 import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static android.support.test.espresso.Espresso.pressBack;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.DrawerActions.close;
-import static android.support.test.espresso.contrib.DrawerActions.open;
-import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
-import static android.support.test.espresso.contrib.DrawerMatchers.isOpen;
 import static android.support.test.espresso.matcher.ViewMatchers.hasFocus;
-import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -227,77 +212,10 @@ public class PasswdSafeNewFileFragmentTest
                 .check(matches(not(isEnabled())));
     }
 
-    @Test
-    public void testNewFile() throws InterruptedException
-    {
-        File file = new File(FileListActivityTest.DIR, "ZZZtest.psafe3");
-        if (file.exists()) {
-            Assert.assertTrue(file.delete());
-        }
-        onFileNameView()
-                .perform(replaceText(file.getName()));
-        onView(withId(R.id.password))
-                .perform(replaceText("test123"));
-        onView(withId(R.id.password_confirm))
-                .perform(replaceText("test123"));
-        onView(withId(R.id.ok))
-                .perform(closeSoftKeyboard(), scrollTo(), click());
-
-        try {
-            Assert.assertTrue(file.exists());
-
-            onView(withId(R.id.drawer_layout))
-                    .check(matches(isClosed(Gravity.START)))
-                    .perform(open());
-            onView(allOf(withText(R.string.records),
-                         isDescendantOfA(withId(R.id.navigation_drawer))))
-                    .check(matches(isEnabled()));
-            onView(allOf(withText(R.string.about),
-                         isDescendantOfA(withId(R.id.navigation_drawer))))
-                    .check(matches(isEnabled()));
-            onView(withId(R.id.drawer_layout))
-                    .check(matches(isOpen(Gravity.START)))
-                    .perform(close());
-            Thread.sleep(1000); // Wait for menu to be refreshed
-
-            onView(withId(R.id.menu_search))
-                    .check(matches(isEnabled()));
-            onView(withId(R.id.menu_add))
-                    .check(matches(isEnabled()));
-            openActionBarOverflowOrOptionsMenu(
-                    getInstrumentation().getTargetContext());
-            onView(withText(R.string.file_operations))
-                    .check(matches(isEnabled()));
-            onView(withText(R.string.sort))
-                    .check(matches(isEnabled()));
-            onView(withText(R.string.close_file))
-                    .check(matches(isEnabled()));
-            pressBack();
-
-            onView(withId(R.id.content))
-                    .check(matches(isEnabled()));
-            onView(allOf(withId(android.R.id.list),
-                         withParent(withParent(withId(R.id.content)))))
-                    .check(matches(
-                            withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-            onView(allOf(withId(android.R.id.empty),
-                         withParent(withParent(withId(R.id.content)))))
-                    .check(matches(
-                            withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
-            openActionBarOverflowOrOptionsMenu(
-                    getInstrumentation().getTargetContext());
-            onView(withText(R.string.close_file))
-                    .perform(click());
-        } finally {
-            Assert.assertTrue(file.delete());
-        }
-    }
-
     /**
      * Test with the file name text view
      */
-    private static ViewInteraction onFileNameView()
+    public static ViewInteraction onFileNameView()
     {
         return onView(allOf(
                 withId(R.id.file_name),

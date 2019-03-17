@@ -46,6 +46,8 @@ public class PasswdSafeUtil
 
     private static final String TAG = "PasswdSafeUtil";
 
+    private static boolean TESTING = false;
+
     /** Create an intent to open a URI */
     public static Intent createOpenIntent(Uri uri, String recToOpen)
     {
@@ -236,6 +238,23 @@ public class PasswdSafeUtil
     {
         Log.e(logTag, msg, error);
         showErrorMsg(msg, context);
+    }
+
+    /**
+     * Get whether the app is running while testing
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isTesting()
+    {
+        return DEBUG && TESTING;
+    }
+
+    /**
+     * Set whether the app is running while testing
+     */
+    public static void setIsTesting(boolean testing)
+    {
+        TESTING = DEBUG && testing;
     }
 
     /** Log a debug message at info level */
