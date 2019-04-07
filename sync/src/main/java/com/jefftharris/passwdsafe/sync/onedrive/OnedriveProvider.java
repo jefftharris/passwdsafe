@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.accounts.Account;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -152,7 +153,12 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @Override
     public synchronized boolean isAccountAuthorized()
     {
-        return (getODAccount() != null);
+        try {
+            return (getODAccount() != null);
+        } catch (Exception e) {
+            Log.e(TAG, "isAccountAuthorized error", e);
+            return false;
+        }
     }
 
     /**
@@ -314,9 +320,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                             TAG + " useOneDriveService not authorized");
                 }
 
-                itsClientApp.acquireTokenSilentAsync(
-                        Constants.SCOPES,
-                        itsClientApp.getAccount(itsHomeAccountId), tokenCb);
+                itsClientApp.acquireTokenSilentAsync(Constants.SCOPES,
+                                                     acct, tokenCb);
             }
 
             AuthenticationResult authResult = tokenCb.getResult();
@@ -345,7 +350,13 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      */
     private void unlinkAccount(final Runnable completeCb)
     {
-        IAccount acct = getODAccount();
+        IAccount acct;
+        try {
+            acct = getODAccount();
+        } catch (Exception e) {
+            Log.e(TAG, "unlinkAccount error", e);
+            acct = null;
+        }
         if (acct != null) {
             itsClientApp.removeAccount(acct);
         }
@@ -358,7 +369,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      * of authentication information
      * @param completeCb The callback to run when the update is complete
      */
-    private void updateOnedriveAcct(final Runnable completeCb)
+    private synchronized void updateOnedriveAcct(final Runnable completeCb)
     {
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -385,12 +396,24 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      * Get the OneDrive account for the active account
      */
     @Nullable
-    private IAccount getODAccount()
+    @SuppressLint("ApplySharedPref")
+    private synchronized IAccount getODAccount() throws Exception
     {
         if (TextUtils.isEmpty(itsHomeAccountId)) {
             return null;
         }
-        return itsClientApp.getAccount(itsHomeAccountId);
+        try {
+            return itsClientApp.getAccount(itsHomeAccountId);
+        } catch (Throwable e) {
+            // Work-around for
+            // https://github.com/AzureAD/microsoft-authentication-library-for-android/issues/495
+            SharedPreferences msalPrefs = getContext().getSharedPreferences(
+                    "com.microsoft.identity.client.account_credential_cache",
+                    Context.MODE_PRIVATE);
+            msalPrefs.edit().clear().commit();
+            Log.w(TAG, "getODAccount error", e);
+            throw new Exception("OneDrive account retrieval error", e);
+        }
     }
 
     /** Update the account's user ID */
