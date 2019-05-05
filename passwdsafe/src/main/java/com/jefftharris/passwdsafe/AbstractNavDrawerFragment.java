@@ -117,7 +117,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
                            int expectedDrawerOpenVal)
     {
         itsFragmentContainerView =
-                getActivity().findViewById(R.id.navigation_drawer);
+                requireActivity().findViewById(R.id.navigation_drawer);
         itsDrawerLayout = drawerLayout;
 
         // set a custom shadow that overlays the main content when the drawer
@@ -144,7 +144,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
                     return;
                 }
 
-                getActivity().supportInvalidateOptionsMenu();
+                requireActivity().invalidateOptionsMenu();
             }
 
             @Override
@@ -166,7 +166,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
                       .apply();
                 }
 
-                getActivity().supportInvalidateOptionsMenu();
+                requireActivity().invalidateOptionsMenu();
             }
         };
 
@@ -273,6 +273,6 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     /** Get the action bar */
     private ActionBar getActionBar()
     {
-        return ((AppCompatActivity) getActivity()).getSupportActionBar();
+        return ((AppCompatActivity) requireActivity()).getSupportActionBar();
     }
 }
