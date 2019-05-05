@@ -74,7 +74,7 @@ public class PasswdFileData
         new IdentityHashMap<>();
     private final ArrayList<PwsRecord> itsRecords = new ArrayList<>();
     private HeaderPasswdPolicies itsHdrPolicies = new HeaderPasswdPolicies();
-    private boolean itsIsOpenReadOnly = false;
+    private boolean itsIsUriWritable = false;
     private boolean itsIsYubikey = false;
 
     private static final List<PasswdFileDataObserver> itsObservers =
@@ -90,17 +90,13 @@ public class PasswdFileData
         itsUri = uri;
     }
 
-    public void load(Owner<PwsPassword>.Param passwd, boolean readonly,
-                     Context context)
+    public void load(Owner<PwsPassword>.Param passwd, Context context)
             throws IOException, EndOfFileException, InvalidPassphraseException,
                    UnsupportedFileVersionException
     {
-        itsIsOpenReadOnly = readonly;
         itsPwsFile = itsUri.load(passwd, context);
-
-        if (itsIsOpenReadOnly || !itsUri.isWritable().first) {
-            itsPwsFile.setReadOnly(true);
-        }
+        itsPwsFile.setReadOnly(true);
+        itsIsUriWritable = itsUri.isWritable().first;
         finishOpenFile();
     }
 
@@ -108,6 +104,8 @@ public class PasswdFileData
         throws IOException
     {
         itsPwsFile = itsUri.createNew(passwd, context);
+        itsPwsFile.setReadOnly(false);
+        itsIsUriWritable = true;
         save(context);
         finishOpenFile();
     }
@@ -135,6 +133,7 @@ public class PasswdFileData
         itsUri = null;
         itsPwsFile.dispose();
         itsPwsFile = null;
+        itsIsUriWritable = false;
         indexRecords();
     }
 
@@ -253,19 +252,36 @@ public class PasswdFileData
         itsIsYubikey = yubikey;
     }
 
+    /**
+     * Is the file writable
+     */
+    public final boolean isWritable()
+    {
+        return itsIsUriWritable &&
+               (itsPwsFile != null) && !itsPwsFile.isReadOnly();
+    }
+
+    /**
+     * Set the file writable if allowed
+     */
+    public final void setWritable(boolean writable)
+    {
+        if (itsPwsFile != null) {
+            itsPwsFile.setReadOnly(!(writable && itsIsUriWritable));
+        }
+    }
+
     public final boolean canEdit()
     {
-        return !itsIsOpenReadOnly &&
+        return isWritable() &&
                (itsPwsFile != null) &&
-               !itsPwsFile.isReadOnly() &&
                ((itsPwsFile.getFileVersionMajor() == PwsFileV3.VERSION) ||
                 (itsPwsFile.getFileVersionMajor() == PwsFileV2.VERSION));
     }
 
     public final boolean canDelete()
     {
-        return (itsPwsFile != null) && !itsPwsFile.isReadOnly() &&
-               itsUri.isDeletable();
+        return isWritable() && itsUri.isDeletable();
     }
 
     public final boolean isV3()

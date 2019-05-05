@@ -178,7 +178,7 @@ public class PasswdSafeNewFileTest
                     .check(matches(withText("Open " + FILE.getName())));
             onView(withId(R.id.passwd_edit))
                     .perform(replaceText("test123"));
-            clickButton(R.id.modify);
+            clickButton(R.id.open);
 
             // Verify open file UI
             validateOpenedEmptyFile();

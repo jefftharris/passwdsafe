@@ -359,6 +359,7 @@
     <string name="vibrate_keyboard_on_press">Vibrate keyboard on press</string>
     <string name="view">View</string>
     <string name="view_password_expirations">View password expirations</string>
+    <string name="writable">Writable</string>
     <string name="word_wrap">Word Wrap</string>
     <string name="yes">Yes</string>
     <string name="yubikey">YubiKey</string>

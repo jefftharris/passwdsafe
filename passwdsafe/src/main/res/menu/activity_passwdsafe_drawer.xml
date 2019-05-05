@@ -6,7 +6,14 @@
   ~ distributed with this code, or available from
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_drawer_writable"
+        android:title="@string/writable"
+        app:actionLayout="@layout/switch_item"/>
+
     <group android:checkableBehavior="single">
         <item android:id="@+id/menu_drawer_records"
               android:icon="@drawable/ic_action_people_outline"
