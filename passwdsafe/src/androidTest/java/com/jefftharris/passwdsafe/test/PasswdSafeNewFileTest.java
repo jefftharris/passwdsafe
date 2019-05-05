@@ -16,12 +16,14 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
+import android.view.View;
 
 import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +44,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.close;
 import static android.support.test.espresso.contrib.DrawerActions.open;
@@ -52,8 +55,12 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAct
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCategories;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasType;
+import static android.support.test.espresso.matcher.ViewMatchers.hasChildCount;
+import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
+import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -159,13 +166,8 @@ public class PasswdSafeNewFileTest
             Assert.assertTrue(FILE.exists());
 
             // Verify new file UI
-            validateOpenedEmptyFile();
-
-            openActionBarOverflowOrOptionsMenu(
-                    getInstrumentation().getTargetContext());
-            onView(withText(R.string.close_file))
-                    .perform(click());
-            Assert.assertTrue(itsActivityRule.getActivity().isFinishing());
+            validateOpenedEmptyFile(true);
+            closeFile();
 
             Intents.release();
             Intent openIntent =
@@ -181,51 +183,38 @@ public class PasswdSafeNewFileTest
             clickButton(R.id.open);
 
             // Verify open file UI
-            validateOpenedEmptyFile();
-
-            openActionBarOverflowOrOptionsMenu(
-                    getInstrumentation().getTargetContext());
-            onView(withText(R.string.close_file))
-                    .perform(click());
-            Assert.assertTrue(itsActivityRule.getActivity().isFinishing());
+            validateOpenedEmptyFile(false);
+            closeFile();
         } finally {
             Assert.assertTrue(FILE.delete());
         }
     }
 
     /**
-     * Validate the UI for a new file
+     * Close an open file
      */
-    private static void validateOpenedEmptyFile()
+    private void closeFile()
     {
-        onView(withId(R.id.drawer_layout))
-                .check(matches(isClosed(Gravity.START)))
-                .perform(open());
-        onView(allOf(withText(R.string.records),
-                     isDescendantOfA(withId(R.id.navigation_drawer))))
-                .check(matches(isEnabled()));
-        onView(allOf(withText(R.string.about),
-                     isDescendantOfA(withId(R.id.navigation_drawer))))
-                .check(matches(isEnabled()));
-        onView(withId(R.id.drawer_layout))
-                .check(matches(isOpen(Gravity.START)))
-                .perform(close());
+        onView(withId(R.id.menu_close))
+                .check(matches(isEnabled()))
+                .perform(click());
+        Assert.assertTrue(itsActivityRule.getActivity().isFinishing());
+    }
 
-        onView(isRoot()).perform(waitId(R.id.menu_search,
-                                        TimeUnit.SECONDS.toMillis(15)));
-        onView(withId(R.id.menu_search))
-                .check(matches(isEnabled()));
-        onView(withId(R.id.menu_add))
-                .check(matches(isEnabled()));
-        openActionBarOverflowOrOptionsMenu(
-                getInstrumentation().getTargetContext());
-        onView(withText(R.string.file_operations))
-                .check(matches(isEnabled()));
-        onView(withText(R.string.sort))
-                .check(matches(isEnabled()));
-        onView(withText(R.string.close_file))
-                .check(matches(isEnabled()));
-        pressBack();
+    /**
+     * Validate the UI for a new file.  The file is left in read-only mode.
+     */
+    private static void validateOpenedEmptyFile(boolean newFile)
+    {
+        if (newFile) {
+            validateMenus(true);
+        } else {
+            validateMenus(false);
+            setWritable(true);
+            validateMenus(true);
+        }
+        setWritable(false);
+        validateMenus(false);
 
         onView(withId(R.id.content))
                 .check(matches(isEnabled()));
@@ -237,5 +226,96 @@ public class PasswdSafeNewFileTest
                      withParent(withParent(withId(R.id.content)))))
                 .check(matches(withEffectiveVisibility(
                         ViewMatchers.Visibility.VISIBLE)));
+    }
+
+    /**
+     * Validate the menus of an open file
+     */
+    private static void validateMenus(boolean writable)
+    {
+        // Validate nav drawer
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.START)))
+                .perform(open());
+
+        onView(withParent(withId(R.id.navigation_drawer)))
+               .check(matches(hasChildCount(1 /*header*/ + 6 /*menu items*/)));
+
+        for (int id : new int[]
+                { R.string.writable, R.string.records,
+                  R.string.password_policies, R.string.password_expiration,
+                  R.string.preferences, R.string.about }) {
+            onView(allOf(withText(id),
+                         isDescendantOfA(withId(R.id.navigation_drawer))))
+                    .check(matches(isEnabled()));
+        }
+
+        onView(withWritableSw())
+                .check(matches(writable ? isChecked() : isNotChecked()));
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isOpen(Gravity.START)))
+                .perform(close());
+
+        // Validate main menu
+        onView(isRoot()).perform(waitId(R.id.menu_search,
+                                        TimeUnit.SECONDS.toMillis(15)));
+        onView(withId(R.id.menu_search))
+                .check(matches(isEnabled()));
+        if (writable) {
+            onView(withId(R.id.menu_add))
+                    .check(matches(isEnabled()));
+            openActionBarOverflowOrOptionsMenu(
+                    getInstrumentation().getTargetContext());
+            onView(withText(R.string.file_operations))
+                    .check(matches(isEnabled()));
+            onView(withText(R.string.sort))
+                    .check(matches(isEnabled()));
+            onView(withText(R.string.close_file))
+                    .check(matches(isEnabled()));
+            pressBack();
+        } else {
+            onView(withId(R.id.menu_sort))
+                    .check(matches(isEnabled()));
+            onView(withId(R.id.menu_close))
+                    .check(matches(isEnabled()));
+            onView(withId(R.id.menu_add))
+                    .check(doesNotExist());
+        }
+    }
+
+    /**
+     * Set the writable state of the file.  The file must be in the opposite
+     * state already.
+     */
+    private static void setWritable(boolean writable)
+    {
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.START)))
+                .perform(open());
+
+        onView(withWritableSw())
+                .check(matches(writable ? isNotChecked() : isChecked()))
+                .perform(click());
+
+        // Wait for main menu
+        onView(isRoot()).perform(waitId(R.id.menu_search,
+                                        TimeUnit.SECONDS.toMillis(15)));
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.START)));
+    }
+
+    /**
+     * Get a matcher for the writable switch
+     */
+    private static Matcher<View> withWritableSw()
+    {
+        return allOf(
+                withId(R.id.switch_item),
+                withParent(withParent(hasSibling(
+                        allOf(withText(R.string.writable),
+                              isDescendantOfA(withId(R.id.navigation_drawer))
+                        )))
+                ));
     }
 }
