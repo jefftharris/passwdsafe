@@ -271,6 +271,14 @@ public class PasswdFileData
         }
     }
 
+    /**
+     * Is the file capable of being written
+     */
+    public final boolean isWriteCapable()
+    {
+        return itsIsUriWritable;
+    }
+
     public final boolean canEdit()
     {
         return isWritable() &&

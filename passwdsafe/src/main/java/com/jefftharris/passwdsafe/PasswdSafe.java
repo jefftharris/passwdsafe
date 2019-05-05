@@ -784,6 +784,18 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     /**
+     * Is the file capable of being writable
+     */
+    @Override
+    public boolean isFileWriteCapable()
+    {
+        Boolean writeCapable = (itsFileDataFrag != null) ?
+                itsFileDataFrag.useFileData(PasswdFileData::isWriteCapable) :
+                null;
+        return (writeCapable != null) ? writeCapable : false;
+    }
+
+    /**
      * Set the file writable
      */
     @Override
