@@ -369,6 +369,7 @@
     <string name="view">Ouvrir</string>
     <string name="view_password_expirations">Voir les expirations de mot de passe</string>
     <string name="word_wrap">Adapter les retours-chariot</string>
+    <string name="writable">Modifiable</string>
     <string name="yes">Oui</string>
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_disabled">YubiKey désactivée. Activer NFC pour utiliser.</string>

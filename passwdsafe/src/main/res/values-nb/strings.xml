@@ -282,6 +282,7 @@
     <string name="view">Se</string>
     <string name="view_password_expirations">Vis passordutløp</string>
     <string name="word_wrap">Linjebryting</string>
+    <string name="writable">Skrivbar</string>
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_disabled">YubiKey deaktivert. Aktiver NFC for å bruke.</string>

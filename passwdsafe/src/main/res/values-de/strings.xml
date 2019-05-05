@@ -360,6 +360,7 @@
     <string name="view">Ansehen</string>
     <string name="view_password_expirations">Passwortlaufzeiten anzeigen</string>
     <string name="word_wrap">Zeilenumbruch</string>
+    <string name="writable">Beschreibbar</string>
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_disabled">YubiKey deaktiviert. NFC einschalten, um es benutzen zu können.</string>
