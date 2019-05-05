@@ -29,7 +29,13 @@ public class PasswdSafeNavDrawerFragment
         extends AbstractNavDrawerFragment<PasswdSafeNavDrawerFragment.Listener>
         implements CompoundButton.OnCheckedChangeListener
 {
-    // TODO: auto open drawer to show writable option first time
+    /** Preference for initial forced open count */
+    private static final String PREF_SHOWN_DRAWER =
+            "passwdsafe_navigation_drawer_shown_passwdsafe";
+
+    /** Counter for how often the drawer is forced open for user to see
+     *  changes */
+    private static final int SHOW_DRAWER_COUNT = 1;
 
     /** Listener interface for the owning activity */
     public interface Listener
@@ -118,7 +124,7 @@ public class PasswdSafeNavDrawerFragment
      */
     public void setUp(DrawerLayout drawerLayout)
     {
-        super.setUp(drawerLayout);
+        doSetUp(drawerLayout, PREF_SHOWN_DRAWER, SHOW_DRAWER_COUNT);
         updateView(Mode.INIT, "", false);
     }
 

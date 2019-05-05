@@ -42,6 +42,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     private View itsFragmentContainerView;
     private boolean itsFromSavedInstanceState;
     private boolean itsUserLearnedDrawer;
+    private boolean itsInitShowDrawer = false;
     private ListenerT itsListener;
 
     @Override
@@ -110,10 +111,10 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     /**
      * Users of this fragment must call this method to set up the navigation
      * drawer interactions.
-     *
-     * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
-    protected void setUp(DrawerLayout drawerLayout)
+    protected void doSetUp(DrawerLayout drawerLayout,
+                           String drawerOpenPref,
+                           int expectedDrawerOpenVal)
     {
         itsFragmentContainerView =
                 getActivity().findViewById(R.id.navigation_drawer);
@@ -170,6 +171,13 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
         };
 
         itsDrawerLayout.addDrawerListener(itsDrawerToggle);
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+        int shown = prefs.getInt(drawerOpenPref, 0);
+        if (shown != expectedDrawerOpenVal) {
+            prefs.edit().putInt(drawerOpenPref, expectedDrawerOpenVal).apply();
+            itsInitShowDrawer = true;
+        }
     }
 
     /** Is the drawer open */
@@ -222,8 +230,12 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     /**
      * Should the drawer be opened automatically
      */
-    protected boolean shouldOpenDrawer()
+    protected final boolean shouldOpenDrawer()
     {
+        if (itsInitShowDrawer) {
+            itsInitShowDrawer = false;
+            return true;
+        }
         return !itsUserLearnedDrawer && !itsFromSavedInstanceState;
     }
 

@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe;
 
 import android.content.ContentUris;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -75,7 +74,6 @@ public class FileListNavDrawerFragment
     private Uri itsSelSyncFilesUri = null;
     private final SparseArray<Uri> itsProviders = new SparseArray<>();
     private int itsNoProvidersNavItem = -1;
-    private boolean itsIsShowDrawer;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -103,16 +101,7 @@ public class FileListNavDrawerFragment
      */
     public void setUp(DrawerLayout drawerLayout)
     {
-        super.setUp(drawerLayout);
-
-        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
-        int shown = prefs.getInt(PREF_SHOWN_DRAWER, 0);
-        if (shown < SHOWN_DRAWER_PROVIDERS) {
-            prefs.edit().putInt(PREF_SHOWN_DRAWER, SHOWN_DRAWER_PROVIDERS)
-                 .apply();
-            itsIsShowDrawer = true;
-        }
-
+        doSetUp(drawerLayout, PREF_SHOWN_DRAWER, SHOWN_DRAWER_PROVIDERS);
         updateView(Mode.INIT, null);
     }
 
@@ -232,16 +221,6 @@ public class FileListNavDrawerFragment
     public void onLoaderReset(@NonNull Loader<Cursor> loader)
     {
         onLoadFinished(loader, null);
-    }
-
-    @Override
-    protected boolean shouldOpenDrawer()
-    {
-        if (itsIsShowDrawer) {
-            itsIsShowDrawer = false;
-            return true;
-        }
-        return super.shouldOpenDrawer();
     }
 
     /**
