@@ -378,6 +378,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.18.0&lt;/b&gt; - Déplacement de l\'autorisation modification
+        fichier vers le menu en haut a gauche après l\'ouverture du fichier.
+        \n\n
         &lt;b&gt;6.17.0&lt;/b&gt; - Maj ouvrir fochier et nouvelle interface
         graphique
         \n\n
