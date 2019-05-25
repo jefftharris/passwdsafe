@@ -1210,19 +1210,15 @@ public class PasswdSafeOpenFileFragment
         protected void handleFinish(SavedPasswordFinish finishMode)
         {
             setProgressVisible(false, false);
+            doSetFieldsEnabled(true);
             switch (finishMode) {
             case SUCCESS: {
-                doDelayed(() -> {
-                    doSetFieldsEnabled(true);
-                    itsLoadSavedPasswordUser = null;
-                    itsOpenBtn.performClick();
-                });
+                doDelayed(() -> itsLoadSavedPasswordUser = null);
                 break;
             }
             case ERROR:
             case FRAGMENT_CANCEL:
             case TIMEOUT: {
-                doSetFieldsEnabled(true);
                 itsLoadSavedPasswordUser = null;
                 break;
             }
