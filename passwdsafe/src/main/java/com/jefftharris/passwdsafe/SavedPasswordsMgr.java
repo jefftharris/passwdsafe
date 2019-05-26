@@ -37,11 +37,13 @@ import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
@@ -194,14 +196,15 @@ public final class SavedPasswordsMgr
             throws InvalidAlgorithmParameterException, NoSuchAlgorithmException,
             NoSuchProviderException, IOException
     {
-        PasswdSafeUtil.dbginfo(TAG, "generateKey: %s", fileUri);
+        String keyName = getUriAlias2(fileUri.getUri());
+        PasswdSafeUtil.dbginfo(TAG, "generateKey: %s, key: %s",
+                               fileUri, keyName);
 
         if (!itsFingerprintMgr.hasEnrolledFingerprints()) {
             throw new IOException(
                     itsContext.getString(R.string.no_fingerprints_registered));
         }
 
-        String keyName = getUriAlias(fileUri.getUri());
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance(
                     KeyProperties.KEY_ALGORITHM_AES, KEYSTORE);
@@ -318,8 +321,14 @@ public final class SavedPasswordsMgr
             PasswdSafeUtil.dbginfo(TAG, "removeSavedPassword: %s", fileUri);
             try {
                 KeyStore keyStore = getKeystore();
-                String keyName = getUriAlias(uri);
-                keyStore.deleteEntry(keyName);
+                for (String keyName : new String[]
+                        { getUriAlias2(uri), getUriAlias1(uri) }) {
+                    try {
+                        keyStore.deleteEntry(keyName);
+                    } catch (KeyStoreException e) {
+                        e.printStackTrace();
+                    }
+                }
             } catch (KeyStoreException | CertificateException |
                     IOException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
@@ -380,9 +389,16 @@ public final class SavedPasswordsMgr
             }
         }
 
-        String keyName = getUriAlias(uri);
         KeyStore keystore = getKeystore();
-        Key key = keystore.getKey(keyName, null);
+        Key key = null;
+        for (String keyName : new String[]
+                { getUriAlias2(uri), getUriAlias1(uri) }) {
+            key = keystore.getKey(keyName, null);
+            if (key != null) {
+                PasswdSafeUtil.dbginfo(TAG, "getKeyCipher name %s", keyName);
+                break;
+            }
+        }
         if (key == null) {
             throw new IOException(itsContext.getString(R.string.key_not_found,
                                                        uri));
@@ -417,9 +433,18 @@ public final class SavedPasswordsMgr
     }
 
     /**
-     * Get the keystore alias for a URI
+     * Get the v2 keystore alias for a URI
      */
-    private String getUriAlias(Uri uri)
+    private static String getUriAlias2(Uri uri)
+            throws UnsupportedEncodingException
+    {
+        return "key2_" + SavedPassword.getUriKey(uri);
+    }
+
+    /**
+     * Get the v1 keystore alias for a URI
+     */
+    private static String getUriAlias1(Uri uri)
     {
         return "key_" + uri.toString();
     }
@@ -442,6 +467,17 @@ public final class SavedPasswordsMgr
         public final String itsIv;
         public final String itsEncPasswd;
 
+        private static final MessageDigest MD_SHA256;
+        static {
+            MessageDigest md = null;
+            try {
+                md = MessageDigest.getInstance("SHA-256");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            MD_SHA256 = md;
+        }
+
         /**
          * Constructor
          */
@@ -450,6 +486,18 @@ public final class SavedPasswordsMgr
             itsUri = Uri.parse(uri);
             itsIv = iv;
             itsEncPasswd = encPasswd;
+        }
+
+        /**
+         * Get a unique key for a URI
+         */
+        public static String getUriKey(Uri uri)
+                throws UnsupportedEncodingException
+        {
+            String uristr = uri.toString();
+            @SuppressWarnings("CharsetObjectCanBeUsed")
+            byte[] digest = MD_SHA256.digest(uristr.getBytes("UTF-8"));
+            return Base64.encodeToString(digest, Base64.NO_WRAP);
         }
     }
 
@@ -501,8 +549,17 @@ public final class SavedPasswordsMgr
                 public SavedPassword useDb(SQLiteDatabase db)
                         throws Exception
                 {
-                    SavedPassword saved = getByQuery(
-                            db, WHERE_BY_URI, new String[]{ uri.toString() });
+                    SavedPassword saved;
+
+                    saved = getByQuery(db, WHERE_BY_URI,
+                                       new String[]{ SavedPassword.getUriKey(
+                                               uri.getUri()) });
+                    if (saved != null) {
+                        return saved;
+                    }
+
+                    saved = getByQuery(db, WHERE_BY_URI,
+                                       new String[]{ uri.toString() });
                     if (saved != null) {
                         return saved;
                     }
@@ -557,8 +614,8 @@ public final class SavedPasswordsMgr
                 throws Exception
         {
             Pair<String, String> provdisp = getProviderAndDisplay(uri, ctx);
-            addSavedPassword(uri.toString(), provdisp.first, provdisp.second,
-                             iv, encPasswd);
+            addSavedPassword(SavedPassword.getUriKey(uri.getUri()),
+                             provdisp.first, provdisp.second, iv, encPasswd);
         }
 
         /**
@@ -567,8 +624,11 @@ public final class SavedPasswordsMgr
         public void removeSavedPassword(final Uri uri) throws Exception
         {
             itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
-                db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                          WHERE_BY_URI, new String[] {uri.toString()});
+                for (String uristr: new String[] {
+                        uri.toString(), SavedPassword.getUriKey(uri) }) {
+                    db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
+                              WHERE_BY_URI, new String[]{uristr});
+                }
                 return null;
             });
         }
