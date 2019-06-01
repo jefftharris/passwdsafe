@@ -16,11 +16,12 @@
    height="793.70081"
    id="svg2"
    version="1.1"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="0.92.4 (unknown)"
    inkscape:export-filename="/home/jharris/src/PasswdSafe/image.png"
-   inkscape:export-xdpi="20.49"
-   inkscape:export-ydpi="20.49"
-   style="enable-background:new">
+   inkscape:export-xdpi="69.029999"
+   inkscape:export-ydpi="69.029999"
+   style="enable-background:new"
+   enable-background="new">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -29,16 +30,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="544.75983"
-     inkscape:cy="395.55536"
+     inkscape:cx="-48.74017"
+     inkscape:cy="194.05536"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer5"
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:window-width="1765"
      inkscape:window-height="1380"
-     inkscape:window-x="968"
-     inkscape:window-y="479"
+     inkscape:window-x="122"
+     inkscape:window-y="585"
      inkscape:window-maximized="0"
      inkscape:snap-global="true"
      showguides="true"
@@ -949,6 +950,18 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Background">
+    <rect
+       style="fill:#e6e6e6;stroke:#e6e6e6;stroke-width:4.9393115;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers fill stroke"
+       id="background"
+       width="707.05896"
+       height="707.05896"
+       x="-86.529457"
+       y="173.17131" />
+  </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
