@@ -11,7 +11,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -44,6 +43,7 @@ import com.jefftharris.passwdsafe.sync.lib.AccountSyncFreqUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
+import com.jefftharris.passwdsafe.sync.lib.RemoveAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 import com.jefftharris.passwdsafe.sync.onedrive.OnedriveFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudEditDialog;
@@ -679,16 +679,7 @@ public class MainActivity extends AppCompatActivity
     /** Remove an account */
     private void removeAccount(Uri currAcct)
     {
-        new AccountUpdateTask(currAcct, getString(R.string.removing_account))
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                if (itsAccountUri != null) {
-                    cr.delete(itsAccountUri, null, null);
-                }
-            }
-        }.startTask(this, this);
+        new RemoveAccountTask(currAcct, this).startTask(this, this);
     }
 
     /** Get the Google Drive provider */
