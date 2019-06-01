@@ -139,6 +139,7 @@
 -dontwarn com.nimbusds.jose.crypto.LegacyAESGCM
 -dontwarn com.nimbusds.jose.jwk.ECKey
 -dontwarn com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton
+-keep class com.microsoft.graph.extensions.Hashes
 
 # Retrofit library
 -dontwarn retrofit.RestMethodInfo$RxSupport
