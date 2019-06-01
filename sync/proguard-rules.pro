@@ -87,21 +87,7 @@
     java.lang.CharSequence title;
 }
 
--dontnote android.net.http.**
--dontnote android.support.v4.text.ICUCompat**
--dontnote android.support.v7.widget.DrawableUtils
--dontnote com.android.vending.licensing.ILicensingService
-
-# Apache commons
--dontnote org.apache.commons.codec.**
--dontwarn org.apache.commons.logging.impl.**
--dontnote org.apache.commons.lang.exception.ExceptionUtils
--dontnote org.apache.commons.logging.LogSource
--dontnote org.apache.commons.logging.**
-
 # Apache http
--dontwarn org.apache.http.**
--dontnote org.apache.http.**
 -keep class org.apache.commons.httpclient.auth.BasicScheme
 -keep class org.apache.commons.httpclient.auth.DigestScheme
 -keep class org.apache.commons.httpclient.auth.NTLMScheme
@@ -110,44 +96,13 @@
 # Box library
 -keepclasseswithmembers,includedescriptorclasses class com.box.boxandroidlibv2.dao.** { *; }
 
-# Google play
--dontwarn com.google.android.gms.common.GooglePlayServicesUtil
--dontwarn com.google.common.cache.Striped64**
--dontwarn com.google.common.primitives.UnsignedBytes$LexicographicalComparatorHolder$UnsafeComparator**
--dontnote com.google.api.client.util.IOUtils
--dontnote com.google.common.cache.Striped64**
--dontnote com.google.gson.internal.UnsafeAllocator
--dontnote com.google.vending.licensing.ILicensingService
-
-# Jackrabbit
--dontwarn org.apache.jackrabbit.webdav.**
-
-# Jackson
--dontwarn com.fasterxml.jackson.databind.ext.**
--dontnote com.fasterxml.jackson.databind.deser.BasicDeserializerFactory
-
 # OkHttp
--dontwarn com.squareup.okhttp.internal.huc.**
--dontwarn okio.BufferedSink
--dontwarn okio.DeflaterSink
--dontwarn okio.Okio
--dontwarn org.joda.time.**
--dontnote com.squareup.okhttp.internal.Platform
--dontnote org.joda.time.DateTimeZone
+-dontwarn okio.ForwardingSink
 
 # OneDrive
--dontwarn com.nimbusds.jose.crypto.LegacyAESGCM
--dontwarn com.nimbusds.jose.jwk.ECKey
--dontwarn com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton
 -keep class com.microsoft.graph.extensions.Hashes
 
 # Retrofit library
--dontwarn retrofit.RestMethodInfo$RxSupport
--dontwarn retrofit.RxSupport
--dontwarn retrofit.RxSupport$1
--dontwarn retrofit.RxSupport$2
--dontwarn retrofit.appengine.UrlFetchClient
--dontnote retrofit.Platform
 -keep,includedescriptorclasses class retrofit.** { *; }
 -keepclasseswithmembers class * {
     @retrofit.http.* <methods>;
@@ -158,8 +113,5 @@
 
 # Dropbox unused dependencies
 -dontwarn okhttp3.**
--dontwarn com.dropbox.core.http.OkHttp3Requestor$*
--dontwarn com.dropbox.core.http.OkHttpRequestor$*
 -dontwarn com.squareup.okhttp.**
--dontwarn com.google.appengine.**
 -dontwarn javax.servlet.**
