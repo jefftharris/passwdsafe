@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import android.support.annotation.NonNull;
-import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 

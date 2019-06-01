@@ -7,7 +7,7 @@
  */
 package org.pwsafe.lib.crypto;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

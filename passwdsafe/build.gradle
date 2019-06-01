@@ -19,7 +19,7 @@ android {
         // <major><minor><bugfix><beta/extra>
         versionCode 6180000
         versionName "6.18.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -45,16 +45,16 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
-    androidTestImplementation 'com.android.support:support-annotations:28.0.0'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'androidx.annotation:annotation:1.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation('androidx.test.espresso:espresso-contrib:3.1.0') {
         exclude module: 'support-v4'
         exclude module: 'appcompat-v7'
         exclude module: 'design'
         exclude module: 'recyclerview-v7'
     }
-    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.1'
 }

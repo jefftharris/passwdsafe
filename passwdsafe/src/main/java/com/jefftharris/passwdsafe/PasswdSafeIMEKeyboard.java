@@ -11,8 +11,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.inputmethodservice.Keyboard;
-import android.support.annotation.NonNull;
 import android.view.inputmethod.EditorInfo;
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 

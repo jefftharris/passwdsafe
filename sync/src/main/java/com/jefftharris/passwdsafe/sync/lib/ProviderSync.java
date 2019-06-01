@@ -13,12 +13,12 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.PowerManager;
-import android.support.annotation.WorkerThread;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
+import androidx.annotation.WorkerThread;
+import androidx.core.app.NotificationCompat;
+import androidx.core.util.Pair;
 
 import com.jefftharris.passwdsafe.lib.BuildConfig;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;

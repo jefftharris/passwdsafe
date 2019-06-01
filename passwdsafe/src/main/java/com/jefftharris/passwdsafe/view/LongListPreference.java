@@ -8,10 +8,10 @@
 package com.jefftharris.passwdsafe.view;
 
 import android.content.Context;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.widget.TextView;
+import androidx.preference.ListPreference;
+import androidx.preference.PreferenceViewHolder;
 
 /**
  * The LongListPreference class is a ListPreference with support for a

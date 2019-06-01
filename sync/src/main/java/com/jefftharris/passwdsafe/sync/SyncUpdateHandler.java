@@ -7,7 +7,7 @@
 package com.jefftharris.passwdsafe.sync;
 
 
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 
 /**
  *  The SyncUpdateHandler interface defines callbacks for the UI when the sync

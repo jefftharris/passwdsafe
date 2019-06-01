@@ -7,7 +7,7 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Interface for users of password file data

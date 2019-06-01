@@ -10,8 +10,6 @@ package com.jefftharris.passwdsafe;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ListFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +21,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.ListFragment;
 
 import com.jefftharris.passwdsafe.file.HeaderPasswdPolicies;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;

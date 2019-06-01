@@ -7,14 +7,14 @@
  */
 package com.jefftharris.passwdsafe.test.util;
 
-import android.support.test.espresso.ViewAssertion;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.ViewAssertion;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
-import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 

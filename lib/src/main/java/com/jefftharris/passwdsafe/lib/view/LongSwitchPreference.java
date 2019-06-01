@@ -8,10 +8,10 @@
 package com.jefftharris.passwdsafe.lib.view;
 
 import android.content.Context;
-import android.support.v7.preference.PreferenceViewHolder;
-import android.support.v7.preference.SwitchPreferenceCompat;
 import android.util.AttributeSet;
 import android.widget.TextView;
+import androidx.preference.PreferenceViewHolder;
+import androidx.preference.SwitchPreferenceCompat;
 
 /**
  * The LongSwitchPreference class is a SwitchPreference with support for

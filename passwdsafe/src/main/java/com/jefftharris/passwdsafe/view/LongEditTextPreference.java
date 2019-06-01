@@ -8,10 +8,10 @@
 package com.jefftharris.passwdsafe.view;
 
 import android.content.Context;
-import android.support.v7.preference.EditTextPreference;
-import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.widget.TextView;
+import androidx.preference.EditTextPreference;
+import androidx.preference.PreferenceViewHolder;
 
 /**
  * The LongEditTextPreference class is an EditTextPreference with support for a

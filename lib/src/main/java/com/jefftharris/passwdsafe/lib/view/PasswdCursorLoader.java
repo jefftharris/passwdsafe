@@ -11,9 +11,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.os.OperationCanceledException;
+import androidx.core.os.OperationCanceledException;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 

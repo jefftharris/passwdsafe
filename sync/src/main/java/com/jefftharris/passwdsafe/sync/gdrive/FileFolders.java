@@ -7,18 +7,18 @@
  */
 package com.jefftharris.passwdsafe.sync.gdrive;
 
+import android.text.TextUtils;
+import androidx.annotation.Nullable;
+
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
-
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
 
 /**
  * The FileFolders class encapsulates handling of files and folders for

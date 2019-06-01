@@ -7,16 +7,16 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.io.File;
-
 import android.accounts.Account;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+
+import java.io.File;
 
 /**
  * The Provider interface encapsulates a service that provides files which are

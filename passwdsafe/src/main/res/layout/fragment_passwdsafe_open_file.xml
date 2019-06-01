@@ -17,7 +17,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.jefftharris.passwdsafe.PasswdSafeOpenFileFragment">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
@@ -34,7 +34,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/passwd_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/file"
             app:passwordToggleEnabled="true">
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwd_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                 android:maxLines="1"
                 android:scrollHorizontally="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
             android:id="@+id/yubikey"
@@ -81,7 +81,7 @@
             app:layout_constraintStart_toEndOf="@+id/yubikey"
             app:layout_constraintTop_toBottomOf="@+id/passwd_input"/>
 
-        <android.support.constraint.Barrier
+        <androidx.constraintlayout.widget.Barrier
             android:id="@+id/ro_save_options"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -151,7 +151,7 @@
             app:layout_constraintStart_toEndOf="@+id/yubi_progress_text"
             app:layout_constraintTop_toBottomOf="@+id/file_open_help_text"/>
 
-        <android.support.constraint.Barrier
+        <androidx.constraintlayout.widget.Barrier
             android:id="@+id/progress_barrier"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -171,6 +171,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progress_barrier"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

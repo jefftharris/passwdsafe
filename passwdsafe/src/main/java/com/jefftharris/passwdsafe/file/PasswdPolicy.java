@@ -10,8 +10,8 @@ package com.jefftharris.passwdsafe.file;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.util.Pair;

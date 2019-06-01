@@ -10,10 +10,10 @@ package com.jefftharris.passwdsafe.file;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ActContext;

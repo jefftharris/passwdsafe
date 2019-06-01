@@ -8,9 +8,9 @@
 package com.jefftharris.passwdsafe.sync;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceFragmentCompat;
 
 /**
  * Preferences activity

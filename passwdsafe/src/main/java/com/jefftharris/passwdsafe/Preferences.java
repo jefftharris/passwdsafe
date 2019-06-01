@@ -11,8 +11,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
+import androidx.preference.PreferenceManager;
 
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;

@@ -8,8 +8,8 @@
 package com.jefftharris.passwdsafe.sync.gdrive;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About;

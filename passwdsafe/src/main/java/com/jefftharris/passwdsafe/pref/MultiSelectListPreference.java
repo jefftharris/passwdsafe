@@ -10,8 +10,8 @@ package com.jefftharris.passwdsafe.pref;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.preference.ListPreference;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import androidx.annotation.NonNull;
 
 /**
  * @author jharris

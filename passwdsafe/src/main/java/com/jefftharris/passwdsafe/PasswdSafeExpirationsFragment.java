@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;

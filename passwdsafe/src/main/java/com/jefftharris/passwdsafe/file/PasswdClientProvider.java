@@ -6,15 +6,6 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -26,8 +17,8 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.PasswdSafeFileDataFragment;
 import com.jefftharris.passwdsafe.Preferences;
@@ -35,6 +26,15 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
 import org.pwsafe.lib.file.PwsRecord;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  *  The PasswdClientProvider class is a content provider for the PasswdSafe

@@ -7,9 +7,9 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;

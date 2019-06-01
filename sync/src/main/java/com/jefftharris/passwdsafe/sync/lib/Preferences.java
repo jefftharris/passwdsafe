@@ -9,7 +9,7 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 /**
  * The Preferences class manages preferences for the application

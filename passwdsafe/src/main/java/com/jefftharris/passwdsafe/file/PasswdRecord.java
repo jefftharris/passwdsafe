@@ -7,14 +7,14 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import android.text.TextUtils;
+import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.file.PwsRecord;
 
-import android.support.annotation.NonNull;
-import android.text.TextUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 
 public class PasswdRecord

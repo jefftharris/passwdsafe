@@ -15,9 +15,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.CallSuper;
-import android.support.annotation.Nullable;
 import android.util.Log;
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;

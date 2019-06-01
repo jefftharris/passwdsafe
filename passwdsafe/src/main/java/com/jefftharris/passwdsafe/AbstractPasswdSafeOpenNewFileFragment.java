@@ -8,11 +8,11 @@
 package com.jefftharris.passwdsafe;
 
 import android.net.Uri;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ProgressBar;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ManagedTask;

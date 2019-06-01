@@ -7,9 +7,9 @@
  */
 package com.jefftharris.passwdsafe;
 
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;

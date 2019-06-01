@@ -17,7 +17,6 @@ import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -26,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdHistory;

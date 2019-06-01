@@ -23,9 +23,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;

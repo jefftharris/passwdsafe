@@ -7,8 +7,9 @@
  */
 package com.jefftharris.passwdsafe.view;
 
-import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 /**
  * Utilities for TextInputLayout

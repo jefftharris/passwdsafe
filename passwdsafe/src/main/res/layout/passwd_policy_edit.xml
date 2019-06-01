@@ -23,33 +23,33 @@
                       android:layout_height="wrap_content"
                       android:orientation="vertical">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/name_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/name">
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textCapSentences"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout android:layout_width="match_parent"
                           android:layout_height="wrap_content"
                           android:orientation="horizontal">
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/length">
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/length"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
                         android:inputType="number"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <Spinner android:id="@+id/type"
                          style="@style/Widget.AppCompat.Spinner.Underlined"

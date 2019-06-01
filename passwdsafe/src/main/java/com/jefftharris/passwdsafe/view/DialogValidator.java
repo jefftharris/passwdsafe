@@ -7,15 +7,15 @@
  */
 package com.jefftharris.passwdsafe.view;
 
-import com.jefftharris.passwdsafe.R;
-import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
-
 import android.content.Context;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
+
+import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 
 public abstract class DialogValidator
 {
@@ -24,12 +24,12 @@ public abstract class DialogValidator
      */
     public static class AlertCompatValidator extends DialogValidator
     {
-        private final android.support.v7.app.AlertDialog itsDialog;
+        private final androidx.appcompat.app.AlertDialog itsDialog;
 
         /**
          * Constructor with a specific view and optional password fields
          */
-        public AlertCompatValidator(android.support.v7.app.AlertDialog dlg,
+        public AlertCompatValidator(androidx.appcompat.app.AlertDialog dlg,
                                     View view, Context ctx)
         {
             super(view, ctx);
@@ -40,7 +40,7 @@ public abstract class DialogValidator
         protected final View getDoneButton()
         {
             return itsDialog.getButton(
-                    android.support.v7.app.AlertDialog.BUTTON_POSITIVE);
+                    androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
         }
 
     }

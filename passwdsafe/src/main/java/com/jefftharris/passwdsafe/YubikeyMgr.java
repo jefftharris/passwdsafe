@@ -7,12 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import java.io.UnsupportedEncodingException;
-
-import org.pwsafe.lib.Util;
-import org.pwsafe.lib.file.Owner;
-import org.pwsafe.lib.file.PwsPassword;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -23,14 +17,20 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.CountDownTimer;
-import android.support.annotation.CheckResult;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.annotation.CheckResult;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.util.ClearingByteArrayOutputStream;
 import com.jefftharris.passwdsafe.util.YubiState;
+
+import org.pwsafe.lib.Util;
+import org.pwsafe.lib.file.Owner;
+import org.pwsafe.lib.file.PwsPassword;
+
+import java.io.UnsupportedEncodingException;
 
 
 /**

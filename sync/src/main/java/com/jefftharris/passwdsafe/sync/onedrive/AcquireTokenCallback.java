@@ -7,9 +7,9 @@
  */
 package com.jefftharris.passwdsafe.sync.onedrive;
 
-import android.support.annotation.MainThread;
-import android.support.annotation.WorkerThread;
 import android.util.Log;
+import androidx.annotation.MainThread;
+import androidx.annotation.WorkerThread;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.microsoft.identity.client.AuthenticationCallback;

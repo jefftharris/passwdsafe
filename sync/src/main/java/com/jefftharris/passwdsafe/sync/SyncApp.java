@@ -10,8 +10,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.WorkerThread;
 import android.util.Log;
+import androidx.annotation.WorkerThread;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;

@@ -9,8 +9,8 @@ package com.jefftharris.passwdsafe.lib.view;
 
 import android.database.Cursor;
 import android.database.DataSetObserver;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * RecyclerView adapter using a cursor

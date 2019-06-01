@@ -7,7 +7,7 @@
  */
 package com.jefftharris.passwdsafe.test.util;
 
-import android.support.v4.util.LongSparseArray;
+import androidx.collection.LongSparseArray;
 
 import org.junit.Before;
 import org.junit.Test;

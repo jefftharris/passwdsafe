@@ -19,10 +19,10 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.OpenableColumns;
-import android.support.annotation.Nullable;
-import android.support.v4.os.EnvironmentCompat;
-import android.support.v4.provider.DocumentFile;
 import android.util.Log;
+import androidx.annotation.Nullable;
+import androidx.core.os.EnvironmentCompat;
+import androidx.documentfile.provider.DocumentFile;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ApiCompat;

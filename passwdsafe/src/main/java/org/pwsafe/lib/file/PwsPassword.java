@@ -7,9 +7,9 @@
  */
 package org.pwsafe.lib.file;
 
-import android.support.annotation.CheckResult;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.annotation.CheckResult;
 
 import org.pwsafe.lib.Util;
 

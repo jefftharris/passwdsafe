@@ -19,13 +19,13 @@ import android.os.Build;
 import android.os.Handler;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
-import android.support.v4.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.core.os.CancellationSignal;
 
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ApiCompat;

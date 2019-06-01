@@ -16,9 +16,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.View;
@@ -30,7 +27,10 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 
 import java.util.List;

@@ -8,9 +8,9 @@
 package com.jefftharris.passwdsafe;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
+import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 

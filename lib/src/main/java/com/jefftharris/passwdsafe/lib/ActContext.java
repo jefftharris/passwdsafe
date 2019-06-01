@@ -9,7 +9,7 @@ package com.jefftharris.passwdsafe.lib;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Wrapper for a context that must be an Activity.  Used to ensure UI elements

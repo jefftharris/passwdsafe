@@ -17,9 +17,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 

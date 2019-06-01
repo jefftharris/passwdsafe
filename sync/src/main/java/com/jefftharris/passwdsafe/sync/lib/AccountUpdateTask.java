@@ -11,8 +11,8 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import androidx.fragment.app.FragmentActivity;
 
 import com.jefftharris.passwdsafe.lib.view.ProgressFragment;
 

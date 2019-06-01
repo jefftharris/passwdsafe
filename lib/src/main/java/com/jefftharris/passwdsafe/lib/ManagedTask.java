@@ -9,8 +9,8 @@ package com.jefftharris.passwdsafe.lib;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
+import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 
 /**
  * An async task that is manageable from fragments or activities

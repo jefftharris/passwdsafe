@@ -11,9 +11,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.content.ContentResolverCompat;
-import android.support.v4.os.CancellationSignal;
 import android.util.Log;
+import androidx.core.content.ContentResolverCompat;
+import androidx.core.os.CancellationSignal;
 
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;

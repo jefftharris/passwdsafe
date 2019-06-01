@@ -7,22 +7,22 @@
  */
 package com.jefftharris.passwdsafe.file;
 
+import android.content.Context;
+import android.text.TextUtils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.Utils;
+
+import org.pwsafe.lib.file.PwsRecord;
+
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.pwsafe.lib.file.PwsRecord;
-
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
-
-import com.jefftharris.passwdsafe.R;
-import com.jefftharris.passwdsafe.lib.Utils;
 
 /** A filter for records */
 public final class PasswdRecordFilter implements Closeable

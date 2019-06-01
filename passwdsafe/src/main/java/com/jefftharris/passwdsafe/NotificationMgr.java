@@ -20,10 +20,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.util.LongSparseArray;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.collection.LongSparseArray;
+import androidx.fragment.app.DialogFragment;
 
 import com.jefftharris.passwdsafe.file.PasswdExpiration;
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
