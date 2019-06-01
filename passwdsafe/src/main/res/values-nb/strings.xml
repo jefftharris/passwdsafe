@@ -291,6 +291,9 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.18.1&lt;/b&gt; - Fikset lagring av passord med lange
+        fil-URL-er, f.eks. OneDrive-app-filer.
+        \n\n
         &lt;b&gt;6.18.0&lt;/b&gt; - Flyttet aktivering av filendringer til
         menyen øverst til venstre etter at filen er åpen.
         \n\n

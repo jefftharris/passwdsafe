@@ -370,7 +370,7 @@
 
     <string name="release_notes">
         &lt;b&gt;6.18.1&lt;/b&gt; - Fix saving passwords with long file URLs,
-        e.g. OneDrive.
+        e.g. OneDrive app files.
         \n\n
         &lt;b&gt;6.18.0&lt;/b&gt; - Move enabling file changes to the top-left
         menu after the file is open.

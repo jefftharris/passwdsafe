@@ -378,6 +378,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.18.1&lt;/b&gt; - Correction sur la sauvegarde des mots de
+        passe avec url fichier longs, par example fichiers One Drive.
+        \n\n
         &lt;b&gt;6.18.0&lt;/b&gt; - Déplacement de l\'autorisation modification
         fichier vers le menu en haut a gauche après l\'ouverture du fichier.
         \n\n
