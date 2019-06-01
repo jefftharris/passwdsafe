@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -41,6 +40,7 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.sync.dropbox.DropboxFilesActivity;
+import com.jefftharris.passwdsafe.sync.lib.AccountSyncFreqUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
@@ -575,17 +575,8 @@ public class MainActivity extends AppCompatActivity
     public void updateProviderSyncFreq(final Uri providerUri,
                                        ProviderSyncFreqPref freq)
     {
-        new AccountUpdateTask(providerUri, getString(R.string.updating_account))
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                ContentValues values = new ContentValues();
-                values.put(PasswdSafeContract.Providers.COL_SYNC_FREQ,
-                           freq.getFreq());
-                cr.update(itsAccountUri, values, null, null);
-            }
-        }.startTask(this, this);
+        new AccountSyncFreqUpdateTask(providerUri, freq, this)
+                .startTask(this, this);
     }
 
     @Override

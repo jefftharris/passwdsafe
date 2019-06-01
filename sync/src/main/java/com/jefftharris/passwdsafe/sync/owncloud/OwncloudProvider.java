@@ -175,7 +175,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
      * @see com.jefftharris.passwdsafe.sync.lib.Provider#cleanupOnDelete(java.lang.String)
      */
     @Override
-    public void cleanupOnDelete(String acctName) throws Exception
+    public void cleanupOnDelete(String acctName)
     {
         unlinkAccount();
     }
@@ -488,9 +488,11 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
 
         @Override
         protected boolean doProviderUpdate(@NonNull OwncloudProvider provider)
-                throws Exception
         {
             Activity act = getActivity();
+            if (act == null) {
+                return false;
+            }
             String authToken = getAuthToken(provider.getAccount(itsNewAcct),
                                             act, act);
             return (authToken != null);

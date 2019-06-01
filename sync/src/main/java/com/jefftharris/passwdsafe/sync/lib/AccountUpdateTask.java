@@ -9,11 +9,14 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.view.ProgressFragment;
 
 /**
@@ -35,15 +38,17 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
     protected final Uri itsAccountUri;
 
     private final String itsProgressMsg;
-    private FragmentActivity itsActivity;
+    private ManagedRef<FragmentActivity> itsActivity;
     private Listener itsListener;
+    private ContentResolver itsContentResolver;
     private ProgressFragment itsProgressFrag;
 
     /** Start the update task */
     public void startTask(FragmentActivity activity, Listener listener)
     {
-        itsActivity = activity;
+        itsActivity = new ManagedRef<>(activity);
         itsListener = listener;
+        itsContentResolver = activity.getContentResolver();
         execute();
     }
 
@@ -68,16 +73,18 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
     {
         super.onPreExecute();
         itsListener.notifyUpdateStarted(this);
-        itsProgressFrag = ProgressFragment.newInstance(itsProgressMsg);
-        itsProgressFrag.show(itsActivity.getSupportFragmentManager(), null);
+        FragmentActivity frag = itsActivity.get();
+        if (frag != null) {
+            itsProgressFrag = ProgressFragment.newInstance(itsProgressMsg);
+            itsProgressFrag.show(frag.getSupportFragmentManager(), null);
+        }
     }
 
     @Override
     protected final Void doInBackground(Void... params)
     {
         try {
-            ContentResolver cr = itsActivity.getContentResolver();
-            doAccountUpdate(cr);
+            doAccountUpdate(itsContentResolver);
         } catch (Exception e) {
             Log.e(TAG, "Account update error", e);
         }
@@ -98,8 +105,8 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
     }
 
     /** Get the activity for the task */
-    protected final Activity getActivity()
+    protected final @Nullable Activity getActivity()
     {
-        return itsActivity;
+        return itsActivity.get();
     }
 }
