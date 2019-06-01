@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity
         accounts.setAdapter(itsAccountsAdapter);
         accounts.setNestedScrollingEnabled(false);
 
-        LoaderManager lm = getSupportLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_PROVIDERS, null, this);
 
         if (BuildConfig.DEBUG) {
@@ -759,7 +759,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void reloadProviders()
     {
-        LoaderManager lm = getSupportLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.restartLoader(LOADER_PROVIDERS, null, this);
     }
 
