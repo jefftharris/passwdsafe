@@ -497,8 +497,7 @@ public class PasswdSafeListFragment extends ListFragment
                 }
             }
 
-            itsSections =
-                    sectionIdxs.toArray(new ItemSection[sectionIdxs.size()]);
+            itsSections = sectionIdxs.toArray(new ItemSection[0]);
             setNotifyOnChange(true);
             notifyDataSetChanged();
             return selectedPos;

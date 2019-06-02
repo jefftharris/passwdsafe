@@ -391,8 +391,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
 
             itsPasswdEncPref = (ListPreference)
                     findPreference(Preferences.PREF_PASSWD_ENC);
-            String[] charsets =  PwsFile.ALL_PASSWORD_CHARSETS.toArray(
-                    new String[PwsFile.ALL_PASSWORD_CHARSETS.size()]);
+            String[] charsets =
+                    PwsFile.ALL_PASSWORD_CHARSETS.toArray(new String[0]);
             itsPasswdEncPref.setEntries(charsets);
             itsPasswdEncPref.setEntryValues(charsets);
             itsPasswdEncPref.setDefaultValue(Preferences.PREF_PASSWD_ENC_DEF);
