@@ -369,12 +369,15 @@ public class Preferences
     {
         Uri defFileUri = getDefFilePref(prefs);
         if ((defFileUri != null) && (defFileUri.getScheme() == null)) {
-            File defDir = getFileDirPref(prefs);
-            File def = new File(defDir, defFileUri.getPath());
-            defFileUri = Uri.fromFile(def);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(PREF_DEF_FILE, defFileUri.toString());
-            editor.apply();
+            String path = defFileUri.getPath();
+            if (path != null) {
+                File defDir = getFileDirPref(prefs);
+                File def = new File(defDir, path);
+                defFileUri = Uri.fromFile(def);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(PREF_DEF_FILE, defFileUri.toString());
+                editor.apply();
+            }
         }
     }
 

@@ -45,6 +45,7 @@ import org.pwsafe.lib.file.PwsStreamStorage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * The PasswdFileUri class encapsulates a URI to a password file
@@ -174,29 +175,28 @@ public class PasswdFileUri implements Parcelable
         itsType = getUriType(uri);
         switch (itsType) {
         case FILE: {
-            itsFile = new File(uri.getPath());
+            itsFile = new File(Objects.requireNonNull(uri.getPath()));
             resolveFileUri(ctx);
-            break;
+            return;
         }
         case GENERIC_PROVIDER: {
             itsFile = null;
             resolveGenericProviderUri(ctx);
-            break;
+            return;
         }
         case SYNC_PROVIDER: {
             itsFile = null;
             resolveSyncProviderUri(ctx);
-            break;
+            return;
         }
         case EMAIL:
-            //noinspection UnnecessaryDefault
-        default: {
-            itsFile = null;
-            itsWritableInfo = new Pair<>(false, null);
-            itsIsDeletable = false;
+        {
             break;
         }
         }
+        itsFile = null;
+        itsWritableInfo = new Pair<>(false, null);
+        itsIsDeletable = false;
     }
 
 
@@ -531,13 +531,14 @@ public class PasswdFileUri implements Parcelable
     /** Get the URI type */
     private static Type getUriType(Uri uri)
     {
-        if (uri.getScheme().equals(ContentResolver.SCHEME_FILE)) {
+        String scheme = uri.getScheme();
+        if ((scheme != null) && scheme.equals(ContentResolver.SCHEME_FILE)) {
             return Type.FILE;
         }
         String auth = uri.getAuthority();
         if (PasswdSafeContract.AUTHORITY.equals(auth)) {
             return Type.SYNC_PROVIDER;
-        } else if (auth.contains("mail")) {
+        } else if ((auth != null) && auth.contains("mail")) {
             return Type.EMAIL;
         }
         return Type.GENERIC_PROVIDER;

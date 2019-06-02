@@ -102,7 +102,7 @@ public class PasswdClientProvider extends ContentProvider
         case MATCH_FILES: {
             String fileName = uri.getLastPathSegment();
             synchronized (this) {
-                if (!itsFiles.contains(fileName)) {
+                if ((fileName == null) || !itsFiles.contains(fileName)) {
                     throw new FileNotFoundException(fileName);
                 }
                 File file = new File(fileName);

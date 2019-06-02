@@ -236,7 +236,8 @@ public class NotificationMgr implements PasswdFileDataObserver
         case FILE: {
             Uri fileUri = uri.getUri();
             String path = fileUri.getPath();
-            return (!path.contains("/data/com.google.android.apps.") &&
+            return ((path != null) &&
+                    !path.contains("/data/com.google.android.apps.") &&
                     !path.contains("/data/com.dropbox.android"));
         }
         case SYNC_PROVIDER: {
