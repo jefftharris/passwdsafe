@@ -6,12 +6,14 @@
   ~ distributed with this code, or available from
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_parent_dir"
         android:icon="@drawable/ic_action_up"
         android:orderInCategory="100"
-        android:title="@string/parent_directory"/>
+        android:title="@string/parent_directory"
+        app:showAsAction="ifRoom"/>
 
 </menu>

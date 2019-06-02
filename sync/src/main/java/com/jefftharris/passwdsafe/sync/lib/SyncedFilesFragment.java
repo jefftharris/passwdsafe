@@ -24,7 +24,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.ListFragment;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -164,8 +163,6 @@ public class SyncedFilesFragment extends ListFragment
                 !TextUtils.equals(ProviderRemoteFile.PATH_SEPARATOR, itsPathId);
 
         MenuItem item = menu.findItem(R.id.menu_parent_dir);
-        MenuItemCompat.setShowAsAction(item,
-                                       MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         item.setVisible(parentEnabled);
         super.onCreateOptionsMenu(menu, inflater);
     }
