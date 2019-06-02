@@ -115,7 +115,8 @@ public class OwncloudFilesActivity extends AbstractSyncedFilesActivity
             List<ProviderRemoteFile> files = new ArrayList<>();
             Pair<List<ProviderRemoteFile>, Exception> result =
                     Pair.create(files, null);
-            if (itsClient == null) {
+            Context ctx = itsContext.get();
+            if ((itsClient == null) || (ctx == null)) {
                 return result;
             }
 
@@ -123,7 +124,7 @@ public class OwncloudFilesActivity extends AbstractSyncedFilesActivity
                 ReadRemoteFolderOperation oper =
                         new ReadRemoteFolderOperation(params[0]);
                 RemoteOperationResult statusRes = oper.execute(itsClient);
-                OwncloudSyncer.checkOperationResult(statusRes, itsContext);
+                OwncloudSyncer.checkOperationResult(statusRes, ctx);
 
                 for (Object obj: statusRes.getData()) {
                     if (!(obj instanceof RemoteFile)) {

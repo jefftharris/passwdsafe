@@ -31,6 +31,7 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.jefftharris.passwdsafe.lib.ActContext;
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -388,7 +389,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
                              AbstractListFilesTask task);
         }
 
-        protected final Context itsContext;
+        protected final ManagedRef<Context> itsContext;
         private final Callback itsCb;
 
 
@@ -396,7 +397,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         public AbstractListFilesTask(Context ctx, Callback cb)
         {
             itsCb = cb;
-            itsContext = ctx;
+            itsContext = new ManagedRef<>(ctx);
         }
 
 
@@ -407,10 +408,11 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         protected void onPostExecute(
                 Pair<List<ProviderRemoteFile>, Exception> result)
         {
-            if (result.second != null) {
+            Context ctx = itsContext.get();
+            if ((result.second != null) && (ctx != null)) {
                 Log.e(TAG, "Error listing files", result.second);
                 Toast.makeText(
-                        itsContext,
+                        ctx,
                         "Error listing files: " + result.second.getMessage(),
                         Toast.LENGTH_LONG).show();
             }
