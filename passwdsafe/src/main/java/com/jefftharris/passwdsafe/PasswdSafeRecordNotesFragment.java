@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.file.PasswdNotes;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
-import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 
@@ -63,7 +62,7 @@ public class PasswdSafeRecordNotesFragment
         View root = inflater.inflate(R.layout.fragment_passwdsafe_record_notes,
                                      container, false);
         itsNotes = root.findViewById(R.id.notes);
-        GuiUtils.setTextSelectable(itsNotes);
+        itsNotes.setTextIsSelectable(true);
         return root;
     }
 
@@ -147,7 +146,7 @@ public class PasswdSafeRecordNotesFragment
         itsIsWordWrap = prefs.getBoolean(WORD_WRAP_PREF, true);
         itsIsMonospace = prefs.getBoolean(MONOSPACE_PREF, false);
         setNotesOptions();
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
     /**

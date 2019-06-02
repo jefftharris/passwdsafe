@@ -224,7 +224,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         {
             switch (key) {
             case Preferences.PREF_DISPLAY_THEME_LIGHT: {
-                ApiCompat.recreateActivity(getActivity());
+                requireActivity().recreate();
                 break;
             }
             }

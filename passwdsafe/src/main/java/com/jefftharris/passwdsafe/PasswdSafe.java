@@ -1775,7 +1775,7 @@ public class PasswdSafe extends AppCompatActivity
         }
         }
 
-        GuiUtils.invalidateOptionsMenu(this);
+        invalidateOptionsMenu();
         boolean fileOpen = isFileOpen();
         itsNavDrawerFrag.updateView(drawerMode, fileNameUpdate, fileOpen);
         restoreActionBar();

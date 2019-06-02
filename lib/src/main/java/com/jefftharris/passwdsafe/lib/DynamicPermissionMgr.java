@@ -128,7 +128,7 @@ public class DynamicPermissionMgr implements View.OnClickListener
      */
     private void restart()
     {
-        ApiCompat.recreateActivity(itsActivity);
+        itsActivity.recreate();
         System.exit(0);
     }
 }

@@ -445,7 +445,7 @@ public class PasswdSafeRecordBasicFragment
         GuiUtils.setListViewHeightBasedOnChildren(itsReferences);
         GuiUtils.setVisible(itsReferencesRow, hasReferences);
 
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
     /**
@@ -558,7 +558,7 @@ public class PasswdSafeRecordBasicFragment
             }
             }
         }
-        GuiUtils.invalidateOptionsMenu(act);
+        act.invalidateOptionsMenu();
     }
 
     /**

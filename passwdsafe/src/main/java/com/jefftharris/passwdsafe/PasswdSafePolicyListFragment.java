@@ -322,7 +322,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
         PolicyListAdapter adapter = new PolicyListAdapter(
                 policies, itsIsFileReadonly, listener, getContext());
         setListAdapter(adapter);
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
     /**

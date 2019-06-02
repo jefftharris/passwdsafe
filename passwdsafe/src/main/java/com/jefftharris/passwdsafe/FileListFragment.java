@@ -34,7 +34,6 @@ import androidx.loader.content.Loader;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
-import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.FileComparator;
 
 import java.io.File;
@@ -482,7 +481,7 @@ public final class FileListFragment extends ListFragment
         }
         setFileDir(newDir);
         showFiles();
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
 

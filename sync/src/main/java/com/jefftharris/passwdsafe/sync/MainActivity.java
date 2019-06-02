@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         GuiUtils.setVisible(findViewById(R.id.no_accounts_msg), !hasAccounts);
-        GuiUtils.invalidateOptionsMenu(this);
+        invalidateOptionsMenu();
 
         itsAccountsAdapter.changeCursor(cursor);
     }

@@ -7,7 +7,6 @@
  */
 package com.jefftharris.passwdsafe.lib.view;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -28,7 +27,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.core.app.NotificationCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
@@ -131,11 +129,8 @@ public final class GuiUtils
      */
     public static void setCheckedNoAnim(CompoundButton view, boolean checked)
     {
-        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_HONEYCOMB) {
-            GuiUtilsHoneycomb.setCheckedNoAnim(view, checked);
-        } else {
-            view.setChecked(checked);
-        }
+        view.setChecked(checked);
+        view.jumpDrawablesToCurrentState();
     }
 
     /**
@@ -177,7 +172,7 @@ public final class GuiUtils
                                          final Runnable enterRunnable)
     {
         if (firstField != null) {
-            GuiUtilsFroyo.showKeyboard(firstField, ctx);
+            firstField.post(new KeyboardViewer(firstField, ctx));
         }
 
         finalField.setOnKeyListener((v, keyCode, event) -> {
@@ -206,36 +201,9 @@ public final class GuiUtils
             return;
         }
         if (visible) {
-            if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_HONEYCOMB) {
-                imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-            } else {
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-                                    InputMethodManager.HIDE_IMPLICIT_ONLY);
-            }
+            imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
         } else {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-    }
-
-
-    /**
-     * Invalidate the options menu on an activity
-     */
-    public static void invalidateOptionsMenu(Activity act)
-    {
-        if (act instanceof FragmentActivity) {
-            act.invalidateOptionsMenu();
-        } else if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_HONEYCOMB) {
-            GuiUtilsHoneycomb.invalidateOptionsMenu(act);
-        }
-    }
-
-
-    /** Set the text in a TextView as selectable */
-    public static void setTextSelectable(TextView tv)
-    {
-        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_HONEYCOMB) {
-            GuiUtilsHoneycomb.setTextSelectable(tv);
         }
     }
 
@@ -248,7 +216,7 @@ public final class GuiUtils
         if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_LOLLIPOP) {
             return GuiUtilsLollipop.getDrawable(res, id);
         } else {
-            return GuiUtilsFroyo.getDrawable(res, id);
+            return res.getDrawable(id);
         }
     }
 

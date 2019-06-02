@@ -223,7 +223,7 @@ public class PasswdSafeChangePasswordFragment
 
             if (valid != itsIsValid) {
                 itsIsValid = valid;
-                GuiUtils.invalidateOptionsMenu(getActivity());
+                requireActivity().invalidateOptionsMenu();
             }
         }
 
