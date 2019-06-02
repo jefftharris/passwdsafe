@@ -68,7 +68,6 @@ public final class GuiUtilsFroyo
     /**
      * Get a drawable resource
      */
-    @SuppressWarnings("deprecation")
     public static Drawable getDrawable(Resources res, int id)
     {
         return res.getDrawable(id);

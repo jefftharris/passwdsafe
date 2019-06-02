@@ -217,11 +217,9 @@ public class PasswdFileUri implements Parcelable
         itsUri = source.readParcelable(getClass().getClassLoader());
         itsType = Type.valueOf(source.readString());
         str = source.readString();
-        //noinspection ConstantConditions
         itsFile = (str != null) ? new File(str) : null;
         itsTitle = source.readString();
         str = source.readString();
-        //noinspection ConstantConditions
         itsSyncType = (str != null) ? ProviderType.valueOf(str) : null;
     }
 
@@ -639,7 +637,6 @@ public class PasswdFileUri implements Parcelable
                                                                Context ctx)
     {
         boolean checkFlags = false;
-        //noinspection ConstantConditions
         if (DocumentFile.isDocumentUri(ctx, itsUri)) {
             if (ctx.checkCallingOrSelfUriPermission(
                     itsUri,

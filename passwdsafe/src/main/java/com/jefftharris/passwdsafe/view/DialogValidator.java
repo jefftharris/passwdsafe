@@ -86,7 +86,6 @@ public abstract class DialogValidator
                 itsErrorMsgView.setVisibility(View.GONE);
             } else {
                 itsErrorMsgView.setVisibility(View.VISIBLE);
-                //noinspection deprecation
                 itsErrorMsgView.setText(
                         Html.fromHtml(String.format(itsErrorFmt, errorMsg)));
             }
