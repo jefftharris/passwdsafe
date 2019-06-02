@@ -473,7 +473,7 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.MONTH),
                             itsExpiryDate.get(Calendar.DAY_OF_MONTH));
             picker.setTargetFragment(this, 0);
-            picker.show(getFragmentManager(), "datePicker");
+            picker.show(requireFragmentManager(), "datePicker");
             break;
         }
         case R.id.expire_date_time: {
@@ -482,7 +482,7 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.HOUR_OF_DAY),
                             itsExpiryDate.get(Calendar.MINUTE));
             picker.setTargetFragment(this, 0);
-            picker.show(getFragmentManager(), "timePicker");
+            picker.show(requireFragmentManager(), "timePicker");
             break;
         }
         case R.id.history_addremove: {
@@ -546,7 +546,7 @@ public class PasswdSafeEditRecordFragment
             PasswdPolicyEditDialog dlg =
                     PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
             dlg.setTargetFragment(this, 0);
-            dlg.show(getFragmentManager(), "PasswdPolicyEditDialog");
+            dlg.show(requireFragmentManager(), "PasswdPolicyEditDialog");
             break;
         }
         }
@@ -1140,7 +1140,7 @@ public class PasswdSafeEditRecordFragment
             itsGroup.setSelection(itsPrevGroupPos);
             NewGroupDialog groupDlg = NewGroupDialog.newInstance();
             groupDlg.setTargetFragment(this, 0);
-            groupDlg.show(getFragmentManager(), "NewGroupDialog");
+            groupDlg.show(requireFragmentManager(), "NewGroupDialog");
         } else {
             itsPrevGroupPos = position;
             itsValidator.validate();
