@@ -627,8 +627,8 @@ public class PwsRecordV3 extends PwsRecord
     protected void writeField(PwsFile file, PwsField field, int type)
             throws IOException
     {
-        byte lenBlock[] = new byte[5];
-        byte dataBlock[] = field.getBytes();
+        byte[] lenBlock = new byte[5];
+        byte[] dataBlock = field.getBytes();
 
         Util.putIntToByteArray(lenBlock, dataBlock.length, 0);
         lenBlock[4] = (byte)type;

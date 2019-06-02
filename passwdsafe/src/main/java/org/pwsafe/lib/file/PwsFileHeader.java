@@ -107,7 +107,7 @@ public class PwsFileHeader
      */
     private void update(Owner<PwsPassword>.Param passwd)
     {
-        byte temp[];
+        byte[] temp;
 
         Util.newRandBytes(RandStuff);
         temp = Util.cloneByteArray(RandStuff, 10);

@@ -48,7 +48,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     private boolean modified = false;
     private boolean isLoaded = false;
     protected final Map<Integer, PwsField> attributes = new TreeMap<>();
-    private final Object ValidTypes[];
+    private final Object[] ValidTypes;
 
     protected boolean ignoreFieldTypes = false;
 
@@ -519,8 +519,8 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     protected void writeField(PwsFile file, PwsField field, int aType)
             throws IOException
     {
-        byte lenBlock[];
-        byte dataBlock[];
+        byte[] lenBlock;
+        byte[] dataBlock;
 
         lenBlock = new byte[PwsFile.calcBlockLength(8)];
         dataBlock = field.getBytes();

@@ -95,7 +95,7 @@ public abstract class PwsFileV1V2 extends PwsFile
             throws UnsupportedEncodingException
     {
         SHA1 sha1;
-        byte salt[];
+        byte[] salt;
 
         sha1 = new SHA1();
         salt = header.getSalt();
