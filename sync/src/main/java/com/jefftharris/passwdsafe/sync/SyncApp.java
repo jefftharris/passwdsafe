@@ -21,6 +21,7 @@ import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  *  Application class for PasswdSafe Sync
@@ -51,7 +52,8 @@ public class SyncApp extends Application
         try {
             List<DbProvider> providers = SyncDb.useDb(SyncDb::getProviders);
             for (DbProvider provider: providers) {
-                providerMap.put(provider.itsType, provider);
+                providerMap.put(Objects.requireNonNull(provider.itsType),
+                                provider);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error reading providers", e);
