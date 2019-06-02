@@ -236,7 +236,6 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
     }
 
     /** Should the file be synced */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isSyncFile(@NonNull File file)
     {
         if (isFolderFile(file) || file.getTrashed()) {
