@@ -698,7 +698,7 @@ public class PasswdFileData
     {
         Integer val = null;
         PwsField field = doGetRecField(rec, fieldId);
-        if ((field != null) && (field instanceof PwsIntegerField)) {
+        if (field instanceof PwsIntegerField) {
             val = (Integer)field.getValue();
         }
         return val;
@@ -709,7 +709,7 @@ public class PasswdFileData
     {
         Date date = null;
         PwsField field = doGetRecField(rec, fieldId);
-        if ((field != null) && (field instanceof PwsTimeField)) {
+        if (field instanceof PwsTimeField) {
             date = (Date)field.getValue();
         }
         return date;
