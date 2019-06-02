@@ -28,7 +28,7 @@ import java.io.Serializable;
  */
 public abstract class PwsField implements Comparable<Object>, Serializable
 {
-    private Object Value;
+    private final Object Value;
     private final int Type;
 
     /**

@@ -574,8 +574,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     private static class DefaultFileResolver
             extends AsyncTask<Void, Void, PasswdFileUri>
     {
-        private ManagedRef<FilesScreen> itsScreen;
-        private ManagedRef<Fragment> itsFrag;
+        private final ManagedRef<FilesScreen> itsScreen;
+        private final ManagedRef<Fragment> itsFrag;
         private PasswdFileUri.Creator itsUriCreator;
 
         /**

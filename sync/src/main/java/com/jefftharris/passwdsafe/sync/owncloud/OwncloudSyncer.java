@@ -43,7 +43,7 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
 {
     private static final String TAG = "OwncloudSyncer";
 
-    private boolean itsIsAuthorized;
+    private final boolean itsIsAuthorized;
 
     /** Constructor */
     public OwncloudSyncer(OwnCloudClient client,
