@@ -367,7 +367,6 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
             break;
         }
         case HEXADECIMAL: {
-            optionsVisible = false;
             break;
         }
         }
@@ -448,7 +447,6 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         case EASY_TO_READ:
         case PRONOUNCEABLE:
         case HEXADECIMAL: {
-            visible = false;
             break;
         }
         }

@@ -350,7 +350,6 @@ public class PasswdSafeListFragment extends ListFragment
         switch (itsMode) {
         case RECORDS:
         case NONE: {
-            groupVisible = false;
             break;
         }
         case GROUPS:

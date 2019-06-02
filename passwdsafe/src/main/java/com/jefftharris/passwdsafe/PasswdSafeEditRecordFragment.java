@@ -1024,7 +1024,6 @@ public class PasswdSafeEditRecordFragment
             int pos = TYPE_NORMAL;
             switch (type) {
             case NORMAL: {
-                pos = TYPE_NORMAL;
                 break;
             }
             case ALIAS: {
@@ -1043,13 +1042,10 @@ public class PasswdSafeEditRecordFragment
         itsTypeHasDetails = true;
         switch (type) {
         case NORMAL: {
-            itsTypeHasNormalPassword = true;
-            itsTypeHasDetails = true;
             break;
         }
         case ALIAS: {
             itsTypeHasNormalPassword = false;
-            itsTypeHasDetails = true;
             break;
         }
         case SHORTCUT: {
@@ -1497,7 +1493,6 @@ public class PasswdSafeEditRecordFragment
         case NORMAL: {
             switch (itsExpiryType) {
             case NEVER: {
-                updatedExpiry = null;
                 break;
             }
             case DATE: {
@@ -1526,7 +1521,6 @@ public class PasswdSafeEditRecordFragment
         }
         case ALIAS:
         case SHORTCUT: {
-            updatedExpiry = null;
             break;
         }
         }
