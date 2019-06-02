@@ -490,8 +490,6 @@ public class PwsRecordV3 extends PwsRecord
      * Initialises this record by reading its data from <code>file</code>.
      *
      * @param file the file to read the data from.
-     * @throws EndOfFileException
-     * @throws IOException
      */
     @Override
     protected void loadRecord(PwsFile file)
@@ -622,7 +620,6 @@ public class PwsRecordV3 extends PwsRecord
      * @param field the field to be written.
      * @param type  the type to write to the file instead of
      *              <code>field.getType()</code>
-     * @throws IOException
      */
     @Override
     protected void writeField(PwsFile file, PwsField field, int type)

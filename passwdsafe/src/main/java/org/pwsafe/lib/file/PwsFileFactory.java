@@ -165,11 +165,6 @@ public class PwsFileFactory
      * @param filename the name of the file to open
      * @param passwd   the passphrase for the file
      * @return The correct subclass of {@link PwsFile} for the file.
-     * @throws EndOfFileException
-     * @throws FileNotFoundException
-     * @throws InvalidPassphraseException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     public static PwsFile loadFile(String filename,
                                    Owner<PwsPassword>.Param passwd)
@@ -187,10 +182,6 @@ public class PwsFileFactory
      * @param storage the password storage
      * @param passwd  the passphrase for the file
      * @return The correct subclass of {@link PwsFile} for the file.
-     * @throws EndOfFileException
-     * @throws InvalidPassphraseException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     public static PwsFile loadFromStorage(PwsStorage storage,
                                           Owner<PwsPassword>.Param passwd)

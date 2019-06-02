@@ -231,8 +231,6 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      * Initialises this record by reading its data from <code>file</code>.
      *
      * @param file the file to read the data from.
-     * @throws EndOfFileException
-     * @throws IOException
      */
     @Override
     protected void loadRecord(PwsFile file)

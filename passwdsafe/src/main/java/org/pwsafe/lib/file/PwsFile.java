@@ -216,9 +216,6 @@ public abstract class PwsFile
      * @param aStorage the storage of the database to open.
      * @param passwd   the passphrase for the database.
      * @param encoding the passphrase encoding (if known)
-     * @throws EndOfFileException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     protected PwsFile(PwsStorage aStorage,
                       Owner<PwsPassword>.Param passwd, String encoding)
@@ -483,9 +480,6 @@ public abstract class PwsFile
      *
      * @param passwd   the passphrase for the file.
      * @param encoding the passphrase encoding (if known)
-     * @throws EndOfFileException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     protected abstract void open(Owner<PwsPassword>.Param passwd,
                                  String encoding)
@@ -593,7 +587,6 @@ public abstract class PwsFile
      *
      * @return The record read from the file.
      * @throws EndOfFileException              When end-of-file is reached.
-     * @throws IOException
      * @throws UnsupportedFileVersionException If this version of the file
      * cannot be handled.
      */
@@ -667,7 +660,6 @@ public abstract class PwsFile
      * Writes unencrypted bytes to the file.
      *
      * @param buffer the data to be written.
-     * @throws IOException
      */
     public void writeBytes(byte[] buffer)
             throws IOException
@@ -679,7 +671,6 @@ public abstract class PwsFile
      * Encrypts then writes the contents of <code>buff</code> to the file.
      *
      * @param buff the data to be written.
-     * @throws IOException
      */
     public abstract void writeEncryptedBytes(byte[] buff)
             throws IOException;
@@ -689,8 +680,6 @@ public abstract class PwsFile
      * Subclasses should override this as necessary.
      *
      * @param file the {@link PwsFile} instance to write the header to.
-     *
-     * @throws IOException
      */
     protected void writeExtraHeader( PwsFile file )
             throws IOException

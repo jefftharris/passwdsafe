@@ -49,10 +49,6 @@ public abstract class PwsFileV1V2 extends PwsFile
 
     /**
      * Create a v1 or v2 file from storage
-     *
-     * @throws EndOfFileException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     protected PwsFileV1V2(PwsStorage storage,
                           Owner<PwsPassword>.Param passwd, String encoding)
@@ -89,7 +85,6 @@ public abstract class PwsFileV1V2 extends PwsFile
      * @param passwdParam the passphrase
      * @param encoding    the passphrase encoding (if known)
      * @return A properly initialised {@link BlowfishPws} object.
-     * @throws UnsupportedEncodingException
      */
     private BlowfishPws makeBlowfish(Owner<PwsPassword>.Param passwdParam,
                                      String encoding)
@@ -119,9 +114,6 @@ public abstract class PwsFileV1V2 extends PwsFile
      *
      * @param passwd   the passphrase for the file.
      * @param encoding the passphrase encoding (if known)
-     * @throws EndOfFileException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     @Override
     protected void open(Owner<PwsPassword>.Param passwd, String encoding)
@@ -247,7 +239,6 @@ public abstract class PwsFileV1V2 extends PwsFile
      * Encrypts then writes the contents of <code>buff</code> to the file.
      *
      * @param buff the data to be written.
-     * @throws IOException
      */
     @Override
     public void writeEncryptedBytes(byte[] buff)

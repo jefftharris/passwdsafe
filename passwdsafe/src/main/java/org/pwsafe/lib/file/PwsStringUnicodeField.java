@@ -23,7 +23,6 @@ public class PwsStringUnicodeField extends PwsField
      *
      * @param type  the field's type.
      * @param value the field's value.
-     * @throws UnsupportedEncodingException
      */
     public PwsStringUnicodeField(int type, byte[] value)
             throws UnsupportedEncodingException

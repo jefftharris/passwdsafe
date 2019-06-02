@@ -77,8 +77,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
          * Reads a single item of data from the file.
          *
          * @param file the file the data should be read from.
-         * @throws EndOfFileException
-         * @throws IOException
          */
         protected Item(PwsFile file) throws EndOfFileException,
                                             IOException
@@ -201,8 +199,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param owner      the file that data is to be read from and which
      *                   "owns" this record.
      * @param validTypes an array of valid field types.
-     * @throws EndOfFileException
-     * @throws IOException
      */
     PwsRecord(PwsFile owner, Object[] validTypes) throws
                                                   EndOfFileException,
@@ -225,8 +221,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param validTypes       an array of valid field types.
      * @param ignoreFieldTypes true if all fields types should be ignored,
      *                                false otherwise
-     * @throws EndOfFileException
-     * @throws IOException
      */
     protected PwsRecord(
             PwsFile owner,
@@ -304,8 +298,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * Loads this record from <code>file</code>.
      *
      * @param file the file to load the record from.
-     * @throws EndOfFileException
-     * @throws IOException
      */
     protected abstract void loadRecord(PwsFile file) throws
                                                      EndOfFileException,
@@ -315,7 +307,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * Saves this record to <code>file</code>.
      *
      * @param file the file to save the record to.
-     * @throws IOException
      */
     protected abstract void saveRecord(PwsFile file) throws IOException;
 
@@ -388,9 +379,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *
      * @param file the file to read the record from.
      * @return The record that was read.
-     * @throws EndOfFileException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     public static PwsRecord read(PwsFile file)
             throws EndOfFileException, IOException,
@@ -516,7 +504,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param field the field to be written.
      * @param aType the type to write to the file instead of <code>field
      *                     .getType()</code>
-     * @throws IOException
      */
     protected void writeField(PwsFile file, PwsField field, int aType)
             throws IOException
@@ -543,7 +530,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *
      * @param file  the file to write the field to.
      * @param field the field to be written.
-     * @throws IOException
      */
     protected void writeField(PwsFile file, PwsField field) throws IOException
     {

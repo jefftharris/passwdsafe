@@ -28,7 +28,6 @@ public class BlowfishPwsECB extends BlowfishPws
      * Decrypts <code>buffer</code> in place.
      *
      * @param buffer the buffer to be decrypted.
-     * @throws PasswordSafeException
      */
     public void decrypt(byte[] buffer) throws PasswordSafeException
     {
@@ -48,7 +47,6 @@ public class BlowfishPwsECB extends BlowfishPws
      * Encrypts <code>buffer</code> in place.
      *
      * @param buffer the buffer to be encrypted.
-     * @throws PasswordSafeException
      */
     public void encrypt(byte[] buffer) throws PasswordSafeException
     {

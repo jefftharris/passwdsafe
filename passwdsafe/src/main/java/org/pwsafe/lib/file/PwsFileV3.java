@@ -83,9 +83,6 @@ public final class PwsFileV3 extends PwsFile
      *
      * @param storage the underlying storage to use to open the database.
      * @param passwd  the passphrase for the database.
-     * @throws EndOfFileException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     public PwsFileV3(PwsStorage storage, Owner<PwsPassword>.Param passwd)
             throws EndOfFileException, IOException,
@@ -379,7 +376,6 @@ public final class PwsFileV3 extends PwsFile
      * Encrypts then writes the contents of <code>buff</code> to the file.
      *
      * @param buff the data to be written.
-     * @throws IOException
      */
     @Override
     public void writeEncryptedBytes(byte[] buff)
