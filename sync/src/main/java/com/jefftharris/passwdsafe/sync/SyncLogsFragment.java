@@ -180,8 +180,8 @@ public class SyncLogsFragment extends ListFragment
                 onLoadFinished(loader, null);
             }
         };
-        LoaderManager lm = getLoaderManager();
-        lm.initLoader(LOADER_LOGS, null, itsLogsCbs);
+        LoaderManager.getInstance(this).initLoader(LOADER_LOGS,
+                                                   null, itsLogsCbs);
     }
 
 
@@ -220,8 +220,8 @@ public class SyncLogsFragment extends ListFragment
         case R.id.menu_show_all: {
             itsIsShowAll = !item.isChecked();
             item.setChecked(itsIsShowAll);
-            LoaderManager lm = getLoaderManager();
-            lm.restartLoader(LOADER_LOGS, null, itsLogsCbs);
+            LoaderManager.getInstance(this).restartLoader(LOADER_LOGS,
+                                                          null, itsLogsCbs);
             return true;
         }
         default: {

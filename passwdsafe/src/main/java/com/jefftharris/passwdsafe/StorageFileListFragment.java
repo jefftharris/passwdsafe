@@ -153,16 +153,14 @@ public final class StorageFileListFragment extends Fragment
             return;
         }
 
-        LoaderManager lm = getLoaderManager();
-        lm.initLoader(LOADER_FILES, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_FILES, null, this);
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        LoaderManager lm = getLoaderManager();
-        lm.restartLoader(LOADER_FILES, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_FILES, null, this);
         itsListener.updateViewFiles();
     }
 
@@ -261,7 +259,8 @@ public final class StorageFileListFragment extends Fragment
                     }
                 }
 
-                getLoaderManager().restartLoader(LOADER_FILES, null, this);
+                LoaderManager.getInstance(this).restartLoader(LOADER_FILES,
+                                                              null, this);
             } catch (Exception e) {
                 PasswdSafeUtil.showFatalMsg(e, "Clear recent error",
                                             getActivity());
@@ -365,7 +364,8 @@ public final class StorageFileListFragment extends Fragment
                 ApiCompat.releasePersistableUriPermission(cr, uri, flags);
             }
 
-            getLoaderManager().restartLoader(LOADER_FILES, null, this);
+            LoaderManager.getInstance(this).restartLoader(LOADER_FILES,
+                                                          null, this);
         } catch (Exception e) {
             PasswdSafeUtil.showFatalMsg(e, "Remove recent file error",
                                         requireActivity());

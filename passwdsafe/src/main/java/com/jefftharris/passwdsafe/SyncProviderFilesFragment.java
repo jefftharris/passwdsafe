@@ -152,7 +152,7 @@ public class SyncProviderFilesFragment extends ListFragment
 
         setListAdapter(itsProviderAdapter);
 
-        LoaderManager lm = getLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_TITLE, null, new LoaderCallbacks<Cursor>()
             {
                 @NonNull

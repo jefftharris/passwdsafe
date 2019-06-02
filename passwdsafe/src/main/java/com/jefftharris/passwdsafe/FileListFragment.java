@@ -162,7 +162,7 @@ public final class FileListFragment extends ListFragment
             openFile(new File(PasswdSafeApp.DEBUG_AUTO_FILE));
         }
 
-        LoaderManager lm = getLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(0, null, this);
     }
 
@@ -362,7 +362,7 @@ public final class FileListFragment extends ListFragment
             itsDir = getFileDir();
         }
 
-        LoaderManager lm = getLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.restartLoader(0, null, this);
     }
 

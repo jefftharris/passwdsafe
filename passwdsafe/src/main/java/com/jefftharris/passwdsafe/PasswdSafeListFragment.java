@@ -338,7 +338,7 @@ public class PasswdSafeListFragment extends ListFragment
             return;
         }
 
-        LoaderManager lm = getLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         if (lm.hasRunningLoaders()) {
             // Trash loader if running.  See
             // https://code.google.com/p/android/issues/detail?id=56464
