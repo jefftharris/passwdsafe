@@ -23,7 +23,7 @@ public class SyncHelper
     /** Get the filename for a local file */
     public static String getLocalFileName(long fileId)
     {
-        return "syncfile-" + Long.toString(fileId);
+        return "syncfile-" + fileId;
     }
 
 
