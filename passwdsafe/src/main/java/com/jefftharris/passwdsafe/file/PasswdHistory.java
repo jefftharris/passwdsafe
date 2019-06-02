@@ -34,13 +34,13 @@ public class PasswdHistory
         private final Date itsDate;
         private final String itsPasswd;
 
-        public Entry(Date date, String passwd)
+        protected Entry(Date date, String passwd)
         {
             itsDate = date;
             itsPasswd = passwd;
         }
 
-        public Date getDate()
+        protected Date getDate()
         {
             return itsDate;
         }
@@ -268,10 +268,10 @@ public class PasswdHistory
         /**
          * Constructor
          */
-        public HistoryAdapter(ArrayList<Entry> entries,
-                              boolean enabled,
-                              boolean hasContextMenu,
-                              Context ctx)
+        protected HistoryAdapter(ArrayList<Entry> entries,
+                                 boolean enabled,
+                                 boolean hasContextMenu,
+                                 Context ctx)
         {
             super(ctx, R.layout.passwd_history_list_item, entries);
             itsIsEnabled = enabled;
@@ -312,10 +312,10 @@ public class PasswdHistory
             /**
              * Constructor
              */
-            public ViewHolder(View view,
-                              boolean enabled,
-                              boolean hasContextMenu,
-                              Context ctx)
+            protected ViewHolder(View view,
+                                 boolean enabled,
+                                 boolean hasContextMenu,
+                                 Context ctx)
             {
                 itsPassword = view.findViewById(R.id.password);
                 TypefaceUtils.setMonospace(itsPassword, ctx);
@@ -337,7 +337,7 @@ public class PasswdHistory
             /**
              * Update the layout fields with values from the entry
              */
-            public void update(Entry entry, Context ctx)
+            protected void update(Entry entry, Context ctx)
             {
                 itsPassword.setText(entry.getPasswd());
                 itsDate.setText(Utils.formatDate(entry.getDate(), ctx));

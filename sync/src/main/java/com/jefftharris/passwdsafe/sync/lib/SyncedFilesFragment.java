@@ -256,11 +256,11 @@ public class SyncedFilesFragment extends ListFragment
     /** Holder for each item in the list view */
     private static class ListItem
     {
-        public final ProviderRemoteFile itsFile;
-        public boolean itsIsSelected;
+        protected final ProviderRemoteFile itsFile;
+        protected boolean itsIsSelected;
 
         /** Constructor */
-        public ListItem(ProviderRemoteFile file, boolean selected)
+        protected ListItem(ProviderRemoteFile file, boolean selected)
         {
             itsFile = file;
             itsIsSelected = selected;
@@ -274,7 +274,7 @@ public class SyncedFilesFragment extends ListFragment
         private final LayoutInflater itsInflater;
 
         /** Constructor */
-        public FilesAdapter(Activity act)
+        protected FilesAdapter(Activity act)
         {
             super(act, R.layout.listview_sync_file_item);
             setNotifyOnChange(false);
@@ -324,13 +324,13 @@ public class SyncedFilesFragment extends ListFragment
         /** View holder for fields in a list item */
         private static class ViewHolder
         {
-            public final TextView itsText;
-            public final TextView itsModDate;
-            public final ImageView itsIcon;
-            public final CheckBox itsSelected;
+            protected final TextView itsText;
+            protected final TextView itsModDate;
+            protected final ImageView itsIcon;
+            protected final CheckBox itsSelected;
 
             /** Constructor */
-            public ViewHolder(View view)
+            protected ViewHolder(View view)
             {
                 itsText = view.findViewById(R.id.text);
                 itsModDate = view.findViewById(R.id.mod_date);

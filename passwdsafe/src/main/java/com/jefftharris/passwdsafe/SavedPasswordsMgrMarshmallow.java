@@ -45,7 +45,7 @@ public final class SavedPasswordsMgrMarshmallow
         /**
          * Constructor
          */
-        public FingerprintMgr(Context ctx)
+        protected FingerprintMgr(Context ctx)
         {
             if (ActivityCompat.checkSelfPermission(
                     ctx, Manifest.permission.USE_FINGERPRINT) ==
@@ -110,7 +110,7 @@ public final class SavedPasswordsMgrMarshmallow
         /**
          * Constructor
          */
-        public AuthenticationCallback(
+        protected AuthenticationCallback(
                 FingerprintManagerCompat.AuthenticationCallback cb)
         {
             itsCb = cb;

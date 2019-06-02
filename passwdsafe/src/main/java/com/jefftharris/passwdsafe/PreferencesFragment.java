@@ -181,8 +181,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          * Handle an activity result
          * @return true if handled; false otherwise
          */
-        public boolean onActivityResult(int requestCode, int resultCode,
-                                        Intent data)
+        protected boolean onActivityResult(int requestCode, int resultCode,
+                                           Intent data)
         {
             return false;
         }
@@ -190,7 +190,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Handle a confirmed dialog prompt
          */
-        public void promptConfirmed(ConfirmAction action)
+        protected void promptConfirmed(ConfirmAction action)
         {
         }
 
@@ -209,7 +209,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public RootScreen()
+        protected RootScreen()
         {
             Preference pref =
                     findPreference(Preferences.PREF_DISPLAY_VIBRATE_KEYBOARD);
@@ -244,7 +244,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public FilesScreen(SharedPreferences prefs, Resources res)
+        protected FilesScreen(SharedPreferences prefs, Resources res)
         {
             itsFileDirPref = (EditTextPreference)
                     findPreference(Preferences.PREF_FILE_DIR);
@@ -378,7 +378,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public PasswordScreen(SharedPreferences prefs, Resources res)
+        protected PasswordScreen(SharedPreferences prefs, Resources res)
         {
             itsPasswdVisibleTimeoutPref = (ListPreference)
                     findPreference(Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
@@ -523,7 +523,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public RecordScreen(SharedPreferences prefs, Resources res)
+        protected RecordScreen(SharedPreferences prefs, Resources res)
         {
             itsRecordSortOrderPref = (ListPreference)
                     findPreference(Preferences.PREF_RECORD_SORT_ORDER);
@@ -581,9 +581,9 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public DefaultFileResolver(Uri fileUri,
-                                   FilesScreen screen,
-                                   Fragment fragment)
+        protected DefaultFileResolver(Uri fileUri,
+                                      FilesScreen screen,
+                                      Fragment fragment)
         {
             itsScreen = new ManagedRef<>(screen);
             itsFrag = new ManagedRef<>(fragment);

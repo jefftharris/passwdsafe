@@ -390,8 +390,8 @@ public final class StorageFileListFragment extends Fragment
         /**
          * Constructor
          */
-        public FileLoader(ManagedRef<RecentFilesDb> recentFilesDb,
-                          Context ctx)
+        protected FileLoader(ManagedRef<RecentFilesDb> recentFilesDb,
+                             Context ctx)
         {
             super(ctx.getApplicationContext());
             itsRecentFilesDb = recentFilesDb;

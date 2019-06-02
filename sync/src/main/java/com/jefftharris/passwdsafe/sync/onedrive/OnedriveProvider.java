@@ -448,10 +448,10 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         /**
          * Constructor
          */
-        public NewOneDriveTask(Uri currAcctUri,
-                               AcquireTokenCallback tokenCb,
-                               boolean reauthorization,
-                               OnedriveProvider provider)
+        protected NewOneDriveTask(Uri currAcctUri,
+                                  AcquireTokenCallback tokenCb,
+                                  boolean reauthorization,
+                                  OnedriveProvider provider)
         {
             super(currAcctUri, null, provider, false, provider.getContext(),
                   TAG);

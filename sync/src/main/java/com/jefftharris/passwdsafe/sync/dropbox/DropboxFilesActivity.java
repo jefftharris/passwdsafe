@@ -45,7 +45,7 @@ public class DropboxFilesActivity extends AbstractSyncedFilesActivity
         private final DropboxCoreProvider itsProvider;
 
         /** Constructor */
-        public ListFilesTask(Context ctx, Callback cb)
+        protected ListFilesTask(Context ctx, Callback cb)
         {
             super(ctx, cb);
             itsProvider = (DropboxCoreProvider)

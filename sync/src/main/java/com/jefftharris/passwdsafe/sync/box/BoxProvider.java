@@ -327,7 +327,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
         /**
          * Constructor
          */
-        public NewBoxTask(Uri currAcctUri, BoxProvider provider)
+        protected NewBoxTask(Uri currAcctUri, BoxProvider provider)
         {
             super(currAcctUri, null, provider, false, provider.getContext(),
                   TAG);

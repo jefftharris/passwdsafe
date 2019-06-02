@@ -26,11 +26,11 @@ import java.util.List;
  */
 public final class RecentFilesDb
 {
-    public static final String DB_COL_FILES_ID =
+    private static final String DB_COL_FILES_ID =
             PasswdSafeDb.DB_COL_FILES_ID;
-    public static final String DB_COL_FILES_TITLE =
+    private static final String DB_COL_FILES_TITLE =
             PasswdSafeDb.DB_COL_FILES_TITLE;
-    public static final String DB_COL_FILES_DATE =
+    private static final String DB_COL_FILES_DATE =
             PasswdSafeDb.DB_COL_FILES_DATE;
 
     private static final String[] QUERY_COLUMNS = new String[] {

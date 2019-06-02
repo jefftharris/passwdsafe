@@ -421,7 +421,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
         /**
          * Constructor
          */
-        public NewDropboxTask(Uri currAcctUri, DropboxCoreProvider provider)
+        protected NewDropboxTask(Uri currAcctUri, DropboxCoreProvider provider)
         {
             super(currAcctUri, null, provider, false, provider.getContext(),
                   TAG);
@@ -450,7 +450,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
         /**
          * Constructor
          */
-        public TokenRevokeTask(DropboxCoreProvider provider)
+        protected TokenRevokeTask(DropboxCoreProvider provider)
         {
             itsProvider = new ManagedRef<>(provider);
         }

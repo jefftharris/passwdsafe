@@ -207,15 +207,15 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         private boolean itsIsRunning = true;
 
         /** Constructor */
-        public SyncRequestTask(AbstractSyncTimerProvider provider,
-                               boolean manual)
+        protected SyncRequestTask(AbstractSyncTimerProvider provider,
+                                  boolean manual)
         {
             itsProviderRef = new ManagedRef<>(provider);
             itsIsManual = manual;
         }
 
         /** Check the status of the sync */
-        public synchronized void checkSync()
+        protected synchronized void checkSync()
         {
             AbstractSyncTimerProvider provider = itsProviderRef.get();
             if (provider == null) {
@@ -246,7 +246,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         }
 
         /** Get whether the task is finished */
-        public synchronized boolean isFinished()
+        protected synchronized boolean isFinished()
         {
             return !itsIsTimerPending && !itsIsRunning;
         }

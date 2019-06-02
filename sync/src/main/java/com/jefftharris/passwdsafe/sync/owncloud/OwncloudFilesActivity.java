@@ -98,7 +98,7 @@ public class OwncloudFilesActivity extends AbstractSyncedFilesActivity
 
 
         /** Constructor */
-        public ListFilesTask(OwnCloudClient client, Context ctx, Callback cb)
+        protected ListFilesTask(OwnCloudClient client, Context ctx, Callback cb)
         {
             super(ctx, cb);
             itsClient = client;

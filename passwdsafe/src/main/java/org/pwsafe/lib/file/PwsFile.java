@@ -772,7 +772,7 @@ public abstract class PwsFile
          * @param file the file this iterator is linked to.
          * @param iter the <code>Iterator</code> over the records.
          */
-        public FileIterator(PwsFile file, Iterator<PwsRecord> iter)
+        protected FileIterator(PwsFile file, Iterator<PwsRecord> iter)
         {
             this.file = file;
             recDelegate = iter;

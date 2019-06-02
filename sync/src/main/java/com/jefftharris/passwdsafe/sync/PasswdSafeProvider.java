@@ -810,7 +810,7 @@ public class PasswdSafeProvider extends ContentProvider
         /**
          * Constructor
          */
-        public AccountVerifier(PasswdSafeProvider provider)
+        protected AccountVerifier(PasswdSafeProvider provider)
         {
             itsProvider = new ManagedRef<>(provider);
         }

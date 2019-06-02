@@ -562,18 +562,18 @@ public class PasswdSafeIME extends InputMethodService
      */
     private static class RefreshResult<RetT>
     {
-        public final String itsFileLabel;
-        public final String itsRecordLabel;
-        public final boolean itsHasPreviousPassword;
-        public final RetT itsResult;
+        protected final String itsFileLabel;
+        protected final String itsRecordLabel;
+        protected final boolean itsHasPreviousPassword;
+        protected final RetT itsResult;
 
         /**
          * Constructor
          */
-        public RefreshResult(String fileLabel,
-                             String recLabel,
-                             boolean hasPreviousPassword,
-                             RetT result)
+        protected RefreshResult(String fileLabel,
+                                String recLabel,
+                                boolean hasPreviousPassword,
+                                RetT result)
         {
             itsFileLabel = fileLabel;
             itsRecordLabel = recLabel;

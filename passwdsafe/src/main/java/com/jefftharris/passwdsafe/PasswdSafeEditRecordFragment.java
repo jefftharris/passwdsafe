@@ -1567,7 +1567,7 @@ public class PasswdSafeEditRecordFragment
         /**
          * Register a text view with the validator
          */
-        public final void registerTextView(TextView field)
+        protected final void registerTextView(TextView field)
         {
             field.addTextChangedListener(this);
         }
@@ -1576,7 +1576,7 @@ public class PasswdSafeEditRecordFragment
          * Set whether the validator is paused.  Validation will be performed
          * if not paused.
          */
-        public final void setPaused(boolean paused)
+        protected final void setPaused(boolean paused)
         {
             itsIsPaused = paused;
             if (!paused) {
@@ -1587,7 +1587,7 @@ public class PasswdSafeEditRecordFragment
         /**
          * Validate
          */
-        public final void validate()
+        protected final void validate()
         {
             if (itsIsPaused) {
                 return;
@@ -1686,7 +1686,7 @@ public class PasswdSafeEditRecordFragment
         /**
          * Is valid
          */
-        public final boolean isValid()
+        protected final boolean isValid()
         {
             return itsIsValid;
         }
@@ -1783,7 +1783,7 @@ public class PasswdSafeEditRecordFragment
         private final String itsGroup;
         private final String itsUser;
 
-        public RecordKey(String title, String group, String user)
+        protected RecordKey(String title, String group, String user)
         {
             itsTitle = (title != null) ? title : "";
             itsGroup = (group != null) ? group : "";

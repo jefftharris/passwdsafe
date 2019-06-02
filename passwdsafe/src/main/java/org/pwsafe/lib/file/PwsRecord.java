@@ -79,8 +79,8 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
          * @throws EndOfFileException
          * @throws IOException
          */
-        public Item(PwsFile file) throws EndOfFileException,
-                                         IOException
+        protected Item(PwsFile file) throws EndOfFileException,
+                                            IOException
         {
             rawData = file.readBlock();
             length = Util.getIntFromByteArray(rawData, 0);
@@ -102,7 +102,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
          *
          * @return This items data as an array of bytes.
          */
-        public byte[] getByteData()
+        protected byte[] getByteData()
         {
             if (length != data.length) {
                 return Util.cloneByteArray(data, length);
@@ -118,7 +118,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
          *
          * @return The item data as a <code>String</code>.
          */
-        public String getData()
+        protected String getData()
         {
             try {
                 // Use ISO-8859-1 because we may have some
@@ -143,7 +143,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
          *
          * @return This items type.
          */
-        public int getType()
+        protected int getType()
         {
             return type;
         }
@@ -170,7 +170,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
             return sb.toString();
         }
 
-        public final void clear()
+        protected final void clear()
         {
             Arrays.fill(data, (byte)0);
             Arrays.fill(rawData, (byte)0);

@@ -534,6 +534,6 @@ public abstract class ProviderSyncer<ProviderClientT>
         /**
          * Use the database
          */
-        public abstract T useDb(SQLiteDatabase db) throws SQLException;
+        protected abstract T useDb(SQLiteDatabase db) throws SQLException;
     }
 }

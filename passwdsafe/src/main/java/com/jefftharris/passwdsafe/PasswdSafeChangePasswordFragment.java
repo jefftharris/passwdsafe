@@ -189,7 +189,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Register a text view with the validator
          */
-        public void registerTextView(TextView tv)
+        protected void registerTextView(TextView tv)
         {
             tv.addTextChangedListener(this);
         }
@@ -197,7 +197,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Unregister a text view
          */
-        public void unregisterTextView(TextView tv)
+        protected void unregisterTextView(TextView tv)
         {
             tv.removeTextChangedListener(this);
         }
@@ -205,7 +205,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Validate the fragment
          */
-        public final void validate()
+        protected final void validate()
         {
             boolean valid;
 
@@ -230,7 +230,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Is valid
          */
-        public final boolean isValid()
+        protected final boolean isValid()
         {
             return itsIsValid;
         }

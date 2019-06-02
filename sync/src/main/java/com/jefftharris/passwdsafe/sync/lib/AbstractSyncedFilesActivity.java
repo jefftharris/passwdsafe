@@ -438,7 +438,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
             implements SyncDb.DbUser<Long>
     {
         /** Callback for when the update is complete */
-        public interface Callback
+        protected interface Callback
         {
             void updateComplete(Exception error,
                                 long remFileId,
@@ -453,8 +453,8 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
 
 
         /** Constructor */
-        public FileSyncedUpdateTask(Uri providerUri, ProviderRemoteFile file,
-                                    boolean synced, Callback cb)
+        protected FileSyncedUpdateTask(Uri providerUri, ProviderRemoteFile file,
+                                       boolean synced, Callback cb)
         {
             itsProviderUri = providerUri;
             itsFile = file;

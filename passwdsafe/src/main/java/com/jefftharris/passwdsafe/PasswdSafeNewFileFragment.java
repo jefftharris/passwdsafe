@@ -473,7 +473,7 @@ public class PasswdSafeNewFileFragment
         /**
          * Register a text view with the validator to revalidate on text change
          */
-        public void registerTextView(TextView tv)
+        protected void registerTextView(TextView tv)
         {
             tv.addTextChangedListener(itsTextWatcher);
         }
@@ -481,7 +481,7 @@ public class PasswdSafeNewFileFragment
         /**
          * Unregister a text view
          */
-        public void unregisterTextView(TextView tv)
+        protected void unregisterTextView(TextView tv)
         {
             tv.removeTextChangedListener(itsTextWatcher);
         }
@@ -489,7 +489,7 @@ public class PasswdSafeNewFileFragment
         /**
          * Validate the fragment
          */
-        public final void validate()
+        protected final void validate()
         {
             boolean isError;
 
@@ -528,9 +528,9 @@ public class PasswdSafeNewFileFragment
         /**
          * Constructor
          */
-        public NewTask(String fileName,
-                       Owner<PwsPassword>.Param passwd,
-                       PasswdSafeNewFileFragment frag)
+        protected NewTask(String fileName,
+                          Owner<PwsPassword>.Param passwd,
+                          PasswdSafeNewFileFragment frag)
         {
             super(frag);
             itsFileName = fileName;

@@ -274,10 +274,10 @@ public class PasswdClientProvider extends ContentProvider
         /**
          * Constructor
          */
-        public SuggestionsUser(PasswdRecordFilter filter,
-                               int limit,
-                               MatchComparator comparator,
-                               Context ctx)
+        protected SuggestionsUser(PasswdRecordFilter filter,
+                                  int limit,
+                                  MatchComparator comparator,
+                                  Context ctx)
         {
             itsFilter = filter;
             itsLimit = limit;
@@ -337,18 +337,18 @@ public class PasswdClientProvider extends ContentProvider
      */
     private static class RecordMatch
     {
-        public final String itsTitle;
-        public final String itsUser;
-        public final String itsData;
-        public final String itsLabel;
-        public final String itsMatch;
+        protected final String itsTitle;
+        protected final String itsUser;
+        protected final String itsData;
+        protected final String itsLabel;
+        protected final String itsMatch;
 
         /**
          * Constructor for a record
          */
-        public RecordMatch(PwsRecord rec,
-                           String match,
-                           PasswdFileData fileData)
+        protected RecordMatch(PwsRecord rec,
+                              String match,
+                              PasswdFileData fileData)
         {
             itsTitle = fileData.getTitle(rec);
             itsUser = fileData.getUsername(rec);
@@ -361,7 +361,7 @@ public class PasswdClientProvider extends ContentProvider
         /**
          * Constructor for a group
          */
-        public RecordMatch(String group)
+        protected RecordMatch(String group)
         {
             itsTitle = group;
             itsUser = null;
@@ -382,7 +382,7 @@ public class PasswdClientProvider extends ContentProvider
         /**
          * Constructor
          */
-        public MatchComparator(boolean ascending, boolean caseSensitive)
+        protected MatchComparator(boolean ascending, boolean caseSensitive)
         {
             itsIsAscending = ascending;
             itsIsCaseSensitive = caseSensitive;

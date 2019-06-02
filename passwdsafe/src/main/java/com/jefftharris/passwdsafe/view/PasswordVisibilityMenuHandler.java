@@ -38,7 +38,7 @@ public class PasswordVisibilityMenuHandler
         private final TextView[] itsViews;
         private final TextView itsView;
 
-        public MenuListener(Context ctx, TextView view, TextView[] views)
+        protected MenuListener(Context ctx, TextView view, TextView[] views)
         {
             itsContext = ctx;
             itsViews = views;

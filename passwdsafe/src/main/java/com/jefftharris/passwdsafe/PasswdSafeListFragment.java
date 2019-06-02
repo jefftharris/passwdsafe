@@ -457,7 +457,7 @@ public class PasswdSafeListFragment extends ListFragment
         private ItemSection[] itsSections = new ItemSection[0];
 
         /** Constructor */
-        public ItemListAdapter(boolean isContents, Context context)
+        protected ItemListAdapter(boolean isContents, Context context)
         {
             super(context, R.layout.passwdsafe_list_item, android.R.id.text1);
             itsInflater = (LayoutInflater)context.getSystemService(
@@ -466,8 +466,8 @@ public class PasswdSafeListFragment extends ListFragment
         }
 
         /** Set the list data */
-        public int setData(List<PasswdRecordListData> data,
-                           String selectedRecord)
+        protected int setData(List<PasswdRecordListData> data,
+                              String selectedRecord)
         {
             int selectedPos = -1;
             setNotifyOnChange(false);
@@ -566,13 +566,13 @@ public class PasswdSafeListFragment extends ListFragment
          */
         private static final class ItemSection
         {
-            public final String itsTitle;
-            public final int itsPosition;
+            protected final String itsTitle;
+            protected final int itsPosition;
 
             /**
              * Constructor
              */
-            public ItemSection(String title, int position)
+            protected ItemSection(String title, int position)
             {
                 itsTitle = title;
                 itsPosition = position;
@@ -598,7 +598,7 @@ public class PasswdSafeListFragment extends ListFragment
             private int itsLastIconImage;
 
             /** Constructor */
-            public ViewHolder(View view)
+            protected ViewHolder(View view)
             {
                 itsTitle = view.findViewById(android.R.id.text1);
                 itsUser = view.findViewById(android.R.id.text2);
@@ -609,9 +609,9 @@ public class PasswdSafeListFragment extends ListFragment
             }
 
             /** Update the fields for a list item */
-            public void update(PasswdRecordListData item,
-                               boolean selected,
-                               boolean isLeftListRecord)
+            protected void update(PasswdRecordListData item,
+                                  boolean selected,
+                                  boolean isLeftListRecord)
             {
                 setText(itsTitle, item.itsTitle);
                 setText(itsUser, item.itsUser);
@@ -626,7 +626,7 @@ public class PasswdSafeListFragment extends ListFragment
             }
 
             /** Reset the fields */
-            public void reset()
+            protected void reset()
             {
                 setText(itsTitle, null);
                 setText(itsUser, null);
@@ -653,8 +653,8 @@ public class PasswdSafeListFragment extends ListFragment
         private final Listener itsActListener;
 
         /** Constructor */
-        public ItemLoader(Mode mode, Listener actListener,
-                          Context context)
+        protected ItemLoader(Mode mode, Listener actListener,
+                             Context context)
         {
             super(context);
             itsMode = mode;

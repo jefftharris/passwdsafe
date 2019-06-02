@@ -478,9 +478,9 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         /**
          * Constructor
          */
-        public NewOwncloudTask(Uri currAcctUri,
-                               String newAcct,
-                               OwncloudProvider provider)
+        protected NewOwncloudTask(Uri currAcctUri,
+                                  String newAcct,
+                                  OwncloudProvider provider)
         {
             super(currAcctUri, newAcct, provider, true, provider.getContext(),
                   TAG);

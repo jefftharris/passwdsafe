@@ -25,7 +25,7 @@ public class DbFile
         REMOVED;
 
         /** Get the FileChange from its string stored in the database */
-        public static FileChange fromDbStr(String str)
+        protected static FileChange fromDbStr(String str)
         {
             if (TextUtils.isEmpty(str)) {
                 return NO_CHANGE;

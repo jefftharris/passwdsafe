@@ -29,16 +29,16 @@ public abstract class AbstractPasswdSafeLocationFragment
      */
     protected static class RecordInfo
     {
-        public final PwsRecord itsRec;
-        public final PasswdRecord itsPasswdRec;
-        public final PasswdFileData itsFileData;
+        protected final PwsRecord itsRec;
+        protected final PasswdRecord itsPasswdRec;
+        protected final PasswdFileData itsFileData;
 
         /**
          * Constructor
          */
-        public RecordInfo(@NonNull PwsRecord rec,
-                          @NonNull PasswdRecord passwdRec,
-                          @NonNull PasswdFileData fileData)
+        protected RecordInfo(@NonNull PwsRecord rec,
+                             @NonNull PasswdRecord passwdRec,
+                             @NonNull PasswdFileData fileData)
         {
             itsRec = rec;
             itsPasswdRec = passwdRec;

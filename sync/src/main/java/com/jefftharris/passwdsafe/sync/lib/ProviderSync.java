@@ -247,7 +247,7 @@ public class ProviderSync
         /**
          * Constructor
          */
-        public BackgroundSync(boolean manual)
+        protected BackgroundSync(boolean manual)
         {
             addTrace("BackgroundSync");
 
@@ -282,7 +282,7 @@ public class ProviderSync
         /**
          * Set a failure in running the task for the background sync
          */
-        public void setTaskException(Exception e)
+        protected void setTaskException(Exception e)
         {
             addTrace("task exception");
             itsIsCanceled = true;

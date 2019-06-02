@@ -774,10 +774,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Dialog to prompt when an account is cleared */
-    public static class ClearPromptDlg extends DialogFragment
+    protected static class ClearPromptDlg extends DialogFragment
     {
         /** Create an instance of the dialog */
-        public static ClearPromptDlg newInstance(Uri currAcct)
+        protected static ClearPromptDlg newInstance(Uri currAcct)
         {
             ClearPromptDlg dlg = new ClearPromptDlg();
             Bundle args = new Bundle();

@@ -29,8 +29,8 @@ public abstract class DialogValidator
         /**
          * Constructor with a specific view and optional password fields
          */
-        public AlertCompatValidator(androidx.appcompat.app.AlertDialog dlg,
-                                    View view, Context ctx)
+        protected AlertCompatValidator(androidx.appcompat.app.AlertDialog dlg,
+                                       View view, Context ctx)
         {
             super(view, ctx);
             itsDialog = dlg;

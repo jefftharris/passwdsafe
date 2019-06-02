@@ -75,19 +75,19 @@ public final class FileListFragment extends ListFragment
     }
 
     /** File data information for the list */
-    public static final class FileData
+    protected static final class FileData
     {
-        public final File itsFile;
+        protected final File itsFile;
         private final String itsName;
 
-        public FileData(File f)
+        protected FileData(File f)
         {
             itsFile = f;
             itsName = itsFile.getName();
         }
 
         /** Constructor for a null file */
-        public FileData(Context ctx)
+        protected FileData(Context ctx)
         {
             itsFile = null;
             itsName = ctx.getString(R.string.none_paren);
@@ -100,7 +100,7 @@ public final class FileListFragment extends ListFragment
         }
 
         /** Does the data indicate a directory */
-        public boolean isDirectory()
+        protected boolean isDirectory()
         {
             return (itsFile != null) && (itsFile.isDirectory());
         }
@@ -510,7 +510,7 @@ public final class FileListFragment extends ListFragment
         private final int itsFileIcon;
 
         /** Constructor */
-        public FileLoader(File dir, boolean includeNone, Context context)
+        protected FileLoader(File dir, boolean includeNone, Context context)
         {
             super(context);
             itsDir = dir;
