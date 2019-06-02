@@ -133,7 +133,9 @@ public final class PasswdSafeIMEKeyboard extends Keyboard
         /**
          * Set whether the key has a popup for long-press behavior
          */
-        protected void setHasLongPress(boolean hasLongPress, int longPressPopup)
+        protected void setHasLongPress(
+                boolean hasLongPress,
+                @SuppressWarnings("SameParameterValue") int longPressPopup)
         {
             if (hasLongPress) {
                 label = itsLabel + " …";
