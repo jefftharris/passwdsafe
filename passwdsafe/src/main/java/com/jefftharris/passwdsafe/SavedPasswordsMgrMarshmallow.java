@@ -17,6 +17,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.core.os.CancellationSignal;
 
+import java.util.Objects;
+
+import javax.crypto.Cipher;
+
 /**
  * Saved password manager implementation for Marshmallow and higher
  */
@@ -82,8 +86,9 @@ public final class SavedPasswordsMgrMarshmallow
                 throw new IllegalStateException("No fingerprint manager");
             }
 
+            Cipher cipher = Objects.requireNonNull(crypto.getCipher());
             FingerprintManager.CryptoObject cryptoObj =
-                    new FingerprintManager.CryptoObject(crypto.getCipher());
+                    new FingerprintManager.CryptoObject(cipher);
 
             android.os.CancellationSignal cancelObj = null;
             if (cancel != null) {
