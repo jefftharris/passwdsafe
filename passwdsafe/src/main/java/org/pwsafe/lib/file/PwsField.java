@@ -9,6 +9,8 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 
@@ -106,6 +108,7 @@ public abstract class PwsField implements Comparable<Object>, Serializable
      * @return The string value of the field.
      */
     @Override
+    @NonNull
     public String toString()
     {
         return Value.toString();

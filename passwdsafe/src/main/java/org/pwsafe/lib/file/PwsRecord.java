@@ -157,6 +157,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
          * @return A <code>String</code> representation of this object.
          */
         @Override
+        @NonNull
         public String toString()
         {
             StringBuilder sb;

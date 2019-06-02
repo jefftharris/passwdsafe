@@ -20,6 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.EnvironmentCompat;
 import androidx.documentfile.provider.DocumentFile;
@@ -498,6 +499,7 @@ public class PasswdFileUri implements Parcelable
 
     /** Convert the URI to a string */
     @Override
+    @NonNull
     public String toString()
     {
         return itsUri.toString();

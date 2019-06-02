@@ -307,6 +307,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      * @return A string representation of this object.
      */
     @Override
+    @NonNull
     public String toString()
     {
         return "{ \"" + getField(TITLE) + "\", \"" +

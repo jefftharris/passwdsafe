@@ -13,6 +13,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 
 import org.pwsafe.lib.file.PwsRecord;
@@ -178,10 +180,8 @@ public class PasswdLocation implements Parcelable
                TextUtils.equals(itsRecord, location.itsRecord);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
+    @NonNull
     public String toString()
     {
         return String.format("{rec: %s, groups: %s}",

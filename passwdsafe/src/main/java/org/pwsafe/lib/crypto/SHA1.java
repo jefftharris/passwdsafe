@@ -7,6 +7,8 @@
  */
 package org.pwsafe.lib.crypto;
 
+import androidx.annotation.NonNull;
+
 import org.pwsafe.lib.Util;
 
 /**
@@ -349,6 +351,7 @@ public class SHA1
      * @return the string representation
      */
     @Override
+    @NonNull
     public String toString()
     {
         return Util.bytesToHex(m_digestBits);

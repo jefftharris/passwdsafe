@@ -577,6 +577,7 @@ public class PasswdSafeListFragment extends ListFragment
             }
 
             @Override
+            @NonNull
             public String toString()
             {
                 return itsTitle;

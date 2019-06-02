@@ -94,6 +94,7 @@ public final class FileListFragment extends ListFragment
         }
 
         @Override
+        @NonNull
         public final String toString()
         {
             return itsName;

@@ -396,6 +396,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
 
     /** Convert the object to a string */
     @Override
+    @NonNull
     public String toString()
     {
         return itsName;

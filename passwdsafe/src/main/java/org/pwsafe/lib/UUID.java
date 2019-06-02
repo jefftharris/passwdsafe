@@ -187,6 +187,7 @@ public class UUID implements Comparable<Object>, Serializable
      * <code>UUID</code>.
      */
     @Override
+    @NonNull
     public String toString()
     {
         return toString(TheUUID);

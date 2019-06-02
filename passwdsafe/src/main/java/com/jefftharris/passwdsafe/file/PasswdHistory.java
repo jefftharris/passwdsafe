@@ -57,6 +57,7 @@ public class PasswdHistory
         }
 
         @Override
+        @NonNull
         public String toString()
         {
             return itsPasswd + " [" + itsDate + "]";
@@ -178,6 +179,7 @@ public class PasswdHistory
     }
 
     @Override
+    @NonNull
     public String toString()
     {
         StringBuilder strbld = new StringBuilder();

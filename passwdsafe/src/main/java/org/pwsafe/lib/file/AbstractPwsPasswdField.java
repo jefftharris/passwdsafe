@@ -84,6 +84,7 @@ public abstract class AbstractPwsPasswdField extends PwsField
 
 
     @Override
+    @NonNull
     public String toString()
     {
         SealedObject sealValue = (SealedObject)getValue();
