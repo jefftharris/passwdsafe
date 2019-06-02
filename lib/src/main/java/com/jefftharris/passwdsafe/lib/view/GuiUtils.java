@@ -224,7 +224,7 @@ public final class GuiUtils
     public static void invalidateOptionsMenu(Activity act)
     {
         if (act instanceof FragmentActivity) {
-            ((FragmentActivity)act).supportInvalidateOptionsMenu();
+            act.invalidateOptionsMenu();
         } else if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_HONEYCOMB) {
             GuiUtilsHoneycomb.invalidateOptionsMenu(act);
         }
