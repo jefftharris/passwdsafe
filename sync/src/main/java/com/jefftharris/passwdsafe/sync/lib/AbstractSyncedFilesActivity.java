@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -106,7 +105,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
 
         itsProviderLoaderCb = new ProviderLoaderCb();
         itsFilesLoaderCb = new FilesLoaderCb();
-        LoaderManager lm = getSupportLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_TITLE, null, itsProviderLoaderCb);
         lm.initLoader(LOADER_FILES, null, itsFilesLoaderCb);
     }
@@ -135,9 +134,6 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.activity_synced_files, menu);
-        MenuItem item = menu.findItem(R.id.menu_reload);
-        MenuItemCompat.setShowAsAction(item,
-                                       MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -151,7 +147,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         switch (item.getItemId()) {
         case R.id.menu_reload: {
             reloadFiles();
-            LoaderManager lm = getSupportLoaderManager();
+            LoaderManager lm = LoaderManager.getInstance(this);
             lm.restartLoader(LOADER_TITLE, null, itsProviderLoaderCb);
             lm.restartLoader(LOADER_FILES, null, itsFilesLoaderCb);
             return true;
