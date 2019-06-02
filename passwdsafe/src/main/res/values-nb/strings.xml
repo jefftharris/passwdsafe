@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="add">Legg til</string>
     <string name="add_policy">Legg til regel</string>
     <string name="add_record">Legg til oppføring</string>
@@ -224,7 +224,7 @@
     <string name="record_sort_order">Sorteringsrekkefølge for oppføring</string>
     <string name="record_type">Oppføringstype</string>
     <string name="read_only_about">Skrivebeskyttet</string>
-    <string name="read_only_media">Filen er lokalisert på skrivebeskyttet media. Denne situasjonen kan oppstå med Kitkat eller nyere med fjernbare SD-kort.</string>
+    <string name="read_only_media" tools:ignore="Typos">Filen er lokalisert på skrivebeskyttet media. Denne situasjonen kan oppstå med Kitkat eller nyere med fjernbare SD-kort.</string>
     <string name="read_only_provider">Tilbyderen av filen støtter ikke skriving eller har ikke gitt skrivetillatelse</string>
     <string name="read_only_sdcard">Filen er lokalisert på et SD-kort som ikke er skrivbart. Flytt filen til det interne lagret eller bruk den nye filvelgeren som kan aktiveres i filens innstillinger.</string>
     <string name="read_write">Skrivbart</string>
