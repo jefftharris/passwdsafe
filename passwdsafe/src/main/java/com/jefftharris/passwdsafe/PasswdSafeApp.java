@@ -51,10 +51,6 @@ public final class PasswdSafeApp extends Application
         System.loadLibrary("PasswdSafe");
     }
 
-    public PasswdSafeApp()
-    {
-    }
-
     /* (non-Javadoc)
      * @see android.app.Application#onCreate()
      */
