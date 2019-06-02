@@ -171,11 +171,8 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#cleanupOnDelete(java.lang.String)
-     */
     @Override
-    public void cleanupOnDelete(String acctName)
+    public void cleanupOnDelete()
     {
         unlinkAccount();
     }

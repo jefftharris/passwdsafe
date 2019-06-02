@@ -170,7 +170,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
     }
 
     @Override
-    public void cleanupOnDelete(String acctName)
+    public void cleanupOnDelete()
     {
         if (!isPendingAdd()) {
             unlinkAccount();

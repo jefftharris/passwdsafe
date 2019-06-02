@@ -59,7 +59,7 @@ public interface Provider
 
     /** Cleanup a provider when deleted */
     @SuppressWarnings("RedundantThrows")
-    void cleanupOnDelete(String acctName)
+    void cleanupOnDelete()
             throws Exception;
 
     /** Update a provider's sync frequency */

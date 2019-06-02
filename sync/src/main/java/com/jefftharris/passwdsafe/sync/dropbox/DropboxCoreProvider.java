@@ -176,7 +176,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
 
 
     @Override
-    public void cleanupOnDelete(String acctName)
+    public void cleanupOnDelete()
     {
         if (!isPendingAdd()) {
             unlinkAccount();

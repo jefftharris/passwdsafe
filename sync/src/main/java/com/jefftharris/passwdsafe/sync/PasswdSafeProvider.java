@@ -656,7 +656,7 @@ public class PasswdSafeProvider extends ContentProvider
         SyncDb.deleteProvider(provider.itsId, db);
         Provider providerImpl =
                 ProviderFactory.getProvider(provider.itsType, ctx);
-        providerImpl.cleanupOnDelete(provider.itsAcct);
+        providerImpl.cleanupOnDelete();
         Account acct = providerImpl.getAccount(provider.itsAcct);
         providerImpl.updateSyncFreq(acct, 0);
         ctx.getContentResolver().notifyChange(PasswdSafeContract.CONTENT_URI,
