@@ -32,6 +32,6 @@ public class DropboxCoreRmFileOper extends AbstractRmSyncOper<DbxClientV2>
     protected void doRemoteRemove(DbxClientV2 providerClient,
                                   Context ctx) throws DbxException
     {
-        providerClient.files().delete(itsFile.itsRemoteId);
+        providerClient.files().deleteV2(itsFile.itsRemoteId);
     }
 }
