@@ -500,9 +500,7 @@ public final class PasswdFileDataView
             GroupNode childNode = itsCurrGroupNode.getGroup(group);
             if (childNode == null) {
                 // Prune groups from current item in the stack on down
-                for (int j = itsCurrGroups.size() - 1; j >= i; --j) {
-                    itsCurrGroups.remove(j);
-                }
+                itsCurrGroups.subList(i, itsCurrGroups.size()).clear();
                 break;
             }
             itsCurrGroupNode = childNode;
