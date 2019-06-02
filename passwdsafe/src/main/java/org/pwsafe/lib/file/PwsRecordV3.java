@@ -456,7 +456,7 @@ public class PwsRecordV3 extends PwsRecord
             byte[] remainingDataInRecord = Util.getBytes(rawData, 5, 11);
             if (length <= 11) {
                 System.arraycopy(remainingDataInRecord, 0, data, 0, length);
-            } else if (length > 11) {
+            } else {
                 int bytesToRead = length - 11;
                 final int blockSize = file.getBlockSize();
                 int blocksToRead = bytesToRead / blockSize;
