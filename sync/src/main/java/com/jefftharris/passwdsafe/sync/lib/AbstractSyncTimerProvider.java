@@ -82,6 +82,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     /**
      * Get whether there is a pending add
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected synchronized boolean isPendingAdd()
     {
         return itsIsPendingAdd;

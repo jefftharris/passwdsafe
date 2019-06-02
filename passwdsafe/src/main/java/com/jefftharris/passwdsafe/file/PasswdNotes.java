@@ -52,6 +52,7 @@ public final class PasswdNotes
     /**
      * Get whether the notes are truncated
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isTruncated()
     {
         return itsIsTruncated;
