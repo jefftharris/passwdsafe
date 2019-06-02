@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * Dialog to pick a date
@@ -50,7 +51,7 @@ public class DatePickerDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Bundle args = getArguments();
+        Bundle args = Objects.requireNonNull(getArguments());
         Calendar now = Calendar.getInstance();
         int year = args.getInt("year", now.get(Calendar.YEAR));
         int monthOfYear = args.getInt("monthOfYear", now.get(Calendar.MONTH));

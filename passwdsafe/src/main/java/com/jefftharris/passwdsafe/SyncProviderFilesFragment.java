@@ -37,6 +37,8 @@ import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.util.ProviderSyncTask;
 
+import java.util.Objects;
+
 /**
  * The SyncProviderFilesFragment shows the list of files for a provider
  */
@@ -92,7 +94,8 @@ public class SyncProviderFilesFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        itsProviderUri = Uri.parse(getArguments().getString("providerUri"));
+        Bundle args = Objects.requireNonNull(getArguments());
+        itsProviderUri = Uri.parse(args.getString("providerUri"));
         itsFilesUri = itsProviderUri.buildUpon().appendPath(
                 PasswdSafeContract.Files.TABLE).build();
     }
