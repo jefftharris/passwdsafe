@@ -81,7 +81,7 @@ public class SyncProviderFragment extends ListFragment
                 v -> PasswdSafeUtil.startMainActivity(
                         PasswdSafeUtil.SYNC_PACKAGE, getActivity()));
 
-        GuiUtils.setVisible(rootView, checkProvider(getContext()));
+        GuiUtils.setVisible(rootView, checkProvider(requireContext()));
         return rootView;
     }
 
@@ -92,7 +92,7 @@ public class SyncProviderFragment extends ListFragment
         super.onActivityCreated(savedInstanceState);
 
         itsProviderAdapter = new SimpleCursorAdapter(
-               getActivity(), R.layout.sync_provider_list_item, null,
+               requireContext(), R.layout.sync_provider_list_item, null,
                new String[] { PasswdSafeContract.Providers.COL_ACCT,
                               PasswdSafeContract.Providers.COL_TYPE,
                               PasswdSafeContract.Providers.COL_TYPE},
@@ -196,7 +196,7 @@ public class SyncProviderFragment extends ListFragment
     {
         Uri uri = PasswdSafeContract.Providers.CONTENT_URI;
         return new PasswdCursorLoader(
-                 getContext(), uri, PasswdSafeContract.Providers.PROJECTION,
+                 requireContext(), uri, PasswdSafeContract.Providers.PROJECTION,
                  null, null, PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
     }
 

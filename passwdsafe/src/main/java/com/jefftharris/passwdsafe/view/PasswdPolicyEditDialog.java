@@ -92,7 +92,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
             itsPolicy = null;
         }
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         LayoutInflater factory = LayoutInflater.from(ctx);
         itsView = factory.inflate(R.layout.passwd_policy_edit, null);
 

@@ -153,7 +153,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
     {
         if (newPolicy.getLocation() == PasswdPolicy.Location.DEFAULT) {
             PasswdSafeApp app =
-                    (PasswdSafeApp)getContext().getApplicationContext();
+                    (PasswdSafeApp)requireContext().getApplicationContext();
             app.setDefaultPasswdPolicy(newPolicy);
             refresh();
         } else {
@@ -290,7 +290,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
         }
 
         PasswdSafeApp app =
-                (PasswdSafeApp)getContext().getApplicationContext();
+                (PasswdSafeApp)requireContext().getApplicationContext();
         PasswdPolicy defPolicy = app.getDefaultPasswdPolicy();
         policies.add(defPolicy);
 

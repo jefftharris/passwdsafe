@@ -419,7 +419,7 @@ public final class FileListFragment extends ListFragment
 
         // Open the default file
         if (getListAdapter() != null) {
-            Activity act = getActivity();
+            Activity act = requireActivity();
             PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
             if (app.checkOpenDefault()) {
                 SharedPreferences prefs = Preferences.getSharedPrefs(act);

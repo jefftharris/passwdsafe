@@ -121,7 +121,7 @@ public class SyncProviderFilesFragment extends ListFragment
         super.onActivityCreated(savedInstanceState);
 
         itsProviderAdapter = new SimpleCursorAdapter(
-               getActivity(), R.layout.sync_provider_file_list_item, null,
+               requireContext(), R.layout.sync_provider_file_list_item, null,
                new String[] { PasswdSafeContract.Files.COL_TITLE,
                               PasswdSafeContract.Files.COL_MOD_DATE,
                               PasswdSafeContract.Files.COL_FOLDER },
@@ -160,7 +160,7 @@ public class SyncProviderFilesFragment extends ListFragment
                 public Loader<Cursor> onCreateLoader(int id, Bundle args)
                 {
                     return new PasswdCursorLoader(
-                            getContext(), itsProviderUri,
+                            requireContext(), itsProviderUri,
                             PasswdSafeContract.Providers.PROJECTION,
                             null, null, null);
                 }
@@ -209,7 +209,7 @@ public class SyncProviderFilesFragment extends ListFragment
                  public Loader<Cursor> onCreateLoader(int id, Bundle args)
                  {
                      return new PasswdCursorLoader(
-                             getContext(), itsFilesUri,
+                             requireContext(), itsFilesUri,
                              PasswdSafeContract.Files.PROJECTION,
                              PasswdSafeContract.Files.NOT_DELETED_SELECTION,
                              null, PasswdSafeContract.Files.TITLE_SORT_ORDER);

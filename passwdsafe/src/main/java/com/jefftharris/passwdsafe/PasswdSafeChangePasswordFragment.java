@@ -116,7 +116,7 @@ public class PasswdSafeChangePasswordFragment
     public void onPause()
     {
         super.onPause();
-        GuiUtils.setKeyboardVisible(itsPassword, getContext(), false);
+        GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
         GuiUtils.clearEditText(itsPassword);
         GuiUtils.clearEditText(itsPasswordConfirm);
     }

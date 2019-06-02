@@ -215,7 +215,7 @@ public class PasswdSafeExpirationsFragment
      */
     private NotificationMgr getNotifyMgr()
     {
-        PasswdSafeApp app = (PasswdSafeApp)getActivity().getApplication();
+        PasswdSafeApp app = (PasswdSafeApp)requireActivity().getApplication();
         return app.getNotifyMgr();
     }
 }

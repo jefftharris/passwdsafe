@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.view;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -74,8 +75,9 @@ public class NewGroupDialog extends DialogFragment
                     }
                 };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                .setTitle(PasswdSafeUtil.getAppTitle(getContext()))
+        Context ctx = requireContext();
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx)
+                .setTitle(PasswdSafeUtil.getAppTitle(ctx))
                 .setView(view)
                 .setPositiveButton(R.string.ok, dlgClick)
                 .setNegativeButton(R.string.cancel, dlgClick)

@@ -72,7 +72,7 @@ public class SyncLogsFragment extends ListFragment
         super.onActivityCreated(savedInstanceState);
 
         itsLogsAdapter = new SimpleCursorAdapter(
-                getActivity(), R.layout.listview_sync_log_item, null,
+                requireContext(), R.layout.listview_sync_log_item, null,
                 new String[] { PasswdSafeContract.SyncLogs.COL_START,
                                PasswdSafeContract.SyncLogs.COL_LOG,
                                PasswdSafeContract.SyncLogs.COL_STACK},
@@ -158,7 +158,7 @@ public class SyncLogsFragment extends ListFragment
                 String selection = itsIsShowAll ? null :
                     PasswdSafeContract.SyncLogs.DEFAULT_SELECTION;
                 return new PasswdCursorLoader(
-                        getContext(),
+                        requireContext(),
                         PasswdSafeContract.SyncLogs.CONTENT_URI,
                         PasswdSafeContract.SyncLogs.PROJECTION,
                         selection, null,

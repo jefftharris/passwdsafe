@@ -102,7 +102,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
         }
         String neutralStr = args.getString(ARG_NEUTRAL);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         LayoutInflater factory = LayoutInflater.from(ctx);
         @SuppressLint("InflateParams")
         View dlgView = factory.inflate(R.layout.confirm_prompt, null);

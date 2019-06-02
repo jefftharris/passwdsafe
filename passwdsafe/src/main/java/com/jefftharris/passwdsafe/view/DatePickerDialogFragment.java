@@ -57,7 +57,7 @@ public class DatePickerDialogFragment extends DialogFragment
         int dayOfMonth = args.getInt("dayOfMonth",
                                      now.get(Calendar.DAY_OF_MONTH));
 
-        return new DatePickerDialog(getContext(), this, year, monthOfYear,
+        return new DatePickerDialog(requireContext(), this, year, monthOfYear,
                                     dayOfMonth);
     }
 

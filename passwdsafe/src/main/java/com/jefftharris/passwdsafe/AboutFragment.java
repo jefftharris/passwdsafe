@@ -75,7 +75,7 @@ public class AboutFragment extends Fragment
                                          container, false);
 
         String licenses = AboutUtils.getLicenses(
-                getContext(), "license-PasswdSafe.txt",
+                requireContext(), "license-PasswdSafe.txt",
                 "license-android.txt", "license-AndroidAssetStudio.txt",
                 "license-MaterialIcons.txt", "license-icons.txt",
                 "license-RobotoMono.txt");

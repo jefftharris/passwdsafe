@@ -54,7 +54,7 @@ public class AccountChooserDlg extends DialogFragment
         Bundle args = getArguments();
         String accountType = args.getString("accountType");
 
-        Activity act = getActivity();
+        Activity act = requireActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(act);
         builder.setTitle(R.string.choose_account);
 
@@ -110,7 +110,7 @@ public class AccountChooserDlg extends DialogFragment
             result = Activity.RESULT_CANCELED;
         }
 
-        PendingIntent pendIntent = getActivity().createPendingResult(
+        PendingIntent pendIntent = requireActivity().createPendingResult(
                 requestCode, intent, PendingIntent.FLAG_ONE_SHOT);
         try {
             pendIntent.send(result);

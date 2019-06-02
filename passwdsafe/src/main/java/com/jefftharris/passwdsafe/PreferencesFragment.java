@@ -214,7 +214,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             Preference pref =
                     findPreference(Preferences.PREF_DISPLAY_VIBRATE_KEYBOARD);
             if (pref != null) {
-                pref.setVisible(ApiCompat.hasVibrator(getContext()));
+                pref.setVisible(ApiCompat.hasVibrator(requireContext()));
             }
         }
 
@@ -504,7 +504,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             }
             case CLEAR_ALL_SAVED: {
                 SavedPasswordsMgr passwdMgr =
-                        new SavedPasswordsMgr(getContext());
+                        new SavedPasswordsMgr(requireContext());
                 passwdMgr.removeAllSavedPasswords();
                 break;
             }

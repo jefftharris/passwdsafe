@@ -142,7 +142,7 @@ public class PasswdSafeRecordNotesFragment
         }
 
         SharedPreferences prefs =
-                getActivity().getPreferences(Context.MODE_PRIVATE);
+                requireActivity().getPreferences(Context.MODE_PRIVATE);
         itsIsWordWrap = prefs.getBoolean(WORD_WRAP_PREF, true);
         itsIsMonospace = prefs.getBoolean(MONOSPACE_PREF, false);
         setNotesOptions();
@@ -155,7 +155,7 @@ public class PasswdSafeRecordNotesFragment
     private void saveNotesOptionsPrefs()
     {
         SharedPreferences prefs =
-                getActivity().getPreferences(Context.MODE_PRIVATE);
+                requireActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(WORD_WRAP_PREF, itsIsWordWrap);
         editor.putBoolean(MONOSPACE_PREF, itsIsMonospace);

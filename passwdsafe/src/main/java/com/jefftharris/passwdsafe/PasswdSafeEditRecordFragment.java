@@ -193,7 +193,7 @@ public class PasswdSafeEditRecordFragment
                              Bundle savedInstanceState)
     {
         setHasOptionsMenu(true);
-        Context ctx = getContext();
+        Context ctx = requireContext();
         View rootView = inflater.inflate(
                 R.layout.fragment_passwdsafe_edit_record, container, false);
         itsTypeGroup = rootView.findViewById(R.id.type_group);
@@ -288,7 +288,8 @@ public class PasswdSafeEditRecordFragment
         // Notes
         itsNotesLabel = rootView.findViewById(R.id.notes_label);
         itsNotes = rootView.findViewById(R.id.notes);
-        PasswdSafeRecordNotesFragment.setNotesOptions(itsNotes, getActivity());
+        PasswdSafeRecordNotesFragment.setNotesOptions(itsNotes,
+                                                      requireActivity());
 
         initProtViews(rootView);
         initialize();
@@ -364,7 +365,7 @@ public class PasswdSafeEditRecordFragment
     public void onPause()
     {
         super.onPause();
-        GuiUtils.setKeyboardVisible(itsTitle, getContext(), false);
+        GuiUtils.setKeyboardVisible(itsTitle, requireContext(), false);
     }
 
     @Override
@@ -415,7 +416,7 @@ public class PasswdSafeEditRecordFragment
             List<PasswdHistory.Entry> passwds = itsHistory.getPasswds();
             if ((info.position >= 0) && (info.position < passwds.size())) {
                 menu.setHeaderTitle(passwds.get(info.position).getPasswd());
-                getActivity().getMenuInflater().inflate(
+                requireActivity().getMenuInflater().inflate(
                         R.menu.fragment_passwdsafe_edit_record_history, menu);
             }
         }
@@ -502,7 +503,7 @@ public class PasswdSafeEditRecordFragment
         }
         case R.id.link_ref: {
             Intent intent = new Intent(PasswdSafeApp.CHOOSE_RECORD_INTENT,
-                                       getActivity().getIntent().getData(),
+                                       requireActivity().getIntent().getData(),
                                        getContext(),
                                        LauncherRecordShortcuts.class);
             // Do not allow mixed alias and shortcut references to a
@@ -810,7 +811,7 @@ public class PasswdSafeEditRecordFragment
         }
 
         itsPolicies = new ArrayList<>();
-        PasswdSafeApp app = (PasswdSafeApp)getActivity().getApplication();
+        PasswdSafeApp app = (PasswdSafeApp)requireActivity().getApplication();
         PasswdPolicy defPolicy = app.getDefaultPasswdPolicy();
         itsPolicies.add(defPolicy);
         HeaderPasswdPolicies hdrPolicies = fileData.getHdrPasswdPolicies();
@@ -1178,7 +1179,7 @@ public class PasswdSafeEditRecordFragment
     private void setSpinnerItems(Spinner spinner, List<?> items)
     {
         ArrayAdapter<Object> adapter =
-                new ArrayAdapter<>(getContext(),
+                new ArrayAdapter<>(requireContext(),
                                    android.R.layout.simple_spinner_item,
                                    Collections.unmodifiableList(items));
         adapter.setDropDownViewResource(
@@ -1387,7 +1388,7 @@ public class PasswdSafeEditRecordFragment
             fileData.addRecord(record);
         }
 
-        GuiUtils.setKeyboardVisible(itsTitle, getContext(), false);
+        GuiUtils.setKeyboardVisible(itsTitle, requireContext(), false);
 
         return new EditRecordResult(newRecord, newRecord || record.isModified(),
                                     new PasswdLocation(record, fileData));
