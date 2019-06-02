@@ -29,6 +29,7 @@ public class PwsStringUnicodeField extends PwsField
             throws UnsupportedEncodingException
     {
 
+        //noinspection CharsetObjectCanBeUsed
         super(type, new String(value, "UTF-8"));
     }
 
@@ -66,6 +67,7 @@ public class PwsStringUnicodeField extends PwsField
     public byte[] getBytes()
     {
         try {
+            //noinspection CharsetObjectCanBeUsed
             return ((String)super.getValue()).getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);

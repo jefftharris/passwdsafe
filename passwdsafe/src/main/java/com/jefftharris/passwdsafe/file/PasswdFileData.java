@@ -1042,6 +1042,7 @@ public class PasswdFileData
     private static String doHdrFieldToString(PwsField field)
     {
         try {
+            //noinspection CharsetObjectCanBeUsed
             return new String(field.getBytes(), "UTF-8");
         }
         catch (UnsupportedEncodingException e) {
@@ -1056,6 +1057,7 @@ public class PasswdFileData
         try {
             PwsField field = null;
             if (val != null) {
+                //noinspection CharsetObjectCanBeUsed
                 field = new PwsUnknownField(fieldId, val.getBytes("UTF-8"));
             }
             setOrRemoveField(field, fieldId, rec);
