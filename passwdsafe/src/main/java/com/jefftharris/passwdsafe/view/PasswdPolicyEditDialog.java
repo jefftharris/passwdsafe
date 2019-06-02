@@ -176,8 +176,10 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
                 {
                     dialog.dismiss();
                     Listener listener = (Listener)getTargetFragment();
-                    listener.handlePolicyEditComplete(itsPolicy,
-                                                      createPolicy());
+                    if (listener != null) {
+                        listener.handlePolicyEditComplete(itsPolicy,
+                                                          createPolicy());
+                    }
                 }
             };
 
@@ -549,7 +551,8 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
                 if ((itsPolicy == null) ||
                     !itsPolicy.getName().equals(name)) {
                     Listener listener = (Listener)getTargetFragment();
-                    if (listener.isDuplicatePolicy(name)) {
+                    if ((listener != null) &&
+                        listener.isDuplicatePolicy(name)) {
                         return getString(R.string.duplicate_name);
                     }
                 }

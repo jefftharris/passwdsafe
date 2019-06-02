@@ -64,14 +64,20 @@ public class NewGroupDialog extends DialogFragment
                     public void onOkClicked(DialogInterface dialog)
                     {
                         EditText newGroup = view.findViewById(R.id.new_group);
-                        ((Listener)getTargetFragment()).handleNewGroup(
-                                newGroup.getText().toString());
+                        Listener listener = (Listener)getTargetFragment();
+                        if (listener != null) {
+                            listener.handleNewGroup(
+                                    newGroup.getText().toString());
+                        }
                     }
 
                     @Override
                     public void onCancelClicked()
                     {
-                        ((Listener)getTargetFragment()).handleNewGroup(null);
+                        Listener listener = (Listener)getTargetFragment();
+                        if (listener != null) {
+                            listener.handleNewGroup(null);
+                        }
                     }
                 };
 

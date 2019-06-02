@@ -67,8 +67,9 @@ public class DatePickerDialogFragment extends DialogFragment
                           int dayOfMonth)
     {
         if (isResumed()) {
-            ((Listener)getTargetFragment()).handleDatePicked(year, monthOfYear,
-                                                             dayOfMonth);
+            Listener listener =
+                    Objects.requireNonNull((Listener)getTargetFragment());
+            listener.handleDatePicked(year, monthOfYear, dayOfMonth);
         }
     }
 }

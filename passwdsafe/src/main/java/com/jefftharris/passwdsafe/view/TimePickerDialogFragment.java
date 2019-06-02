@@ -63,7 +63,9 @@ public class TimePickerDialogFragment extends DialogFragment
     public void onTimeSet(TimePicker view, int hourOfDay, int minute)
     {
         if (isResumed()) {
-            ((Listener)getTargetFragment()).handleTimePicked(hourOfDay, minute);
+            Listener listener =
+                    Objects.requireNonNull((Listener)getTargetFragment());
+            listener.handleTimePicked(hourOfDay, minute);
         }
     }
 }
