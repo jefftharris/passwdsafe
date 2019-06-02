@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.io.IOException;
-
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
