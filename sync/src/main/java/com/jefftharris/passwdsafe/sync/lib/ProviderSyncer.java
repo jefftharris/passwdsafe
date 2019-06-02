@@ -522,6 +522,7 @@ public abstract class ProviderSyncer<ProviderClientT>
      */
     private static abstract class CheckedDbUser<T> implements DbUser<T>
     {
+        @SuppressWarnings("RedundantThrows")
         @Override
         public final T useDb(boolean dbOk, SQLiteDatabase db) throws Exception
         {
