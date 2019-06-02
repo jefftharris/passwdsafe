@@ -47,7 +47,7 @@ public abstract class AbstractRmSyncOper<ProviderClientT>
     @Override
     public final void doPostOperUpdate(boolean updateLocal,
                                        SQLiteDatabase db, Context ctx)
-            throws IOException, SQLException
+            throws SQLException
     {
         if (updateLocal) {
             if (itsIsRmLocal) {

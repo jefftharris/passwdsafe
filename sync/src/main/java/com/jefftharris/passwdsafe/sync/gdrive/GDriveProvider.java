@@ -190,7 +190,6 @@ public class GDriveProvider extends AbstractSyncTimerProvider
 
     @Override
     public void checkProviderAdd(SQLiteDatabase db)
-            throws Exception
     {
     }
 

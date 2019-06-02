@@ -321,13 +321,10 @@ public final class PwsFileV3 extends PwsFile
      * @throws EndOfFileException              If end of file is reached.
      * @throws IOException                     If an error occurs whilst
      * reading.
-     * @throws UnsupportedFileVersionException If the header is not a
-     * valid V2 header.
      */
     @Override
     protected void readExtraHeader(PwsFile file)
-            throws EndOfFileException, IOException,
-                   UnsupportedFileVersionException
+            throws EndOfFileException, IOException
     {
         //headerRecord = (PwsRecordV3) readRecord();
         headerRecord = new PwsRecordV3(this, true);
