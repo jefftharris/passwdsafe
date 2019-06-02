@@ -473,7 +473,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public Long useDb(SQLiteDatabase db) throws Exception
+        public Long useDb(SQLiteDatabase db)
         {
             long providerId =
                     PasswdSafeContract.Providers.getId(itsProviderUri);
