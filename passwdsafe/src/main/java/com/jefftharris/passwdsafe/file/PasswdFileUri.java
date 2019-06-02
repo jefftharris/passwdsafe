@@ -548,54 +548,56 @@ public class PasswdFileUri implements Parcelable
     /** Resolve fields for a file URI */
     private void resolveFileUri(Context ctx)
     {
-        boolean writable;
-        Integer extraMsgId = null;
-        do {
-            if (itsFile == null) {
-                writable = false;
-                break;
-            }
+        itsWritableInfo = doResolveFileUri(ctx);
+        itsIsDeletable = itsWritableInfo.first;
+    }
 
-            itsTitle = itsFile.getName();
-            if (!itsFile.canWrite()) {
-                writable = false;
 
-                // Check for SD card location
-                File[] extdirs = ApiCompat.getExternalFilesDirs(ctx, null);
-                if ((extdirs != null) && (extdirs.length > 1)) {
-                    for (int i = 1; i < extdirs.length; ++i) {
-                        if (extdirs[i] == null) {
-                            continue;
-                        }
-                        String path = extdirs[i].getAbsolutePath();
-                        int pos = path.indexOf("/Android/");
-                        if (pos == -1) {
-                            continue;
-                        }
+    /**
+     * Implementation of resolving fields for a file URI
+     */
+    private Pair<Boolean, Integer> doResolveFileUri(Context ctx)
+    {
+        if (itsFile == null) {
+            return new Pair<>(false, null);
+        }
 
-                        String basepath = path.substring(0, pos + 1);
-                        if (itsFile.getAbsolutePath().startsWith(basepath)) {
-                            extraMsgId = R.string.read_only_sdcard;
-                            break;
-                        }
+        itsTitle = itsFile.getName();
+        if (!itsFile.canWrite()) {
+            Integer extraMsgId = null;
+
+            // Check for SD card location
+            File[] extdirs = ApiCompat.getExternalFilesDirs(ctx, null);
+            if ((extdirs != null) && (extdirs.length > 1)) {
+                for (int i = 1; i < extdirs.length; ++i) {
+                    if (extdirs[i] == null) {
+                        continue;
+                    }
+                    String path = extdirs[i].getAbsolutePath();
+                    int pos = path.indexOf("/Android/");
+                    if (pos == -1) {
+                        continue;
+                    }
+
+                    String basepath = path.substring(0, pos + 1);
+                    if (itsFile.getAbsolutePath().startsWith(basepath)) {
+                        extraMsgId = R.string.read_only_sdcard;
+                        break;
                     }
                 }
-                break;
             }
+            return new Pair<>(false, extraMsgId);
+        }
 
-            // Check mount state on kitkat or higher
-            if (ApiCompat.SDK_VERSION < ApiCompat.SDK_KITKAT) {
-                writable = true;
-                break;
-            }
-            writable = !EnvironmentCompat.getStorageState(itsFile).equals(
-                    Environment.MEDIA_MOUNTED_READ_ONLY);
-            if (!writable) {
-                extraMsgId = R.string.read_only_media;
-            }
-        } while(false);
-        itsWritableInfo = new Pair<>(writable, extraMsgId);
-        itsIsDeletable = writable;
+        // Check mount state on kitkat or higher
+        if (ApiCompat.SDK_VERSION < ApiCompat.SDK_KITKAT) {
+            return new Pair<>(true, null);
+        }
+
+        boolean writable = !EnvironmentCompat.getStorageState(itsFile).equals(
+                Environment.MEDIA_MOUNTED_READ_ONLY);
+        return new Pair<>(writable,
+                          writable ? null : R.string.read_only_media);
     }
 
 

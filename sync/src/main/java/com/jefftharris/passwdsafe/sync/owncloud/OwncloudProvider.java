@@ -98,21 +98,16 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
                                             Uri providerAcctUri)
     {
         String accountName = null;
-        do {
-            if ((activityResult != Activity.RESULT_OK) ||
-                    (activityData == null)) {
-                break;
-            }
-
+        if ((activityResult == Activity.RESULT_OK) &&
+            (activityData != null)) {
             Bundle b = activityData.getExtras();
             accountName = (b != null) ?
                     b.getString(AccountManager.KEY_ACCOUNT_NAME) : null;
             Log.i(TAG, "Selected account: " + accountName);
             if (TextUtils.isEmpty(accountName)) {
                 accountName = null;
-                break;
             }
-        } while(false);
+        }
 
         saveAuthData(accountName, createUrlFromAccount(accountName, true));
         updateOwncloudAcct();

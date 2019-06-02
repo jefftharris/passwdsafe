@@ -285,25 +285,8 @@ public abstract class ProviderSyncer<ProviderClientT>
         String remFolder = remfile.getFolder();
         long remModDate = remfile.getModTime();
         String remHash = remfile.getHash();
-        boolean changed = true;
-        do {
-            if (!TextUtils.equals(dbfile.itsRemoteTitle, remTitle) ||
-                !TextUtils.equals(dbfile.itsRemoteFolder, remFolder) ||
-                (dbfile.itsRemoteModDate != remModDate) ||
-                !TextUtils.equals(dbfile.itsRemoteHash, remHash) ||
-                TextUtils.isEmpty(dbfile.itsLocalFile)) {
-                break;
-            }
-
-            File localFile = itsContext.getFileStreamPath(dbfile.itsLocalFile);
-            if (!localFile.exists()) {
-                break;
-            }
-
-            changed = false;
-        } while(false);
-
-        if (!changed) {
+        if (!checkRemoteFileChanged(dbfile, remTitle, remFolder, remModDate,
+                                    remHash)) {
             return;
         }
 
@@ -323,6 +306,28 @@ public abstract class ProviderSyncer<ProviderClientT>
             break;
         }
         }
+    }
+
+
+    /**
+     * Check whether a remote file changed
+     */
+    private boolean checkRemoteFileChanged(DbFile dbfile,
+                                           String remTitle,
+                                           String remFolder,
+                                           long remModDate,
+                                           String remHash)
+    {
+        if (!TextUtils.equals(dbfile.itsRemoteTitle, remTitle) ||
+            !TextUtils.equals(dbfile.itsRemoteFolder, remFolder) ||
+            (dbfile.itsRemoteModDate != remModDate) ||
+            !TextUtils.equals(dbfile.itsRemoteHash, remHash) ||
+            TextUtils.isEmpty(dbfile.itsLocalFile)) {
+            return true;
+        }
+
+        File localFile = itsContext.getFileStreamPath(dbfile.itsLocalFile);
+        return !localFile.exists();
     }
 
 
