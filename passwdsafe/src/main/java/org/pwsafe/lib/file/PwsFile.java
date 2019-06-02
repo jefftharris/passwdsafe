@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -81,7 +82,7 @@ import javax.crypto.spec.SecretKeySpec;
 public abstract class PwsFile
 {
     private static final Log LOG = Log.getInstance(
-            PwsFile.class.getPackage().getName());
+            Objects.requireNonNull(PwsFile.class.getPackage()).getName());
 
     /**
      * Length of RandStuff in bytes.
@@ -759,8 +760,8 @@ public abstract class PwsFile
      */
     private class FileIterator implements Iterator<PwsRecord>
     {
-        private final Log LOG = Log
-                .getInstance(FileIterator.class.getPackage().getName());
+        private final Log LOG = Log.getInstance(Objects.requireNonNull(
+                FileIterator.class.getPackage()).getName());
 
         private final PwsFile file;
         private final Iterator<PwsRecord> recDelegate;

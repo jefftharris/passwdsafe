@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Support for new v3 Record type.
@@ -29,8 +30,8 @@ public class PwsRecordV3 extends PwsRecord
 {
     private static final long serialVersionUID = -3160317668375599155L;
 
-    private static final Log LOG =
-            Log.getInstance(PwsRecordV3.class.getPackage().getName());
+    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
+            PwsRecordV3.class.getPackage()).getName());
 
     /**
      * Constant for the version 3 ID string field.

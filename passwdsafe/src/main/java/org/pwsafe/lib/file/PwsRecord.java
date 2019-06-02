@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -36,8 +37,8 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = Log.getInstance(
-            PwsRecord.class.getPackage().getName());
+    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
+            PwsRecord.class.getPackage()).getName());
 
     /**
      * The default character set used for <code>byte[]</code> to

@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Superclass for common functionality for V1 and V2 Files.
@@ -30,8 +31,8 @@ import java.util.Iterator;
  */
 public abstract class PwsFileV1V2 extends PwsFile
 {
-    private static final Log LOG = Log.getInstance(
-            PwsFileV1V2.class.getPackage().getName());
+    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
+            PwsFileV1V2.class.getPackage()).getName());
 
 
     /**
