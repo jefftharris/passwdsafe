@@ -13,6 +13,8 @@ import android.preference.ListPreference;
 import android.util.AttributeSet;
 import androidx.annotation.NonNull;
 
+import java.util.regex.Pattern;
+
 /**
  * @author jharris
  * Patterned off of class from http://blog.350nice.com/wp/archives/240
@@ -76,7 +78,7 @@ public class MultiSelectListPreference extends ListPreference
         String value = getValue();
         String[] values = null;
         if (value != null) {
-            values = value.split("\\Q" + SEPARATOR + "\\E");
+            values = value.split(Pattern.quote(SEPARATOR));
         }
         for (int entryIdx = 0; entryIdx < entryValues.length; ++entryIdx) {
             itsSelectedItems[entryIdx] = false;
