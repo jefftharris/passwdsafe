@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
@@ -571,7 +572,7 @@ public class PasswdPolicyTest
     {
         try {
             PasswdPolicy.parseHdrPolicies(policyStr);
-            assertTrue(false);
+            fail();
         } catch (Throwable t) {
             assertTrue(t instanceof IllegalArgumentException);
             assertEquals(exMsg, t.getMessage());
@@ -583,7 +584,7 @@ public class PasswdPolicyTest
     {
         try {
             PasswdPolicy.parseRecordPolicy(null, policyStr, null);
-            assertTrue(false);
+            fail();
         } catch (Throwable t) {
             assertTrue(t instanceof IllegalArgumentException);
             assertEquals(exMsg, t.getMessage());
@@ -617,8 +618,8 @@ public class PasswdPolicyTest
             PasswdPolicy.recordPolicyToString(policy);
         assertNotNull(strs);
         assertEquals(policyName, strs.itsPolicyName);
-        assertEquals(null, strs.itsPolicyStr);
-        assertEquals(null, strs.itsOwnSymbols);
+        assertNull(strs.itsPolicyStr);
+        assertNull(strs.itsOwnSymbols);
     }
 
     /** Check a record with its own password policy */
@@ -691,7 +692,7 @@ public class PasswdPolicyTest
                 break;
             }
             case HEXADECIMAL: {
-                assertTrue(false);
+                fail();
                 break;
             }
             }
@@ -759,7 +760,7 @@ public class PasswdPolicyTest
                 break;
             }
             case HEXADECIMAL: {
-                assertTrue(false);
+                fail();
                 break;
             }
             }
@@ -799,7 +800,7 @@ public class PasswdPolicyTest
                     } else if (symbols.indexOf(c) >= 0) {
                         ++numSymbols;
                     } else {
-                        assertTrue(false);
+                        fail();
                     }
                 }
                 verifyPolicyNumChars(useLower, numLower,
@@ -827,7 +828,7 @@ public class PasswdPolicyTest
                     } else if (symbols.indexOf(c) >= 0) {
                         ++numSymbols;
                     } else {
-                        assertTrue(false);
+                        fail();
                     }
                 }
                 verifyPolicyNumChars(useLower, numLower,
@@ -853,7 +854,7 @@ public class PasswdPolicyTest
                     } else if (PasswdPolicy.SYMBOLS_PRONOUNCE.indexOf(c) >= 0) {
                         ++numSymbols;
                     } else {
-                        assertTrue(false);
+                        fail();
                     }
                 }
 
