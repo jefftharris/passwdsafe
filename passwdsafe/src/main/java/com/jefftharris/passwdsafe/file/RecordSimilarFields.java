@@ -18,6 +18,7 @@ import org.pwsafe.lib.file.PwsRecord;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *  Matcher for records with similar fields
@@ -184,7 +185,7 @@ public final class RecordSimilarFields implements Closeable
         if (passwords == null) {
             passwords = new ArrayList<>();
         }
-        passwords.add(PwsPassword.create(password));
+        passwords.add(PwsPassword.create(Objects.requireNonNull(password)));
         return passwords;
     }
 }

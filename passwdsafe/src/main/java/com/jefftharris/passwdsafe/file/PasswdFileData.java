@@ -63,6 +63,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 @SuppressWarnings("SameParameterValue")
 public class PasswdFileData
@@ -444,7 +445,7 @@ public class PasswdFileData
         String fieldStr = getField(rec, PwsRecordV3.PASSWORD_HISTORY);
         if (!TextUtils.isEmpty(fieldStr)) {
             try {
-                return new PasswdHistory(fieldStr);
+                return new PasswdHistory(Objects.requireNonNull(fieldStr));
             } catch (Exception e) {
                 Log.e(TAG, "Error reading password history: " + e, e);
             }

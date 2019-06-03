@@ -26,6 +26,7 @@ import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 import org.pwsafe.lib.file.PwsFile;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * The Preferences class manages preferences for the application
@@ -341,9 +342,9 @@ public class Preferences
             }
             int length;
             try {
-                length = Integer.parseInt(prefs.getString(PREF_GEN_LENGTH,
-                                                          PREF_GEN_LENGTH_DEF));
-            } catch (NumberFormatException e) {
+                length = Integer.parseInt(Objects.requireNonNull(
+                        prefs.getString(PREF_GEN_LENGTH, PREF_GEN_LENGTH_DEF)));
+            } catch (NumberFormatException | NullPointerException e) {
                 length = Integer.parseInt(PREF_GEN_LENGTH_DEF);
             }
             PasswdPolicy policy = PasswdPolicy.createDefaultPolicy(ctx, flags,

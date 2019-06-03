@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -193,7 +194,7 @@ public class PasswdClientProvider extends ContentProvider
             try {
                 String limitStr = uri.getQueryParameter("limit");
                 if (!TextUtils.isEmpty(limitStr)) {
-                    limit = Integer.valueOf(limitStr);
+                    limit = Integer.valueOf(Objects.requireNonNull(limitStr));
                 }
             } catch (NumberFormatException e) {
                 // ignore
