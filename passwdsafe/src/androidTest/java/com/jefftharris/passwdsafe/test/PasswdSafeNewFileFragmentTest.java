@@ -10,8 +10,8 @@ package com.jefftharris.passwdsafe.test;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;

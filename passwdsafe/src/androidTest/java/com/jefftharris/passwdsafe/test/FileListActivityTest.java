@@ -20,7 +20,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.jefftharris.passwdsafe.BuildConfig;
 import com.jefftharris.passwdsafe.FileListActivity;
@@ -42,7 +42,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static androidx.test.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -65,6 +64,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static com.jefftharris.passwdsafe.test.util.RecyclerViewAssertions.hasRecyclerViewItemAtPosition;
 import static com.jefftharris.passwdsafe.test.util.RecyclerViewAssertions.withRecyclerViewCount;
 import static com.jefftharris.passwdsafe.test.util.TestUtils.withAdaptedData;
