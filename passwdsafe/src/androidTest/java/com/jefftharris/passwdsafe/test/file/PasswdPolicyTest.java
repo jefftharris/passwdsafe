@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests for the PasswdPolicy class
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "ConstantConditions"})
 public class PasswdPolicyTest
 {
     //private static final String TAG = "PasswdPolicyTest";
@@ -768,7 +768,6 @@ public class PasswdPolicyTest
     }
 
     /** Verify a generated password */
-    @SuppressWarnings("ConstantConditions")
     private static void verifyGenPasswd(PasswdPolicy policy)
     {
         boolean useLower = policy.checkFlags(PasswdPolicy.FLAG_USE_LOWERCASE);
