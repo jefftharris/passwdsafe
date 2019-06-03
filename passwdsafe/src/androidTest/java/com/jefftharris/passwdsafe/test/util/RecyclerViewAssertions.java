@@ -34,7 +34,7 @@ public final class RecyclerViewAssertions
     /**
      * Match against the number of entries in the view
      */
-    public static ViewAssertion withRecyclerViewCount(
+    private static ViewAssertion withRecyclerViewCount(
             final Matcher<Integer> matcher)
     {
         return (view, noViewFoundException) -> {
