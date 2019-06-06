@@ -119,7 +119,9 @@ public class LauncherFileShortcuts extends AppCompatActivity
                 SyncProviderFilesFragment.newInstance(uri);
 
         FragmentTransaction txn = fragMgr.beginTransaction();
-        txn.remove(syncFrag);
+        if (syncFrag != null) {
+            txn.remove(syncFrag);
+        }
         txn.replace(R.id.files, syncFilesFrag);
         txn.addToBackStack(null);
         txn.commit();

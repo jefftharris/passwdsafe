@@ -28,6 +28,7 @@ import com.jefftharris.passwdsafe.sync.lib.DialogValidator;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 /**
  * Dialog to edit an ownCloud account
@@ -68,7 +69,7 @@ public class OwncloudEditDialog extends DialogFragment
     public @NonNull
     Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Bundle args = getArguments();
+        Bundle args = Objects.requireNonNull(getArguments());
         itsProviderUri = args.getParcelable("providerUri");
         String url = args.getString("url");
         int syncFreq = args.getInt("syncFreq");

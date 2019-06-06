@@ -16,9 +16,9 @@ import org.pwsafe.lib.exception.InvalidPassphraseException;
 import org.pwsafe.lib.exception.PasswordSafeException;
 import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 /**
  * This is a singleton factory class used to load a PasswordSafe file.  It is
@@ -29,8 +29,8 @@ import java.io.UnsupportedEncodingException;
  */
 public class PwsFileFactory
 {
-    private static final Log LOG = Log
-            .getInstance(PwsFileFactory.class.getPackage().getName());
+    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
+            PwsFileFactory.class.getPackage()).getName());
 
     private static final int MAX_HEADER_LEN = PwsFile.STUFF_LENGTH +
                                               PwsFile.HASH_LENGTH;
@@ -164,11 +164,6 @@ public class PwsFileFactory
      * @param filename the name of the file to open
      * @param passwd   the passphrase for the file
      * @return The correct subclass of {@link PwsFile} for the file.
-     * @throws EndOfFileException
-     * @throws FileNotFoundException
-     * @throws InvalidPassphraseException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     public static PwsFile loadFile(String filename,
                                    Owner<PwsPassword>.Param passwd)
@@ -186,10 +181,6 @@ public class PwsFileFactory
      * @param storage the password storage
      * @param passwd  the passphrase for the file
      * @return The correct subclass of {@link PwsFile} for the file.
-     * @throws EndOfFileException
-     * @throws InvalidPassphraseException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     public static PwsFile loadFromStorage(PwsStorage storage,
                                           Owner<PwsPassword>.Param passwd)

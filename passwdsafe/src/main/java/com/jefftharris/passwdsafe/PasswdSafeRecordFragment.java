@@ -23,7 +23,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.jefftharris.passwdsafe.file.PasswdNotes;
-import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 
 import org.pwsafe.lib.file.PwsRecord;
@@ -244,7 +243,7 @@ public class PasswdSafeRecordFragment
             return null;
         });
         updateNotesTab();
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
     /**

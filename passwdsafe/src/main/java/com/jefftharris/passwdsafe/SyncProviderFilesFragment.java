@@ -37,6 +37,8 @@ import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.util.ProviderSyncTask;
 
+import java.util.Objects;
+
 /**
  * The SyncProviderFilesFragment shows the list of files for a provider
  */
@@ -92,7 +94,8 @@ public class SyncProviderFilesFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        itsProviderUri = Uri.parse(getArguments().getString("providerUri"));
+        Bundle args = Objects.requireNonNull(getArguments());
+        itsProviderUri = Uri.parse(args.getString("providerUri"));
         itsFilesUri = itsProviderUri.buildUpon().appendPath(
                 PasswdSafeContract.Files.TABLE).build();
     }
@@ -121,7 +124,7 @@ public class SyncProviderFilesFragment extends ListFragment
         super.onActivityCreated(savedInstanceState);
 
         itsProviderAdapter = new SimpleCursorAdapter(
-               getActivity(), R.layout.sync_provider_file_list_item, null,
+               requireContext(), R.layout.sync_provider_file_list_item, null,
                new String[] { PasswdSafeContract.Files.COL_TITLE,
                               PasswdSafeContract.Files.COL_MOD_DATE,
                               PasswdSafeContract.Files.COL_FOLDER },
@@ -152,7 +155,7 @@ public class SyncProviderFilesFragment extends ListFragment
 
         setListAdapter(itsProviderAdapter);
 
-        LoaderManager lm = getLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_TITLE, null, new LoaderCallbacks<Cursor>()
             {
                 @NonNull
@@ -160,7 +163,7 @@ public class SyncProviderFilesFragment extends ListFragment
                 public Loader<Cursor> onCreateLoader(int id, Bundle args)
                 {
                     return new PasswdCursorLoader(
-                            getContext(), itsProviderUri,
+                            requireContext(), itsProviderUri,
                             PasswdSafeContract.Providers.PROJECTION,
                             null, null, null);
                 }
@@ -209,7 +212,7 @@ public class SyncProviderFilesFragment extends ListFragment
                  public Loader<Cursor> onCreateLoader(int id, Bundle args)
                  {
                      return new PasswdCursorLoader(
-                             getContext(), itsFilesUri,
+                             requireContext(), itsFilesUri,
                              PasswdSafeContract.Files.PROJECTION,
                              PasswdSafeContract.Files.NOT_DELETED_SELECTION,
                              null, PasswdSafeContract.Files.TITLE_SORT_ORDER);

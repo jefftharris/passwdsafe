@@ -24,7 +24,7 @@ public abstract class ManagedTask<ResultT, FragT>
     /**
      * Constructor
      */
-    public ManagedTask(FragT frag, Context context)
+    protected ManagedTask(FragT frag, Context context)
     {
         itsFrag = new ManagedRef<>(frag);
         itsContext = context.getApplicationContext();
@@ -103,7 +103,7 @@ public abstract class ManagedTask<ResultT, FragT>
         /**
          * Constructor
          */
-        public Task(ManagedTask<ResultT, FragT> task)
+        protected Task(ManagedTask<ResultT, FragT> task)
         {
             itsTask = task;
         }

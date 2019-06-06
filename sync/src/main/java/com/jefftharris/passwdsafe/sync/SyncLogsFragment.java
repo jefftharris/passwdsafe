@@ -72,7 +72,7 @@ public class SyncLogsFragment extends ListFragment
         super.onActivityCreated(savedInstanceState);
 
         itsLogsAdapter = new SimpleCursorAdapter(
-                getActivity(), R.layout.listview_sync_log_item, null,
+                requireContext(), R.layout.listview_sync_log_item, null,
                 new String[] { PasswdSafeContract.SyncLogs.COL_START,
                                PasswdSafeContract.SyncLogs.COL_LOG,
                                PasswdSafeContract.SyncLogs.COL_STACK},
@@ -158,7 +158,7 @@ public class SyncLogsFragment extends ListFragment
                 String selection = itsIsShowAll ? null :
                     PasswdSafeContract.SyncLogs.DEFAULT_SELECTION;
                 return new PasswdCursorLoader(
-                        getContext(),
+                        requireContext(),
                         PasswdSafeContract.SyncLogs.CONTENT_URI,
                         PasswdSafeContract.SyncLogs.PROJECTION,
                         selection, null,
@@ -180,8 +180,8 @@ public class SyncLogsFragment extends ListFragment
                 onLoadFinished(loader, null);
             }
         };
-        LoaderManager lm = getLoaderManager();
-        lm.initLoader(LOADER_LOGS, null, itsLogsCbs);
+        LoaderManager.getInstance(this).initLoader(LOADER_LOGS,
+                                                   null, itsLogsCbs);
     }
 
 
@@ -220,8 +220,8 @@ public class SyncLogsFragment extends ListFragment
         case R.id.menu_show_all: {
             itsIsShowAll = !item.isChecked();
             item.setChecked(itsIsShowAll);
-            LoaderManager lm = getLoaderManager();
-            lm.restartLoader(LOADER_LOGS, null, itsLogsCbs);
+            LoaderManager.getInstance(this).restartLoader(LOADER_LOGS,
+                                                          null, itsLogsCbs);
             return true;
         }
         default: {

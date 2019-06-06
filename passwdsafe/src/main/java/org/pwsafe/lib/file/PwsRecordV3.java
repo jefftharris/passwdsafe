@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Support for new v3 Record type.
@@ -29,8 +30,8 @@ public class PwsRecordV3 extends PwsRecord
 {
     private static final long serialVersionUID = -3160317668375599155L;
 
-    private static final Log LOG =
-            Log.getInstance(PwsRecordV3.class.getPackage().getName());
+    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
+            PwsRecordV3.class.getPackage()).getName());
 
     /**
      * Constant for the version 3 ID string field.
@@ -455,7 +456,7 @@ public class PwsRecordV3 extends PwsRecord
             byte[] remainingDataInRecord = Util.getBytes(rawData, 5, 11);
             if (length <= 11) {
                 System.arraycopy(remainingDataInRecord, 0, data, 0, length);
-            } else if (length > 11) {
+            } else {
                 int bytesToRead = length - 11;
                 final int blockSize = file.getBlockSize();
                 int blocksToRead = bytesToRead / blockSize;
@@ -489,8 +490,6 @@ public class PwsRecordV3 extends PwsRecord
      * Initialises this record by reading its data from <code>file</code>.
      *
      * @param file the file to read the data from.
-     * @throws EndOfFileException
-     * @throws IOException
      */
     @Override
     protected void loadRecord(PwsFile file)
@@ -621,14 +620,13 @@ public class PwsRecordV3 extends PwsRecord
      * @param field the field to be written.
      * @param type  the type to write to the file instead of
      *              <code>field.getType()</code>
-     * @throws IOException
      */
     @Override
     protected void writeField(PwsFile file, PwsField field, int type)
             throws IOException
     {
-        byte lenBlock[] = new byte[5];
-        byte dataBlock[] = field.getBytes();
+        byte[] lenBlock = new byte[5];
+        byte[] dataBlock = field.getBytes();
 
         Util.putIntToByteArray(lenBlock, dataBlock.length, 0);
         lenBlock[4] = (byte)type;
@@ -668,6 +666,7 @@ public class PwsRecordV3 extends PwsRecord
      * @return A string representation of this object.
      */
     @Override
+    @NonNull
     public String toString()
     {
         boolean first = true;

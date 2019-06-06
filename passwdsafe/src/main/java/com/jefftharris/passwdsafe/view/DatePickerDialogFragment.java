@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * Dialog to pick a date
@@ -50,14 +51,14 @@ public class DatePickerDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Bundle args = getArguments();
+        Bundle args = Objects.requireNonNull(getArguments());
         Calendar now = Calendar.getInstance();
         int year = args.getInt("year", now.get(Calendar.YEAR));
         int monthOfYear = args.getInt("monthOfYear", now.get(Calendar.MONTH));
         int dayOfMonth = args.getInt("dayOfMonth",
                                      now.get(Calendar.DAY_OF_MONTH));
 
-        return new DatePickerDialog(getContext(), this, year, monthOfYear,
+        return new DatePickerDialog(requireContext(), this, year, monthOfYear,
                                     dayOfMonth);
     }
 
@@ -66,8 +67,9 @@ public class DatePickerDialogFragment extends DialogFragment
                           int dayOfMonth)
     {
         if (isResumed()) {
-            ((Listener)getTargetFragment()).handleDatePicked(year, monthOfYear,
-                                                             dayOfMonth);
+            Listener listener =
+                    Objects.requireNonNull((Listener)getTargetFragment());
+            listener.handleDatePicked(year, monthOfYear, dayOfMonth);
         }
     }
 }

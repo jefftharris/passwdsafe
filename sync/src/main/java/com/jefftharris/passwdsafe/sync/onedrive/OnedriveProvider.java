@@ -189,7 +189,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      * Cleanup a provider when deleted
      */
     @Override
-    public synchronized void cleanupOnDelete(String acctName)
+    public synchronized void cleanupOnDelete()
     {
         if (!isPendingAdd()) {
             unlinkAccount();
@@ -448,10 +448,10 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         /**
          * Constructor
          */
-        public NewOneDriveTask(Uri currAcctUri,
-                               AcquireTokenCallback tokenCb,
-                               boolean reauthorization,
-                               OnedriveProvider provider)
+        protected NewOneDriveTask(Uri currAcctUri,
+                                  AcquireTokenCallback tokenCb,
+                                  boolean reauthorization,
+                                  OnedriveProvider provider)
         {
             super(currAcctUri, null, provider, false, provider.getContext(),
                   TAG);

@@ -65,8 +65,8 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
 
 
         /** Constructor */
-        public ListFilesTask(OnedriveProvider provider,
-                             Context ctx, Callback cb)
+        protected ListFilesTask(OnedriveProvider provider,
+                                Context ctx, Callback cb)
         {
             super(ctx, cb);
             itsProvider = provider;

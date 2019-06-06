@@ -43,7 +43,7 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
 {
     private static final String TAG = "OwncloudSyncer";
 
-    private boolean itsIsAuthorized;
+    private final boolean itsIsAuthorized;
 
     /** Constructor */
     public OwncloudSyncer(OwnCloudClient client,
@@ -97,7 +97,6 @@ public class OwncloudSyncer extends ProviderSyncer<OwnCloudClient>
         if (result.getCode() ==
             RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED) {
             try {
-                @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
                 CertificateCombinedException certExc =
                         (CertificateCombinedException)result.getException();
                 X509Certificate cert = certExc.getServerCertificate();

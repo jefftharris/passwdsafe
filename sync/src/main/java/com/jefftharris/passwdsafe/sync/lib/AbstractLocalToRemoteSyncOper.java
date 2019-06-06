@@ -7,9 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,6 +15,8 @@ import android.util.Log;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
+
+import java.io.File;
 
 /**
  * Abstract sync operation to sync a local file to a remote file
@@ -48,7 +47,7 @@ public abstract class AbstractLocalToRemoteSyncOper<ProviderClientT>
     @Override
     public final void doPostOperUpdate(boolean updateLocal,
                                        SQLiteDatabase db, Context ctx)
-            throws IOException, SQLException
+            throws SQLException
     {
         if (itsUpdatedFile == null) {
             return;

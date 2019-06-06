@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -32,6 +31,7 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.jefftharris.passwdsafe.lib.ActContext;
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -106,7 +106,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
 
         itsProviderLoaderCb = new ProviderLoaderCb();
         itsFilesLoaderCb = new FilesLoaderCb();
-        LoaderManager lm = getSupportLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_TITLE, null, itsProviderLoaderCb);
         lm.initLoader(LOADER_FILES, null, itsFilesLoaderCb);
     }
@@ -135,9 +135,6 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.activity_synced_files, menu);
-        MenuItem item = menu.findItem(R.id.menu_reload);
-        MenuItemCompat.setShowAsAction(item,
-                                       MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -151,7 +148,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         switch (item.getItemId()) {
         case R.id.menu_reload: {
             reloadFiles();
-            LoaderManager lm = getSupportLoaderManager();
+            LoaderManager lm = LoaderManager.getInstance(this);
             lm.restartLoader(LOADER_TITLE, null, itsProviderLoaderCb);
             lm.restartLoader(LOADER_FILES, null, itsFilesLoaderCb);
             return true;
@@ -392,7 +389,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
                              AbstractListFilesTask task);
         }
 
-        protected final Context itsContext;
+        protected final ManagedRef<Context> itsContext;
         private final Callback itsCb;
 
 
@@ -400,7 +397,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         public AbstractListFilesTask(Context ctx, Callback cb)
         {
             itsCb = cb;
-            itsContext = ctx;
+            itsContext = new ManagedRef<>(ctx);
         }
 
 
@@ -411,10 +408,11 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         protected void onPostExecute(
                 Pair<List<ProviderRemoteFile>, Exception> result)
         {
-            if (result.second != null) {
+            Context ctx = itsContext.get();
+            if ((result.second != null) && (ctx != null)) {
                 Log.e(TAG, "Error listing files", result.second);
                 Toast.makeText(
-                        itsContext,
+                        ctx,
                         "Error listing files: " + result.second.getMessage(),
                         Toast.LENGTH_LONG).show();
             }
@@ -440,7 +438,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
             implements SyncDb.DbUser<Long>
     {
         /** Callback for when the update is complete */
-        public interface Callback
+        protected interface Callback
         {
             void updateComplete(Exception error,
                                 long remFileId,
@@ -455,8 +453,8 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
 
 
         /** Constructor */
-        public FileSyncedUpdateTask(Uri providerUri, ProviderRemoteFile file,
-                                    boolean synced, Callback cb)
+        protected FileSyncedUpdateTask(Uri providerUri, ProviderRemoteFile file,
+                                       boolean synced, Callback cb)
         {
             itsProviderUri = providerUri;
             itsFile = file;
@@ -475,7 +473,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         }
 
         @Override
-        public Long useDb(SQLiteDatabase db) throws Exception
+        public Long useDb(SQLiteDatabase db)
         {
             long providerId =
                     PasswdSafeContract.Providers.getId(itsProviderUri);

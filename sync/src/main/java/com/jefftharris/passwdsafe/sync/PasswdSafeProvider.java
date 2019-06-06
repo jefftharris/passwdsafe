@@ -656,7 +656,7 @@ public class PasswdSafeProvider extends ContentProvider
         SyncDb.deleteProvider(provider.itsId, db);
         Provider providerImpl =
                 ProviderFactory.getProvider(provider.itsType, ctx);
-        providerImpl.cleanupOnDelete(provider.itsAcct);
+        providerImpl.cleanupOnDelete();
         Account acct = providerImpl.getAccount(provider.itsAcct);
         providerImpl.updateSyncFreq(acct, 0);
         ctx.getContentResolver().notifyChange(PasswdSafeContract.CONTENT_URI,
@@ -686,7 +686,7 @@ public class PasswdSafeProvider extends ContentProvider
     /** Execute a method */
     private void doMethod(String[] args) throws Exception
     {
-        if (args.length < 1) {
+        if ((args == null) || (args.length < 1)) {
             throw new IllegalArgumentException("No method args");
         }
 
@@ -810,7 +810,7 @@ public class PasswdSafeProvider extends ContentProvider
         /**
          * Constructor
          */
-        public AccountVerifier(PasswdSafeProvider provider)
+        protected AccountVerifier(PasswdSafeProvider provider)
         {
             itsProvider = new ManagedRef<>(provider);
         }

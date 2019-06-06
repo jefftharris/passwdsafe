@@ -13,6 +13,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import java.util.Objects;
+
 /**
  * Generic progress dialog
  */
@@ -37,7 +39,8 @@ public class ProgressFragment extends DialogFragment
         setCancelable(false);
         ProgressDialog dlg = new ProgressDialog(getActivity());
         dlg.setIndeterminate(true);
-        dlg.setMessage(getArguments().getString("msg"));
+        Bundle args = Objects.requireNonNull(getArguments());
+        dlg.setMessage(args.getString("msg"));
         return dlg;
     }
 }

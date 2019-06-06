@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.view;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -63,19 +64,26 @@ public class NewGroupDialog extends DialogFragment
                     public void onOkClicked(DialogInterface dialog)
                     {
                         EditText newGroup = view.findViewById(R.id.new_group);
-                        ((Listener)getTargetFragment()).handleNewGroup(
-                                newGroup.getText().toString());
+                        Listener listener = (Listener)getTargetFragment();
+                        if (listener != null) {
+                            listener.handleNewGroup(
+                                    newGroup.getText().toString());
+                        }
                     }
 
                     @Override
                     public void onCancelClicked()
                     {
-                        ((Listener)getTargetFragment()).handleNewGroup(null);
+                        Listener listener = (Listener)getTargetFragment();
+                        if (listener != null) {
+                            listener.handleNewGroup(null);
+                        }
                     }
                 };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                .setTitle(PasswdSafeUtil.getAppTitle(getContext()))
+        Context ctx = requireContext();
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx)
+                .setTitle(PasswdSafeUtil.getAppTitle(ctx))
                 .setView(view)
                 .setPositiveButton(R.string.ok, dlgClick)
                 .setNegativeButton(R.string.cancel, dlgClick)

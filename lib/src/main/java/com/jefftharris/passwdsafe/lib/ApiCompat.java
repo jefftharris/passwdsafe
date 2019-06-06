@@ -7,17 +7,14 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
-import android.accounts.Account;
-import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.text.ClipboardManager;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -32,9 +29,6 @@ import java.util.List;
  */
 public final class ApiCompat
 {
-    private static final int SDK_ECLAIR =
-            android.os.Build.VERSION_CODES.ECLAIR;
-    public static final int SDK_HONEYCOMB = 11;
     public static final int SDK_KITKAT = 19;
     public static final int SDK_LOLLIPOP = 21;
     public static final int SDK_MARSHMALLOW = 23;
@@ -42,45 +36,14 @@ public final class ApiCompat
 
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
 
-    /** Request a manual sync of a content provider */
-    @SuppressWarnings("SameParameterValue")
-    public static void requestManualSync(Account acct,
-                                         Uri uri,
-                                         Bundle extras)
-    {
-        if (SDK_VERSION >= SDK_ECLAIR) {
-            ApiCompatEclair.requestManualSync(acct, uri.getAuthority(), extras);
-        }
-    }
-
-
     /** Set whether the window is visible in the recent apps list */
     public static void setRecentAppsVisible(
             Window w, @SuppressWarnings("SameParameterValue") boolean visible)
     {
-        /* The screen appears garbled before honeycomb, and the screenshot
-         * feature started with honeycomb */
-        if (SDK_VERSION >= SDK_HONEYCOMB) {
-            if (visible) {
-                w.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-            } else {
-                w.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-            }
-        }
-    }
-
-
-    /**
-     * Recreate the activity
-     */
-    public static void recreateActivity(Activity act)
-    {
-        if (SDK_VERSION >= SDK_HONEYCOMB) {
-            ApiCompatHoneycomb.recreateActivity(act);
+        if (visible) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         } else {
-            Intent startIntent = act.getIntent();
-            act.finish();
-            act.startActivity(startIntent);
+            w.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
     }
 
@@ -152,15 +115,11 @@ public final class ApiCompat
      */
     public static void copyToClipboard(String str, Context ctx)
     {
-        if (SDK_VERSION >= SDK_HONEYCOMB) {
-            ApiCompatHoneycomb.copyToClipboard(str, ctx);
-        } else {
-            @SuppressWarnings("deprecation")
-            ClipboardManager clipMgr = (ClipboardManager)
-                    ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-            if (clipMgr != null) {
-                clipMgr.setText(str);
-            }
+        ClipboardManager clipMgr = (ClipboardManager)
+                ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipMgr != null) {
+            ClipData clip = ClipData.newPlainText(null, str);
+            clipMgr.setPrimaryClip(clip);
         }
     }
 
@@ -169,14 +128,9 @@ public final class ApiCompat
      */
     public static boolean clipboardHasText(Context ctx)
     {
-        if (SDK_VERSION >= SDK_HONEYCOMB) {
-            return ApiCompatHoneycomb.clipboardHasText(ctx);
-        } else {
-            @SuppressWarnings("deprecation")
-            ClipboardManager clipMgr = (ClipboardManager)
-                    ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-            return (clipMgr != null) && clipMgr.hasText();
-        }
+        ClipboardManager clipMgr = (ClipboardManager)
+                ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+        return (clipMgr != null) && clipMgr.hasPrimaryClip();
     }
 
     /**

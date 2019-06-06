@@ -35,7 +35,7 @@ public final class NotifUtils
         DRIVE_REAUTH_REQUIRED(7),
         ONEDRIVE_MIGRATED(8);
 
-        public final int itsNotifId;
+        protected final int itsNotifId;
 
         Type(int id)
         {

@@ -116,7 +116,7 @@ public class PasswdSafeChangePasswordFragment
     public void onPause()
     {
         super.onPause();
-        GuiUtils.setKeyboardVisible(itsPassword, getContext(), false);
+        GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
         GuiUtils.clearEditText(itsPassword);
         GuiUtils.clearEditText(itsPasswordConfirm);
     }
@@ -189,7 +189,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Register a text view with the validator
          */
-        public void registerTextView(TextView tv)
+        protected void registerTextView(TextView tv)
         {
             tv.addTextChangedListener(this);
         }
@@ -197,7 +197,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Unregister a text view
          */
-        public void unregisterTextView(TextView tv)
+        protected void unregisterTextView(TextView tv)
         {
             tv.removeTextChangedListener(this);
         }
@@ -205,7 +205,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Validate the fragment
          */
-        public final void validate()
+        protected final void validate()
         {
             boolean valid;
 
@@ -223,14 +223,14 @@ public class PasswdSafeChangePasswordFragment
 
             if (valid != itsIsValid) {
                 itsIsValid = valid;
-                GuiUtils.invalidateOptionsMenu(getActivity());
+                requireActivity().invalidateOptionsMenu();
             }
         }
 
         /**
          * Is valid
          */
-        public final boolean isValid()
+        protected final boolean isValid()
         {
             return itsIsValid;
         }

@@ -463,9 +463,9 @@ public final class SavedPasswordsMgr
      */
     private static class SavedPassword
     {
-        public final Uri itsUri;
-        public final String itsIv;
-        public final String itsEncPasswd;
+        protected final Uri itsUri;
+        protected final String itsIv;
+        protected final String itsEncPasswd;
 
         private static final MessageDigest MD_SHA256;
         static {
@@ -481,7 +481,7 @@ public final class SavedPasswordsMgr
         /**
          * Constructor
          */
-        public SavedPassword(String uri, String iv, String encPasswd)
+        protected SavedPassword(String uri, String iv, String encPasswd)
         {
             itsUri = Uri.parse(uri);
             itsIv = iv;
@@ -491,7 +491,7 @@ public final class SavedPasswordsMgr
         /**
          * Get a unique key for a URI
          */
-        public static String getUriKey(Uri uri)
+        protected static String getUriKey(Uri uri)
                 throws UnsupportedEncodingException
         {
             String uristr = uri.toString();
@@ -529,7 +529,7 @@ public final class SavedPasswordsMgr
         /**
          * Constructor
          */
-        public SavedPasswordsDb(Context ctx)
+        protected SavedPasswordsDb(Context ctx)
         {
             PasswdSafeApp app = (PasswdSafeApp)ctx.getApplicationContext();
             itsDb = app.getPasswdSafeDb();
@@ -539,8 +539,8 @@ public final class SavedPasswordsMgr
         /**
          * Get the IV and encrypted saved password for a URI
          */
-        public SavedPassword getSavedPassword(final PasswdFileUri uri,
-                                              final Context ctx)
+        protected SavedPassword getSavedPassword(final PasswdFileUri uri,
+                                                 final Context ctx)
                 throws Exception
         {
             return itsDb.useDb(new PasswdSafeDb.DbUser<SavedPassword>()
@@ -600,8 +600,9 @@ public final class SavedPasswordsMgr
         /**
          * Add the saved password to the database
          */
-        public void addSavedPassword(PasswdFileUri uri,
-                                     String iv, String encPasswd, Context ctx)
+        protected void addSavedPassword(PasswdFileUri uri,
+                                        String iv, String encPasswd,
+                                        Context ctx)
                 throws Exception
         {
             Pair<String, String> provdisp = getProviderAndDisplay(uri, ctx);
@@ -612,7 +613,7 @@ public final class SavedPasswordsMgr
         /**
          * Remove the saved password
          */
-        public void removeSavedPassword(final Uri uri) throws Exception
+        protected void removeSavedPassword(final Uri uri) throws Exception
         {
             itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
                 db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
@@ -624,7 +625,7 @@ public final class SavedPasswordsMgr
         /**
          * Remove all saved passwords
          */
-        public void removeAllSavedPasswords() throws Exception
+        protected void removeAllSavedPasswords() throws Exception
         {
             itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
                 db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS, null, null);

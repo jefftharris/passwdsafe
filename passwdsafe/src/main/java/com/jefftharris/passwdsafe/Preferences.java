@@ -225,7 +225,7 @@ public class Preferences
     public static File getFileDirPref(SharedPreferences prefs)
     {
         String prefstr = prefs.getString(PREF_FILE_DIR, PREF_FILE_DIR_DEF);
-        return (prefstr != null) ? new File(prefstr) : null;
+        return new File(prefstr);
     }
 
     public static void setFileDirPref(File dir, SharedPreferences prefs)
@@ -369,12 +369,15 @@ public class Preferences
     {
         Uri defFileUri = getDefFilePref(prefs);
         if ((defFileUri != null) && (defFileUri.getScheme() == null)) {
-            File defDir = getFileDirPref(prefs);
-            File def = new File(defDir, defFileUri.getPath());
-            defFileUri = Uri.fromFile(def);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(PREF_DEF_FILE, defFileUri.toString());
-            editor.apply();
+            String path = defFileUri.getPath();
+            if (path != null) {
+                File defDir = getFileDirPref(prefs);
+                File def = new File(defDir, path);
+                defFileUri = Uri.fromFile(def);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(PREF_DEF_FILE, defFileUri.toString());
+                editor.apply();
+            }
         }
     }
 

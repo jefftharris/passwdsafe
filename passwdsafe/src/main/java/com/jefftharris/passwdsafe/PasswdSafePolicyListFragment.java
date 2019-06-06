@@ -153,7 +153,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
     {
         if (newPolicy.getLocation() == PasswdPolicy.Location.DEFAULT) {
             PasswdSafeApp app =
-                    (PasswdSafeApp)getContext().getApplicationContext();
+                    (PasswdSafeApp)requireContext().getApplicationContext();
             app.setDefaultPasswdPolicy(newPolicy);
             refresh();
         } else {
@@ -196,7 +196,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
                 getString(R.string.delete_policy_msg, policy.getName()), null,
                 getString(R.string.delete), confirmArgs);
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), "Delete policy");
+        dialog.show(requireFragmentManager(), "Delete policy");
     }
 
     /**
@@ -207,7 +207,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
         PasswdSafeUtil.dbginfo(TAG, "Edit policy: %s", policy);
         PasswdPolicyEditDialog dlg = PasswdPolicyEditDialog.newInstance(policy);
         dlg.setTargetFragment(this, 0);
-        dlg.show(getFragmentManager(), "PasswdPolicyEditDialog");
+        dlg.show(requireFragmentManager(), "PasswdPolicyEditDialog");
     }
 
     /**
@@ -290,7 +290,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
         }
 
         PasswdSafeApp app =
-                (PasswdSafeApp)getContext().getApplicationContext();
+                (PasswdSafeApp)requireContext().getApplicationContext();
         PasswdPolicy defPolicy = app.getDefaultPasswdPolicy();
         policies.add(defPolicy);
 
@@ -322,7 +322,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
         PolicyListAdapter adapter = new PolicyListAdapter(
                 policies, itsIsFileReadonly, listener, getContext());
         setListAdapter(adapter);
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
     /**
@@ -333,7 +333,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
         /**
          * User of the policy adapter
          */
-        public interface PolicyItemUser
+        protected interface PolicyItemUser
         {
             int getPolicyUseCount(PasswdPolicy policy);
 
@@ -349,10 +349,10 @@ public class PasswdSafePolicyListFragment extends ListFragment
         /**
          * Constructor
          */
-        public PolicyListAdapter(List<PasswdPolicy> policies,
-                                 boolean fileReadonly,
-                                 PolicyItemUser policyListener,
-                                 Context ctx)
+        protected PolicyListAdapter(List<PasswdPolicy> policies,
+                                    boolean fileReadonly,
+                                    PolicyItemUser policyListener,
+                                    Context ctx)
         {
             super(ctx, R.layout.passwd_policy_list_item, policies);
             itsInflater = LayoutInflater.from(ctx);
@@ -398,7 +398,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             /**
              * Constructor
              */
-            public ViewHolder(View view)
+            protected ViewHolder(View view)
             {
                 itsTitle = view.findViewById(R.id.title);
                 itsEditBtn = view.findViewById(R.id.edit);
@@ -414,7 +414,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             /**
              * Update the layout fields with values from the policy
              */
-            public void update(PasswdPolicy policy, boolean checked)
+            protected void update(PasswdPolicy policy, boolean checked)
             {
                 itsPolicy = policy;
                 int useCount = itsListener.getPolicyUseCount(policy);

@@ -177,43 +177,7 @@ public class PasswdFileData
 
     public final boolean removeRecord(PwsRecord rec, ActContext context)
     {
-        int errMsg = 0;
-        do {
-            if (itsPwsFile == null) {
-                errMsg = R.string.record_not_found;
-                break;
-            }
-            PasswdRecord passwdRec = getPasswdRecord(rec);
-            if (passwdRec == null) {
-                errMsg = R.string.record_not_found;
-                break;
-            }
-            if (!passwdRec.getRefsToRecord().isEmpty()) {
-                errMsg = R.string.record_has_references;
-                break;
-            }
-
-            String recuuid = getUUID(rec);
-            if (recuuid == null) {
-                errMsg = R.string.record_not_found;
-                break;
-            }
-
-            for (int i = 0; i < itsRecords.size(); ++i) {
-                PwsRecord r = itsRecords.get(i);
-                String ruuid = getUUID(r);
-                if (recuuid.equals(ruuid)) {
-                    boolean rc = itsPwsFile.removeRecord(i);
-                    if (rc) {
-                        indexRecords();
-                    } else {
-                        errMsg = R.string.record_not_found;
-                    }
-                    break;
-                }
-            }
-        } while(false);
-
+        int errMsg = doRemoveRecord(rec);
         if (errMsg != 0) {
             Context ctx = context.getContext();
             if (ctx != null) {
@@ -734,7 +698,7 @@ public class PasswdFileData
     {
         Integer val = null;
         PwsField field = doGetRecField(rec, fieldId);
-        if ((field != null) && (field instanceof PwsIntegerField)) {
+        if (field instanceof PwsIntegerField) {
             val = (Integer)field.getValue();
         }
         return val;
@@ -745,7 +709,7 @@ public class PasswdFileData
     {
         Date date = null;
         PwsField field = doGetRecField(rec, fieldId);
-        if ((field != null) && (field instanceof PwsTimeField)) {
+        if (field instanceof PwsTimeField) {
             date = (Date)field.getValue();
         }
         return date;
@@ -1042,6 +1006,7 @@ public class PasswdFileData
     private static String doHdrFieldToString(PwsField field)
     {
         try {
+            //noinspection CharsetObjectCanBeUsed
             return new String(field.getBytes(), "UTF-8");
         }
         catch (UnsupportedEncodingException e) {
@@ -1056,6 +1021,7 @@ public class PasswdFileData
         try {
             PwsField field = null;
             if (val != null) {
+                //noinspection CharsetObjectCanBeUsed
                 field = new PwsUnknownField(fieldId, val.getBytes("UTF-8"));
             }
             setOrRemoveField(field, fieldId, rec);
@@ -1315,6 +1281,45 @@ public class PasswdFileData
                 }
             }
         }
+    }
+
+    /**
+     * Implementation of removing a record
+     * @return 0 if successful; error message id otherwise
+     */
+    private int doRemoveRecord(PwsRecord rec)
+    {
+        if (itsPwsFile == null) {
+            return R.string.record_not_found;
+        }
+        PasswdRecord passwdRec = getPasswdRecord(rec);
+        if (passwdRec == null) {
+            return R.string.record_not_found;
+        }
+        if (!passwdRec.getRefsToRecord().isEmpty()) {
+            return R.string.record_has_references;
+        }
+
+        String recuuid = getUUID(rec);
+        if (recuuid == null) {
+            return R.string.record_not_found;
+        }
+
+        for (int i = 0; i < itsRecords.size(); ++i) {
+            PwsRecord r = itsRecords.get(i);
+            String ruuid = getUUID(r);
+            if (recuuid.equals(ruuid)) {
+                boolean rc = itsPwsFile.removeRecord(i);
+                if (rc) {
+                    indexRecords();
+                } else {
+                    return R.string.record_not_found;
+                }
+                break;
+            }
+        }
+
+        return 0;
     }
 
     private static int getHdrMinorVersion(PwsRecord rec)

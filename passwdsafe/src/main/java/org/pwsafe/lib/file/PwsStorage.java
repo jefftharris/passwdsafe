@@ -39,7 +39,6 @@ public interface PwsStorage
      * Open the file for loading
      *
      * @return The header bytes
-     * @throws IOException
      */
     byte[] openForLoad(@SuppressWarnings("SameParameterValue") int headerLen)
             throws IOException;
@@ -48,14 +47,11 @@ public interface PwsStorage
      * Grab all the bytes in the file
      *
      * @return The bytes in the file
-     * @throws IOException
      */
     byte[] load() throws IOException;
 
     /**
      * Close the file after being loaded
-     *
-     * @throws IOException
      */
     void closeAfterLoad() throws IOException;
 

@@ -193,7 +193,7 @@ public class PasswdSafeEditRecordFragment
                              Bundle savedInstanceState)
     {
         setHasOptionsMenu(true);
-        Context ctx = getContext();
+        Context ctx = requireContext();
         View rootView = inflater.inflate(
                 R.layout.fragment_passwdsafe_edit_record, container, false);
         itsTypeGroup = rootView.findViewById(R.id.type_group);
@@ -288,7 +288,8 @@ public class PasswdSafeEditRecordFragment
         // Notes
         itsNotesLabel = rootView.findViewById(R.id.notes_label);
         itsNotes = rootView.findViewById(R.id.notes);
-        PasswdSafeRecordNotesFragment.setNotesOptions(itsNotes, getActivity());
+        PasswdSafeRecordNotesFragment.setNotesOptions(itsNotes,
+                                                      requireActivity());
 
         initProtViews(rootView);
         initialize();
@@ -335,7 +336,7 @@ public class PasswdSafeEditRecordFragment
             }
         }
 
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -364,7 +365,7 @@ public class PasswdSafeEditRecordFragment
     public void onPause()
     {
         super.onPause();
-        GuiUtils.setKeyboardVisible(itsTitle, getContext(), false);
+        GuiUtils.setKeyboardVisible(itsTitle, requireContext(), false);
     }
 
     @Override
@@ -415,7 +416,7 @@ public class PasswdSafeEditRecordFragment
             List<PasswdHistory.Entry> passwds = itsHistory.getPasswds();
             if ((info.position >= 0) && (info.position < passwds.size())) {
                 menu.setHeaderTitle(passwds.get(info.position).getPasswd());
-                getActivity().getMenuInflater().inflate(
+                requireActivity().getMenuInflater().inflate(
                         R.menu.fragment_passwdsafe_edit_record_history, menu);
             }
         }
@@ -472,7 +473,7 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.MONTH),
                             itsExpiryDate.get(Calendar.DAY_OF_MONTH));
             picker.setTargetFragment(this, 0);
-            picker.show(getFragmentManager(), "datePicker");
+            picker.show(requireFragmentManager(), "datePicker");
             break;
         }
         case R.id.expire_date_time: {
@@ -481,7 +482,7 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.HOUR_OF_DAY),
                             itsExpiryDate.get(Calendar.MINUTE));
             picker.setTargetFragment(this, 0);
-            picker.show(getFragmentManager(), "timePicker");
+            picker.show(requireFragmentManager(), "timePicker");
             break;
         }
         case R.id.history_addremove: {
@@ -502,7 +503,7 @@ public class PasswdSafeEditRecordFragment
         }
         case R.id.link_ref: {
             Intent intent = new Intent(PasswdSafeApp.CHOOSE_RECORD_INTENT,
-                                       getActivity().getIntent().getData(),
+                                       requireActivity().getIntent().getData(),
                                        getContext(),
                                        LauncherRecordShortcuts.class);
             // Do not allow mixed alias and shortcut references to a
@@ -545,7 +546,7 @@ public class PasswdSafeEditRecordFragment
             PasswdPolicyEditDialog dlg =
                     PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
             dlg.setTargetFragment(this, 0);
-            dlg.show(getFragmentManager(), "PasswdPolicyEditDialog");
+            dlg.show(requireFragmentManager(), "PasswdPolicyEditDialog");
             break;
         }
         }
@@ -810,7 +811,7 @@ public class PasswdSafeEditRecordFragment
         }
 
         itsPolicies = new ArrayList<>();
-        PasswdSafeApp app = (PasswdSafeApp)getActivity().getApplication();
+        PasswdSafeApp app = (PasswdSafeApp)requireActivity().getApplication();
         PasswdPolicy defPolicy = app.getDefaultPasswdPolicy();
         itsPolicies.add(defPolicy);
         HeaderPasswdPolicies hdrPolicies = fileData.getHdrPasswdPolicies();
@@ -1017,13 +1018,12 @@ public class PasswdSafeEditRecordFragment
         // Prev type needs to be updated before setting spinner to prevent
         // recursion
         itsRecType = type;
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
 
         if (init) {
             int pos = TYPE_NORMAL;
             switch (type) {
             case NORMAL: {
-                pos = TYPE_NORMAL;
                 break;
             }
             case ALIAS: {
@@ -1042,13 +1042,10 @@ public class PasswdSafeEditRecordFragment
         itsTypeHasDetails = true;
         switch (type) {
         case NORMAL: {
-            itsTypeHasNormalPassword = true;
-            itsTypeHasDetails = true;
             break;
         }
         case ALIAS: {
             itsTypeHasNormalPassword = false;
-            itsTypeHasDetails = true;
             break;
         }
         case SHORTCUT: {
@@ -1139,7 +1136,7 @@ public class PasswdSafeEditRecordFragment
             itsGroup.setSelection(itsPrevGroupPos);
             NewGroupDialog groupDlg = NewGroupDialog.newInstance();
             groupDlg.setTargetFragment(this, 0);
-            groupDlg.show(getFragmentManager(), "NewGroupDialog");
+            groupDlg.show(requireFragmentManager(), "NewGroupDialog");
         } else {
             itsPrevGroupPos = position;
             itsValidator.validate();
@@ -1178,7 +1175,7 @@ public class PasswdSafeEditRecordFragment
     private void setSpinnerItems(Spinner spinner, List<?> items)
     {
         ArrayAdapter<Object> adapter =
-                new ArrayAdapter<>(getContext(),
+                new ArrayAdapter<>(requireContext(),
                                    android.R.layout.simple_spinner_item,
                                    Collections.unmodifiableList(items));
         adapter.setDropDownViewResource(
@@ -1387,7 +1384,7 @@ public class PasswdSafeEditRecordFragment
             fileData.addRecord(record);
         }
 
-        GuiUtils.setKeyboardVisible(itsTitle, getContext(), false);
+        GuiUtils.setKeyboardVisible(itsTitle, requireContext(), false);
 
         return new EditRecordResult(newRecord, newRecord || record.isModified(),
                                     new PasswdLocation(record, fileData));
@@ -1496,7 +1493,6 @@ public class PasswdSafeEditRecordFragment
         case NORMAL: {
             switch (itsExpiryType) {
             case NEVER: {
-                updatedExpiry = null;
                 break;
             }
             case DATE: {
@@ -1525,7 +1521,6 @@ public class PasswdSafeEditRecordFragment
         }
         case ALIAS:
         case SHORTCUT: {
-            updatedExpiry = null;
             break;
         }
         }
@@ -1567,7 +1562,7 @@ public class PasswdSafeEditRecordFragment
         /**
          * Register a text view with the validator
          */
-        public final void registerTextView(TextView field)
+        protected final void registerTextView(TextView field)
         {
             field.addTextChangedListener(this);
         }
@@ -1576,7 +1571,7 @@ public class PasswdSafeEditRecordFragment
          * Set whether the validator is paused.  Validation will be performed
          * if not paused.
          */
-        public final void setPaused(boolean paused)
+        protected final void setPaused(boolean paused)
         {
             itsIsPaused = paused;
             if (!paused) {
@@ -1587,7 +1582,7 @@ public class PasswdSafeEditRecordFragment
         /**
          * Validate
          */
-        public final void validate()
+        protected final void validate()
         {
             if (itsIsPaused) {
                 return;
@@ -1679,14 +1674,14 @@ public class PasswdSafeEditRecordFragment
 
             if (valid != itsIsValid) {
                 itsIsValid = valid;
-                GuiUtils.invalidateOptionsMenu(getActivity());
+                requireActivity().invalidateOptionsMenu();
             }
         }
 
         /**
          * Is valid
          */
-        public final boolean isValid()
+        protected final boolean isValid()
         {
             return itsIsValid;
         }
@@ -1783,7 +1778,7 @@ public class PasswdSafeEditRecordFragment
         private final String itsGroup;
         private final String itsUser;
 
-        public RecordKey(String title, String group, String user)
+        protected RecordKey(String title, String group, String user)
         {
             itsTitle = (title != null) ? title : "";
             itsGroup = (group != null) ? group : "";

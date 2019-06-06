@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.io.IOException;
-
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -47,7 +45,7 @@ public abstract class AbstractRmSyncOper<ProviderClientT>
     @Override
     public final void doPostOperUpdate(boolean updateLocal,
                                        SQLiteDatabase db, Context ctx)
-            throws IOException, SQLException
+            throws SQLException
     {
         if (updateLocal) {
             if (itsIsRmLocal) {

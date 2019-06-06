@@ -178,7 +178,6 @@ public class PwsFileHeaderV3 implements Serializable
      * Write the header to the file.
      *
      * @param file the file to write the header to.
-     * @throws IOException
      */
     public void save(PwsFile file)
             throws IOException

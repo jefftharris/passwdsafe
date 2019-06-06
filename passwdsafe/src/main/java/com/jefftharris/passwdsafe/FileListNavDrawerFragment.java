@@ -90,7 +90,7 @@ public class FileListNavDrawerFragment
         super.onActivityCreated(savedInstanceState);
         // TODO: check file launcher activity
         //LoaderManager.enableDebugLogging(true);
-        getLoaderManager().initLoader(1, null, this);
+        LoaderManager.getInstance(this).initLoader(1, null, this);
     }
 
     /**

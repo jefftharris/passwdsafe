@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import android.database.Cursor;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 
 /**
  *  Entry in the files table
@@ -25,7 +26,7 @@ public class DbFile
         REMOVED;
 
         /** Get the FileChange from its string stored in the database */
-        public static FileChange fromDbStr(String str)
+        protected static FileChange fromDbStr(String str)
         {
             if (TextUtils.isEmpty(str)) {
                 return NO_CHANGE;
@@ -114,6 +115,7 @@ public class DbFile
     }
 
     @Override
+    @NonNull
     public String toString()
     {
         return String.format(Locale.US,

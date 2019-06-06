@@ -433,7 +433,7 @@ public class PasswdSafeRecordBasicFragment
         boolean hasReferences = (references != null) && !references.isEmpty();
         if (hasReferences) {
             ArrayAdapter<String> adapter =
-                    new ArrayAdapter<>(getActivity(),
+                    new ArrayAdapter<>(requireActivity(),
                                        android.R.layout.simple_list_item_1);
             for (PwsRecord refRec: references) {
                 adapter.add(info.itsFileData.getId(refRec));
@@ -445,7 +445,7 @@ public class PasswdSafeRecordBasicFragment
         GuiUtils.setListViewHeightBasedOnChildren(itsReferences);
         GuiUtils.setVisible(itsReferencesRow, hasReferences);
 
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
     /**
@@ -534,7 +534,7 @@ public class PasswdSafeRecordBasicFragment
         if (subsetShown) {
             itsPasswordSubset.requestFocus();
         }
-        Activity act = getActivity();
+        Activity act = requireActivity();
         GuiUtils.setKeyboardVisible(itsPasswordSubset, act, subsetShown);
         itsPassword.setText(
                 (password != null) ? password : itsHiddenPasswordStr);
@@ -558,7 +558,7 @@ public class PasswdSafeRecordBasicFragment
             }
             }
         }
-        GuiUtils.invalidateOptionsMenu(act);
+        act.invalidateOptionsMenu();
     }
 
     /**

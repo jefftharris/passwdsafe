@@ -12,6 +12,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import com.jefftharris.passwdsafe.lib.ProviderType;
 
 /**
@@ -69,6 +71,7 @@ public class DbProvider
     }
 
     @Override
+    @NonNull
     public String toString()
     {
         return String.format(

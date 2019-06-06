@@ -114,7 +114,7 @@ public class PasswdSafeExpirationsFragment
                             now.get(Calendar.MONTH),
                             now.get(Calendar.DAY_OF_MONTH));
             picker.setTargetFragment(this, 0);
-            picker.show(getFragmentManager(), "datePicker");
+            picker.show(requireFragmentManager(), "datePicker");
             break;
         }
         }
@@ -132,7 +132,7 @@ public class PasswdSafeExpirationsFragment
                         getString(R.string.expiration_notifications_warning),
                         getString(R.string.enable), null);
                 dialog.setTargetFragment(this, 0);
-                dialog.show(getFragmentManager(), "expiry");
+                dialog.show(requireFragmentManager(), "expiry");
             } else {
                 setExpiryNotif(false);
             }
@@ -215,7 +215,7 @@ public class PasswdSafeExpirationsFragment
      */
     private NotificationMgr getNotifyMgr()
     {
-        PasswdSafeApp app = (PasswdSafeApp)getActivity().getApplication();
+        PasswdSafeApp app = (PasswdSafeApp)requireActivity().getApplication();
         return app.getNotifyMgr();
     }
 }

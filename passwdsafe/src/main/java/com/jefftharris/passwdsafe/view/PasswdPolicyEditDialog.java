@@ -92,7 +92,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
             itsPolicy = null;
         }
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         LayoutInflater factory = LayoutInflater.from(ctx);
         itsView = factory.inflate(R.layout.passwd_policy_edit, null);
 
@@ -176,8 +176,10 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
                 {
                     dialog.dismiss();
                     Listener listener = (Listener)getTargetFragment();
-                    listener.handlePolicyEditComplete(itsPolicy,
-                                                      createPolicy());
+                    if (listener != null) {
+                        listener.handlePolicyEditComplete(itsPolicy,
+                                                          createPolicy());
+                    }
                 }
             };
 
@@ -365,7 +367,6 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
             break;
         }
         case HEXADECIMAL: {
-            optionsVisible = false;
             break;
         }
         }
@@ -446,7 +447,6 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         case EASY_TO_READ:
         case PRONOUNCEABLE:
         case HEXADECIMAL: {
-            visible = false;
             break;
         }
         }
@@ -549,7 +549,8 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
                 if ((itsPolicy == null) ||
                     !itsPolicy.getName().equals(name)) {
                     Listener listener = (Listener)getTargetFragment();
-                    if (listener.isDuplicatePolicy(name)) {
+                    if ((listener != null) &&
+                        listener.isDuplicatePolicy(name)) {
                         return getString(R.string.duplicate_name);
                     }
                 }

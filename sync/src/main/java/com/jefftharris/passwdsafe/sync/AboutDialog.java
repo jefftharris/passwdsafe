@@ -49,15 +49,12 @@ public class AboutDialog extends AppCompatDialogFragment
         LayoutInflater factory = LayoutInflater.from(act);
         View detailsView = factory.inflate(R.layout.fragment_about, null);
 
-        String licenses =
-                AboutUtils.getLicenses(getContext(), "license-PasswdSafe.txt",
-                                       "license-android.txt",
-                                       "license-AndroidAssetStudio.txt",
-                                       "license-MaterialIcons.txt",
-                                       "license-icons.txt",
-                                       "license-box.txt",
-                                       "license-onedrive.txt",
-                                       "license-owncloud.txt");
+        String licenses = AboutUtils.getLicenses(
+                requireContext(), "license-PasswdSafe.txt",
+                "license-android.txt", "license-AndroidAssetStudio.txt",
+                "license-MaterialIcons.txt", "license-icons.txt",
+                "license-box.txt", "license-onedrive.txt",
+                "license-owncloud.txt");
         String name = AboutUtils.updateAboutFields(detailsView, licenses, act);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(act)

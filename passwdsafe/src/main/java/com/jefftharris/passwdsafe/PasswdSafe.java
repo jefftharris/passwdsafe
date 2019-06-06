@@ -1775,7 +1775,7 @@ public class PasswdSafe extends AppCompatActivity
         }
         }
 
-        GuiUtils.invalidateOptionsMenu(this);
+        invalidateOptionsMenu();
         boolean fileOpen = isFileOpen();
         itsNavDrawerFrag.updateView(drawerMode, fileNameUpdate, fileOpen);
         restoreActionBar();
@@ -1849,10 +1849,10 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        public FinishSaveInfo(EditFinish task,
-                              String popTag,
-                              PasswdLocation newLocation,
-                              Runnable postSaveRun)
+        protected FinishSaveInfo(EditFinish task,
+                                 String popTag,
+                                 PasswdLocation newLocation,
+                                 Runnable postSaveRun)
         {
             switch (task) {
             case ADD_RECORD: {
@@ -1891,8 +1891,8 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Should the location be reset
          */
-        public boolean shouldResetLoc(PasswdFileDataView dataView,
-                                      PasswdLocation currLocation)
+        protected boolean shouldResetLoc(PasswdFileDataView dataView,
+                                         PasswdLocation currLocation)
         {
             //noinspection SimplifiableIfStatement
             if (!itsIsSave || (itsNewLocation == null)) {
@@ -1916,9 +1916,9 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        public SaveTask(String fileId,
-                        @NonNull FinishSaveInfo saveInfo,
-                        PasswdSafe act)
+        protected SaveTask(String fileId,
+                           @NonNull FinishSaveInfo saveInfo,
+                           PasswdSafe act)
         {
             super(act.getString(R.string.saving_file, fileId), act);
             itsSaveInfo = saveInfo;
@@ -1973,7 +1973,7 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        public ShareTask(String fileId, String fileName, PasswdSafe act)
+        protected ShareTask(String fileId, String fileName, PasswdSafe act)
                 throws IOException
         {
             super(act.getString(R.string.sharing_file, fileId), act);
@@ -2033,7 +2033,7 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        public DeleteTask(PasswdFileUri uri, PasswdSafe act)
+        protected DeleteTask(PasswdFileUri uri, PasswdSafe act)
         {
             super(act.getString(R.string.delete_file), act);
             itsFileUri = uri;

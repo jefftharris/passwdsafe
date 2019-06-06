@@ -25,6 +25,8 @@ import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.R;
 
+import java.util.Objects;
+
 /**
  * Dialog to confirm a prompt
  */
@@ -93,7 +95,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     @Override
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Bundle args = getArguments();
+        Bundle args = Objects.requireNonNull(getArguments());
         String titleStr = args.getString(ARG_TITLE);
         String promptStr = args.getString(ARG_PROMPT);
         String confirmStr = args.getString(ARG_CONFIRM);
@@ -102,7 +104,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
         }
         String neutralStr = args.getString(ARG_NEUTRAL);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         LayoutInflater factory = LayoutInflater.from(ctx);
         @SuppressLint("InflateParams")
         View dlgView = factory.inflate(R.layout.confirm_prompt, null);
@@ -159,8 +161,8 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
 
         switch (which) {
         case AlertDialog.BUTTON_POSITIVE: {
-            itsListener.promptConfirmed(
-                    getArguments().getBundle(ARG_CONFIRM_ARGS));
+            Bundle args = Objects.requireNonNull(getArguments());
+            itsListener.promptConfirmed(args.getBundle(ARG_CONFIRM_ARGS));
             break;
         }
         case AlertDialog.BUTTON_NEGATIVE: {
@@ -168,8 +170,8 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
             break;
         }
         case AlertDialog.BUTTON_NEUTRAL: {
-            itsListener.promptConfirmed(
-                    getArguments().getBundle(ARG_NEUTRAL_ARGS));
+            Bundle args = Objects.requireNonNull(getArguments());
+            itsListener.promptConfirmed(args.getBundle(ARG_NEUTRAL_ARGS));
             break;
         }
         }

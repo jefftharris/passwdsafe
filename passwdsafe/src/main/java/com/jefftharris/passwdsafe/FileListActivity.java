@@ -485,7 +485,7 @@ public class FileListActivity extends AppCompatActivity
         }
         }
 
-        GuiUtils.invalidateOptionsMenu(this);
+        invalidateOptionsMenu();
         itsNavDrawerFrag.updateView(drawerMode, syncFilesUri);
         GuiUtils.setVisible(itsNoPermGroup, !hasPermission);
         GuiUtils.setVisible(itsFiles, hasPermission);

@@ -123,8 +123,8 @@ public final class PasswdSafeIMEKeyboard extends Keyboard
         /**
          * Constructor
          */
-        public PasswdSafeKey(Resources res, Row parent, int x, int y,
-                             XmlResourceParser parser)
+        protected PasswdSafeKey(Resources res, Row parent, int x, int y,
+                                XmlResourceParser parser)
         {
             super(res, parent, x, y, parser);
             itsLabel = label;
@@ -133,7 +133,9 @@ public final class PasswdSafeIMEKeyboard extends Keyboard
         /**
          * Set whether the key has a popup for long-press behavior
          */
-        public void setHasLongPress(boolean hasLongPress, int longPressPopup)
+        protected void setHasLongPress(
+                boolean hasLongPress,
+                @SuppressWarnings("SameParameterValue") int longPressPopup)
         {
             if (hasLongPress) {
                 label = itsLabel + " …";

@@ -11,8 +11,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -41,9 +39,11 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.sync.dropbox.DropboxFilesActivity;
+import com.jefftharris.passwdsafe.sync.lib.AccountSyncFreqUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
+import com.jefftharris.passwdsafe.sync.lib.RemoveAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 import com.jefftharris.passwdsafe.sync.onedrive.OnedriveFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudEditDialog;
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity
         accounts.setAdapter(itsAccountsAdapter);
         accounts.setNestedScrollingEnabled(false);
 
-        LoaderManager lm = getSupportLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_PROVIDERS, null, this);
 
         if (BuildConfig.DEBUG) {
@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         GuiUtils.setVisible(findViewById(R.id.no_accounts_msg), !hasAccounts);
-        GuiUtils.invalidateOptionsMenu(this);
+        invalidateOptionsMenu();
 
         itsAccountsAdapter.changeCursor(cursor);
     }
@@ -575,17 +575,8 @@ public class MainActivity extends AppCompatActivity
     public void updateProviderSyncFreq(final Uri providerUri,
                                        ProviderSyncFreqPref freq)
     {
-        new AccountUpdateTask(providerUri, getString(R.string.updating_account))
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                ContentValues values = new ContentValues();
-                values.put(PasswdSafeContract.Providers.COL_SYNC_FREQ,
-                           freq.getFreq());
-                cr.update(itsAccountUri, values, null, null);
-            }
-        }.startTask(this, this);
+        new AccountSyncFreqUpdateTask(providerUri, freq, this)
+                .startTask(this, this);
     }
 
     @Override
@@ -688,16 +679,7 @@ public class MainActivity extends AppCompatActivity
     /** Remove an account */
     private void removeAccount(Uri currAcct)
     {
-        new AccountUpdateTask(currAcct, getString(R.string.removing_account))
-        {
-            @Override
-            protected void doAccountUpdate(ContentResolver cr)
-            {
-                if (itsAccountUri != null) {
-                    cr.delete(itsAccountUri, null, null);
-                }
-            }
-        }.startTask(this, this);
+        new RemoveAccountTask(currAcct, this).startTask(this, this);
     }
 
     /** Get the Google Drive provider */
@@ -777,7 +759,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void reloadProviders()
     {
-        LoaderManager lm = getSupportLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.restartLoader(LOADER_PROVIDERS, null, this);
     }
 
@@ -792,10 +774,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Dialog to prompt when an account is cleared */
-    public static class ClearPromptDlg extends DialogFragment
+    protected static class ClearPromptDlg extends DialogFragment
     {
         /** Create an instance of the dialog */
-        public static ClearPromptDlg newInstance(Uri currAcct)
+        protected static ClearPromptDlg newInstance(Uri currAcct)
         {
             ClearPromptDlg dlg = new ClearPromptDlg();
             Bundle args = new Bundle();

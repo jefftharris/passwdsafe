@@ -81,7 +81,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         RECORD_NAME     (2),
         RECORD          (3);
 
-        public final int itsSortOrder;
+        protected final int itsSortOrder;
 
         Location(int sortOrder)
         {
@@ -96,9 +96,9 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         public final String itsPolicyStr;
         public final String itsOwnSymbols;
 
-        public RecordPolicyStrs(String policyName,
-                                String policyStr,
-                                String ownSymbols)
+        protected RecordPolicyStrs(String policyName,
+                                   String policyStr,
+                                   String ownSymbols)
         {
             itsPolicyName = policyName;
             itsPolicyStr = policyStr;
@@ -396,6 +396,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
 
     /** Convert the object to a string */
     @Override
+    @NonNull
     public String toString()
     {
         return itsName;
@@ -606,16 +607,16 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     /** Fields parsed from a policy flags and length string */
     private static class ParsedFields
     {
-        public final int itsFlags;
-        public final int itsLength;
-        public final int itsMinLowercase;
-        public final int itsMinUppercase;
-        public final int itsMinDigits;
-        public final int itsMinSymbols;
-        public final int itsFieldsEnd;
+        protected final int itsFlags;
+        protected final int itsLength;
+        protected final int itsMinLowercase;
+        protected final int itsMinUppercase;
+        protected final int itsMinDigits;
+        protected final int itsMinSymbols;
+        protected final int itsFieldsEnd;
 
-        public ParsedFields(int flags, int pwLen, int minLower, int minUpper,
-                            int minDigits, int minSymbols, int fieldsEnd)
+        protected ParsedFields(int flags, int pwLen, int minLower, int minUpper,
+                               int minDigits, int minSymbols, int fieldsEnd)
         {
             itsFlags = flags;
             itsLength = pwLen;

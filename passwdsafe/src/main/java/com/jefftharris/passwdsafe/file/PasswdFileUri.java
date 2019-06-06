@@ -20,6 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.EnvironmentCompat;
 import androidx.documentfile.provider.DocumentFile;
@@ -45,6 +46,7 @@ import org.pwsafe.lib.file.PwsStreamStorage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * The PasswdFileUri class encapsulates a URI to a password file
@@ -174,29 +176,28 @@ public class PasswdFileUri implements Parcelable
         itsType = getUriType(uri);
         switch (itsType) {
         case FILE: {
-            itsFile = new File(uri.getPath());
+            itsFile = new File(Objects.requireNonNull(uri.getPath()));
             resolveFileUri(ctx);
-            break;
+            return;
         }
         case GENERIC_PROVIDER: {
             itsFile = null;
             resolveGenericProviderUri(ctx);
-            break;
+            return;
         }
         case SYNC_PROVIDER: {
             itsFile = null;
             resolveSyncProviderUri(ctx);
-            break;
+            return;
         }
         case EMAIL:
-            //noinspection UnnecessaryDefault
-        default: {
-            itsFile = null;
-            itsWritableInfo = new Pair<>(false, null);
-            itsIsDeletable = false;
+        {
             break;
         }
         }
+        itsFile = null;
+        itsWritableInfo = new Pair<>(false, null);
+        itsIsDeletable = false;
     }
 
 
@@ -217,11 +218,9 @@ public class PasswdFileUri implements Parcelable
         itsUri = source.readParcelable(getClass().getClassLoader());
         itsType = Type.valueOf(source.readString());
         str = source.readString();
-        //noinspection ConstantConditions
         itsFile = (str != null) ? new File(str) : null;
         itsTitle = source.readString();
         str = source.readString();
-        //noinspection ConstantConditions
         itsSyncType = (str != null) ? ProviderType.valueOf(str) : null;
     }
 
@@ -500,6 +499,7 @@ public class PasswdFileUri implements Parcelable
 
     /** Convert the URI to a string */
     @Override
+    @NonNull
     public String toString()
     {
         return itsUri.toString();
@@ -533,13 +533,14 @@ public class PasswdFileUri implements Parcelable
     /** Get the URI type */
     private static Type getUriType(Uri uri)
     {
-        if (uri.getScheme().equals(ContentResolver.SCHEME_FILE)) {
+        String scheme = uri.getScheme();
+        if ((scheme != null) && scheme.equals(ContentResolver.SCHEME_FILE)) {
             return Type.FILE;
         }
         String auth = uri.getAuthority();
         if (PasswdSafeContract.AUTHORITY.equals(auth)) {
             return Type.SYNC_PROVIDER;
-        } else if (auth.contains("mail")) {
+        } else if ((auth != null) && auth.contains("mail")) {
             return Type.EMAIL;
         }
         return Type.GENERIC_PROVIDER;
@@ -549,54 +550,56 @@ public class PasswdFileUri implements Parcelable
     /** Resolve fields for a file URI */
     private void resolveFileUri(Context ctx)
     {
-        boolean writable;
-        Integer extraMsgId = null;
-        do {
-            if (itsFile == null) {
-                writable = false;
-                break;
-            }
+        itsWritableInfo = doResolveFileUri(ctx);
+        itsIsDeletable = itsWritableInfo.first;
+    }
 
-            itsTitle = itsFile.getName();
-            if (!itsFile.canWrite()) {
-                writable = false;
 
-                // Check for SD card location
-                File[] extdirs = ApiCompat.getExternalFilesDirs(ctx, null);
-                if ((extdirs != null) && (extdirs.length > 1)) {
-                    for (int i = 1; i < extdirs.length; ++i) {
-                        if (extdirs[i] == null) {
-                            continue;
-                        }
-                        String path = extdirs[i].getAbsolutePath();
-                        int pos = path.indexOf("/Android/");
-                        if (pos == -1) {
-                            continue;
-                        }
+    /**
+     * Implementation of resolving fields for a file URI
+     */
+    private Pair<Boolean, Integer> doResolveFileUri(Context ctx)
+    {
+        if (itsFile == null) {
+            return new Pair<>(false, null);
+        }
 
-                        String basepath = path.substring(0, pos + 1);
-                        if (itsFile.getAbsolutePath().startsWith(basepath)) {
-                            extraMsgId = R.string.read_only_sdcard;
-                            break;
-                        }
+        itsTitle = itsFile.getName();
+        if (!itsFile.canWrite()) {
+            Integer extraMsgId = null;
+
+            // Check for SD card location
+            File[] extdirs = ApiCompat.getExternalFilesDirs(ctx, null);
+            if ((extdirs != null) && (extdirs.length > 1)) {
+                for (int i = 1; i < extdirs.length; ++i) {
+                    if (extdirs[i] == null) {
+                        continue;
+                    }
+                    String path = extdirs[i].getAbsolutePath();
+                    int pos = path.indexOf("/Android/");
+                    if (pos == -1) {
+                        continue;
+                    }
+
+                    String basepath = path.substring(0, pos + 1);
+                    if (itsFile.getAbsolutePath().startsWith(basepath)) {
+                        extraMsgId = R.string.read_only_sdcard;
+                        break;
                     }
                 }
-                break;
             }
+            return new Pair<>(false, extraMsgId);
+        }
 
-            // Check mount state on kitkat or higher
-            if (ApiCompat.SDK_VERSION < ApiCompat.SDK_KITKAT) {
-                writable = true;
-                break;
-            }
-            writable = !EnvironmentCompat.getStorageState(itsFile).equals(
-                    Environment.MEDIA_MOUNTED_READ_ONLY);
-            if (!writable) {
-                extraMsgId = R.string.read_only_media;
-            }
-        } while(false);
-        itsWritableInfo = new Pair<>(writable, extraMsgId);
-        itsIsDeletable = writable;
+        // Check mount state on kitkat or higher
+        if (ApiCompat.SDK_VERSION < ApiCompat.SDK_KITKAT) {
+            return new Pair<>(true, null);
+        }
+
+        boolean writable = !EnvironmentCompat.getStorageState(itsFile).equals(
+                Environment.MEDIA_MOUNTED_READ_ONLY);
+        return new Pair<>(writable,
+                          writable ? null : R.string.read_only_media);
     }
 
 
@@ -639,7 +642,6 @@ public class PasswdFileUri implements Parcelable
                                                                Context ctx)
     {
         boolean checkFlags = false;
-        //noinspection ConstantConditions
         if (DocumentFile.isDocumentUri(ctx, itsUri)) {
             if (ctx.checkCallingOrSelfUriPermission(
                     itsUri,

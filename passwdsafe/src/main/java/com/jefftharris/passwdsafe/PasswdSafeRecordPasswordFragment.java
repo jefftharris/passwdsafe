@@ -111,7 +111,7 @@ public class PasswdSafeRecordPasswordFragment
             policy = info.itsPasswdRec.getPasswdPolicy();
             if (policy == null) {
                 PasswdSafeApp app =
-                        (PasswdSafeApp)getActivity().getApplication();
+                        (PasswdSafeApp)requireActivity().getApplication();
                 policy = app.getDefaultPasswdPolicy();
                 policyLoc = getString(R.string.default_policy);
             } else if (policy.getLocation() ==

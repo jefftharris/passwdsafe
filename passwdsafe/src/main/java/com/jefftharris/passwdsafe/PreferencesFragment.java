@@ -181,8 +181,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          * Handle an activity result
          * @return true if handled; false otherwise
          */
-        public boolean onActivityResult(int requestCode, int resultCode,
-                                        Intent data)
+        protected boolean onActivityResult(int requestCode, int resultCode,
+                                           Intent data)
         {
             return false;
         }
@@ -190,7 +190,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Handle a confirmed dialog prompt
          */
-        public void promptConfirmed(ConfirmAction action)
+        protected void promptConfirmed(ConfirmAction action)
         {
         }
 
@@ -209,12 +209,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public RootScreen()
+        protected RootScreen()
         {
             Preference pref =
                     findPreference(Preferences.PREF_DISPLAY_VIBRATE_KEYBOARD);
             if (pref != null) {
-                pref.setVisible(ApiCompat.hasVibrator(getContext()));
+                pref.setVisible(ApiCompat.hasVibrator(requireContext()));
             }
         }
 
@@ -224,7 +224,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         {
             switch (key) {
             case Preferences.PREF_DISPLAY_THEME_LIGHT: {
-                ApiCompat.recreateActivity(getActivity());
+                requireActivity().recreate();
                 break;
             }
             }
@@ -244,7 +244,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public FilesScreen(SharedPreferences prefs, Resources res)
+        protected FilesScreen(SharedPreferences prefs, Resources res)
         {
             itsFileDirPref = (EditTextPreference)
                     findPreference(Preferences.PREF_FILE_DIR);
@@ -276,11 +276,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             switch (key) {
             case Preferences.PREF_FILE_DIR: {
                 File pref = Preferences.getFileDirPref(prefs);
-                if (pref == null) {
-                    itsFileDirPref.setText(null);
-                    itsFileDirPref.setSummary(null);
-                    break;
-                }
                 if (TextUtils.isEmpty(pref.toString())) {
                     pref = new File(Preferences.PREF_FILE_DIR_DEF);
                     itsFileDirPref.setText(pref.toString());
@@ -378,7 +373,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public PasswordScreen(SharedPreferences prefs, Resources res)
+        protected PasswordScreen(SharedPreferences prefs, Resources res)
         {
             itsPasswdVisibleTimeoutPref = (ListPreference)
                     findPreference(Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
@@ -391,8 +386,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
 
             itsPasswdEncPref = (ListPreference)
                     findPreference(Preferences.PREF_PASSWD_ENC);
-            String[] charsets =  PwsFile.ALL_PASSWORD_CHARSETS.toArray(
-                    new String[PwsFile.ALL_PASSWORD_CHARSETS.size()]);
+            String[] charsets =
+                    PwsFile.ALL_PASSWORD_CHARSETS.toArray(new String[0]);
             itsPasswdEncPref.setEntries(charsets);
             itsPasswdEncPref.setEntryValues(charsets);
             itsPasswdEncPref.setDefaultValue(Preferences.PREF_PASSWD_ENC_DEF);
@@ -504,7 +499,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             }
             case CLEAR_ALL_SAVED: {
                 SavedPasswordsMgr passwdMgr =
-                        new SavedPasswordsMgr(getContext());
+                        new SavedPasswordsMgr(requireContext());
                 passwdMgr.removeAllSavedPasswords();
                 break;
             }
@@ -523,7 +518,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        public RecordScreen(SharedPreferences prefs, Resources res)
+        protected RecordScreen(SharedPreferences prefs, Resources res)
         {
             itsRecordSortOrderPref = (ListPreference)
                     findPreference(Preferences.PREF_RECORD_SORT_ORDER);
@@ -574,16 +569,16 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     private static class DefaultFileResolver
             extends AsyncTask<Void, Void, PasswdFileUri>
     {
-        private ManagedRef<FilesScreen> itsScreen;
-        private ManagedRef<Fragment> itsFrag;
+        private final ManagedRef<FilesScreen> itsScreen;
+        private final ManagedRef<Fragment> itsFrag;
         private PasswdFileUri.Creator itsUriCreator;
 
         /**
          * Constructor
          */
-        public DefaultFileResolver(Uri fileUri,
-                                   FilesScreen screen,
-                                   Fragment fragment)
+        protected DefaultFileResolver(Uri fileUri,
+                                      FilesScreen screen,
+                                      Fragment fragment)
         {
             itsScreen = new ManagedRef<>(screen);
             itsFrag = new ManagedRef<>(fragment);

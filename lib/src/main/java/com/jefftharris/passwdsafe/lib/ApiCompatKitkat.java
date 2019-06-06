@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
@@ -54,7 +55,8 @@ public final class ApiCompatKitkat
                     ContentResolver.class.getMethod(
                             "getPersistedUriPermissions");
 
-            ClassLoader loader = ApiCompatKitkat.class.getClassLoader();
+            ClassLoader loader = Objects.requireNonNull(
+                    ApiCompatKitkat.class.getClassLoader());
             Class docContractClass =
                     loader.loadClass("android.provider.DocumentsContract");
 

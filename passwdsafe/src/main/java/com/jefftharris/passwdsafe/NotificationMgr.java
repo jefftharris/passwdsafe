@@ -236,7 +236,8 @@ public class NotificationMgr implements PasswdFileDataObserver
         case FILE: {
             Uri fileUri = uri.getUri();
             String path = fileUri.getPath();
-            return (!path.contains("/data/com.google.android.apps.") &&
+            return ((path != null) &&
+                    !path.contains("/data/com.google.android.apps.") &&
                     !path.contains("/data/com.dropbox.android"));
         }
         case SYNC_PROVIDER: {
@@ -569,7 +570,7 @@ public class NotificationMgr implements PasswdFileDataObserver
         private static final int DB_VERSION = 1;
 
         /** Constructor */
-        public DbHelper(Context context)
+        protected DbHelper(Context context)
         {
             super(context, DB_NAME, null, DB_VERSION);
         }
@@ -634,13 +635,14 @@ public class NotificationMgr implements PasswdFileDataObserver
     /** The ExpiryEntry class represents an expiration entry for notifications */
     private static final class ExpiryEntry implements Comparable<ExpiryEntry>
     {
-        public final String itsUuid;
-        public final String itsTitle;
-        public final String itsGroup;
-        public final long itsExpiry;
+        protected final String itsUuid;
+        protected final String itsTitle;
+        protected final String itsGroup;
+        protected final long itsExpiry;
 
         /** Constructor */
-        public ExpiryEntry(String uuid, String title, String group, long expiry)
+        protected ExpiryEntry(String uuid, String title, String group,
+                              long expiry)
         {
             itsUuid = uuid;
             itsTitle = title;
@@ -674,7 +676,7 @@ public class NotificationMgr implements PasswdFileDataObserver
 
 
         /** Convert the entry to a string for users */
-        public final String toString(Context ctx)
+        protected final String toString(Context ctx)
         {
             return PasswdRecord.getRecordId(itsGroup, itsTitle, null) +
                 " (" + Utils.formatDate(itsExpiry, ctx, false, true, true) +
@@ -705,25 +707,25 @@ public class NotificationMgr implements PasswdFileDataObserver
         private final TreeSet<ExpiryEntry> itsEntries = new TreeSet<>();
 
         /** Constructor */
-        public UriNotifInfo(int notifId)
+        protected UriNotifInfo(int notifId)
         {
             itsNotifId = notifId;
         }
 
         /** Get the notification id */
-        public int getNotifId()
+        protected int getNotifId()
         {
             return itsNotifId;
         }
 
         /** Get the expired entries */
-        public SortedSet<ExpiryEntry> getEntries()
+        protected SortedSet<ExpiryEntry> getEntries()
         {
             return itsEntries;
         }
 
         /** Set the expired entries */
-        public void setEntries(Set<ExpiryEntry> entries)
+        protected void setEntries(Set<ExpiryEntry> entries)
         {
             itsEntries.clear();
             itsEntries.addAll(entries);

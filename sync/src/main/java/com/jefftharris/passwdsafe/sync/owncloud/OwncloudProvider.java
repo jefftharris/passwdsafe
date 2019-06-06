@@ -98,21 +98,16 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
                                             Uri providerAcctUri)
     {
         String accountName = null;
-        do {
-            if ((activityResult != Activity.RESULT_OK) ||
-                    (activityData == null)) {
-                break;
-            }
-
+        if ((activityResult == Activity.RESULT_OK) &&
+            (activityData != null)) {
             Bundle b = activityData.getExtras();
             accountName = (b != null) ?
                     b.getString(AccountManager.KEY_ACCOUNT_NAME) : null;
             Log.i(TAG, "Selected account: " + accountName);
             if (TextUtils.isEmpty(accountName)) {
                 accountName = null;
-                break;
             }
-        } while(false);
+        }
 
         saveAuthData(accountName, createUrlFromAccount(accountName, true));
         updateOwncloudAcct();
@@ -171,11 +166,8 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.jefftharris.passwdsafe.sync.lib.Provider#cleanupOnDelete(java.lang.String)
-     */
     @Override
-    public void cleanupOnDelete(String acctName) throws Exception
+    public void cleanupOnDelete()
     {
         unlinkAccount();
     }
@@ -478,9 +470,9 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         /**
          * Constructor
          */
-        public NewOwncloudTask(Uri currAcctUri,
-                               String newAcct,
-                               OwncloudProvider provider)
+        protected NewOwncloudTask(Uri currAcctUri,
+                                  String newAcct,
+                                  OwncloudProvider provider)
         {
             super(currAcctUri, newAcct, provider, true, provider.getContext(),
                   TAG);
@@ -488,9 +480,11 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
 
         @Override
         protected boolean doProviderUpdate(@NonNull OwncloudProvider provider)
-                throws Exception
         {
             Activity act = getActivity();
+            if (act == null) {
+                return false;
+            }
             String authToken = getAuthToken(provider.getAccount(itsNewAcct),
                                             act, act);
             return (authToken != null);

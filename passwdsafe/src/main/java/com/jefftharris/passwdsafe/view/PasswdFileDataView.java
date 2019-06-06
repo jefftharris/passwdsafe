@@ -500,9 +500,7 @@ public final class PasswdFileDataView
             GroupNode childNode = itsCurrGroupNode.getGroup(group);
             if (childNode == null) {
                 // Prune groups from current item in the stack on down
-                for (int j = itsCurrGroups.size() - 1; j >= i; --j) {
-                    itsCurrGroups.remove(j);
-                }
+                itsCurrGroups.subList(i, itsCurrGroups.size()).clear();
                 break;
             }
             itsCurrGroupNode = childNode;
@@ -576,12 +574,12 @@ public final class PasswdFileDataView
         private TreeMap<String, GroupNode> itsGroups = null;
 
         /** Constructor */
-        public GroupNode()
+        protected GroupNode()
         {
         }
 
         /** Add a record */
-        public final void addRecord(MatchPwsRecord rec)
+        protected final void addRecord(MatchPwsRecord rec)
         {
             if (itsRecords == null) {
                 itsRecords = new ArrayList<>();
@@ -590,14 +588,14 @@ public final class PasswdFileDataView
         }
 
         /** Get the records */
-        public final List<MatchPwsRecord> getRecords()
+        protected final List<MatchPwsRecord> getRecords()
         {
             return itsRecords;
         }
 
         /** Put a child group */
-        public final void putGroup(String name, GroupNode node,
-                                   Comparator<String> groupComp)
+        protected final void putGroup(String name, GroupNode node,
+                                      Comparator<String> groupComp)
         {
             if (itsGroups == null) {
                 itsGroups = new TreeMap<>(groupComp);
@@ -606,7 +604,7 @@ public final class PasswdFileDataView
         }
 
         /** Get a group */
-        public final GroupNode getGroup(String name)
+        protected final GroupNode getGroup(String name)
         {
             if (itsGroups == null) {
                 return null;
@@ -616,13 +614,13 @@ public final class PasswdFileDataView
         }
 
         /** Get the groups */
-        public final Map<String, GroupNode> getGroups()
+        protected final Map<String, GroupNode> getGroups()
         {
             return itsGroups;
         }
 
         /** Get the number of records */
-        public final int getNumRecords()
+        protected final int getNumRecords()
         {
             int num = 0;
             if (itsRecords != null) {
@@ -643,16 +641,16 @@ public final class PasswdFileDataView
      */
     private static final class MatchPwsRecord
     {
-        public final String itsTitle;
-        public final String itsUsername;
-        public final String itsUuid;
-        public final Date itsCreationTime;
-        public final Date itsModTime;
-        public final String itsMatch;
+        protected final String itsTitle;
+        protected final String itsUsername;
+        protected final String itsUuid;
+        protected final Date itsCreationTime;
+        protected final Date itsModTime;
+        protected final String itsMatch;
 
-        public MatchPwsRecord(PwsRecord rec,
-                              PasswdFileData fileData,
-                              String match)
+        protected MatchPwsRecord(PwsRecord rec,
+                                 PasswdFileData fileData,
+                                 String match)
         {
             itsTitle = fileData.getTitle(rec);
             itsUsername = fileData.getUsername(rec);

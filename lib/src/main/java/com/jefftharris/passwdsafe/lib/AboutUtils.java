@@ -74,7 +74,6 @@ public class AboutUtils
         tv = detailsView.findViewById(R.id.build_date);
         tv.setText(BuildConfig.BUILD_DATE);
         tv = detailsView.findViewById(R.id.release_notes);
-        //noinspection deprecation
         tv.setText(
                 Html.fromHtml(tv.getText().toString().replace("\n", "<br>")));
 

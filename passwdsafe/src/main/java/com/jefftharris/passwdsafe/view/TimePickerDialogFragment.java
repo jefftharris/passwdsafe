@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * Dialog to pick a time
@@ -49,7 +50,7 @@ public class TimePickerDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Bundle args = getArguments();
+        Bundle args = Objects.requireNonNull(getArguments());
         Calendar now = Calendar.getInstance();
         int hourOfDay = args.getInt("hourOfDay", now.get(Calendar.HOUR_OF_DAY));
         int minute = args.getInt("minute", now.get(Calendar.MINUTE));
@@ -62,7 +63,9 @@ public class TimePickerDialogFragment extends DialogFragment
     public void onTimeSet(TimePicker view, int hourOfDay, int minute)
     {
         if (isResumed()) {
-            ((Listener)getTargetFragment()).handleTimePicked(hourOfDay, minute);
+            Listener listener =
+                    Objects.requireNonNull((Listener)getTargetFragment());
+            listener.handleTimePicked(hourOfDay, minute);
         }
     }
 }

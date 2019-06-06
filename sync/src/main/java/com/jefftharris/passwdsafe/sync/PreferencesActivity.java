@@ -20,7 +20,7 @@ public class PreferencesActivity extends AppCompatActivity
     /**
      * Fragment for the preferences
      */
-    public static final class PreferencesFragment
+    protected static final class PreferencesFragment
             extends PreferenceFragmentCompat
     {
         @Override

@@ -24,7 +24,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.ListFragment;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -33,6 +32,7 @@ import com.jefftharris.passwdsafe.sync.R;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *  Fragment to show synced password files
@@ -101,8 +101,9 @@ public class SyncedFilesFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        itsPathDisplay = getArguments().getString("pathDisplay");
-        itsPathId = getArguments().getString("pathId");
+        Bundle args = Objects.requireNonNull(getArguments());
+        itsPathDisplay = args.getString("pathDisplay");
+        itsPathId = args.getString("pathId");
     }
 
 
@@ -164,8 +165,6 @@ public class SyncedFilesFragment extends ListFragment
                 !TextUtils.equals(ProviderRemoteFile.PATH_SEPARATOR, itsPathId);
 
         MenuItem item = menu.findItem(R.id.menu_parent_dir);
-        MenuItemCompat.setShowAsAction(item,
-                                       MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         item.setVisible(parentEnabled);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -259,11 +258,11 @@ public class SyncedFilesFragment extends ListFragment
     /** Holder for each item in the list view */
     private static class ListItem
     {
-        public final ProviderRemoteFile itsFile;
-        public boolean itsIsSelected;
+        protected final ProviderRemoteFile itsFile;
+        protected boolean itsIsSelected;
 
         /** Constructor */
-        public ListItem(ProviderRemoteFile file, boolean selected)
+        protected ListItem(ProviderRemoteFile file, boolean selected)
         {
             itsFile = file;
             itsIsSelected = selected;
@@ -277,7 +276,7 @@ public class SyncedFilesFragment extends ListFragment
         private final LayoutInflater itsInflater;
 
         /** Constructor */
-        public FilesAdapter(Activity act)
+        protected FilesAdapter(Activity act)
         {
             super(act, R.layout.listview_sync_file_item);
             setNotifyOnChange(false);
@@ -327,13 +326,13 @@ public class SyncedFilesFragment extends ListFragment
         /** View holder for fields in a list item */
         private static class ViewHolder
         {
-            public final TextView itsText;
-            public final TextView itsModDate;
-            public final ImageView itsIcon;
-            public final CheckBox itsSelected;
+            protected final TextView itsText;
+            protected final TextView itsModDate;
+            protected final ImageView itsIcon;
+            protected final CheckBox itsSelected;
 
             /** Constructor */
-            public ViewHolder(View view)
+            protected ViewHolder(View view)
             {
                 itsText = view.findViewById(R.id.text);
                 itsModDate = view.findViewById(R.id.mod_date);

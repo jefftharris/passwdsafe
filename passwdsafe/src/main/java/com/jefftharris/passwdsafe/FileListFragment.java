@@ -34,7 +34,6 @@ import androidx.loader.content.Loader;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
-import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.FileComparator;
 
 import java.io.File;
@@ -76,32 +75,33 @@ public final class FileListFragment extends ListFragment
     }
 
     /** File data information for the list */
-    public static final class FileData
+    protected static final class FileData
     {
-        public final File itsFile;
+        protected final File itsFile;
         private final String itsName;
 
-        public FileData(File f)
+        protected FileData(File f)
         {
             itsFile = f;
             itsName = itsFile.getName();
         }
 
         /** Constructor for a null file */
-        public FileData(Context ctx)
+        protected FileData(Context ctx)
         {
             itsFile = null;
             itsName = ctx.getString(R.string.none_paren);
         }
 
         @Override
+        @NonNull
         public final String toString()
         {
             return itsName;
         }
 
         /** Does the data indicate a directory */
-        public boolean isDirectory()
+        protected boolean isDirectory()
         {
             return (itsFile != null) && (itsFile.isDirectory());
         }
@@ -162,7 +162,7 @@ public final class FileListFragment extends ListFragment
             openFile(new File(PasswdSafeApp.DEBUG_AUTO_FILE));
         }
 
-        LoaderManager lm = getLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(0, null, this);
     }
 
@@ -362,7 +362,7 @@ public final class FileListFragment extends ListFragment
             itsDir = getFileDir();
         }
 
-        LoaderManager lm = getLoaderManager();
+        LoaderManager lm = LoaderManager.getInstance(this);
         lm.restartLoader(0, null, this);
     }
 
@@ -420,7 +420,7 @@ public final class FileListFragment extends ListFragment
 
         // Open the default file
         if (getListAdapter() != null) {
-            Activity act = getActivity();
+            Activity act = requireActivity();
             PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
             if (app.checkOpenDefault()) {
                 SharedPreferences prefs = Preferences.getSharedPrefs(act);
@@ -482,7 +482,7 @@ public final class FileListFragment extends ListFragment
         }
         setFileDir(newDir);
         showFiles();
-        GuiUtils.invalidateOptionsMenu(getActivity());
+        requireActivity().invalidateOptionsMenu();
     }
 
 
@@ -511,7 +511,7 @@ public final class FileListFragment extends ListFragment
         private final int itsFileIcon;
 
         /** Constructor */
-        public FileLoader(File dir, boolean includeNone, Context context)
+        protected FileLoader(File dir, boolean includeNone, Context context)
         {
             super(context);
             itsDir = dir;

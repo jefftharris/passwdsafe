@@ -53,9 +53,6 @@ public class PwsFileV2 extends PwsFileV1V2
      * @param storage the password file storage
      * @param passwd   the passphrase for the database.
      * @param encoding the password encoding
-     * @throws EndOfFileException
-     * @throws IOException
-     * @throws UnsupportedFileVersionException
      */
     public PwsFileV2(PwsStorage storage,
                      Owner<PwsPassword>.Param passwd, String encoding)

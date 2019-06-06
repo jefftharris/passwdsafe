@@ -190,12 +190,11 @@ public class GDriveProvider extends AbstractSyncTimerProvider
 
     @Override
     public void checkProviderAdd(SQLiteDatabase db)
-            throws Exception
     {
     }
 
     @Override
-    public void cleanupOnDelete(String acctName)
+    public void cleanupOnDelete()
     {
         if (!isPendingAdd()) {
             unlinkAccount();

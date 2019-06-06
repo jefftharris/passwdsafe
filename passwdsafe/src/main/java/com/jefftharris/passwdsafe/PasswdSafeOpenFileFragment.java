@@ -814,13 +814,13 @@ public class PasswdSafeOpenFileFragment
      */
     private static class OpenResult
     {
-        public final PasswdFileData itsFileData;
-        public final Exception itsKeygenError;
+        protected final PasswdFileData itsFileData;
+        protected final Exception itsKeygenError;
 
         /**
          * Constructor
          */
-        public OpenResult(PasswdFileData fileData, Exception keygenError)
+        protected OpenResult(PasswdFileData fileData, Exception keygenError)
         {
             itsFileData = fileData;
             itsKeygenError = keygenError;
@@ -842,8 +842,8 @@ public class PasswdSafeOpenFileFragment
         /**
          * Constructor
          */
-        public OpenTask(Owner<PwsPassword>.Param passwd,
-                        PasswdSafeOpenFileFragment frag)
+        protected OpenTask(Owner<PwsPassword>.Param passwd,
+                           PasswdSafeOpenFileFragment frag)
         {
             super(frag);
             itsFileUri = frag.getPasswdFileUri();
@@ -1169,7 +1169,7 @@ public class PasswdSafeOpenFileFragment
         /**
          * Constructor
          */
-        public LoadSavedPasswordUser()
+        protected LoadSavedPasswordUser()
         {
             super(R.string.touch_sensor_to_load_saved_password,
                   "LoadSavedPasswordUser");
@@ -1236,7 +1236,7 @@ public class PasswdSafeOpenFileFragment
         /**
          * Constructor
          */
-        public AddSavedPasswordUser(OpenResult result)
+        protected AddSavedPasswordUser(OpenResult result)
         {
             super(R.string.touch_sensor_to_save_the_password,
                   "AddSavedPasswordUser");

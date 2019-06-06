@@ -70,9 +70,9 @@ public class ProviderSyncTask
         /**
          * Constructor
          */
-        public AsyncSyncTask(Uri provider,
-                             ContentResolver resolver,
-                             ProviderSyncTask task)
+        protected AsyncSyncTask(Uri provider,
+                                ContentResolver resolver,
+                                ProviderSyncTask task)
         {
             if (provider != null) {
                 itsProviderArgs = new String[] {
@@ -90,7 +90,7 @@ public class ProviderSyncTask
         /**
          * Cancel the task
          */
-        public void cancelTask()
+        protected void cancelTask()
         {
             itsCancelSignal.cancel();
             cancel(true);

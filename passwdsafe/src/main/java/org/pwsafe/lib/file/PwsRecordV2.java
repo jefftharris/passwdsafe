@@ -213,8 +213,6 @@ public class PwsRecordV2 extends PwsRecord
      * Initialises this record by reading its data from <code>file</code>.
      *
      * @param file the file to read the data from.
-     * @throws EndOfFileException
-     * @throws IOException
      */
     @Override
     protected void loadRecord(PwsFile file)
@@ -300,6 +298,7 @@ public class PwsRecordV2 extends PwsRecord
      * @return A string representation of this object.
      */
     @Override
+    @NonNull
     public String toString()
     {
         boolean first = true;
