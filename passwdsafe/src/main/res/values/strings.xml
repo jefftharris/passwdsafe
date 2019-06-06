@@ -369,6 +369,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.18.2&lt;/b&gt; - Bug fixes.  Fix loading of saved password.
+        \n\n
         &lt;b&gt;6.18.1&lt;/b&gt; - Fix saving passwords with long file URLs,
         e.g. OneDrive app files.
         \n\n

@@ -549,17 +549,8 @@ public final class SavedPasswordsMgr
                 public SavedPassword useDb(SQLiteDatabase db)
                         throws Exception
                 {
-                    SavedPassword saved;
-
-                    saved = getByQuery(db, WHERE_BY_URI,
-                                       new String[]{ SavedPassword.getUriKey(
-                                               uri.getUri()) });
-                    if (saved != null) {
-                        return saved;
-                    }
-
-                    saved = getByQuery(db, WHERE_BY_URI,
-                                       new String[]{ uri.toString() });
+                    SavedPassword saved = getByQuery(
+                            db, WHERE_BY_URI, new String[]{ uri.toString() });
                     if (saved != null) {
                         return saved;
                     }
@@ -615,8 +606,8 @@ public final class SavedPasswordsMgr
                 throws Exception
         {
             Pair<String, String> provdisp = getProviderAndDisplay(uri, ctx);
-            addSavedPassword(SavedPassword.getUriKey(uri.getUri()),
-                             provdisp.first, provdisp.second, iv, encPasswd);
+            addSavedPassword(uri.toString(), provdisp.first, provdisp.second,
+                             iv, encPasswd);
         }
 
         /**
@@ -625,11 +616,8 @@ public final class SavedPasswordsMgr
         protected void removeSavedPassword(final Uri uri) throws Exception
         {
             itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
-                for (String uristr: new String[] {
-                        uri.toString(), SavedPassword.getUriKey(uri) }) {
-                    db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
-                              WHERE_BY_URI, new String[]{uristr});
-                }
+                db.delete(PasswdSafeDb.DB_TABLE_SAVED_PASSWORDS,
+                          WHERE_BY_URI, new String[] {uri.toString()});
                 return null;
             });
         }

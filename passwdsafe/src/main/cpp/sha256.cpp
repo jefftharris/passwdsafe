@@ -36,8 +36,8 @@ static const unsigned long K[64] = {
 #endif
 
 /* Various logical functions */
-#define Ch(x,y,z)       (z ^ (x & (y ^ z)))
-#define Maj(x,y,z)      (((x | y) & z) | (x & y)) 
+#define Ch(x,y,z)       ((z) ^ ((x) & ((y) ^ (z))))
+#define Maj(x,y,z)      ((((x) | (y)) & (z)) | ((x) & (y)))
 #define S(x, n)         RORc((x),(n))
 #define R(x, n)         (((x)&0xFFFFFFFFUL)>>(n))
 #define Sigma0(x)       (S(x, 2) ^ S(x, 13) ^ S(x, 22))
@@ -88,10 +88,10 @@ static void  sha256_compress(ulong32 state[8], const unsigned char *buf)
   }  
 #else 
 #define RND(a,b,c,d,e,f,g,h,i,ki)                    \
-  t0 = h + Sigma1(e) + Ch(e, f, g) + ki + W[i];   \
+  t0 = (h) + Sigma1(e) + Ch(e, f, g) + (ki) + W[(i)];   \
   t1 = Sigma0(a) + Maj(a, b, c);                  \
-  d += t0;                                        \
-  h  = t0 + t1;
+  (d) += t0;                                        \
+  (h)  = t0 + t1;
 
   RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],0,0x428a2f98);
   RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],1,0x71374491);
