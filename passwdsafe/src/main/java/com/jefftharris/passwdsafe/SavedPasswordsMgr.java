@@ -547,7 +547,6 @@ public final class SavedPasswordsMgr
             {
                 @Override
                 public SavedPassword useDb(SQLiteDatabase db)
-                        throws Exception
                 {
                     SavedPassword saved = getByQuery(
                             db, WHERE_BY_URI, new String[]{ uri.toString() });
