@@ -52,7 +52,7 @@ public class PasswdFileSaveHelper implements PwsStorage.SaveHelper
         String name = file.getName();
         Pattern pat = Pattern.compile("^(.*)_\\d{8}_\\d{6}\\.ibak$");
         Matcher match = pat.matcher(name);
-        if ((match != null) && match.matches()) {
+        if (match.matches()) {
             name = match.group(1);
             if (isV3) {
                 name += ".psafe3";
