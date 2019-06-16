@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.ProviderFactory;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncedFilesActivity;
@@ -41,38 +42,15 @@ public class OwncloudFilesActivity extends AbstractSyncedFilesActivity
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-     */
     @Override
     protected void onCreate(Bundle args)
     {
         super.onCreate(args);
-        itsClientLoadTask = new AsyncTask<Void, Void, OwnCloudClient>()
-        {
-            @Override
-            protected OwnCloudClient doInBackground(Void... params)
-            {
-                Context ctx = OwncloudFilesActivity.this;
-                OwncloudProvider provider = (OwncloudProvider)
-                        ProviderFactory.getProvider(ProviderType.OWNCLOUD, ctx);
-                return provider.getClient(ctx);
-            }
-
-            @Override
-            protected void onPostExecute(OwnCloudClient result)
-            {
-                itsClient = result;
-                reloadFiles();
-            }
-        };
+        itsClientLoadTask = new ClientLoadTask(this);
         itsClientLoadTask.execute();
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.FragmentActivity#onDestroy()
-     */
     @Override
     protected void onDestroy()
     {
@@ -91,6 +69,46 @@ public class OwncloudFilesActivity extends AbstractSyncedFilesActivity
     }
 
 
+    /** Background task for retrieving the client */
+    private static class ClientLoadTask
+            extends AsyncTask<Void, Void, OwnCloudClient>
+    {
+        private final ManagedRef<OwncloudFilesActivity> itsActivity;
+
+
+        /**
+         * Constructor
+         */
+        protected ClientLoadTask(OwncloudFilesActivity act)
+        {
+            itsActivity = new ManagedRef<>(act);
+        }
+
+
+        @Override
+        protected OwnCloudClient doInBackground(Void... params)
+        {
+            Context ctx = itsActivity.get();
+            if (ctx == null) {
+                return null;
+            }
+            OwncloudProvider provider = (OwncloudProvider)
+                    ProviderFactory.getProvider(ProviderType.OWNCLOUD, ctx);
+            return provider.getClient(ctx);
+        }
+
+
+        @Override
+        protected void onPostExecute(OwnCloudClient result)
+        {
+            OwncloudFilesActivity act = itsActivity.get();
+            if (act != null) {
+                act.itsClient = result;
+                act.reloadFiles();
+            }
+        }
+    }
+
     /** Background task for listing files from ownCloud */
     private static class ListFilesTask extends AbstractListFilesTask
     {
@@ -105,9 +123,6 @@ public class OwncloudFilesActivity extends AbstractSyncedFilesActivity
         }
 
 
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(java.lang.Object[])
-         */
         @Override
         protected Pair<List<ProviderRemoteFile>, Exception>
         doInBackground(String... params)
