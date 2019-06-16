@@ -432,8 +432,10 @@
                   android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:hint="@string/notes"
+                  android:importantForAutofill="no"
                   android:inputType="textCapSentences|textMultiLine|textLongMessage|textAutoCorrect"
-                  android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                  android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                  tools:targetApi="o"/>
     </LinearLayout>
 
 </ScrollView>

@@ -23,7 +23,9 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:hint="@string/url"
-              android:inputType="textUri"/>
+              android:importantForAutofill="no"
+              android:inputType="textUri"
+              tools:targetApi="o"/>
 
     <View style="@style/Separator"/>
 

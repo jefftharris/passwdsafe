@@ -54,12 +54,12 @@
                          style="@style/Widget.AppCompat.Spinner.Underlined"
                          android:layout_width="0dp"
                          android:layout_height="wrap_content"
+                         android:layout_gravity="bottom"
                          android:layout_weight="1"
                          android:entries="@array/policy_type"
                          android:prompt="@string/choose_type"
                          android:spinnerMode="dropdown"
-                         tools:ignore="UnusedAttribute"
-                         android:layout_gravity="bottom"/>
+                         tools:ignore="UnusedAttribute"/>
 
             </LinearLayout>
 
@@ -79,7 +79,9 @@
 
                     <EditText android:id="@+id/lowercase_len"
                               android:hint="@string/length"
-                              android:inputType="number"/>
+                              android:importantForAutofill="no"
+                              android:inputType="number"
+                              tools:targetApi="o"/>
                 </TableRow>
 
                 <TableRow android:id="@+id/uppercase_row">
@@ -93,7 +95,9 @@
 
                     <EditText android:id="@+id/uppercase_len"
                               android:hint="@string/length"
-                              android:inputType="number"/>
+                              android:importantForAutofill="no"
+                              android:inputType="number"
+                              tools:targetApi="o"/>
                 </TableRow>
 
                 <TableRow android:id="@+id/digits_row">
@@ -107,7 +111,9 @@
 
                     <EditText android:id="@+id/digits_len"
                               android:hint="@string/length"
-                              android:inputType="number"/>
+                              android:importantForAutofill="no"
+                              android:inputType="number"
+                              tools:targetApi="o"/>
                 </TableRow>
 
                 <TableRow android:id="@+id/symbols_row">
@@ -121,7 +127,9 @@
 
                     <EditText android:id="@+id/symbols_len"
                               android:hint="@string/length"
-                              android:inputType="number"/>
+                              android:importantForAutofill="no"
+                              android:inputType="number"
+                              tools:targetApi="o"/>
                 </TableRow>
             </TableLayout>
 
@@ -149,7 +157,9 @@
                           android:layout_marginLeft="32dip"
                           android:layout_marginStart="32dip"
                           android:hint="@string/custom_symbols"
-                          android:inputType="text"/>
+                          android:importantForAutofill="no"
+                          android:inputType="text"
+                          tools:targetApi="o"/>
 
             </LinearLayout>
 
