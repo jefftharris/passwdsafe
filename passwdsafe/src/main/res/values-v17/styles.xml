@@ -12,22 +12,22 @@
       Base application themes for API 17+. These themes completely replace
       AppBase themes from res/values/styles.xml on API 17+ devices.
     -->
-    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="autoCompleteTextViewStyle">@style/AppTheme_AutoComplete</item>
+    <style name="PwsAppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="autoCompleteTextViewStyle">@style/PwsAppTheme_AutoComplete</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="textAppearanceSearchResultSubtitle">@style/AppTheme_SearchSubTitle</item>
-        <item name="textAppearanceSearchResultTitle">@style/AppTheme_SearchTitle</item>
+        <item name="textAppearanceSearchResultSubtitle">@style/PwsAppTheme_SearchSubTitle</item>
+        <item name="textAppearanceSearchResultTitle">@style/PwsAppTheme_SearchTitle</item>
     </style>
 
-    <style name="AppTheme_AutoComplete" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+    <style name="PwsAppTheme_AutoComplete" parent="Widget.AppCompat.Light.AutoCompleteTextView">
         <item name="android:popupBackground">@drawable/popup_background_material</item>
     </style>
 
-    <style name="AppTheme_SearchSubTitle" parent="TextAppearance.AppCompat.SearchResult.Subtitle">
+    <style name="PwsAppTheme_SearchSubTitle" parent="TextAppearance.AppCompat.SearchResult.Subtitle">
         <item name="android:textColor">@android:color/black</item>
     </style>
 
-    <style name="AppTheme_SearchTitle" parent="TextAppearance.AppCompat.SearchResult.Title">
+    <style name="PwsAppTheme_SearchTitle" parent="TextAppearance.AppCompat.SearchResult.Title">
         <item name="android:textColor">@android:color/black</item>
     </style>
 

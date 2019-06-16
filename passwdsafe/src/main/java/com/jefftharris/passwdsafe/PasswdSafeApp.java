@@ -184,7 +184,7 @@ public final class PasswdSafeApp extends Application
     {
         SharedPreferences prefs = Preferences.getSharedPrefs(act);
         act.setTheme(Preferences.getDisplayThemeLight(prefs) ?
-                     R.style.AppTheme : R.style.AppThemeDark);
+                     R.style.PwsAppTheme : R.style.PwsAppThemeDark);
     }
 
     /**
@@ -194,7 +194,8 @@ public final class PasswdSafeApp extends Application
     {
         SharedPreferences prefs = Preferences.getSharedPrefs(act);
         act.setTheme(Preferences.getDisplayThemeLight(prefs) ?
-                     R.style.AppTheme_Dialog : R.style.AppThemeDark_Dialog);
+                             R.style.PwsAppTheme_Dialog :
+                             R.style.PwsAppThemeDark_Dialog);
     }
 
     /**

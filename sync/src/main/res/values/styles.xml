@@ -9,19 +9,19 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by PwsAppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="PwsAppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <item name="android:listSeparatorTextViewStyle">@style/AppTheme.ListSeparatorTextView</item>
+    <style name="PwsAppTheme" parent="PwsAppBaseTheme">
+        <item name="android:listSeparatorTextViewStyle">@style/PwsAppTheme.ListSeparatorTextView</item>
     </style>
 
     <!-- Other styles -->
-    <style name="AppTheme.ListSeparatorTextView">
+    <style name="PwsAppTheme.ListSeparatorTextView">
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">?colorAccent</item>
