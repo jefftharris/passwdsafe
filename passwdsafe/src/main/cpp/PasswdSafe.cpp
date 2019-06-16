@@ -12,7 +12,8 @@
 #include "sha256.h"
 #include "Util.h"
 
-JNIEXPORT jbyteArray JNICALL Java_org_pwsafe_lib_crypto_SHA256Pws_digestNNative
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_org_pwsafe_lib_crypto_SHA256Pws_digestNNative
 (
     JNIEnv* env,
     jclass,
