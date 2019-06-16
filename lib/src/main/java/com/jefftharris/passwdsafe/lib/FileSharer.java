@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -59,6 +60,7 @@ public final class FileSharer
     /**
      * Share the file
      */
+    @SuppressLint("ObsoleteSdkInt")
     @SuppressWarnings("RedundantThrows")
     public void share(String chooserMsg,
                       String contentType,
