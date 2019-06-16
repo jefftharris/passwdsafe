@@ -31,7 +31,6 @@
     <!-- Light application theme -->
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:listSeparatorTextViewStyle">@style/AppTheme.ListSeparatorTextView</item>
-        <item name="cardViewStyle">@style/CardView.Light</item>
         <item name="navViewStyle">@style/AppTheme_NavView</item>
         <item name="drawableActionHome">@drawable/ic_action_home_dark</item>
         <item name="drawableActionNavigationMoreVert">@drawable/ic_action_navigation_more_vert_dark</item>
@@ -50,7 +49,6 @@
 
     <style name="AppTheme_Dialog" parent="AppBaseTheme_Dialog">
         <item name="android:listSeparatorTextViewStyle">@style/AppTheme.ListSeparatorTextView</item>
-        <item name="cardViewStyle">@style/CardView.Light</item>
         <item name="navViewStyle">@style/AppTheme_NavView</item>
         <item name="drawableActionHome">@drawable/ic_action_home_dark</item>
         <item name="drawableActionNavigationMoreVert">@drawable/ic_action_navigation_more_vert_dark</item>
@@ -72,7 +70,6 @@
     <!-- Dark application theme -->
     <style name="AppThemeDark" parent="AppBaseThemeDark">
         <item name="android:listSeparatorTextViewStyle">@style/AppTheme.ListSeparatorTextView</item>
-        <item name="cardViewStyle">@style/CardView.Dark</item>
         <item name="navViewStyle">@style/AppThemeDark_NavView</item>
         <item name="drawableActionHome">@drawable/ic_action_home_light</item>
         <item name="drawableActionNavigationMoreVert">@drawable/ic_action_navigation_more_vert_light</item>
@@ -91,7 +88,6 @@
 
     <style name="AppThemeDark_Dialog" parent="AppBaseThemeDark_Dialog">
         <item name="android:listSeparatorTextViewStyle">@style/AppTheme.ListSeparatorTextView</item>
-        <item name="cardViewStyle">@style/CardView.Dark</item>
         <item name="navViewStyle">@style/AppThemeDark_NavView</item>
         <item name="drawableActionHome">@drawable/ic_action_home_light</item>
         <item name="drawableActionNavigationMoreVert">@drawable/ic_action_navigation_more_vert_light</item>
