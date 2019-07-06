@@ -34,11 +34,11 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
-import com.jefftharris.passwdsafe.view.TextInputUtils;
 
 import org.pwsafe.lib.file.PwsRecord;
 

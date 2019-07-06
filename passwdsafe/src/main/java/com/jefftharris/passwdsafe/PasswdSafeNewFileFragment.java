@@ -34,10 +34,10 @@ import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.CountedBool;
 import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
-import com.jefftharris.passwdsafe.view.TextInputUtils;
 
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;

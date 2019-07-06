@@ -45,11 +45,11 @@ import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.util.YubiState;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
-import com.jefftharris.passwdsafe.view.TextInputUtils;
 
 import org.pwsafe.lib.exception.InvalidPassphraseException;
 import org.pwsafe.lib.file.Owner;

@@ -48,6 +48,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
@@ -57,7 +58,6 @@ import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.view.PasswdPolicyEditDialog;
 import com.jefftharris.passwdsafe.view.PasswdPolicyView;
 import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
-import com.jefftharris.passwdsafe.view.TextInputUtils;
 import com.jefftharris.passwdsafe.view.TimePickerDialogFragment;
 
 import org.pwsafe.lib.file.PwsRecord;
