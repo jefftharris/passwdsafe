@@ -28,10 +28,8 @@ import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
-import com.jefftharris.passwdsafe.sync.R;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
-import com.jefftharris.passwdsafe.sync.lib.AccountChooserDlg;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
@@ -78,6 +76,8 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         updateOwncloudAcct();
     }
 
+    // TODO: remove AccountChooserDlg?
+    // TODO: remove edit dialog
 
     /* (non-Javadoc)
      * @see com.jefftharris.passwdsafe.sync.lib.Provider#startAccountLink(android.app.Activity, int)
@@ -85,10 +85,9 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     @Override
     public void startAccountLink(FragmentActivity activity, int requestCode)
     {
-        AccountChooserDlg dialog = AccountChooserDlg.newInstance(
-                SyncDb.OWNCLOUD_ACCOUNT_TYPE, requestCode,
-                activity.getString(R.string.no_owncloud_accts));
-        dialog.show(activity.getSupportFragmentManager(), null);
+        Intent intent = new Intent();
+        intent.setClass(activity, OwncloudAccountActivity.class);
+        activity.startActivity(intent);
     }
 
     @Override
@@ -97,6 +96,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
                                             Intent activityData,
                                             Uri providerAcctUri)
     {
+        // TODO: finish account link
         String accountName = null;
         if ((activityResult == Activity.RESULT_OK) &&
             (activityData != null)) {
