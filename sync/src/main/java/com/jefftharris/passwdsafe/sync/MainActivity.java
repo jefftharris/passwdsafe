@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,6 +43,8 @@ import com.jefftharris.passwdsafe.sync.dropbox.DropboxFilesActivity;
 import com.jefftharris.passwdsafe.sync.lib.AccountSyncFreqUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
+import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
+import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
 import com.jefftharris.passwdsafe.sync.lib.RemoveAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.SyncResults;
@@ -130,6 +133,11 @@ public class MainActivity extends AppCompatActivity
             success.setOnCheckedChangeListener(
                     (buttonView, isChecked) ->
                             SyncApp.get(this).setIsForceSyncFailure(isChecked));
+        }
+
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra(NotifUtils.OWNCLOUD_SURVEY_EXTRA, false)) {
+            onOwncloudSurveyClick(null);
         }
     }
 
@@ -323,6 +331,40 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Button handler for an ownCloud survey
+     */
+    public void onOwncloudSurveyClick(View view)
+    {
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
+        dlg.setTitle("ownCloud Survey")
+           .setMessage("Click to email the app developer if you use " +
+                       "ownCloud.  Support may be removed in a future " +
+                       "release in favor of NextCloud.")
+           .setCancelable(false)
+           .setPositiveButton("Send", (dialog, which) -> {
+               Intent mailIntent = new Intent(Intent.ACTION_SENDTO);
+               mailIntent.setData(Uri.parse("mailto:"));
+               mailIntent.putExtra(
+                       Intent.EXTRA_EMAIL,
+                       new String[] {"jeffharris@users.sourceforge.net"});
+               mailIntent.putExtra(Intent.EXTRA_SUBJECT, "ownCloud survey");
+               mailIntent.putExtra(
+                       Intent.EXTRA_TEXT,
+                       "I am a user of ownCloud with PasswdSafe Sync");
+               if (mailIntent.resolveActivity(getPackageManager()) != null) {
+                   SharedPreferences prefs = Preferences.getSharedPrefs(this);
+                   prefs.edit()
+                        .putInt(Preferences.PREF_OWNCLOUD_SURVEY, 100).apply();
+                   startActivity(mailIntent);
+               }
+           })
+           .setNegativeButton(R.string.cancel,
+                              (dialog, which) -> dialog.cancel())
+           .show();
+    }
+
+
     /** Handler to choose a Google Drive account */
     private void onGdriveChoose(Uri currProviderUri)
     {
@@ -442,6 +484,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 case BOX: {
                     itsMenuOptions.set(MENU_BIT_HAS_BOX);
+                    View owncloudSurveyBtn = findViewById(R.id.owncloud_survey);
+                    GuiUtils.setVisible(owncloudSurveyBtn, true);
                     break;
                 }
                 case ONEDRIVE: {

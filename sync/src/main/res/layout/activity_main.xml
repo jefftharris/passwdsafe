@@ -46,6 +46,15 @@
             tools:ignore="HardcodedText"
             />
 
+        <Button
+            android:id="@+id/owncloud_survey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onOwncloudSurveyClick"
+            android:text="ownCloud Survey"
+            android:visibility="gone"
+            />
+
         <TextView
             android:id="@+id/no_accounts_msg"
             android:layout_width="match_parent"

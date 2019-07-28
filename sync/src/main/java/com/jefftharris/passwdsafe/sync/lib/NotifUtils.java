@@ -33,7 +33,8 @@ public final class NotifUtils
         SYNC_CONFLICT(5),
         SYNC_REPEAT_FAILURES(6),
         DRIVE_REAUTH_REQUIRED(7),
-        ONEDRIVE_MIGRATED(8);
+        ONEDRIVE_MIGRATED(8),
+        OWNCLOUD_USAGE(9);
 
         protected final int itsNotifId;
 
@@ -42,6 +43,9 @@ public final class NotifUtils
             itsNotifId = id;
         }
     }
+
+    public static final String OWNCLOUD_SURVEY_EXTRA =
+            "com.jefftharris.passwdsafe.sync.__owncloud_survey";
 
     /** Show a notification */
     public static void showNotif(Type type, Context ctx)
@@ -52,7 +56,8 @@ public final class NotifUtils
         case SYNC_PROGRESS:
         case SYNC_RESULTS:
         case SYNC_CONFLICT:
-        case SYNC_REPEAT_FAILURES: {
+        case SYNC_REPEAT_FAILURES:
+        case OWNCLOUD_USAGE: {
             break;
         }
         case DROPBOX_MIGRATED:
@@ -95,7 +100,8 @@ public final class NotifUtils
         case BOX_MIGRATGED:
         case SYNC_PROGRESS:
         case DRIVE_REAUTH_REQUIRED:
-        case ONEDRIVE_MIGRATED: {
+        case ONEDRIVE_MIGRATED:
+        case OWNCLOUD_USAGE: {
             activityClass = MainActivity.class;
             break;
         }
@@ -105,8 +111,14 @@ public final class NotifUtils
             activityClass = SyncLogsActivity.class;
         }
         }
+
+        Intent launchIntent = new Intent(ctx, activityClass);
+        if (type == Type.OWNCLOUD_USAGE) {
+            launchIntent.putExtra(OWNCLOUD_SURVEY_EXTRA, true);
+        }
+
         PendingIntent intent = PendingIntent.getActivity(
-                ctx, type.itsNotifId, new Intent(ctx, activityClass),
+                ctx, type.itsNotifId, launchIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(intent);
 
@@ -163,7 +175,10 @@ public final class NotifUtils
             return ctx.getString(R.string.gdrive_reauth_required);
         }
         case ONEDRIVE_MIGRATED: {
-             return ctx.getString(R.string.onedrive_service_updated);
+            return ctx.getString(R.string.onedrive_service_updated);
+        }
+        case OWNCLOUD_USAGE: {
+            return "ownCloud users survey";
         }
         }
         return null;

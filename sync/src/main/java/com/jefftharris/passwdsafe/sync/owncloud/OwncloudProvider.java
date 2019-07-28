@@ -34,6 +34,8 @@ import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.AccountChooserDlg;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
+import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
+import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncIOException;
@@ -76,6 +78,17 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     {
         super.init(dbProvider);
         updateOwncloudAcct();
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+        int numNotify = prefs.getInt(Preferences.PREF_OWNCLOUD_SURVEY, 0);
+        if (numNotify < 3) {
+            NotifUtils.showNotif(NotifUtils.Type.OWNCLOUD_USAGE,
+                                 "Select for a survey of users of ownCloud",
+                                 getContext());
+            prefs.edit()
+                 .putInt(Preferences.PREF_OWNCLOUD_SURVEY, numNotify + 1)
+                 .apply();
+        }
     }
 
 

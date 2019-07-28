@@ -19,6 +19,8 @@ public class Preferences
     private static final String PREF_NOTIF_SHOW_SYNC = "notifShowSyncPref";
     private static final boolean PREF_NOTIF_SHOW_SYNC_DEF = true;
 
+    public static final String PREF_OWNCLOUD_SURVEY = "owncloudSurvey";
+
     /**
      * Get the default shared preferences
      */
