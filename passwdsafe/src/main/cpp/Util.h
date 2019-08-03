@@ -12,14 +12,7 @@
 // Util.h
 //-----------------------------------------------------------------------------
 
-#include "PwsPlatform.h"
-
-#include "typedefs.h"
-
 extern void trashMemory(void *buffer, size_t length);
 extern void burnStack(unsigned long len); // borrowed from libtomcrypt
 #endif /* __UTIL_H */
 //-----------------------------------------------------------------------------
-// Local variables:
-// mode: c++
-// End:
