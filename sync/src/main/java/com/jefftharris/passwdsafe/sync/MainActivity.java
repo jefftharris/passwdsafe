@@ -334,6 +334,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Button handler for an ownCloud survey
      */
+    @SuppressWarnings("unused")
     public void onOwncloudSurveyClick(View view)
     {
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);
@@ -817,7 +818,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Dialog to prompt when an account is cleared */
-    protected static class ClearPromptDlg extends DialogFragment
+    @SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
+    public static class ClearPromptDlg extends DialogFragment
     {
         /** Create an instance of the dialog */
         protected static ClearPromptDlg newInstance(Uri currAcct)
