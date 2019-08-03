@@ -20,7 +20,8 @@ public class PreferencesActivity extends AppCompatActivity
     /**
      * Fragment for the preferences
      */
-    protected static final class PreferencesFragment
+    @SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
+    public static final class PreferencesFragment
             extends PreferenceFragmentCompat
     {
         @Override
