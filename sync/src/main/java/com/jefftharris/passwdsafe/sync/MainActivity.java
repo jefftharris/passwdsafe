@@ -483,8 +483,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 case BOX: {
                     itsMenuOptions.set(MENU_BIT_HAS_BOX);
-                    View owncloudSurveyBtn = findViewById(R.id.owncloud_survey);
-                    GuiUtils.setVisible(owncloudSurveyBtn, true);
                     break;
                 }
                 case ONEDRIVE: {
@@ -493,6 +491,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 case OWNCLOUD: {
                     itsMenuOptions.set(MENU_BIT_HAS_OWNCLOUD);
+                    View owncloudSurveyBtn = findViewById(R.id.owncloud_survey);
+                    GuiUtils.setVisible(owncloudSurveyBtn, true);
                     break;
                 }
                 }
