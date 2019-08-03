@@ -51,6 +51,12 @@
         </value>
       </option>
     </JavaCodeStyleSettings>
+    <Objective-C>
+      <option name="FUNCTION_BRACE_PLACEMENT" value="2" />
+    </Objective-C>
+    <Objective-C-extensions>
+      <file />
+    </Objective-C-extensions>
     <XML>
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
@@ -78,6 +84,23 @@
       <option name="TERNARY_OPERATION_WRAP" value="1" />
       <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
       <option name="ARRAY_INITIALIZER_WRAP" value="1" />
+      <option name="ENUM_CONSTANTS_WRAP" value="2" />
+      <indentOptions>
+        <option name="TAB_SIZE" value="8" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="ObjectiveC">
+      <option name="CLASS_BRACE_STYLE" value="2" />
+      <option name="INDENT_CASE_FROM_SWITCH" value="false" />
+      <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
+      <option name="ALIGN_MULTILINE_ASSIGNMENT" value="false" />
+      <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="false" />
+      <option name="SPACE_WITHIN_BRACES" value="false" />
+      <option name="SPACE_AFTER_TYPE_CAST" value="false" />
+      <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
+      <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="false" />
+      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="false" />
+      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="false" />
       <option name="ENUM_CONSTANTS_WRAP" value="2" />
       <indentOptions>
         <option name="TAB_SIZE" value="8" />
