@@ -39,13 +39,22 @@
     <string name="open_app_reauthorize">Åpne appen for å autorisere på nytt</string>
     <string name="owncloud_auth_required">Autorisering kreves for tilgang til ownCloud-kontoen. Velg den kommende varslingen for å aktivere tilgang og deretter synkroniser kontoen.</string>
     <string name="owncloud_cert_trusted">Tiltrodd sertifikat for ownCloud-konto</string>
+    <string name="owncloud_select_for_survey">Select for a survey of users of ownCloud</string>
+    <string name="owncloud_survey">ownCloud Survey</string>
+    <string name="owncloud_survey_email_txt">I am a user of ownCloud with PasswdSafe Sync</string>
+    <string name="owncloud_survey_msg">
+        Click to email the app developer if you use ownCloud.
+        Support may be removed in a future release in favor of NextCloud.
+    </string>
     <string name="owncloud_synced_files">ownCloud-synkroniserte filer</string>
+    <string name="owncloud_users_survey">ownCloud users survey</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="passwdsafe_synced_file">PasswdSafe-synkroniserte filer</string>
     <string name="recreated_local_copy">Gjenopprettet lokal kopi</string>
     <string name="remove_account">Fjern konto?</string>
     <string name="removing_account">Fjerner konto …</string>
     <string name="repeated_sync_failures">Gjentatte synkroniseringsfeil</string>
+    <string name="send">Sende</string>
     <string name="show_all">Vis alle</string>
     <string name="show_sync_notifications">Vis synkroniseringsvarslinger</string>
     <string name="sync">Synkronisering</string>

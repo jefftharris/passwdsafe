@@ -58,13 +58,23 @@
         Sie das Konto.
     </string>
     <string name="owncloud_cert_trusted">Zertifikat vertrauenswürdige für ownCloud Konto</string>
+    <string name="owncloud_select_for_survey">Für eine Umfrage von Nutzern von ownCloud ausgewählt</string>
+    <string name="owncloud_survey">ownCloud-Umfrage</string>
+    <string name="owncloud_survey_email_txt">Ich benutze PasswdSafe Sync mit ownCloud</string>
+    <string name="owncloud_survey_msg">
+        Hier klicken um eine E-Mail an den Entwickler zu schicken wenn Sie
+        ownCloud benutzen. Unterstützung für ownCloud könnte in späteren
+        Versionen durch Nextcloud ersetzt werden.
+    </string>
     <string name="owncloud_synced_files">ownCloud Synchronisiert Dateien</string>
+    <string name="owncloud_users_survey">ownCloud-Nutzer-Umfrage</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="passwdsafe_synced_file">PasswdSafe Synced Datei</string>
     <string name="recreated_local_copy">Erstellt lokale Kopie</string>
     <string name="remove_account">Konto löschen?</string>
     <string name="removing_account">Lösche Konto &#8230;</string>
     <string name="repeated_sync_failures">Wiederholte Fehlschläge bei Synchronisierung</string>
+    <string name="send">Senden</string>
     <string name="show_all">Alles anzeigen</string>
     <string name="show_sync_notifications">Synchronisierungsmitteilung anzeigen</string>
     <string name="sync">Synchronisierung</string>
@@ -82,6 +92,10 @@
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.6.3&lt;/b&gt; - ownCloud-Umfrage hinzugefügt um die Nutzung
+        der Funktion zu ermitteln. Unterstützung für ownCloud könnte in Zukunft
+        durch Nextcloud ersetzt werden.
+        \n\n
         &lt;b&gt;3.6.2&lt;/b&gt; - Crash mit OneDrive-Konten behoben
         \n\n
         &lt;b&gt;3.6.1&lt;/b&gt; - Fehlerbehebungen

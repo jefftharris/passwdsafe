@@ -56,8 +56,11 @@ public final class NotifUtils
         case SYNC_PROGRESS:
         case SYNC_RESULTS:
         case SYNC_CONFLICT:
-        case SYNC_REPEAT_FAILURES:
+        case SYNC_REPEAT_FAILURES: {
+            break;
+        }
         case OWNCLOUD_USAGE: {
+            content = ctx.getString(R.string.owncloud_select_for_survey);
             break;
         }
         case DROPBOX_MIGRATED:
@@ -178,7 +181,7 @@ public final class NotifUtils
             return ctx.getString(R.string.onedrive_service_updated);
         }
         case OWNCLOUD_USAGE: {
-            return "ownCloud users survey";
+            return ctx.getString(R.string.owncloud_users_survey);
         }
         }
         return null;

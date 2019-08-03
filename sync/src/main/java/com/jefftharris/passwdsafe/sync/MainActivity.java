@@ -337,21 +337,20 @@ public class MainActivity extends AppCompatActivity
     public void onOwncloudSurveyClick(View view)
     {
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-        dlg.setTitle("ownCloud Survey")
-           .setMessage("Click to email the app developer if you use " +
-                       "ownCloud.  Support may be removed in a future " +
-                       "release in favor of NextCloud.")
+        dlg.setTitle(R.string.owncloud_survey)
+           .setMessage(R.string.owncloud_survey_msg)
            .setCancelable(false)
-           .setPositiveButton("Send", (dialog, which) -> {
+           .setPositiveButton(R.string.send, (dialog, which) -> {
                Intent mailIntent = new Intent(Intent.ACTION_SENDTO);
                mailIntent.setData(Uri.parse("mailto:"));
                mailIntent.putExtra(
                        Intent.EXTRA_EMAIL,
                        new String[] {"jeffharris@users.sourceforge.net"});
-               mailIntent.putExtra(Intent.EXTRA_SUBJECT, "ownCloud survey");
+               mailIntent.putExtra(Intent.EXTRA_SUBJECT,
+                                   getString(R.string.owncloud_survey));
                mailIntent.putExtra(
                        Intent.EXTRA_TEXT,
-                       "I am a user of ownCloud with PasswdSafe Sync");
+                       getString(R.string.owncloud_survey_email_txt));
                if (mailIntent.resolveActivity(getPackageManager()) != null) {
                    SharedPreferences prefs = Preferences.getSharedPrefs(this);
                    prefs.edit()
