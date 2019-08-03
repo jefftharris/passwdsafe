@@ -79,13 +79,16 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         super.init(dbProvider);
         updateOwncloudAcct();
 
-        SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
-        int numNotify = prefs.getInt(Preferences.PREF_OWNCLOUD_SURVEY, 0);
-        if (numNotify < 3) {
-            NotifUtils.showNotif(NotifUtils.Type.OWNCLOUD_USAGE, getContext());
-            prefs.edit()
-                 .putInt(Preferences.PREF_OWNCLOUD_SURVEY, numNotify + 1)
-                 .apply();
+        if (dbProvider != null) {
+            SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+            int numNotify = prefs.getInt(Preferences.PREF_OWNCLOUD_SURVEY, 0);
+            if (numNotify < 3) {
+                NotifUtils.showNotif(NotifUtils.Type.OWNCLOUD_USAGE,
+                                     getContext());
+                prefs.edit()
+                     .putInt(Preferences.PREF_OWNCLOUD_SURVEY, numNotify + 1)
+                     .apply();
+            }
         }
     }
 
