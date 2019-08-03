@@ -12,7 +12,7 @@
 // Util.h
 //-----------------------------------------------------------------------------
 
-extern void trashMemory(void *buffer, size_t length);
-extern void burnStack(unsigned long len); // borrowed from libtomcrypt
+[[gnu::noinline]] extern void trashMemory(void *buffer, size_t length);
+[[gnu::noinline]] extern void burnStack(size_t len); // borrowed from libtomcrypt
 #endif /* __UTIL_H */
 //-----------------------------------------------------------------------------
