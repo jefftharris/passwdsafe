@@ -72,6 +72,8 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.6.4&lt;/b&gt; - Feilrettinger
+        \n\n
         &lt;b&gt;3.6.2&lt;/b&gt; - Fikset krasj med OneDrive-kontoer
         \n\n
         &lt;b&gt;3.6.1&lt;/b&gt; - Feilrettinger
