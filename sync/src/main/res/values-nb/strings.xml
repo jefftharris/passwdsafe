@@ -39,15 +39,16 @@
     <string name="open_app_reauthorize">Åpne appen for å autorisere på nytt</string>
     <string name="owncloud_auth_required">Autorisering kreves for tilgang til ownCloud-kontoen. Velg den kommende varslingen for å aktivere tilgang og deretter synkroniser kontoen.</string>
     <string name="owncloud_cert_trusted">Tiltrodd sertifikat for ownCloud-konto</string>
-    <string name="owncloud_select_for_survey">Select for a survey of users of ownCloud</string>
-    <string name="owncloud_survey">ownCloud Survey</string>
-    <string name="owncloud_survey_email_txt">I am a user of ownCloud with PasswdSafe Sync</string>
+    <string name="owncloud_select_for_survey">Velg for en undersøkelse av brukere av ownCloud</string>
+    <string name="owncloud_survey">ownCloud-undersøkelse</string>
+    <string name="owncloud_survey_email_txt">Jeg er en bruker av ownCloud med PasswdSafe Sync</string>
     <string name="owncloud_survey_msg">
-        Click to email the app developer if you use ownCloud.
-        Support may be removed in a future release in favor of NextCloud.
+        Klikk for å sende en epost til app-utvikleren hvis du bruker
+        ownCloud. Støtte for ownCloud kan bli fjernet i kommende utgaver til
+        fordel for NextCloud.
     </string>
     <string name="owncloud_synced_files">ownCloud-synkroniserte filer</string>
-    <string name="owncloud_users_survey">ownCloud users survey</string>
+    <string name="owncloud_users_survey">ownCloud-brukerundersøkelse</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="passwdsafe_synced_file">PasswdSafe-synkroniserte filer</string>
     <string name="recreated_local_copy">Gjenopprettet lokal kopi</string>
@@ -73,6 +74,10 @@
 
     <string name="release_notes">
         &lt;b&gt;3.6.4&lt;/b&gt; - Feilrettinger
+        \n\n
+        &lt;b&gt;3.6.3&lt;/b&gt; - La til ownCloud-undersøkelse for å avdekke
+        bruken. Støtte for ownCloud kan bli erstattet med NextCloud i en
+        fremtidig utgave.
         \n\n
         &lt;b&gt;3.6.2&lt;/b&gt; - Fikset krasj med OneDrive-kontoer
         \n\n
