@@ -82,8 +82,8 @@ public class PasswdSafeNewFileFragmentTest
     {
         Assert.assertTrue(
                 new File(FileListActivityTest.DIR, "test.psafe3").exists());
-        Assert.assertTrue(
-                !new File(FileListActivityTest.DIR, "ZZZtest.psafe3").exists());
+        Assert.assertFalse(
+                new File(FileListActivityTest.DIR, "ZZZtest.psafe3").exists());
 
         onFileNameView()
                 .perform(replaceText("ZZZtest.psafe3"));
@@ -147,8 +147,8 @@ public class PasswdSafeNewFileFragmentTest
     public void testPassword()
     {
         // Check initial with valid file name
-        Assert.assertTrue(
-                !new File(FileListActivityTest.DIR, "ZZZtest.psafe3").exists());
+        Assert.assertFalse(
+                new File(FileListActivityTest.DIR, "ZZZtest.psafe3").exists());
         onFileNameView()
                 .perform(replaceText("ZZZtest.psafe3"));
         onView(withId(R.id.file_name_input))
