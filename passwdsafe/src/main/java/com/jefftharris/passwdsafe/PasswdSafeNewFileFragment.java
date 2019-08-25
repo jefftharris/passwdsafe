@@ -430,10 +430,7 @@ public class PasswdSafeNewFileFragment
         if (!itsUseStorage) {
             PasswdFileUri uri = getPasswdFileUri();
             if (uri != null) {
-                String error = uri.validateNewChild(fileNameBase, getContext());
-                if (error != null) {
-                    return error;
-                }
+                return uri.validateNewChild(fileNameBase, getContext());
             }
         }
 
