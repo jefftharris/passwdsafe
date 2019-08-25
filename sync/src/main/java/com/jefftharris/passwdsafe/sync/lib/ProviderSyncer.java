@@ -343,26 +343,7 @@ public abstract class ProviderSyncer<ProviderClientT>
         }
 
         switch (dbfile.itsLocalChange) {
-        case ADDED: {
-            switch (dbfile.itsRemoteChange) {
-            case ADDED:
-            case MODIFIED: {
-                logConflictFile(dbfile, true);
-                splitConflictedFile(dbfile, opers, db);
-                break;
-            }
-            case NO_CHANGE: {
-                opers.add(createLocalToRemoteOper(dbfile));
-                break;
-            }
-            case REMOVED: {
-                logConflictFile(dbfile, true);
-                recreateRemoteRemovedFile(dbfile, opers, db);
-                break;
-            }
-            }
-            break;
-        }
+        case ADDED:
         case MODIFIED: {
             switch (dbfile.itsRemoteChange) {
             case ADDED:

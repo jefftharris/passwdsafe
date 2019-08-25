@@ -552,10 +552,6 @@ public class PwsRecordV3 extends PwsRecord
                 case PASSWORD_MOD_TIME:
                 case LAST_ACCESS_TIME:
                 case LAST_MOD_TIME:
-                    itemVal = new PwsTimeField(item.getType(),
-                                               item.getByteData());
-                    break;
-
                 case PASSWORD_LIFETIME:
                     itemVal = new PwsTimeField(item.getType(),
                                                item.getByteData());
