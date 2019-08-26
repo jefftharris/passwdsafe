@@ -166,7 +166,7 @@ public class SyncProviderFragment extends ListFragment
     {
         switch (item.getItemId()) {
         case R.id.menu_sync: {
-            itsSyncTask.start(null, getContext());
+            itsSyncTask.start(null, requireContext());
             return true;
         }
         default: {

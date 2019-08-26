@@ -37,6 +37,7 @@ import com.jefftharris.passwdsafe.view.PasswdRecordListData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *  Fragment showing lists of items from a PasswdSafe file
@@ -518,12 +519,12 @@ public class PasswdSafeListFragment extends ListFragment
             }
 
             if (position < getCount()) {
-                PasswdRecordListData item = getItem(position);
+                PasswdRecordListData item =
+                        Objects.requireNonNull(getItem(position));
                 ListView list = (ListView)parent;
                 boolean isSelected = list.isItemChecked(position);
                 itemViews.update(item, isSelected,
-                                 !itsIsContents &&
-                                 (item != null) && item.itsIsRecord);
+                                 !itsIsContents && item.itsIsRecord);
             } else {
                 itemViews.reset();
             }

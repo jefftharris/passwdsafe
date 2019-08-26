@@ -265,7 +265,9 @@ public class PwsRecordV2 extends PwsRecord
             default:
                 throw new UnimplementedConversionException();
             }
-            setField(itemVal);
+            if (itemVal != null) {
+                setField(itemVal);
+            }
         }
     }
 

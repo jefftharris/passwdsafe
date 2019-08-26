@@ -33,6 +33,8 @@ import com.jefftharris.passwdsafe.lib.DynamicPermissionMgr;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
+import java.util.Objects;
+
 
 /**
  * The FileListActivity is the main PasswdSafe activity for file choosing and
@@ -106,7 +108,8 @@ public class FileListActivity extends AppCompatActivity
         itsNavDrawerFrag = (FileListNavDrawerFragment)
                 getSupportFragmentManager().findFragmentById(
                         R.id.navigation_drawer);
-        itsNavDrawerFrag.setUp(findViewById(R.id.drawer_layout));
+        Objects.requireNonNull(itsNavDrawerFrag)
+               .setUp(findViewById(R.id.drawer_layout));
         itsFiles = findViewById(R.id.files);
         itsNoPermGroup = findViewById(R.id.no_permission_group);
 

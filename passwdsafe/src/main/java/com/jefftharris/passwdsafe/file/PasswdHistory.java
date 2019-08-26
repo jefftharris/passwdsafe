@@ -299,7 +299,9 @@ public class PasswdHistory
             }
 
             Entry entry = getItem(position);
-            itemViews.update(entry, ctx);
+            if (entry != null) {
+                itemViews.update(entry, ctx);
+            }
             return convertView;
         }
 

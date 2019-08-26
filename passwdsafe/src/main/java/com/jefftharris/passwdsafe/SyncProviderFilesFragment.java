@@ -269,7 +269,7 @@ public class SyncProviderFilesFragment extends ListFragment
     {
         switch (item.getItemId()) {
         case R.id.menu_sync_files: {
-            itsSyncTask.start(itsProviderUri, getContext());
+            itsSyncTask.start(itsProviderUri, requireContext());
             return true;
         }
         case R.id.menu_file_new: {

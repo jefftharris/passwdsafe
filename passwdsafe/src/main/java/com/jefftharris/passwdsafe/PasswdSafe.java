@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The main PasswdSafe activity for showing a password file
@@ -267,7 +268,8 @@ public class PasswdSafe extends AppCompatActivity
         itsNavDrawerFrag = (PasswdSafeNavDrawerFragment)
                 getSupportFragmentManager().findFragmentById(
                         R.id.navigation_drawer);
-        itsNavDrawerFrag.setUp(findViewById(R.id.drawer_layout));
+        Objects.requireNonNull(itsNavDrawerFrag).
+                setUp(findViewById(R.id.drawer_layout));
 
         itsQueryPanel = findViewById(R.id.query_panel);
         View queryClearBtn = findViewById(R.id.query_clear_btn);
