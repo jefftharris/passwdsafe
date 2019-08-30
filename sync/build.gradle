@@ -69,7 +69,7 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     // Dropbox
-    implementation 'com.dropbox.core:dropbox-core-sdk:3.0.11'
+    implementation 'com.dropbox.core:dropbox-core-sdk:3.1.1'
     // Box
     implementation 'com.box:box-android-sdk:4.2.0'
     // OneDrive
