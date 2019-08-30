@@ -72,11 +72,15 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     public OnedriveProvider(Context ctx)
     {
         super(ProviderType.ONEDRIVE, ctx, TAG);
-        itsClientApp = new PublicClientApplication(
-                getContext().getApplicationContext(), Constants.CLIENT_ID);
-
         Logger.getInstance().setLogLevel(
                 VERBOSE_LOGS ? Logger.LogLevel.VERBOSE : Logger.LogLevel.INFO);
+        if (VERBOSE_LOGS) {
+            Logger.getInstance().setEnableLogcatLog(true);
+            Logger.getInstance().setEnablePII(true);
+        }
+
+        itsClientApp = new PublicClientApplication(
+                getContext().getApplicationContext(), Constants.CLIENT_ID);
     }
 
     @Override
