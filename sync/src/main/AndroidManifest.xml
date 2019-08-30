@@ -164,14 +164,6 @@
         </provider>
 
         <receiver
-            android:name=".SyncExpirationReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.jefftharris.passwdsafe.action.SYNC_EXPIRATION_TIMEOUT"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver
             android:name="com.jefftharris.passwdsafe.lib.StartupReceiver"
             android:exported="true">
             <intent-filter>

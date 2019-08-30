@@ -24,11 +24,6 @@ import java.io.File;
  */
 public interface Provider
 {
-    String ACTION_SYNC_EXPIRATION_TIMEOUT =
-            "com.jefftharris.passwdsafe.action.SYNC_EXPIRATION_TIMEOUT";
-    String SYNC_EXPIRATION_TIMEOUT_EXTRA_TYPE =
-            "com.jefftharris.passwdsafe.extra.providerType";
-
     /** Initialize the provider */
     void init(@Nullable DbProvider dbProvider);
 
@@ -67,6 +62,9 @@ public interface Provider
 
     /** Request a sync */
     void requestSync(boolean manual);
+
+    /** Create a background sync task */
+    ProviderSync createBackgroundSync(boolean manual);
 
     /** Check connectivity for a sync */
     SyncConnectivityResult checkSyncConnectivity(Account acct) throws Exception;

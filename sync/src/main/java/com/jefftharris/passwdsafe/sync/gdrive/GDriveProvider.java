@@ -319,9 +319,10 @@ public class GDriveProvider extends AbstractSyncTimerProvider
             } catch (Exception e) {
                 Log.e(TAG, "updateAcct failure", e);
             }
-            requestSync(false);
         } else if (!checkReauthRequired()) {
             updateSyncFreq(null, 0);
+        } else {
+            requestSync(false);
         }
     }
 

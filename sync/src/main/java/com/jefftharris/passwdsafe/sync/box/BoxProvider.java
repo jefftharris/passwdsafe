@@ -306,8 +306,9 @@ public class BoxProvider extends AbstractSyncTimerProvider
                 } catch (Exception e) {
                     Log.e(TAG, "updateBoxAcct failure", e);
                 }
+            } else {
+                requestSync(false);
             }
-            requestSync(false);
         } else {
             updateSyncFreq(null, 0);
         }

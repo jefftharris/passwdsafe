@@ -16,8 +16,8 @@ android {
         resConfigs "de", "fr", "nb"
         targetSdkVersion 28
         // <major><minor><bugfix><beta/extra>
-        versionCode 3060401
-        versionName "3.6.4"
+        versionCode 3060403
+        versionName "3.6.5 rc2"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -55,6 +55,10 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
     implementation project(':lib-owncloud')
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.0.0'
+    implementation("androidx.work:work-runtime:2.1.0") {
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
 
     implementation 'com.google.android.gms:play-services-auth:11.6.2'
     // Google Drive

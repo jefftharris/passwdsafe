@@ -364,7 +364,6 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         if (itsUrl != null) {
             try {
                 updateProviderSyncFreq(itsAccountName);
-                requestSync(false);
             } catch (Exception e) {
                 Log.e(TAG, "updateOwncloudAcct failure", e);
             }

@@ -40,7 +40,6 @@ public class ProviderSync
 {
     private static final HashSet<String> itsLastProviderFailures =
             new HashSet<>();
-    private static final Object itsLock = new Object();
     private static final int SYNC_TIMEOUT_MINS = 1;
 
     private static final String TAG = "ProviderSync";
@@ -51,7 +50,9 @@ public class ProviderSync
     private final Context itsContext;
     private final String itsNotifTag;
     private final boolean itsIsShowNotifs;
-    private PowerManager.WakeLock itsWakeLock;
+    private final PowerManager.WakeLock itsWakeLock;
+    private final BackgroundSync itsSync;
+    private final FutureTask<Void> itsTask;
 
     /**
      * Constructor
@@ -59,6 +60,7 @@ public class ProviderSync
     public ProviderSync(Account acct,
                         DbProvider provider,
                         Provider providerImpl,
+                        boolean manual,
                         Context ctx)
     {
         itsAccount = acct;
@@ -69,40 +71,45 @@ public class ProviderSync
 
         SharedPreferences prefs = Preferences.getSharedPrefs(itsContext);
         itsIsShowNotifs = Preferences.getNotifShowSyncPref(prefs);
+
+        PowerManager powerMgr = (PowerManager)
+                itsContext.getSystemService(Context.POWER_SERVICE);
+        if (powerMgr == null) {
+            Log.e(TAG, "Null power manager");
+            itsWakeLock = null;
+        } else {
+            itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                                               "passwdsafe:sync");
+        }
+
+        itsSync = new BackgroundSync(manual);
+        itsTask = new FutureTask<>(itsSync, null);
     }
 
     /**
      * Perform a sync
      */
-    public void sync(boolean manual)
+    public void sync()
     {
-        synchronized (itsLock) {
-            BackgroundSync sync = new BackgroundSync(manual);
-
-            PowerManager powerMgr = (PowerManager)
-                    itsContext.getSystemService(Context.POWER_SERVICE);
-            if (powerMgr == null) {
-                Log.e(TAG, "Null power manager");
-                return;
-            }
-
-            itsWakeLock = powerMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                                               "passwdsafe:sync");
-            itsWakeLock.acquire(TimeUnit.MINUTES.toMillis(SYNC_TIMEOUT_MINS));
-            try {
-                FutureTask<Void> task = new FutureTask<>(sync, null);
-                try {
-                    Thread t = new Thread(task);
-                    t.start();
-                    task.get(SYNC_TIMEOUT_MINS, TimeUnit.MINUTES);
-                } catch (Exception e) {
-                    sync.setTaskException(e);
-                    task.cancel(true);
-                }
-            } finally {
-                releaseWakelock();
-            }
+        acquireWakeLock();
+        try {
+            Thread t = new Thread(itsTask);
+            t.start();
+            itsTask.get(SYNC_TIMEOUT_MINS, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            itsSync.setTaskException(e);
+            itsTask.cancel(true);
+        } finally {
+            releaseWakelock();
         }
+    }
+
+    /**
+     * Cancel a sync
+     */
+    public void cancel()
+    {
+        itsTask.cancel(true);
     }
 
     /**
@@ -217,11 +224,21 @@ public class ProviderSync
     }
 
     /**
+     * Acquire the wake lock
+     */
+    private void acquireWakeLock()
+    {
+        if (itsWakeLock != null) {
+            itsWakeLock.acquire(TimeUnit.MINUTES.toMillis(SYNC_TIMEOUT_MINS));
+        }
+    }
+
+    /**
      * Release the wake lock
      */
     private void releaseWakelock()
     {
-        if (itsWakeLock.isHeld()) {
+        if ((itsWakeLock != null) && itsWakeLock.isHeld()) {
             try {
                 itsWakeLock.release();
             } catch (Exception e) {
@@ -262,14 +279,12 @@ public class ProviderSync
                     ((itsProvider.itsType != null) ?
                      itsProvider.itsType.getName(itsContext) : null),
                     manual);
-
-            updateUIBegin();
         }
 
         @Override
         public void run()
         {
-            itsWakeLock.acquire(TimeUnit.MINUTES.toMillis(SYNC_TIMEOUT_MINS));
+            acquireWakeLock();
             try {
                 sync();
             } finally {
@@ -294,8 +309,8 @@ public class ProviderSync
          */
         private void sync()
         {
-            addTrace("sync");
             try {
+                start();
                 SyncConnectivityResult connResult = checkConnectivity();
                 performSync(connResult);
             } finally {
@@ -360,6 +375,15 @@ public class ProviderSync
                 itsLogrec.addFailure(e);
             }
             addTrace("performSync finished");
+        }
+
+        /**
+         * Start the sync of a provider
+         */
+        private void start()
+        {
+            addTrace("start");
+            updateUIBegin();
         }
 
         /**

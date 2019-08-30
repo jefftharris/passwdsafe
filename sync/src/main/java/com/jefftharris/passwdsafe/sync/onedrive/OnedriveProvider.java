@@ -382,7 +382,6 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         if (isAccountAuthorized()) {
             try {
                 updateProviderSyncFreq(itsHomeAccountId);
-                requestSync(false);
             } catch (Exception e) {
                 Log.e(TAG, "updateOnedriveAcct failure", e);
             }

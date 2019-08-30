@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.WorkerThread;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -28,6 +30,8 @@ import java.util.Objects;
  */
 public class SyncApp extends Application
 {
+    public static final String WORK_TAG = "PasswdSafe Sync";
+
     private static final String TAG = "SyncApp";
 
     private SyncUpdateHandler itsSyncUpdateHandler;
@@ -37,16 +41,29 @@ public class SyncApp extends Application
     private static final Handler itsUIHandler =
             new Handler(Looper.getMainLooper());
 
-    /* (non-Javadoc)
-     * @see android.app.Application#onCreate()
-     */
     @Override
     public void onCreate()
     {
         PasswdSafeUtil.dbginfo(TAG, "onCreate");
         super.onCreate();
 
-        SyncDb.initializeDb(getApplicationContext());
+        Context appCtx = getApplicationContext();
+        SyncDb.initializeDb(appCtx);
+
+        WorkManager workMgr = WorkManager.getInstance(appCtx);
+        workMgr.getWorkInfosByTagLiveData(WORK_TAG)
+               .observeForever(workInfos -> {
+                   PasswdSafeUtil.dbginfo(TAG, "Work changed, have %b",
+                                          workInfos != null);
+                   if (workInfos == null) {
+                       return;
+                   }
+                   for (WorkInfo work : workInfos) {
+                       PasswdSafeUtil.dbginfo(TAG, "Work %s %s",
+                                              work.getState(), work.getTags());
+                   }
+               });
+        workMgr.pruneWork();
 
         Map<ProviderType, DbProvider> providerMap = new HashMap<>();
         try {
@@ -64,9 +81,6 @@ public class SyncApp extends Application
     }
 
 
-    /* (non-Javadoc)
-     * @see android.app.Application#onTerminate()
-     */
     @Override
     public void onTerminate()
     {

@@ -298,8 +298,9 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
                 } catch (Exception e) {
                     Log.e(TAG, "updateDropboxAcct failure", e);
                 }
+            } else {
+                requestSync(false);
             }
-            requestSync(false);
         } else {
             itsUserId = null;
             updateSyncFreq(null, 0);
