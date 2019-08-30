@@ -71,7 +71,7 @@ dependencies {
     // Dropbox
     implementation 'com.dropbox.core:dropbox-core-sdk:3.1.1'
     // Box
-    implementation 'com.box:box-android-sdk:4.2.0'
+    implementation 'com.box:box-android-sdk:5.0.0'
     // OneDrive
     implementation 'com.microsoft.graph:msgraph-sdk-android:1.7.0'
     implementation('com.microsoft.identity.client:msal:0.2.2') {
