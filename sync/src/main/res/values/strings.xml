@@ -90,6 +90,9 @@
     <string name="updating_account">Updating account&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.7.0&lt;/b&gt; - Improve background sync scheduling.  Update
+        Box and Dropbox libraries.
+        \n\n
         &lt;b&gt;3.6.4&lt;/b&gt; - Bug fixes
         \n\n
         &lt;b&gt;3.6.3&lt;/b&gt; - Add ownCloud survey to determine feature usage.

@@ -73,6 +73,9 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.7.0&lt;/b&gt; - Forbedret planlegging av
+        bakgrunnssynkronisering.  Oppdaterte Box- og Dropbox-bibliotekene.
+        \n\n
         &lt;b&gt;3.6.4&lt;/b&gt; - Feilrettinger
         \n\n
         &lt;b&gt;3.6.3&lt;/b&gt; - La til ownCloud-undersøkelse for å avdekke
