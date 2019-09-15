@@ -476,20 +476,18 @@ public class PasswdSafeIME extends InputMethodService
                     String fileLabel = fileData.getUri().getIdentifier(
                             PasswdSafeIME.this, true);
 
-                    PwsRecord rec = null;
-                    boolean hasPrevious = false;
                     String uuid =
                             PasswdSafeFileDataFragment.getLastViewedRecord();
-                    if (uuid != null) {
-                        rec = fileData.getRecord(uuid);
-                        PasswdHistory history = fileData.getPasswdHistory(rec);
-                        hasPrevious =
-                                (history != null) && (history.getMaxSize() > 0);
-                    }
+                    PwsRecord rec =
+                            (uuid != null) ? fileData.getRecord(uuid) : null;
 
                     String recLabel;
+                    boolean hasPrevious = false;
                     if (rec != null) {
                         recLabel = fileData.getId(rec);
+                        PasswdHistory history = fileData.getPasswdHistory(rec);
+                        hasPrevious = (history != null) &&
+                                      (history.getMaxSize() > 0);
                     } else {
                         recLabel = getString(R.string.none_selected_open);
                     }
