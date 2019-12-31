@@ -88,17 +88,18 @@ public final class RecordSimilarFields implements Closeable
      */
     public boolean matchPassword(String recPassword, PasswdHistory history)
     {
-        if ((recPassword == null) || (history == null) ||
-            (itsPasswords == null)) {
+        if (itsPasswords == null) {
             return false;
         }
 
-        if (matchPassword(recPassword)) {
+        if ((recPassword != null) && matchPassword(recPassword)) {
             return true;
         }
-        for (PasswdHistory.Entry entry: history.getPasswds()) {
-            if (matchPassword(entry.getPasswd())) {
-                return true;
+        if (history != null) {
+            for (PasswdHistory.Entry entry: history.getPasswds()) {
+                if (matchPassword(entry.getPasswd())) {
+                    return true;
+                }
             }
         }
 
