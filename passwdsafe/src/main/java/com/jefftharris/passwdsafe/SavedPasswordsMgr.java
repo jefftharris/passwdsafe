@@ -235,15 +235,18 @@ public final class SavedPasswordsMgr
                 KeyStoreException | UnrecoverableKeyException |
                 NoSuchPaddingException | InvalidKeyException |
                 InvalidAlgorithmParameterException | IOException e) {
-            String msg = itsContext.getString(R.string.key_error, fileUri,
-                                              e.getLocalizedMessage());
+            if (e.getClass().getName().equals(
+                    "android.security.keystore." +
+                    "KeyPermanentlyInvalidatedException")) {
+                removeSavedPassword(fileUri);
+            }
+
+            String msg = itsContext.getString(
+                    R.string.key_error, fileUri.getIdentifier(itsContext, true),
+                    e.getLocalizedMessage());
             Log.e(TAG, msg, e);
             user.onAuthenticationError(BiometricPrompt.ERROR_UNABLE_TO_PROCESS,
                                        msg);
-
-            // TODO: check for android.security.keystore.KeyPermanentlyInvalidatedException
-            // and set custom method and remove saved key
-
             return false;
         }
     }
