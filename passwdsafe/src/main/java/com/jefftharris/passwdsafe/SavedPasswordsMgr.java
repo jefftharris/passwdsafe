@@ -16,7 +16,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.text.TextUtils;
@@ -24,11 +23,13 @@ import android.util.Base64;
 import android.util.Log;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
-import androidx.core.os.CancellationSignal;
+import androidx.annotation.Nullable;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
-import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
 
@@ -66,90 +67,25 @@ public final class SavedPasswordsMgr
     private static final String KEYSTORE = "AndroidKeyStore";
     private static final String TAG = "SavedPasswordsMgr";
 
-    private final @NonNull FingerprintMgr itsFingerprintMgr;
-    private final SavedPasswordsDb itsDb;
     private final Context itsContext;
+    private final SavedPasswordsDb itsDb;
+    private @Nullable BiometricPrompt itsBioPrompt;
+    private boolean itsHasBioHw;
+    private boolean itsHasEnrolledBio;
+    private User itsActiveUser;
+
+    // TODO: update save password one time prompt and help for bio vs fingerprint
 
     /**
      * User of the saved password manager
      */
     public static abstract class User
-            extends FingerprintManagerCompat.AuthenticationCallback
-            implements CancellationSignal.OnCancelListener
+            extends BiometricPrompt.AuthenticationCallback
     {
-        private final CancellationSignal itsCancelSignal;
-
-        /**
-         * Constructor
-         */
-        public User()
-        {
-            itsCancelSignal = new CancellationSignal();
-            itsCancelSignal.setOnCancelListener(this);
-        }
-
-        /**
-         * Cancel use of the manager
-         */
-        public void cancel()
-        {
-            itsCancelSignal.cancel();
-        }
-
         /**
          * Is the user for encryption or decryption
          */
         protected abstract boolean isEncrypt();
-
-        /**
-         * Callback when the user has started
-         */
-        protected abstract void onStart();
-
-        /**
-         * Get the cancellation signaler
-         */
-        private CancellationSignal getCancelSignal()
-        {
-            return itsCancelSignal;
-        }
-    }
-
-    /**
-     * A fingerprint manager.  The base class returns no fingerprint support.
-     */
-    public static class FingerprintMgr
-    {
-        /**
-         * Is fingerprint hardware present
-         */
-        public boolean isHardwareDetected()
-        {
-            return false;
-        }
-
-        /**
-         * Are there any enrolled fingerprints
-         */
-        public boolean hasEnrolledFingerprints()
-        {
-            return false;
-        }
-
-        /**
-         * Request authentication via a fingerprint
-         */
-        @SuppressWarnings("SameParameterValue")
-        public void authenticate(
-                FingerprintManagerCompat.CryptoObject crypto,
-                int flags,
-                CancellationSignal cancel,
-                FingerprintManagerCompat.AuthenticationCallback callback,
-                Handler handler)
-                throws IllegalArgumentException, IllegalStateException
-        {
-            throw new IllegalStateException("Not implemented");
-        }
     }
 
     /**
@@ -158,13 +94,48 @@ public final class SavedPasswordsMgr
     public SavedPasswordsMgr(Context ctx)
     {
         itsContext = ctx.getApplicationContext();
-        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_MARSHMALLOW) {
-            itsFingerprintMgr =
-                    SavedPasswordsMgrMarshmallow.getFingerprintMgr(itsContext);
-        } else {
-            itsFingerprintMgr = new FingerprintMgr();
-        }
         itsDb = new SavedPasswordsDb(itsContext);
+        itsHasBioHw = false;
+        itsHasEnrolledBio = false;
+        itsBioPrompt = null;
+    }
+
+    /**
+     * Attach to its owning fragment
+     */
+    public void attach(Fragment frag)
+    {
+        BiometricManager bioMgr = BiometricManager.from(itsContext);
+        switch (bioMgr.canAuthenticate()) {
+        case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+        case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE: {
+            break;
+        }
+        case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED: {
+            itsHasBioHw = true;
+            break;
+        }
+        case BiometricManager.BIOMETRIC_SUCCESS: {
+            itsHasBioHw = true;
+            itsHasEnrolledBio = true;
+            break;
+        }
+        }
+
+        itsBioPrompt = new BiometricPrompt(
+                frag, ContextCompat.getMainExecutor(itsContext),
+                new BioAuthenticationCallback());
+    }
+
+    /**
+     * Detach from its owning fragment
+     */
+    public void detach()
+    {
+        itsActiveUser = null;
+        if (itsBioPrompt != null) {
+            itsBioPrompt.cancelAuthentication();
+        }
     }
 
     /**
@@ -172,7 +143,7 @@ public final class SavedPasswordsMgr
      */
     public boolean isAvailable()
     {
-        return itsFingerprintMgr.isHardwareDetected();
+        return itsHasBioHw;
     }
 
     /**
@@ -200,7 +171,7 @@ public final class SavedPasswordsMgr
         PasswdSafeUtil.dbginfo(TAG, "generateKey: %s, key: %s",
                                fileUri, keyName);
 
-        if (!itsFingerprintMgr.hasEnrolledFingerprints()) {
+        if (!itsHasEnrolledBio) {
             throw new IOException(
                     itsContext.getString(R.string.no_fingerprints_registered));
         }
@@ -234,12 +205,31 @@ public final class SavedPasswordsMgr
     public boolean startPasswordAccess(PasswdFileUri fileUri, User user)
     {
         try {
-            Cipher cipher = getKeyCipher(fileUri, user.isEncrypt());
-            FingerprintManagerCompat.CryptoObject cryptoObj =
-                    new FingerprintManagerCompat.CryptoObject(cipher);
-            itsFingerprintMgr.authenticate(cryptoObj, 0, user.getCancelSignal(),
-                                           user, null);
-            user.onStart();
+            if (itsBioPrompt == null) {
+                throw new IOException("Not attached");
+            }
+
+            boolean isEncrypt = user.isEncrypt();
+            Cipher cipher = getKeyCipher(fileUri, isEncrypt);
+
+            // TODO: check descriptions for bio vs fingerprint
+            int descId = isEncrypt ?
+                    R.string.touch_sensor_to_save_the_password :
+                    R.string.touch_sensor_to_load_saved_password;
+
+            BiometricPrompt.PromptInfo prompt =
+                    new BiometricPrompt.PromptInfo.Builder()
+                            .setTitle(itsContext.getString(R.string.app_name))
+                            .setSubtitle(fileUri.getIdentifier(itsContext,
+                                                               true))
+                            .setDescription(itsContext.getString(descId))
+                            .setNegativeButtonText(
+                                    itsContext.getString(R.string.cancel))
+                            .setConfirmationRequired(false)
+                            .build();
+            itsActiveUser = user;
+            itsBioPrompt.authenticate(prompt,
+                                      new BiometricPrompt.CryptoObject(cipher));
             return true;
         } catch (CertificateException | NoSuchAlgorithmException |
                 KeyStoreException | UnrecoverableKeyException |
@@ -248,7 +238,12 @@ public final class SavedPasswordsMgr
             String msg = itsContext.getString(R.string.key_error, fileUri,
                                               e.getLocalizedMessage());
             Log.e(TAG, msg, e);
-            user.onAuthenticationError(0, msg);
+            user.onAuthenticationError(BiometricPrompt.ERROR_UNABLE_TO_PROCESS,
+                                       msg);
+
+            // TODO: check for android.security.keystore.KeyPermanentlyInvalidatedException
+            // and set custom method and remove saved key
+
             return false;
         }
     }
@@ -456,6 +451,44 @@ public final class SavedPasswordsMgr
             throws Exception
     {
         return itsDb.getSavedPassword(fileUri, itsContext);
+    }
+
+    /**
+     * Biometric authentication callback
+     */
+    private class BioAuthenticationCallback
+            extends BiometricPrompt.AuthenticationCallback
+    {
+        @Override
+        public void onAuthenticationError(int errorCode,
+                                          @NonNull CharSequence errString)
+        {
+            super.onAuthenticationError(errorCode, errString);
+            if (itsActiveUser != null) {
+                itsActiveUser.onAuthenticationError(errorCode, errString);
+                itsActiveUser = null;
+            }
+        }
+
+        @Override
+        public void onAuthenticationSucceeded(
+                @NonNull BiometricPrompt.AuthenticationResult result)
+        {
+            super.onAuthenticationSucceeded(result);
+            if (itsActiveUser != null) {
+                itsActiveUser.onAuthenticationSucceeded(result);
+                itsActiveUser = null;
+            }
+        }
+
+        @Override
+        public void onAuthenticationFailed()
+        {
+            super.onAuthenticationFailed();
+            if (itsActiveUser != null) {
+                itsActiveUser.onAuthenticationFailed();
+            }
+        }
     }
 
     /**

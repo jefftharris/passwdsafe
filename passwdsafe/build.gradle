@@ -46,6 +46,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
 
+    implementation 'androidx.biometric:biometric:1.0.1'
+
     // Core library
     androidTestImplementation 'androidx.test:core:1.2.0'
 

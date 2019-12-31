@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -35,7 +34,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.biometric.BiometricConstants;
+import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -189,7 +189,7 @@ public class PasswdSafeOpenFileFragment
         View rootView = inflater.inflate(R.layout.fragment_passwdsafe_open_file,
                                          container, false);
         setupView(rootView);
-        Context ctx = getContext();
+        Context ctx = requireContext();
 
         itsTitle = rootView.findViewById(R.id.file);
         itsPasswordInput = rootView.findViewById(R.id.passwd_input);
@@ -235,11 +235,12 @@ public class PasswdSafeOpenFileFragment
     }
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
         itsSavedPasswordsMgr = new SavedPasswordsMgr(ctx);
+        itsSavedPasswordsMgr.attach(this);
     }
 
     @Override
@@ -270,7 +271,6 @@ public class PasswdSafeOpenFileFragment
         if (itsYubiMgr != null) {
             itsYubiMgr.onPause();
         }
-        cancelSavedPasswordUsers();
     }
 
     @Override
@@ -289,7 +289,10 @@ public class PasswdSafeOpenFileFragment
     {
         super.onDetach();
         itsListener = null;
-        itsSavedPasswordsMgr = null;
+        if (itsSavedPasswordsMgr != null) {
+            itsSavedPasswordsMgr.detach();
+            itsSavedPasswordsMgr = null;
+        }
     }
 
     /** Handle a new intent */
@@ -301,7 +304,8 @@ public class PasswdSafeOpenFileFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
             inflater.inflate(R.menu.fragment_passwdsafe_open_file, menu);
@@ -506,7 +510,6 @@ public class PasswdSafeOpenFileFragment
                          PwsPassword.create(itsPasswordEdit)) {
                 setOpenPassword(password.pass());
             }
-            cancelSavedPasswordUsers();
             break;
         }
         case YUBIKEY: {
@@ -519,9 +522,7 @@ public class PasswdSafeOpenFileFragment
             break;
         }
         case SAVING_PASSWORD: {
-            setProgressVisible(false, false);
             setFieldsDisabled(false);
-            cancelSavedPasswordUsers();
             break;
         }
         case INITIAL:
@@ -553,7 +554,6 @@ public class PasswdSafeOpenFileFragment
         }
         case SAVING_PASSWORD: {
             setFieldsDisabled(true);
-            setProgressVisible(true, false);
             break;
         }
         case FINISHED: {
@@ -629,8 +629,6 @@ public class PasswdSafeOpenFileFragment
                                    itsPasswordEdit, itsOpenBtn, getContext());
         GuiUtils.setVisible(itsSavedPasswordMsg, itsIsPasswordSaved);
         if (itsIsPasswordSaved) {
-            cancelSavedPasswordUsers();
-            setProgressVisible(true, false);
             itsLoadSavedPasswordUser = new LoadSavedPasswordUser();
             itsIsPasswordSaved = itsSavedPasswordsMgr.startPasswordAccess(
                     getPasswdFileUri(), itsLoadSavedPasswordUser);
@@ -681,7 +679,6 @@ public class PasswdSafeOpenFileFragment
                     break;
                 }
 
-                cancelSavedPasswordUsers();
                 itsAddSavedPasswordUser = new AddSavedPasswordUser(result);
                 itsSavedPasswordsMgr.startPasswordAccess(
                         getPasswdFileUri(), itsAddSavedPasswordUser);
@@ -753,22 +750,6 @@ public class PasswdSafeOpenFileFragment
             title += " - AUTOOPEN!!!!!";
         }
         itsTitle.setText(getResources().getString(label, title));
-    }
-
-    /**
-     * Cancel saved password operations
-     */
-    private void cancelSavedPasswordUsers()
-    {
-        if (itsLoadSavedPasswordUser != null) {
-            itsLoadSavedPasswordUser.cancel();
-            itsLoadSavedPasswordUser = null;
-        }
-
-        if (itsAddSavedPasswordUser != null) {
-            itsAddSavedPasswordUser.cancel();
-            itsAddSavedPasswordUser = null;
-        }
     }
 
     /**
@@ -955,10 +936,6 @@ public class PasswdSafeOpenFileFragment
     {
         /** Success */
         SUCCESS,
-        /** Fragment canceled, no delayed operations should be added */
-        FRAGMENT_CANCEL,
-        /** Timeout */
-        TIMEOUT,
         /** Error */
         ERROR
     }
@@ -970,195 +947,92 @@ public class PasswdSafeOpenFileFragment
             extends SavedPasswordsMgr.User
     {
         protected final String itsTag;
-        private final int itsStartMsgId;
-        private final CountDownTimer itsCancelTimer;
-        private Runnable itsPendingAction;
-        private boolean itsIsCancelTimeout = false;
         private boolean itsIsFinished = false;
-        private boolean itsIsIgnoreErrorAfterCancel = false;
 
         /**
          * Constructor
          */
-        protected AbstractSavedPasswordUser(int startMsgId, String tag)
+        protected AbstractSavedPasswordUser(String tag)
         {
             itsTag = tag;
-            itsStartMsgId = startMsgId;
-            itsCancelTimer = new CountDownTimer(30 * 1000, 1 * 1000)
-            {
-                @Override
-                public void onTick(long millisUntilFinished)
-                {
-                    ProgressBar progress = getProgress();
-                    progress.setMax(30);
-                    progress.setProgress((int)millisUntilFinished / 1000);
-                }
-
-                @Override
-                public void onFinish()
-                {
-                    getProgress().setProgress(0);
-                    itsIsCancelTimeout = true;
-                    AbstractSavedPasswordUser.this.cancel();
-                }
-            };
         }
 
         @Override
-        public final void cancel()
+        public final void onAuthenticationError(int errorCode,
+                                                @NonNull CharSequence errString)
         {
-            cancelPendingAction();
-            super.cancel();
-        }
-
-        @Override
-        public final void onAuthenticationError(int errMsgId,
-                                                CharSequence errString)
-        {
-            if (itsIsIgnoreErrorAfterCancel) {
-                itsIsIgnoreErrorAfterCancel = false;
-            } else {
-                PasswdSafeUtil.dbginfo(itsTag, "error: %s", errString);
-                finish(SavedPasswordFinish.ERROR, errString);
+            PasswdSafeUtil.dbginfo(itsTag, "error: %s", errString);
+            switch (errorCode) {
+            case BiometricConstants.ERROR_CANCELED:
+            case BiometricConstants.ERROR_USER_CANCELED:
+            case BiometricConstants.ERROR_NEGATIVE_BUTTON: {
+                Context ctx = getContext();
+                if (ctx != null) {
+                    errString = ctx.getString(R.string.canceled);
+                }
+                break;
             }
+            case BiometricConstants.ERROR_HW_NOT_PRESENT:
+            case BiometricConstants.ERROR_HW_UNAVAILABLE:
+            case BiometricConstants.ERROR_LOCKOUT_PERMANENT:
+            case BiometricConstants.ERROR_LOCKOUT:
+            case BiometricConstants.ERROR_NO_BIOMETRICS:
+            case BiometricConstants.ERROR_NO_DEVICE_CREDENTIAL:
+            case BiometricConstants.ERROR_NO_SPACE:
+            case BiometricConstants.ERROR_TIMEOUT:
+            case BiometricConstants.ERROR_UNABLE_TO_PROCESS:
+            case BiometricConstants.ERROR_VENDOR: {
+                break;
+            }
+            }
+            finish(SavedPasswordFinish.ERROR, errString);
         }
 
         @Override
         public final void onAuthenticationFailed()
         {
             PasswdSafeUtil.dbginfo(itsTag, "failed");
-            setNotificationMsg(getString(R.string.fingerprint_not_recognized),
-                               itsStartMsgId);
-        }
-
-        @Override
-        public final void onAuthenticationHelp(int helpMsgId,
-                                               CharSequence helpString)
-        {
-            PasswdSafeUtil.dbginfo(itsTag, "help: %s", helpString);
-            setNotificationMsg(helpString, itsStartMsgId);
-        }
-
-        @Override
-        protected final void onStart()
-        {
-            PasswdSafeUtil.dbginfo(itsTag, "onStart");
-            itsCancelTimer.start();
-            itsSavedPasswordMsg.setTextColor(itsSavedPasswordTextColor);
-            itsSavedPasswordMsg.setText(itsStartMsgId);
-            GuiUtils.setVisible(itsSavedPasswordMsg, true);
-        }
-
-        @Override
-        public final void onCancel()
-        {
-            PasswdSafeUtil.dbginfo(itsTag, "onCancel");
-            SavedPasswordFinish finishMode;
-            if (itsIsCancelTimeout) {
-                itsIsIgnoreErrorAfterCancel = true;
-                finishMode = SavedPasswordFinish.TIMEOUT;
-            } else {
-                finishMode = SavedPasswordFinish.FRAGMENT_CANCEL;
-            }
-            finish(finishMode, getString(R.string.canceled));
         }
 
         /**
          * Finish access to the saved passwords
          */
         protected final void finish(SavedPasswordFinish finishMode,
-                                    CharSequence msg)
+                                    @NonNull CharSequence msg)
         {
             if (itsIsFinished) {
                 return;
             }
             itsIsFinished = true;
-            itsCancelTimer.cancel();
 
             GuiUtils.setVisible(itsSavedPasswordMsg, true);
             itsSavedPasswordMsg.setText(msg);
             int textColor = itsSavedPasswordTextColor;
-            boolean resolve = false;
             switch (finishMode) {
             case SUCCESS: {
                 textColor = R.attr.textColorGreen;
-                resolve = true;
                 break;
             }
             case ERROR: {
                 textColor = R.attr.colorError;
-                resolve = true;
-                break;
-            }
-            case FRAGMENT_CANCEL:
-            case TIMEOUT: {
                 break;
             }
             }
 
-            if (resolve) {
-                Context ctx = getContext();
-                if (ctx != null) {
-                    TypedValue value = new TypedValue();
-                    ctx.getTheme().resolveAttribute(textColor, value,
-                                                    true);
-                    textColor = value.data;
-                }
+            Context ctx = getContext();
+            if (ctx != null) {
+                TypedValue value = new TypedValue();
+                ctx.getTheme().resolveAttribute(textColor, value, true);
+                textColor = value.data;
             }
             itsSavedPasswordMsg.setTextColor(textColor);
             handleFinish(finishMode);
-
-            switch (finishMode) {
-            case FRAGMENT_CANCEL: {
-                cancelPendingAction();
-                break;
-            }
-            case SUCCESS:
-            case ERROR:
-            case TIMEOUT: {
-                break;
-            }
-            }
         }
 
         /**
          * Derived-class callback for finishing access to the saved passwords
          */
         protected abstract void handleFinish(SavedPasswordFinish finishMode);
-
-        /**
-         * Perform a delayed action
-         */
-        protected final void doDelayed(final Runnable action)
-        {
-            cancelPendingAction();
-            itsPendingAction = () -> {
-                action.run();
-                itsPendingAction = null;
-                itsSavedPasswordMsg.setTextColor(itsSavedPasswordTextColor);
-            };
-            itsSavedPasswordMsg.postDelayed(itsPendingAction, 2000);
-        }
-
-        /**
-         * Temporarily set a notification message for the user
-         */
-        private void setNotificationMsg(CharSequence msg, final int baseMsgId)
-        {
-            itsSavedPasswordMsg.setText(msg);
-            doDelayed(() -> itsSavedPasswordMsg.setText(baseMsgId));
-        }
-
-        /**
-         * Cancel a pending action
-         */
-        private void cancelPendingAction()
-        {
-            if (itsPendingAction != null) {
-                itsSavedPasswordMsg.removeCallbacks(itsPendingAction);
-                itsPendingAction = null;
-            }
-        }
     }
 
     /**
@@ -1171,21 +1045,22 @@ public class PasswdSafeOpenFileFragment
          */
         protected LoadSavedPasswordUser()
         {
-            super(R.string.touch_sensor_to_load_saved_password,
-                  "LoadSavedPasswordUser");
-            doSetFieldsEnabled(false);
+            super("LoadSavedPasswordUser");
+            setFieldsDisabled(true);
         }
 
         @Override
         public void onAuthenticationSucceeded(
-                FingerprintManagerCompat.AuthenticationResult result)
+                @NonNull BiometricPrompt.AuthenticationResult result)
         {
-            if (itsSavedPasswordsMgr == null) {
-                onCancel();
+            BiometricPrompt.CryptoObject resultCrypto =
+                    result.getCryptoObject();
+            Cipher cipher =
+                    (resultCrypto != null) ? resultCrypto.getCipher() : null;
+            if ((itsSavedPasswordsMgr == null) || (cipher == null)) {
                 return;
             }
             PasswdSafeUtil.dbginfo(itsTag, "success");
-            Cipher cipher = result.getCryptoObject().getCipher();
             try (Owner<PwsPassword> password =
                          itsSavedPasswordsMgr.loadSavedPassword(
                                  getPasswdFileUri(), cipher)) {
@@ -1196,7 +1071,8 @@ public class PasswdSafeOpenFileFragment
                     IOException e) {
                 String msg = "Error using cipher: " + e;
                 Log.e(itsTag, msg, e);
-                onAuthenticationError(0, msg);
+                onAuthenticationError(BiometricPrompt.ERROR_UNABLE_TO_PROCESS,
+                                      msg);
             }
         }
 
@@ -1209,20 +1085,8 @@ public class PasswdSafeOpenFileFragment
         @Override
         protected void handleFinish(SavedPasswordFinish finishMode)
         {
-            setProgressVisible(false, false);
-            doSetFieldsEnabled(true);
-            switch (finishMode) {
-            case SUCCESS: {
-                doDelayed(() -> itsLoadSavedPasswordUser = null);
-                break;
-            }
-            case ERROR:
-            case FRAGMENT_CANCEL:
-            case TIMEOUT: {
-                itsLoadSavedPasswordUser = null;
-                break;
-            }
-            }
+            setFieldsDisabled(false);
+            itsLoadSavedPasswordUser = null;
         }
     }
 
@@ -1238,32 +1102,33 @@ public class PasswdSafeOpenFileFragment
          */
         protected AddSavedPasswordUser(OpenResult result)
         {
-            super(R.string.touch_sensor_to_save_the_password,
-                  "AddSavedPasswordUser");
+            super("AddSavedPasswordUser");
             itsOpenResult = result;
         }
 
         @Override
         public void onAuthenticationSucceeded(
-                FingerprintManagerCompat.AuthenticationResult result)
+                @NonNull BiometricPrompt.AuthenticationResult result)
         {
-            if (itsSavedPasswordsMgr == null) {
-                onCancel();
+            BiometricPrompt.CryptoObject resultCrypto =
+                    result.getCryptoObject();
+            Cipher cipher =
+                    (resultCrypto != null) ? resultCrypto.getCipher() : null;
+            if ((itsSavedPasswordsMgr == null) || (cipher == null)) {
                 return;
             }
             PasswdSafeUtil.dbginfo(itsTag, "success");
-            Cipher cipher = result.getCryptoObject().getCipher();
             try (Owner<PwsPassword> savePassword =
                          PwsPassword.create(itsPasswordEdit)) {
                 itsSavedPasswordsMgr.addSavedPassword(
-                        getPasswdFileUri(), savePassword.pass(),
-                        Objects.requireNonNull(cipher));
+                        getPasswdFileUri(), savePassword.pass(), cipher);
                 finish(SavedPasswordFinish.SUCCESS,
                        getString(R.string.password_saved));
             } catch (Exception e) {
                 String msg = "Error using cipher: " + e;
                 Log.e(itsTag, msg, e);
-                onAuthenticationError(0, msg);
+                onAuthenticationError(BiometricPrompt.ERROR_UNABLE_TO_PROCESS,
+                                      msg);
             }
         }
 
@@ -1276,24 +1141,14 @@ public class PasswdSafeOpenFileFragment
         @Override
         protected void handleFinish(SavedPasswordFinish finishMode)
         {
+            itsAddSavedPasswordUser = null;
             switch (finishMode) {
             case SUCCESS: {
-                doDelayed(() -> {
-                    itsAddSavedPasswordUser = null;
-                    finishFileOpen(itsOpenResult.itsFileData);
-                });
+                finishFileOpen(itsOpenResult.itsFileData);
                 break;
             }
-            case ERROR:
-            case TIMEOUT: {
-                doDelayed(() -> {
-                    itsAddSavedPasswordUser = null;
-                    setPhase(Phase.WAITING_PASSWORD);
-                });
-                break;
-            }
-            case FRAGMENT_CANCEL: {
-                itsAddSavedPasswordUser = null;
+            case ERROR: {
+                setPhase(Phase.WAITING_PASSWORD);
                 break;
             }
             }
