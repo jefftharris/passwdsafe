@@ -87,12 +87,46 @@
     <string name="file">Fil</string>
     <string name="file_name">Filnavn</string>
     <string name="file_not_found_perm_denied">Fil ikke funnet eller ingen tilgang</string>
-    <string name="file_open_help">Filpassord kan lagres på enheter med fingeravtrykkskanner og Android 6.0 eller høyere. Passordene er kryptert med AES-256-nøkler som er beskyttet av fingeravtrykkskanning. \n - For å lagre ett passord, må minst ett fingeravtrykk være registrert i enhetens sikkerhetsinnstillinger. Deretter kan du markere lagre-valget, skrive inn passordet og klikke OK. Etter at passordet er verifisert, skann et fingeravtrykk når spurt om det. Passordet blir kryptert og lagret og filen åpnes. \n - For å bruke et lagret passord, skann et fingeravtrykk istedenfor å skrive inn et passord. Hvis skanningen er vellykket, så blir passordet dekryptert og brukt for å åpne filen. Hvis en YubiKey brukes, så vil nøkkelen bli lest etter at fingeravtrykket er skannet. \n - For å fjerne et lagret passord, fjern markeringen av lagre-valget og åpne filen. Det lagrede passordet blir slettet fra enheten. Alle lagrede passord fjernes fra passordinnstillingene. \n \nFor å bruke en YubiKey NEO, utfør følgende steg:\n - Aktiver NFC-støtte i enhetens innstillinger\n - Skriv inn passordet for filen\n - Velg hvilken plass på YubiKey som har challenge-response nøkkelen. Vanligvis brukes plass 2 for Password Safe.\n - Marker YubiKey-valget\n - Klikk OK\n - Innen 30 sekunder, hold YubiKey mot baksiden av telefonen eller tableten. En lyd høres når nøkkelen blir lest. Hvis enheten ikke svarer med en økende tone, prøv å flytte nøkkelen rundt. Litt prøving og feiling er nødvendig for å finne rett lokasjon. Det er ikke nødvendig å trykke på knappen på selve YubiKey-en.\n - Når nøkkelen er funnet, vil den bli brukt til å autentisere med ditt passord. Filen åpnes automatisk.</string>
+    <string name="file_open_help">
+        Filpassord kan lagres på enheter med biometrisk scanner og Android 6.0
+        eller høyere. Passordene blir kryptert med AES-256 nøkler som er
+        beskyttet av en biometrisk scan.
+        \n
+        - For å lagre et passord må du først forsikre deg om at en biometrisk
+        scan er registrert på enheten i sikkerhetsinnstillingene. Deretter huk
+        av lagre-valget, oppgi passordet og klikk OK. Etter at passordet er
+        verifisert, scan den biometriske legitimasjonen når du blir spurt.
+        Passordet blir kryptert og lagret, og filen åpnes.
+        \n
+        - For å bruke et lagret passord, scan den biometriske legitimasjonen
+        istedenfor for å oppgi et passord. Hvis scanningen er vellykket, så
+        blir passordet dekryptert og brukt for å åpne filen. Hvis en YubiKey
+        er i bruk, så leses nøkkelen etter at den biometriske legitimasjonen
+        er scannet.
+        \n
+        - For å fjerne et lagret passord, fjern markeringen av lagre-valget og
+        åpne filen. Det lagrede passordet blir slettet fra enheten. Alle
+        lagrede passord fjernes fra passordinnstillingene.
+        \n
+        \nFor å bruke en YubiKey NEO, utfør følgende steg:\n
+        - Aktiver NFC-støtte i enhetens innstillinger\n
+        - Skriv inn passordet for filen\n
+        - Velg hvilken plass på YubiKey som har challenge-response nøkkelen.
+        Vanligvis brukes plass 2 for Password Safe.\n
+        - Marker YubiKey-valget\n
+        - Klikk OK\n
+        - Innen 30 sekunder, hold YubiKey mot baksiden av telefonen eller
+        tableten. En lyd høres når nøkkelen blir lest. Hvis enheten ikke svarer
+        med en økende tone, prøv å flytte nøkkelen rundt. Litt prøving og
+        feiling er nødvendig for å finne rett lokasjon. Det er ikke nødvendig
+        å trykke på knappen på selve YubiKey-en.\n
+        - Når nøkkelen er funnet, vil den bli brukt til å autentisere med ditt
+        passord. Filen åpnes automatisk.
+    </string>
     <string name="file_operations">Filoperasjoner …</string>
     <string name="file_password_encoding">Filpassordkoding</string>
     <string name="files">Filer</string>
     <string name="find_similar">Finn lignende</string>
-    <string name="fingerprint_not_recognized">Fingeravtrykk ikke gjenkjent</string>
     <string name="generate">Lag</string>
     <string name="generate_password">Lag passord</string>
     <string name="go">Gå</string>
@@ -153,9 +187,9 @@
     <string name="new_policy">Nye relger</string>
     <string name="next">Neste</string>
     <string name="no_alias_chosen">Ingen alias valgt</string>
+    <string name="no_biometrics_registered">Ingen biometrisk legitimasjon er registrert</string>
     <string name="no_file_permission">PasswdSafe krever filtilgang. \n\nTrykk reload for å bli spurt på nytt. Hvis du ikke blir spurt, trykk app-innstillinger og aktiver lagringstilgang.</string>
     <string name="no_files_select_to_open">Ingen filer - velg en handling for å åpne eller opprette en ny fil \n\nHvis filene ikke vises i dokumentoversikten, bruk menyen for å vise internt lager eller SD-kortet. \n\nDen tidligere filvelgeren er aktivert i innstillingene som den gamle filvelgeren.</string>
-    <string name="no_fingerprints_registered">Ingen fingeravtrykk er registrert</string>
     <string name="no_groups">Ingen grupper</string>
     <string name="no_shortcut_chosen">Ingen snarvei valgt</string>
     <string name="no_policies">Ingen regler</string>
@@ -236,7 +270,12 @@
     <string name="save">Lagre</string>
     <string name="save_password">Lagre passord</string>
     <string name="save_password_p">Lagre passord?</string>
-    <string name="save_password_warning">Etter at filen er åpnet, så vil passord som fylles inn bli lagret lokalt. Passordene er kryptert med en AES-256-nøkkel som er beskyttet av fingeravtrykkskanning. Fingeravtrykkskanningen er kanskje ikke like sikkert som passordfilen selv.</string>
+    <string name="save_password_warning">
+        Etter at filen er åpnet, så blir det oppgitte passordet lagret lokalt.
+        Passordet blir kryptert med en AES-256 nøkkel som er beskyttet av en
+        biometrisk scan. Den biometriske legitimasjonen er kanskje ikke like
+        sikker som selve passordet.
+    </string>
     <string name="saving_file">Lagrer %s …</string>
     <string name="search">Søk</string>
     <string name="search_hint">Søk PasswdSafe</string>
@@ -291,6 +330,10 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.19.0&lt;/b&gt; - Bruk biometrisk legitimasjon for å lagre
+        password istedenfor bare fingeravtrykk.  Fiks matchende passord når man
+        finner lignende oppføringer.
+        \n\n
         &lt;b&gt;6.18.2&lt;/b&gt; - Feilrettinger.
         \n\n
         &lt;b&gt;6.18.1&lt;/b&gt; - Fikset lagring av passord med lange

@@ -100,20 +100,20 @@
     <string name="file_name">File Name</string>
     <string name="file_not_found_perm_denied">File not found or permission denied</string>
     <string name="file_open_help">
-        File passwords can be saved on devices with a fingerprint scanner and
+        File passwords can be saved on devices with biometrics scanner and
         Android 6.0 or higher.  The passwords are encrypted using AES-256
-        keys that are protected by a fingerprint scan.
+        keys that are protected by a biometrics scan.
         \n
-        - To save a password, first ensure a fingerprint is registered
+        - To save a password, first ensure a biometrics scan is registered
         with the device in the security settings.  Then, check the save option,
         enter the password, and click OK. After the password is verified,
-        scan a fingerprint when prompted. The password will be encrypted and
-        saved, and the file will open.
+        scan the biometric credential when prompted. The password will be
+        encrypted and saved, and the file will open.
         \n
-        - To use a saved password, scan a fingerprint instead of entering a
-        password.  If the scan is successful, the password is decrypted and
-        used to open the file.  If a YubiKey is used, the key will be read
-        after the fingerprint is scanned.
+        - To use a saved password, scan the biometric credential instead of
+        entering a password.  If the scan is successful, the password is
+        decrypted and used to open the file.  If a YubiKey is used, the key
+        will be read after the biometric credential is scanned.
         \n
         - To remove a saved password, uncheck the save option and open the file.
         The saved password will be erased from the device.  All saved
@@ -138,7 +138,6 @@
     <string name="file_password_encoding">File password encoding</string>
     <string name="files">Files</string>
     <string name="find_similar">Find Similar</string>
-    <string name="fingerprint_not_recognized">Fingerprint not recognized</string>
     <string name="generate">Generate</string>
     <string name="generate_password">Generate Password</string>
     <string name="go">Go</string>
@@ -204,6 +203,7 @@
     <string name="new_policy">New Policy</string>
     <string name="next">Next</string>
     <string name="no_alias_chosen">No alias chosen</string>
+    <string name="no_biometrics_registered">No biometric credentials are registered</string>
     <string name="no_file_permission">
         PasswdSafe requires file permissions.
         \n\nPress reload for another prompt.  If no prompt is shown, press app
@@ -216,7 +216,6 @@
         \n\nThe previous file chooser is enabled in the Preferences as the
         legacy file chooser.
     </string>
-    <string name="no_fingerprints_registered">No fingerprints are registered</string>
     <string name="no_groups">No Groups</string>
     <string name="no_shortcut_chosen">No shortcut chosen</string>
     <string name="no_policies">No Policies</string>
@@ -312,8 +311,8 @@
     <string name="save_password_warning">
         After the file is opened, the entered password will be saved locally.
         The password is encrypted with an AES-256 key that is protected by a
-        fingerprint scan.  The fingerprint scan may not be as secure as the file
-        password itself.
+        biometrics scan.  The biometrics credential may not be as secure as the
+        file password itself.
     </string>
     <string name="saving_file">Saving %s…</string>
     <string name="search">Search</string>
@@ -369,6 +368,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.19.0&lt;/b&gt; - Use biometric credentials to save passwords
+        instead of only fingerprints.  Fix matching passwords when finding
+        similar records.
+        \n\n
         &lt;b&gt;6.18.2&lt;/b&gt; - Bug fixes.  Fix loading of saved password.
         \n\n
         &lt;b&gt;6.18.1&lt;/b&gt; - Fix saving passwords with long file URLs,

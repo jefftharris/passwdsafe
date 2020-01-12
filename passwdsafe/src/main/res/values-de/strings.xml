@@ -101,21 +101,22 @@
     <string name="file_name">Dateiname</string>
     <string name="file_not_found_perm_denied">Datei nicht gefunden oder keine Berechtigung</string>
     <string name="file_open_help">
-        Dateipasswörter können auf dem Gerät gespeichert werden, wenn ein
-        Fingerabdrucksensor und Android 6.0 oder höher vorhanden sind. Die
-        Passwörter werden mittels AES-256-Schlüssel verschlüsselt, welcher
-        per Fingerabdruck gesichert wird.
+        Dateipasswörter können mit biometrischen Merkmalen auf Geräten mit
+        Android 6.0 oder höher gesichert werden. Passwörter werden mit einem
+        AES-256-Schlüssel verschlüsselt und sind durch biometrischen Merkmale
+        geschützt.
         \n
-        - Um ein Passwort zu speichern, muss ein Fingerabdruck in den Sicherheits-
-        Einstellungen auf dem Gerät registriert sein. Setze danach das Häkchen bei
-        \"Passwort speichern\", gib das Passwort ein und bestätige mit OK. Nachdem
-        das Passwort überprüft wurde, wird nach dem Fingerabdruck gefragt.
-        Das Passwort wird verschlüsselt gespeichert und die Datei wird geöffnet.
+        - Bevor ein Passwort gepeichert werden kann, stellen Sie sicher, dass
+        ein biometrisches Merkmal auf Ihrem Gerät in den
+        Sicherheitseinstellungen registriert ist. Danach klicken Sie auf
+        "Passwort speichern" und werden dann aufgefordert ihr biometrisches
+        Merkmal zu erfassen. Ihr Passwort wird dann verschlüsselt und
+        gespeichert.
         \n
-        - Um ein gespeichertes Passwort zu nutzen, einfach beim Öffnen einer
-        Passwortdatei den Fingerabdrucksensor berühren anstatt das Passwort
-        einzugeben. Wenn ein YubiKey zum Einsatz kommt, wird dieser nach dem
-        Fingerabdruck gelesen.
+        Um das gespeicherte Passwort zu nutzen, erfassen sie das biometrische
+        Merkmal statt das Passwort einzugeben. Wenn dies erfolgreich ist, wird
+        die Datei freigegeben. Wenn Sie einen YubiKey benutzen, wird dieser
+        nach dem Erfassen des biometrischen Merkmals gelesen.
         \n
         - Um ein gespeichertes Passwort zu löschen, das Häkchen bei \"Passwort
         speichern\" entfernen und die Datei wie gewohnt mit Eingabe des Passworts
@@ -138,7 +139,6 @@
     <string name="file_password_encoding">Passwortkodierung</string>
     <string name="files">Dateien</string>
     <string name="find_similar">Finde ähnliche Einträge</string>
-    <string name="fingerprint_not_recognized">Fingerabdruck nicht erkannt</string>
     <string name="generate">Erzeugen</string>
     <string name="generate_password">Passwort erzeugen</string>
     <string name="go">Los</string>
@@ -204,6 +204,7 @@
     <string name="new_policy">Neue Regel</string>
     <string name="next">Weiter</string>
     <string name="no_alias_chosen">Kein Alias ausgewählt</string>
+    <string name="no_biometrics_registered">Es ist kein biometrisches Merkmal registriert</string>
     <string name="no_file_permission">
         PasswdSafe benötigt Speicherberechtigung
         \n\nDrücke Neu Laden um diese neu zu gewähren, wenn dies nicht geht,
@@ -215,7 +216,6 @@
         im Menü den internen Speicher und/oder die SD-Karte einblenden.
         \n\nDie alte Dateiauswahl können Sie in den Einstellungen aktivieren.
     </string>
-    <string name="no_fingerprints_registered">Keine Fingerabdrücke registriert</string>
     <string name="no_groups">Keine Gruppen</string>
     <string name="no_shortcut_chosen">Keine Verknüpfung ausgewählt</string>
     <string name="no_policies">Keine Regeln</string>
@@ -309,11 +309,10 @@
     <string name="save_password">Passwort speichern</string>
     <string name="save_password_p">Passwort speichern?</string>
     <string name="save_password_warning">
-        Nachdem die Datei geöffnet wurde, wird das Passwort lokal
-        gespeichert und mit einem AES-256-Schlüssel verschlüsselt. Dieser ist
-        mit dem Fingerabdruck geschützt. Das Benutzen des Fingerabdrucksensors
-        kann unter Umständen unsicherer als das Verwenden des Dateipassworts
-        selbst sein.
+        Wenn die Datei geöffnet ist, wird das Passwort lokal gespeichert. Das
+        Passwort ist mit einem AES-256-Schlüssel verschlüselt und durch ein
+        biometrisches Merkmal geschützt. Biometrischen Merkmale können
+        unsicherer als ein Dateipasswort sein.
     </string>
     <string name="saving_file">Speichere %s …</string>
     <string name="search">Suchen</string>
@@ -369,6 +368,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.19.0&lt;/b&gt; - Nutze biometrische Merkmale statt nur eines
+        Fingerabdrucks, um Passwörter zu speichern.  Fehler bei ählichen
+        Passwörter beim Auffinden ähnlicher Einträge behoben.
+        \n\n
         &lt;b&gt;6.18.2&lt;/b&gt; - Fehlerbehebungen.
         \n\n
         &lt;b&gt;6.18.1&lt;/b&gt; - Problem beim Speichern von Passwörtern mit

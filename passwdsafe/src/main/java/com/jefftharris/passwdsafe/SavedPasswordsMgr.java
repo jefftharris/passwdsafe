@@ -74,7 +74,6 @@ public final class SavedPasswordsMgr
     private boolean itsHasEnrolledBio;
     private User itsActiveUser;
 
-    // TODO: update save password one time prompt and help for bio vs fingerprint
 
     /**
      * User of the saved password manager
@@ -173,7 +172,7 @@ public final class SavedPasswordsMgr
 
         if (!itsHasEnrolledBio) {
             throw new IOException(
-                    itsContext.getString(R.string.no_fingerprints_registered));
+                    itsContext.getString(R.string.no_biometrics_registered));
         }
 
         try {
@@ -212,7 +211,6 @@ public final class SavedPasswordsMgr
             boolean isEncrypt = user.isEncrypt();
             Cipher cipher = getKeyCipher(fileUri, isEncrypt);
 
-            // TODO: check descriptions for bio vs fingerprint
             int descId = isEncrypt ?
                     R.string.touch_sensor_to_save_the_password :
                     R.string.touch_sensor_to_load_saved_password;

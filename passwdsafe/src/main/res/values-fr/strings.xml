@@ -101,23 +101,22 @@
     <string name="file_name">Nom du fichier</string>
     <string name="file_not_found_perm_denied">Fichier introuvable ou accès interdit</string>
     <string name="file_open_help">
-        Le fichier des mots de passe peut être enregistré sur les appareils
-        muni d\'un lecteur d\'empreinte digitale et Android 6 et plus. Les
-        mots de passe sont encrypés en utilisant une clé AES-256 protégée par
-        le lecteur d\'empreinte.
+        Le fichier de mots de passe peut être enregistré sur des appareils
+        possédants des scanneurs biométrique et Android 6.0 minimum. Les mots
+        de passe sont chiffrés avec des clés AES-256 qui sont protégés par un
+        scan biométrique
         \n
-        - Pour enregistrer un mot de passe, assurez-vous d\'abord qu\'un
-        lecteur d\'empreintes est activé dans les réglages de sécurité. Après
-        cela, vérifiez l\'option d\'enregistrement, entrez le mot de passe et
-        cliquez ok. Après que le mot de passe ai été vérifié, faites une
-        lecture d\'empreinte digitale lorsque c\'est demandé. Le mot de passe
-        sera encrypté et enregistré, et le fichier s\'ouvrira.
+        - Pour enregistrer un mots de passe, assurez vous premièrement qu un
+        scan biométrique est enregistré dans les paramètres sécurité de
+        l\'appareil. Puis cochez l\'option enregistrer, entrez le mots de passe
+        et cliquez ok. Après vérification du mots de passe, scannez
+        l\'identification biométrique lorsque c\'est demandé. Le mots de passe
+        serra chiffré et enregistré, et le fichier s\'ouvrira.
         \n
-        - Pour utiliser un mot de passe enregistré, faite une lecture
-        d\'empreinte digitale au lieu d\'entrer un mot de passe. Si la
-        lecture d\'empreinte est OK, le mot de passe est déchiffré et utilisé
-        pour ouvrir le fichier. Si un YubiKey est utilisé, la clé sera lue
-        après la lecture d\'empreinte.
+        - Pour utiliser un mot de passe enregistré, scannez l\'identification
+        biométrique au lieu d\'entrer le mots de passe. Si le scan est réussi,
+        le mots de passe est déchiffré et utilisé pour ouvrir le fichier. Si
+        un clé YubiKey est utilisée, la clé serra lu après le scan biométrique.
         \n
         - Pour supprimer un mot de passe enregistré, deselectionner l\'option
         d\'enregistrement et ouvrez le fichier. Le mot de passe sera supprimé
@@ -143,7 +142,6 @@
     <string name="file_password_encoding">Encodage fichier mots de passe</string>
     <string name="files">Fichiers</string>
     <string name="find_similar">Chercher similaire</string>
-    <string name="fingerprint_not_recognized">Empreinte digitale non reconnue</string>
     <string name="generate">Générer</string>
     <string name="generate_password">Générer un mot de passe</string>
     <string name="go">OK</string>
@@ -209,6 +207,7 @@
     <string name="new_policy">Nouvelle stratégie</string>
     <string name="next">Suivant</string>
     <string name="no_alias_chosen">Aucun alias choisi</string>
+    <string name="no_biometrics_registered">Pas d\'identification biométrique enregistré</string>
     <string name="no_file_permission">
         PasswdSafe a besoin des droits sur le fichier.
         \n\nAppuyer sur rafraîchir pour une autre demande. Si la demande n\'est
@@ -223,7 +222,6 @@
         \n\nLe sélecteur de fichier précédent est activé dans les préférences
         comme étant l\'ancienne méthode de selection.
     </string>
-    <string name="no_fingerprints_registered">Pas de lecteur d\'empreinte digitale activé</string>
     <string name="no_groups">Aucun Groupes</string>
     <string name="no_shortcut_chosen">Aucun raccourci choisi</string>
     <string name="no_policies">Aucune stratégie</string>
@@ -317,10 +315,10 @@
     <string name="save_password">Enregistrer mot de passe</string>
     <string name="save_password_p">Enregistrer mot de passe?</string>
     <string name="save_password_warning">
-        Après l\'ouverture du fichier, le mot de passe entré sera enregistré
-        localement. Il est encrypté en utilisant une clé AES-256 protégée par
-        le lecteur d\'empreinte. Le lecteur d\'empreinte peut ne pas être
-        aussi sécurisé que le fichier de mot de passe.
+        Après l\'ouverture du fichier, le mots de passe entré serra sauvegardé
+        localement sous forme chiffré avec une clé AES-256 protégée par le scan
+        biométrique. L\'identification biométrique peut ne pas être aussi
+        sécurisé que le fichier lui même.
     </string>
     <string name="saving_file">Enregistrement %s…</string>
     <string name="search">Rechercher</string>
@@ -378,6 +376,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.19.0&lt;/b&gt; - Utilisation de l\'identification biométrique
+        au lieu de seulement les empreintes digitales
+        \n\n
         &lt;b&gt;6.18.2&lt;/b&gt; - Correction de bugs.
         \n\n
         &lt;b&gt;6.18.1&lt;/b&gt; - Correction sur la sauvegarde des mots de
