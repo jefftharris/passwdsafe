@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PasswdSafe.iml" filepath="$PROJECT_DIR$/PasswdSafe.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lib-owncloud/lib-owncloud.iml" filepath="$PROJECT_DIR$/lib-owncloud/lib-owncloud.iml" />
-      <module fileurl="file://$PROJECT_DIR$/passwdsafe/passwdsafe.iml" filepath="$PROJECT_DIR$/passwdsafe/passwdsafe.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sync/sync.iml" filepath="$PROJECT_DIR$/sync/sync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PasswdSafe.iml" filepath="$PROJECT_DIR$/PasswdSafe.iml" group="PasswdSafe" />
+      <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" group="PasswdSafe/lib" />
+      <module fileurl="file://$PROJECT_DIR$/lib-owncloud/lib-owncloud.iml" filepath="$PROJECT_DIR$/lib-owncloud/lib-owncloud.iml" group="PasswdSafe/lib-owncloud" />
+      <module fileurl="file://$PROJECT_DIR$/passwdsafe/passwdsafe.iml" filepath="$PROJECT_DIR$/passwdsafe/passwdsafe.iml" group="PasswdSafe/passwdsafe" />
+      <module fileurl="file://$PROJECT_DIR$/sync/sync.iml" filepath="$PROJECT_DIR$/sync/sync.iml" group="PasswdSafe/sync" />
     </modules>
   </component>
 </project>
