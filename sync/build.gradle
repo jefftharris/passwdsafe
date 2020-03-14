@@ -8,13 +8,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
         minSdkVersion 21
         resConfigs "de", "fr", "nb"
-        targetSdkVersion 28
+        targetSdkVersion 29
         // <major><minor><bugfix><beta/extra>
         versionCode 3070000
         versionName "3.7.0"
@@ -55,21 +55,21 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
     implementation project(':lib-owncloud')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.0.0'
-    implementation('androidx.work:work-runtime:2.2.0') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.2.0'
+    implementation('androidx.work:work-runtime:2.3.3') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     // Google Drive
-    implementation('com.google.api-client:google-api-client-android:1.22.0') {
+    implementation('com.google.api-client:google-api-client-android:1.30.8') {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation('com.google.apis:google-api-services-drive:v3-rev58-1.22.0') {
+    implementation('com.google.apis:google-api-services-drive:v3-rev99-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
     // Dropbox
-    implementation 'com.dropbox.core:dropbox-core-sdk:3.1.1'
+    implementation 'com.dropbox.core:dropbox-core-sdk:3.1.3'
     // Box
     implementation 'com.box:box-android-sdk:5.0.0'
     // OneDrive
@@ -78,6 +78,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.google.com.gson'
     }
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
     // Other
 }

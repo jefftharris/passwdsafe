@@ -9,13 +9,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
         minSdkVersion 14
         resConfigs "de", "fr", "nb"
-        targetSdkVersion 28
+        targetSdkVersion 29
         // <major><minor><bugfix><beta/extra>
         versionCode 6190000
         versionName "6.19.0"
@@ -58,7 +58,7 @@ dependencies {
     // Assertions
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.ext:truth:1.2.0'
-    androidTestImplementation 'com.google.truth:truth:0.42'
+    androidTestImplementation 'com.google.truth:truth:1.0.1'
 
     // Espresso dependencies
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
