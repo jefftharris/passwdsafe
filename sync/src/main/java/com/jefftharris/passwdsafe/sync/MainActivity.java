@@ -52,7 +52,6 @@ import com.jefftharris.passwdsafe.sync.onedrive.OnedriveFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudEditDialog;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudFilesActivity;
 import com.jefftharris.passwdsafe.sync.owncloud.OwncloudProvider;
-import com.microsoft.identity.common.internal.providers.oauth2.AuthorizationStrategy;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -66,16 +65,6 @@ public class MainActivity extends AppCompatActivity
                    OwncloudEditDialog.Listener
 {
     private static final String TAG = "MainActivity";
-
-    private static final int DROPBOX_LINK_RC = 1;
-    private static final int BOX_AUTH_RC = 2;
-    private static final int ONEDRIVE_LINK_RC =
-            AuthorizationStrategy.BROWSER_FLOW;
-    private static final int OWNCLOUD_LINK_RC = 4;
-    private static final int PERMISSIONS_RC = 5;
-    private static final int APP_SETTINGS_RC = 6;
-    private static final int GDRIVE_PLAY_LINK_RC = 7;
-    private static final int GDRIVE_PLAY_SERVICES_ERROR_RC = 8;
 
     private static final int LOADER_PROVIDERS = 0;
 
@@ -105,8 +94,9 @@ public class MainActivity extends AppCompatActivity
 
         itsPermissionMgr = new DynamicPermissionMgr(
                 Manifest.permission.GET_ACCOUNTS, this,
-                PERMISSIONS_RC, APP_SETTINGS_RC, PasswdSafeUtil.SYNC_PACKAGE,
-                R.id.reload, R.id.app_settings);
+                ActivityRequest.PERMISSIONS,
+                ActivityRequest.APP_SETTINGS,
+                PasswdSafeUtil.SYNC_PACKAGE, R.id.reload, R.id.app_settings);
         View noPermGroup = findViewById(R.id.no_permission_group);
         GuiUtils.setVisible(noPermGroup, !itsPermissionMgr.checkPerms());
 
@@ -114,8 +104,8 @@ public class MainActivity extends AppCompatActivity
         GoogleApiAvailability googleApi = GoogleApiAvailability.getInstance();
         int rc = googleApi.isGooglePlayServicesAvailable(this);
         if (rc != ConnectionResult.SUCCESS) {
-            googleApi.showErrorDialogFragment(this, rc,
-                                              GDRIVE_PLAY_SERVICES_ERROR_RC);
+            googleApi.showErrorDialogFragment(
+                    this, rc, ActivityRequest.GDRIVE_PLAY_SERVICES_ERROR);
         }
 
         itsAccountsAdapter = new MainActivityProviderAdapter(this);
@@ -185,8 +175,8 @@ public class MainActivity extends AppCompatActivity
         if (itsDropboxPendingAcctLink) {
             itsDropboxPendingAcctLink = false;
             itsNewAccountTask = getDbxProvider().finishAccountLink(
-                    this, DROPBOX_LINK_RC, Activity.RESULT_OK,
-                    null, getAccountLinkUri(DROPBOX_LINK_RC));
+                    this, ActivityRequest.DROPBOX_LINK, Activity.RESULT_OK,
+                    null, getAccountLinkUri(ActivityRequest.DROPBOX_LINK));
         }
 
         if (itsNewAccountTask != null) {
@@ -201,31 +191,31 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         switch (requestCode) {
-        case BOX_AUTH_RC: {
+        case ActivityRequest.BOX_AUTH: {
             itsNewAccountTask = getBoxProvider().finishAccountLink(
                     this, requestCode, resultCode, data,
-                    getAccountLinkUri(BOX_AUTH_RC));
+                    getAccountLinkUri(ActivityRequest.BOX_AUTH));
             break;
         }
-        case ONEDRIVE_LINK_RC: {
+        case ActivityRequest.ONEDRIVE_LINK: {
             itsNewAccountTask = getOnedriveProvider().finishAccountLink(
                     this, requestCode, resultCode, data,
-                    getAccountLinkUri(ONEDRIVE_LINK_RC));
+                    getAccountLinkUri(ActivityRequest.ONEDRIVE_LINK));
             break;
         }
-        case OWNCLOUD_LINK_RC: {
+        case ActivityRequest.OWNCLOUD_LINK: {
             itsNewAccountTask = getOwncloudProvider().finishAccountLink(
                     this, requestCode, resultCode, data,
-                    getAccountLinkUri(OWNCLOUD_LINK_RC));
+                    getAccountLinkUri(ActivityRequest.OWNCLOUD_LINK));
             break;
         }
-        case GDRIVE_PLAY_LINK_RC: {
+        case ActivityRequest.GDRIVE_PLAY_LINK: {
             itsNewAccountTask = getGDrivePlayProvider().finishAccountLink(
                     this, requestCode, resultCode, data,
-                    getAccountLinkUri(GDRIVE_PLAY_LINK_RC));
+                    getAccountLinkUri(ActivityRequest.GDRIVE_PLAY_LINK));
             break;
         }
-        case GDRIVE_PLAY_SERVICES_ERROR_RC: {
+        case ActivityRequest.GDRIVE_PLAY_SERVICES_ERROR: {
             break;
         }
         default: {
@@ -370,8 +360,10 @@ public class MainActivity extends AppCompatActivity
     {
         Provider driveProvider = getGDrivePlayProvider();
         try {
-            driveProvider.startAccountLink(this, GDRIVE_PLAY_LINK_RC);
-            itsAccountLinkUris.put(GDRIVE_PLAY_LINK_RC, currProviderUri);
+            driveProvider.startAccountLink(this,
+                                           ActivityRequest.GDRIVE_PLAY_LINK);
+            itsAccountLinkUris.put(ActivityRequest.GDRIVE_PLAY_LINK,
+                                   currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "onGDrivePlayChoose failed", e);
             driveProvider.unlinkAccount();
@@ -384,9 +376,10 @@ public class MainActivity extends AppCompatActivity
     {
         Provider dbxProvider = getDbxProvider();
         try {
-            dbxProvider.startAccountLink(this, DROPBOX_LINK_RC);
+            dbxProvider.startAccountLink(this, ActivityRequest.DROPBOX_LINK);
             itsDropboxPendingAcctLink = true;
-            itsAccountLinkUris.put(DROPBOX_LINK_RC, currProviderUri);
+            itsAccountLinkUris.put(ActivityRequest.DROPBOX_LINK,
+                                   currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "startDropboxLink failed", e);
             dbxProvider.unlinkAccount();
@@ -399,8 +392,8 @@ public class MainActivity extends AppCompatActivity
     {
         Provider boxProvider = getBoxProvider();
         try {
-            boxProvider.startAccountLink(this, BOX_AUTH_RC);
-            itsAccountLinkUris.put(BOX_AUTH_RC, currProviderUri);
+            boxProvider.startAccountLink(this, ActivityRequest.BOX_AUTH);
+            itsAccountLinkUris.put(ActivityRequest.BOX_AUTH, currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "Box startAccountLink failed", e);
             boxProvider.unlinkAccount();
@@ -413,8 +406,10 @@ public class MainActivity extends AppCompatActivity
     {
         Provider onedriveProvider = getOnedriveProvider();
         try {
-            onedriveProvider.startAccountLink(this, ONEDRIVE_LINK_RC);
-            itsAccountLinkUris.put(ONEDRIVE_LINK_RC, currProviderUri);
+            onedriveProvider.startAccountLink(this,
+                                              ActivityRequest.ONEDRIVE_LINK);
+            itsAccountLinkUris.put(ActivityRequest.ONEDRIVE_LINK,
+                                   currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "OneDrive startAccountLink failed", e);
             onedriveProvider.unlinkAccount();
@@ -427,8 +422,10 @@ public class MainActivity extends AppCompatActivity
     {
         Provider owncloudProvider = getOwncloudProvider();
         try {
-            owncloudProvider.startAccountLink(this, OWNCLOUD_LINK_RC);
-            itsAccountLinkUris.put(OWNCLOUD_LINK_RC, currProviderUri);
+            owncloudProvider.startAccountLink(this,
+                                              ActivityRequest.OWNCLOUD_LINK);
+            itsAccountLinkUris.put(ActivityRequest.OWNCLOUD_LINK,
+                                   currProviderUri);
         } catch (Exception e) {
             Log.e(TAG, "ownCloud startAccountLink failed", e);
             owncloudProvider.unlinkAccount();
