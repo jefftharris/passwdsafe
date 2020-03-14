@@ -106,7 +106,8 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     }
 
     @Override
-    public NewAccountTask finishAccountLink(int activityRequestCode,
+    public NewAccountTask finishAccountLink(FragmentActivity activity,
+                                            int activityRequestCode,
                                             int activityResult,
                                             Intent activityData,
                                             Uri providerAcctUri)

@@ -34,7 +34,8 @@ public interface Provider
     void startAccountLink(FragmentActivity activity, int requestCode);
 
     /** Finish the process of linking to an account */
-    NewAccountTask finishAccountLink(int activityRequestCode,
+    NewAccountTask finishAccountLink(FragmentActivity activity,
+                                     int activityRequestCode,
                                      int activityResult,
                                      Intent activityData,
                                      Uri providerAcctUri);

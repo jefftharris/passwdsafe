@@ -125,6 +125,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      */
     @Override
     public synchronized NewAccountTask finishAccountLink(
+            FragmentActivity activity,
             int activityRequestCode,
             int activityResult,
             Intent activityData,

@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity
         if (itsDropboxPendingAcctLink) {
             itsDropboxPendingAcctLink = false;
             itsNewAccountTask = getDbxProvider().finishAccountLink(
-                    DROPBOX_LINK_RC, Activity.RESULT_OK,
+                    this, DROPBOX_LINK_RC, Activity.RESULT_OK,
                     null, getAccountLinkUri(DROPBOX_LINK_RC));
         }
 
@@ -203,25 +203,25 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode) {
         case BOX_AUTH_RC: {
             itsNewAccountTask = getBoxProvider().finishAccountLink(
-                    requestCode, resultCode, data,
+                    this, requestCode, resultCode, data,
                     getAccountLinkUri(BOX_AUTH_RC));
             break;
         }
         case ONEDRIVE_LINK_RC: {
             itsNewAccountTask = getOnedriveProvider().finishAccountLink(
-                    requestCode, resultCode, data,
+                    this, requestCode, resultCode, data,
                     getAccountLinkUri(ONEDRIVE_LINK_RC));
             break;
         }
         case OWNCLOUD_LINK_RC: {
             itsNewAccountTask = getOwncloudProvider().finishAccountLink(
-                    requestCode, resultCode, data,
+                    this, requestCode, resultCode, data,
                     getAccountLinkUri(OWNCLOUD_LINK_RC));
             break;
         }
         case GDRIVE_PLAY_LINK_RC: {
             itsNewAccountTask = getGDrivePlayProvider().finishAccountLink(
-                    requestCode, resultCode, data,
+                    this, requestCode, resultCode, data,
                     getAccountLinkUri(GDRIVE_PLAY_LINK_RC));
             break;
         }

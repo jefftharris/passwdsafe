@@ -112,7 +112,8 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
 
 
     @Override
-    public NewAccountTask finishAccountLink(int activityRequestCode,
+    public NewAccountTask finishAccountLink(FragmentActivity activity,
+                                            int activityRequestCode,
                                             int activityResult,
                                             Intent activityData,
                                             Uri providerAcctUri)
