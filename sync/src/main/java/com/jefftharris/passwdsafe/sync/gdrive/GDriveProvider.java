@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.sync.gdrive;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -21,13 +22,20 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.UserRecoverableNotifiedException;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.Task;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -42,6 +50,7 @@ import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.ActivityRequest;
 import com.jefftharris.passwdsafe.sync.R;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.SyncUpdateHandler;
@@ -77,6 +86,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     private static final String TAG = "GDriveProvider";
 
     private String itsAccountName;
+    private String itsPendingAccountName;
 
     /** Constructor */
     public GDriveProvider(Context ctx)
@@ -109,6 +119,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
             alwaysPrompt = false;
         }
 
+        itsPendingAccountName = null;
         Intent intent = AccountPicker.newChooseAccountIntent(
                 selAccount, null,
                 new String[] { GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE },
@@ -129,28 +140,59 @@ public class GDriveProvider extends AbstractSyncTimerProvider
                                             Intent activityData,
                                             Uri acctProviderUri)
     {
-        if (activityData == null) {
+        if (activityResult != Activity.RESULT_OK) {
             return null;
         }
 
-        Bundle b = activityData.getExtras();
-        String accountName = (b != null) ?
-                b.getString(AccountManager.KEY_ACCOUNT_NAME) : null;
-        Log.i(TAG, "Selected account: " + accountName);
-        if (TextUtils.isEmpty(accountName)) {
+        switch (activityRequestCode) {
+        case ActivityRequest.GDRIVE_PLAY_LINK: {
+            if (activityData == null) {
+                return null;
+            }
+            Bundle b = activityData.getExtras();
+            String accountName = (b != null) ?
+                    b.getString(AccountManager.KEY_ACCOUNT_NAME) : null;
+            Log.i(TAG, "Selected initial account: " + accountName);
+            if (TextUtils.isEmpty(accountName)) {
+                return null;
+            }
+
+            itsPendingAccountName = accountName;
+
+            try {
+                Intent intent = getSigninClient(accountName, activity)
+                        .getSignInIntent();
+                activity.startActivityForResult(
+                        intent, ActivityRequest.GDRIVE_PLAY_LINK_PERMS);
+            } catch (ActivityNotFoundException e) {
+                String msg = getContext().getString(
+                        R.string.google_acct_not_available);
+                PasswdSafeUtil.showError(msg, TAG, e, new ActContext(activity));
+            }
             return null;
         }
+        case ActivityRequest.GDRIVE_PLAY_LINK_PERMS: {
+            String accountName = itsPendingAccountName;
+            itsPendingAccountName = null;
+            Log.i(TAG, "Selected account: " + accountName);
+            if (TextUtils.isEmpty(accountName)) {
+                return null;
+            }
 
-        // Re-authorization, don't trigger a new account
-        if (TextUtils.equals(accountName, itsAccountName)) {
-            requestSync(false);
-            return null;
+            // Re-authorization, don't trigger a new account
+            if (TextUtils.equals(accountName, itsAccountName)) {
+                requestSync(false);
+                return null;
+            }
+
+            setAcctName(accountName);
+            updateAcct();
+            return new NewAccountTask<>(acctProviderUri, accountName,
+                                        this, false, getContext(), TAG);
+        }
         }
 
-        setAcctName(accountName);
-        updateAcct();
-        return new NewAccountTask<>(acctProviderUri, accountName,
-                                    this, false, getContext(), TAG);
+        return null;
     }
 
     @Override
@@ -169,6 +211,13 @@ public class GDriveProvider extends AbstractSyncTimerProvider
                 if (token != null) {
                     GoogleAuthUtil.clearToken(ctx, token);
                 }
+
+                GoogleSignInClient client = getSigninClient(acct.name, ctx);
+                Task<Void> task = client.revokeAccess();
+                task.addOnCompleteListener(
+                        task1 -> PasswdSafeUtil.dbginfo(TAG,
+                                                        "Revoke complete"));
+
             } catch (Exception e) {
                 PasswdSafeUtil.dbginfo(TAG, e, "No auth token for %s",
                                        acct.name);
@@ -272,7 +321,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
             if (driveService.first != null) {
                 syncState = user.useDrive(driveService.first);
             } else {
-                syncState = SyncUpdateHandler.GDriveState.PENDING_AUTH;
+                syncState = SyncUpdateHandler.GDriveState.AUTH_REQUIRED;
             }
         } catch (UserRecoverableAuthIOException e) {
             PasswdSafeUtil.dbginfo(TAG, e, "Recoverable google auth error");
@@ -400,6 +449,19 @@ public class GDriveProvider extends AbstractSyncTimerProvider
         }
     }
 
+    /**
+     * Get the sign-in client
+     */
+    private static GoogleSignInClient getSigninClient(String accountName,
+                                                      Context ctx)
+    {
+        GoogleSignInOptions.Builder builder =
+                new GoogleSignInOptions.Builder();
+        builder.requestScopes(new Scope(DriveScopes.DRIVE));
+        builder.setAccountName(accountName);
+        return GoogleSignIn.getClient(ctx, builder.build());
+    }
+
     /** Get the Google account credential */
     private static GoogleAccountCredential getAcctCredential(Context ctx)
     {
@@ -426,15 +488,21 @@ public class GDriveProvider extends AbstractSyncTimerProvider
             credential.setBackOff(new ExponentialBackOff());
             credential.setSelectedAccountName(acct.name);
 
-            token = GoogleAuthUtil.getTokenWithNotification(
-                    ctx, acct, credential.getScope(),
-                    null, PasswdSafeContract.AUTHORITY, null);
+            token = GoogleAuthUtil.getToken(ctx, acct, credential.getScope());
 
             Drive.Builder builder = new Drive.Builder(
                     AndroidHttp.newCompatibleTransport(),
                     JacksonFactory.getDefaultInstance(), credential);
             builder.setApplicationName(ctx.getString(R.string.app_name));
             drive = builder.build();
+        } catch (UserRecoverableAuthException e) {
+            PasswdSafeUtil.dbginfo(TAG, e, "Recoverable auth exception");
+            NotifUtils.showNotif(NotifUtils.Type.DRIVE_REAUTH_REQUIRED, ctx);
+            try {
+                GoogleAuthUtil.clearToken(ctx, null);
+            } catch (Exception ioe) {
+                Log.e(TAG, "getDriveService clear failure", e);
+            }
         } catch (UserRecoverableNotifiedException e) {
             // User notified
             PasswdSafeUtil.dbginfo(TAG, e, "User notified auth exception");

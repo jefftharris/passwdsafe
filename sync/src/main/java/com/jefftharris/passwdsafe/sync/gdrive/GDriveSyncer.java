@@ -78,7 +78,7 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
             throws IOException
     {
         if (itsProviderClient == null) {
-            itsSyncState = SyncUpdateHandler.GDriveState.PENDING_AUTH;
+            itsSyncState = SyncUpdateHandler.GDriveState.AUTH_REQUIRED;
             return null;
         }
 

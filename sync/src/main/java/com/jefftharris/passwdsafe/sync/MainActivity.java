@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -209,10 +210,11 @@ public class MainActivity extends AppCompatActivity
                     getAccountLinkUri(ActivityRequest.OWNCLOUD_LINK));
             break;
         }
-        case ActivityRequest.GDRIVE_PLAY_LINK: {
+        case ActivityRequest.GDRIVE_PLAY_LINK:
+        case ActivityRequest.GDRIVE_PLAY_LINK_PERMS: {
             itsNewAccountTask = getGDrivePlayProvider().finishAccountLink(
                     this, requestCode, resultCode, data,
-                    getAccountLinkUri(ActivityRequest.GDRIVE_PLAY_LINK));
+                    getAccountLinkUri(requestCode));
             break;
         }
         case ActivityRequest.GDRIVE_PLAY_SERVICES_ERROR: {
@@ -518,7 +520,8 @@ public class MainActivity extends AppCompatActivity
         if (provider == null) {
             return;
         }
-        if (provider.isAccountAuthorized()) {
+        CharSequence warning = getProviderWarning(type);
+        if (provider.isAccountAuthorized() && TextUtils.isEmpty(warning)) {
             provider.requestSync(true);
         } else {
             switch (type) {
@@ -639,10 +642,6 @@ public class MainActivity extends AppCompatActivity
             }
             case AUTH_REQUIRED: {
                 warning = getText(R.string.gdrive_state_auth_required);
-                break;
-            }
-            case PENDING_AUTH: {
-                warning = getText(R.string.gdrive_state_pending_auth);
                 break;
             }
             }

@@ -18,7 +18,6 @@
     <string name="dropbox_synced_files">Dropbox-synkroniserte filer</string>
     <string name="gdrive_reauth_required">Google Disk krever at du autentiserer deg på nytt</string>
     <string name="gdrive_state_auth_required">Autentisering av Google-kontoen er påkrevd. Synkroniser igjen for å starte prosessen.</string>
-    <string name="gdrive_state_pending_auth">Autentisering av Google-kontoen kommer. Velg varslingen om innloggingsforespørsel og synkroniser igjen.</string>
     <string name="google_acct_not_available">Google-konto er ikke tilgjengelig</string>
     <string name="interval">Intervall</string>
     <string name="last_failure_label">Siste feil:</string>

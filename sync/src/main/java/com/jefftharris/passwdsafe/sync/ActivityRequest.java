@@ -21,5 +21,6 @@ public interface ActivityRequest
     int PERMISSIONS = 5;
     int APP_SETTINGS = 6;
     int GDRIVE_PLAY_LINK = 7;
-    int GDRIVE_PLAY_SERVICES_ERROR = 8;
+    int GDRIVE_PLAY_LINK_PERMS = 8;
+    int GDRIVE_PLAY_SERVICES_ERROR = 9;
 }

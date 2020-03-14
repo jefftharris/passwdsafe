@@ -18,8 +18,7 @@ public interface SyncUpdateHandler
     enum GDriveState
     {
         OK,
-        AUTH_REQUIRED,
-        PENDING_AUTH
+        AUTH_REQUIRED
     }
 
     /**
