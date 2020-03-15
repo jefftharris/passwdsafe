@@ -18,6 +18,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
@@ -41,6 +43,7 @@ import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import org.pwsafe.lib.file.PwsFile;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Fragment for PasswdSafe preferences
@@ -88,7 +91,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         if (ctx instanceof Listener) {
@@ -171,6 +174,15 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     /**
+     * Find a non-null preference
+     */
+    @NonNull
+    private <T extends Preference> T requirePreference(String key)
+    {
+        return Objects.requireNonNull(findPreference(key));
+    }
+
+    /**
      * A screen of preferences
      */
     private static abstract class Screen
@@ -246,24 +258,22 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          */
         protected FilesScreen(SharedPreferences prefs, Resources res)
         {
-            itsFileDirPref = (EditTextPreference)
-                    findPreference(Preferences.PREF_FILE_DIR);
+            itsFileDirPref = requirePreference(Preferences.PREF_FILE_DIR);
             itsFileDirPref.setDefaultValue(Preferences.PREF_FILE_DIR_DEF);
             onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_DIR);
 
-            itsDefFilePref = findPreference(Preferences.PREF_DEF_FILE);
+            itsDefFilePref = requirePreference(Preferences.PREF_DEF_FILE);
             itsDefFilePref.setOnPreferenceClickListener(this);
             onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
 
-            itsFileClosePref = (ListPreference)
-                    findPreference(Preferences.PREF_FILE_CLOSE_TIMEOUT);
+            itsFileClosePref =
+                    requirePreference(Preferences.PREF_FILE_CLOSE_TIMEOUT);
             itsFileClosePref.setEntries(FileTimeoutPref.getDisplayNames(res));
             itsFileClosePref.setEntryValues(FileTimeoutPref.getValues());
             onSharedPreferenceChanged(prefs,
                                       Preferences.PREF_FILE_CLOSE_TIMEOUT);
 
-            itsFileBackupPref = (ListPreference)
-                    findPreference(Preferences.PREF_FILE_BACKUP);
+            itsFileBackupPref = requirePreference(Preferences.PREF_FILE_BACKUP);
             itsFileBackupPref.setEntries(FileBackupPref.getDisplayNames(res));
             itsFileBackupPref.setEntryValues(FileBackupPref.getValues());
             onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_BACKUP);
@@ -375,8 +385,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          */
         protected PasswordScreen(SharedPreferences prefs, Resources res)
         {
-            itsPasswdVisibleTimeoutPref = (ListPreference)
-                    findPreference(Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
+            itsPasswdVisibleTimeoutPref =
+                    requirePreference(Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
             itsPasswdVisibleTimeoutPref.setEntries(
                     PasswdTimeoutPref.getDisplayNames(res));
             itsPasswdVisibleTimeoutPref.setEntryValues(
@@ -384,8 +394,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             onSharedPreferenceChanged(prefs,
                                       Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
 
-            itsPasswdEncPref = (ListPreference)
-                    findPreference(Preferences.PREF_PASSWD_ENC);
+            itsPasswdEncPref = requirePreference(Preferences.PREF_PASSWD_ENC);
             String[] charsets =
                     PwsFile.ALL_PASSWORD_CHARSETS.toArray(new String[0]);
             itsPasswdEncPref.setEntries(charsets);
@@ -393,8 +402,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             itsPasswdEncPref.setDefaultValue(Preferences.PREF_PASSWD_ENC_DEF);
             onSharedPreferenceChanged(prefs, Preferences.PREF_PASSWD_ENC);
 
-            itsPasswdExpiryNotifPref = (ListPreference)
-                    findPreference(Preferences.PREF_PASSWD_EXPIRY_NOTIF);
+            itsPasswdExpiryNotifPref =
+                    requirePreference(Preferences.PREF_PASSWD_EXPIRY_NOTIF);
             itsPasswdExpiryNotifPref.setEntries(
                     PasswdExpiryNotifPref.getDisplayNames(res));
             itsPasswdExpiryNotifPref.setEntryValues(
@@ -402,8 +411,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             onSharedPreferenceChanged(prefs,
                                       Preferences.PREF_PASSWD_EXPIRY_NOTIF);
 
-            itsPasswdDefaultSymsPref = (EditTextPreference)
-                    findPreference(Preferences.PREF_PASSWD_DEFAULT_SYMS);
+            itsPasswdDefaultSymsPref =
+                    requirePreference(Preferences.PREF_PASSWD_DEFAULT_SYMS);
             itsPasswdDefaultSymsPref.setDialogMessage(
                     getString(R.string.default_symbols_empty_pref,
                               PasswdPolicy.SYMBOLS_DEFAULT));
@@ -413,10 +422,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                                       Preferences.PREF_PASSWD_DEFAULT_SYMS);
 
             Preference clearNotifsPref =
-                    findPreference(Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS);
+                    requirePreference(Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS);
             clearNotifsPref.setOnPreferenceClickListener(this);
             Preference clearAllSavedPref =
-                    findPreference(Preferences.PREF_PASSWD_CLEAR_ALL_SAVED);
+                    requirePreference(Preferences.PREF_PASSWD_CLEAR_ALL_SAVED);
             clearAllSavedPref.setOnPreferenceClickListener(this);
         }
 
@@ -520,8 +529,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
          */
         protected RecordScreen(SharedPreferences prefs, Resources res)
         {
-            itsRecordSortOrderPref = (ListPreference)
-                    findPreference(Preferences.PREF_RECORD_SORT_ORDER);
+            itsRecordSortOrderPref =
+                    requirePreference(Preferences.PREF_RECORD_SORT_ORDER);
             itsRecordSortOrderPref.setEntries(
                     RecordSortOrderPref.getDisplayNames(res));
             itsRecordSortOrderPref.setEntryValues(
@@ -529,8 +538,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             onSharedPreferenceChanged(prefs,
                                       Preferences.PREF_RECORD_SORT_ORDER);
 
-            itsRecordFieldSortPref = (ListPreference)
-                    findPreference(Preferences.PREF_RECORD_FIELD_SORT);
+            itsRecordFieldSortPref =
+                    requirePreference(Preferences.PREF_RECORD_FIELD_SORT);
             itsRecordFieldSortPref.setEntries(
                     RecordFieldSortPref.getDisplayNames(res));
             itsRecordFieldSortPref.setEntryValues(
