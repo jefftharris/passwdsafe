@@ -64,7 +64,8 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
     public static void check404Error(ClientException e)
             throws ClientException
     {
-        if (!e.getMessage().contains("\n404 : Not Found\n")) {
+        String msg = e.getMessage();
+        if ((msg == null) || !msg.contains("\n404 : Not Found\n")) {
             throw e;
         }
     }
@@ -75,7 +76,8 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
      */
     public static boolean is401Error(ClientException e)
     {
-        return e.getMessage().contains("\n401 : Unauthorized");
+        String msg = e.getMessage();
+        return (msg != null) && msg.contains("\n401 : Unauthorized");
     }
 
 

@@ -53,7 +53,8 @@ public class ClientLogger extends DefaultLogger
             sb.append(Thread.currentThread().getStackTrace()[callerStackDepth].getLineNumber());
             return sb.toString();
         } catch (final Exception ex) {
-            Log.e("ClientLogger", ex.getMessage());
+            String msg = ex.getMessage();
+            Log.e("ClientLogger", (msg != null) ? msg : "");
         }
         return null;
     }

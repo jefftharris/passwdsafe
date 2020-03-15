@@ -100,7 +100,8 @@ public final class ApiCompatKitkat
                                                           Uri uri)
     {
         try {
-            Object rc = itsDeleteDocumentMeth.invoke(null, cr, uri);
+            Object rc = Objects.requireNonNull(
+                    itsDeleteDocumentMeth.invoke(null, cr, uri));
             return (Boolean)rc;
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,8 +128,8 @@ public final class ApiCompatKitkat
     public static List<Uri> getPersistedUriPermissions(ContentResolver cr)
     {
         try {
-            List<Object> perms =
-                    (List<Object>) itsGetPersistedUriPermissionsMeth.invoke(cr);
+            List<Object> perms = (List<Object>) Objects.requireNonNull(
+                    itsGetPersistedUriPermissionsMeth.invoke(cr));
 
             List<Uri> uris = new ArrayList<>(perms.size());
             for (Object perm: perms) {

@@ -79,8 +79,11 @@ public class PasswdFileSaveHelper implements PwsStorage.SaveHelper
 
         final Pattern pat = Pattern.compile(
                 "^" + Pattern.quote(fileName) + "_\\d{8}_\\d{6}\\.ibak$");
-        File[] backupFiles = dir.listFiles(
-                f -> f.isFile() && pat.matcher(f.getName()).matches());
+        File[] backupFiles = null;
+        if (dir != null) {
+            backupFiles = dir.listFiles(
+                    f -> f.isFile() && pat.matcher(f.getName()).matches());
+        }
         if (backupFiles != null) {
             Arrays.sort(backupFiles);
 
