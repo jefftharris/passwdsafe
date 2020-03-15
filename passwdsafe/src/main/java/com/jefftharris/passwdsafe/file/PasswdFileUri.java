@@ -693,11 +693,11 @@ public class PasswdFileUri implements Parcelable
         switch (PasswdSafeContract.MATCHER.match(itsUri)) {
         case PasswdSafeContract.MATCH_PROVIDER:
         case PasswdSafeContract.MATCH_PROVIDER_FILES: {
-            providerId = Long.valueOf(itsUri.getPathSegments().get(1));
+            providerId = Long.parseLong(itsUri.getPathSegments().get(1));
             break;
         }
         case PasswdSafeContract.MATCH_PROVIDER_FILE: {
-            providerId = Long.valueOf(itsUri.getPathSegments().get(1));
+            providerId = Long.parseLong(itsUri.getPathSegments().get(1));
             isFile = true;
             break;
         }

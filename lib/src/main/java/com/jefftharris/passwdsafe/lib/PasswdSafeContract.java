@@ -120,7 +120,7 @@ public final class PasswdSafeContract
         /** Get the provider id from the URI */
         public static long getId(Uri uri)
         {
-            return Long.valueOf(getIdStr(uri));
+            return Long.parseLong(getIdStr(uri));
         }
 
         /** Get the provider id string from the URI */
@@ -169,7 +169,7 @@ public final class PasswdSafeContract
         /** Get the file id from the URI */
         public static long getId(Uri uri)
         {
-            return Long.valueOf(getIdStr(uri));
+            return Long.parseLong(getIdStr(uri));
         }
 
         /** Get the file id string from the URI */

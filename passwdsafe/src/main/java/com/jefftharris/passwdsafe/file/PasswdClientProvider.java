@@ -194,7 +194,7 @@ public class PasswdClientProvider extends ContentProvider
             try {
                 String limitStr = uri.getQueryParameter("limit");
                 if (!TextUtils.isEmpty(limitStr)) {
-                    limit = Integer.valueOf(Objects.requireNonNull(limitStr));
+                    limit = Integer.parseInt(Objects.requireNonNull(limitStr));
                 }
             } catch (NumberFormatException e) {
                 // ignore
