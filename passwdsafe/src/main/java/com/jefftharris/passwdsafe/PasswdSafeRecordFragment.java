@@ -94,13 +94,17 @@ public class PasswdSafeRecordFragment
                         itsLastSelectedTab = position;
                     }
                 });
-        viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager())
+        viewPager.setAdapter(new FragmentPagerAdapter(
+                getChildFragmentManager(),
+                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
         {
+            @NonNull
             @Override
             public Fragment getItem(int position)
             {
                 switch (position) {
-                case 0: {
+                case 0:
+                default: {
                     return PasswdSafeRecordBasicFragment.newInstance(
                             getLocation());
                 }
@@ -113,7 +117,6 @@ public class PasswdSafeRecordFragment
                             getLocation());
                 }
                 }
-                return null;
             }
 
             @Override
