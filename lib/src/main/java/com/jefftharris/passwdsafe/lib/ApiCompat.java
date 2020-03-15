@@ -31,7 +31,6 @@ public final class ApiCompat
 {
     public static final int SDK_KITKAT = 19;
     public static final int SDK_LOLLIPOP = 21;
-    public static final int SDK_MARSHMALLOW = 23;
     public static final int SDK_OREO = 26;
 
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
