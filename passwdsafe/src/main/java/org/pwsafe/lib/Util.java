@@ -194,7 +194,7 @@ public final class Util
      */
     public static byte[] cloneByteArray(byte[] src, int length)
     {
-        int max = (length < src.length) ? length : src.length;
+        int max = Math.min(length, src.length);
         final byte[] dst = new byte[length];
 
         System.arraycopy(src, 0, dst, 0, max);
