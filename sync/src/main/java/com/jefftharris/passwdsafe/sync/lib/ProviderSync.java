@@ -10,8 +10,6 @@ package com.jefftharris.passwdsafe.sync.lib;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -325,35 +323,20 @@ public class ProviderSync
         {
             addTrace("checkConnectivity");
             SyncConnectivityResult connResult = null;
-            ConnectivityManager connMgr = (ConnectivityManager)
-                    itsContext.getSystemService(Context.CONNECTIVITY_SERVICE);
             boolean online;
-            if (connMgr != null) {
-                NetworkInfo netInfo = connMgr.getActiveNetworkInfo();
-                addTrace("got network info");
-                online = (netInfo != null) && netInfo.isConnected();
-                addTrace("got connected");
-            } else {
-                online = false;
-                itsLogrec.addFailure(new NullPointerException("connMgr"));
-            }
-            if (online) {
-                try {
-                    if (SyncApp.get(itsContext).isForceSyncFailure()) {
-                        throw new Exception("Forced failure");
-                    }
-
-                    connResult =
-                            itsProviderImpl.checkSyncConnectivity(itsAccount);
-                    itsLogrec.checkSyncInterrupted();
-                    online = (connResult != null);
-                } catch (Exception e) {
-                    Log.e(TAG, "checkSyncConnectivity error", e);
-                    online = false;
-                    itsLogrec.addFailure(e);
+            try {
+                if (SyncApp.get(itsContext).isForceSyncFailure()) {
+                    throw new Exception("Forced failure");
                 }
+
+                connResult = itsProviderImpl.checkSyncConnectivity(itsAccount);
+                itsLogrec.checkSyncInterrupted();
+                online = (connResult != null);
+            } catch (Exception e) {
+                Log.e(TAG, "checkSyncConnectivity error", e);
+                online = false;
+                itsLogrec.addFailure(e);
             }
-            addTrace("got connectivity");
             itsLogrec.setNotConnected(!online);
             return connResult;
         }
