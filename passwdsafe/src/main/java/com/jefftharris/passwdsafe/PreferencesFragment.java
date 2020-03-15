@@ -173,7 +173,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     /**
      * A screen of preferences
      */
-    private abstract class Screen
+    private static abstract class Screen
         implements Preference.OnPreferenceClickListener,
                    SharedPreferences.OnSharedPreferenceChangeListener
     {

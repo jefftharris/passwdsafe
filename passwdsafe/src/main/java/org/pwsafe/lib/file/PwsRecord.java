@@ -58,7 +58,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * field's length, data and, for those formats that use it, the field's
      * type.
      */
-    protected class Item
+    protected static class Item
     {
         protected byte[] rawData;
         protected byte[] data;
