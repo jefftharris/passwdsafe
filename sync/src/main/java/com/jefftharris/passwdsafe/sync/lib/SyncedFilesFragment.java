@@ -87,7 +87,7 @@ public class SyncedFilesFragment extends ListFragment
 
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
@@ -157,7 +157,7 @@ public class SyncedFilesFragment extends ListFragment
      * Initialize the contents of the Activity's standard options menu
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_synced_files, menu);
 
@@ -190,7 +190,10 @@ public class SyncedFilesFragment extends ListFragment
      * @see android.support.v4.app.ListFragment#onListItemClick(android.widget.ListView, android.view.View, int, long)
      */
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id)
+    public void onListItemClick(@NonNull ListView l,
+                                @NonNull View v,
+                                int position,
+                                long id)
     {
         ListItem item = itsFilesAdapter.getItem(position);
         if (item == null) {

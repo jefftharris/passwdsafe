@@ -132,7 +132,7 @@ public class PasswdSafeListFragment extends ListFragment
 
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
@@ -207,7 +207,8 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         if (itsIsContents && (itsListener != null) &&
             itsListener.activityHasMenu() && itsListener.isNavDrawerClosed()) {
@@ -233,7 +234,8 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
+    public void onCreateContextMenu(@NonNull ContextMenu menu,
+                                    @NonNull View v,
                                     ContextMenu.ContextMenuInfo menuInfo)
     {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -281,7 +283,10 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id)
+    public void onListItemClick(@NonNull ListView l,
+                                @NonNull View v,
+                                int position,
+                                long id)
     {
         if (!isResumed()) {
             return;

@@ -406,7 +406,7 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
+    protected void onSaveInstanceState(@NonNull Bundle outState)
     {
         super.onSaveInstanceState(outState);
         outState.putCharSequence(STATE_TITLE, itsTitle);
@@ -566,7 +566,7 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         if (!itsIsResumed) {
             return super.onOptionsItemSelected(item);

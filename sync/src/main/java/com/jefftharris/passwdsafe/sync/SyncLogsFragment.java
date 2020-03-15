@@ -50,7 +50,7 @@ public class SyncLogsFragment extends ListFragment
      * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
      */
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -200,7 +200,7 @@ public class SyncLogsFragment extends ListFragment
      * @see android.support.v4.app.Fragment#onCreateOptionsMenu(android.view.Menu, android.view.MenuInflater)
      */
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_sync_logs, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -231,7 +231,7 @@ public class SyncLogsFragment extends ListFragment
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int pos, long id)
+    public void onListItemClick(ListView l, @NonNull View v, int pos, long id)
     {
         if (l.isItemChecked(pos)) {
             if (pos == itsSelItemPos) {

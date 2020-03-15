@@ -10,6 +10,8 @@ package com.jefftharris.passwdsafe;
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuInflater;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
@@ -36,7 +38,7 @@ public abstract class AbstractPasswdSafeFileDataFragment
     private ListenerT itsListener;
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         //noinspection unchecked
@@ -51,7 +53,8 @@ public abstract class AbstractPasswdSafeFileDataFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
             doOnCreateOptionsMenu(menu, inflater);

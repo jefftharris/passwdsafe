@@ -274,7 +274,8 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view,
+    public void onCreateContextMenu(@NonNull ContextMenu menu,
+                                    @NonNull View view,
                                     ContextMenu.ContextMenuInfo menuInfo)
     {
         super.onCreateContextMenu(menu, view, menuInfo);

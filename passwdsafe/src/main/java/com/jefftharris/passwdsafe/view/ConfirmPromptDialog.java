@@ -127,7 +127,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     }
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         Fragment frag = getTargetFragment();
@@ -184,7 +184,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     }
 
     @Override
-    public void onCancel(DialogInterface dialog)
+    public void onCancel(@NonNull DialogInterface dialog)
     {
         super.onCancel(dialog);
         if (itsListener != null) {

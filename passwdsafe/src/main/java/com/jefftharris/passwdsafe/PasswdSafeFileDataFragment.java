@@ -47,7 +47,7 @@ public class PasswdSafeFileDataFragment extends Fragment
     private static final String TAG = "PasswdSafeFileDataFragment";
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         SharedPreferences prefs = Preferences.getSharedPrefs(ctx);

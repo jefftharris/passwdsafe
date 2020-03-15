@@ -77,7 +77,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
@@ -108,7 +108,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
             inflater.inflate(R.menu.fragment_passwdsafe_policy_list, menu);
@@ -117,7 +118,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu)
+    public void onPrepareOptionsMenu(@NonNull Menu menu)
     {
         super.onPrepareOptionsMenu(menu);
 
@@ -142,7 +143,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int pos, long id)
+    public void onListItemClick(ListView l, @NonNull View v, int pos, long id)
     {
         l.invalidateViews();
     }

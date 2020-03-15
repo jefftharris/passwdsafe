@@ -58,7 +58,7 @@ public class SyncProviderFragment extends ListFragment
     private final ProviderSyncTask itsSyncTask = new ProviderSyncTask();
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
@@ -66,7 +66,7 @@ public class SyncProviderFragment extends ListFragment
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -154,7 +154,7 @@ public class SyncProviderFragment extends ListFragment
 
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_sync_provider, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -177,9 +177,12 @@ public class SyncProviderFragment extends ListFragment
 
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id)
+    public void onListItemClick(@NonNull ListView l,
+                                @NonNull View v,
+                                int position,
+                                long id)
     {
-        Cursor cursor = (Cursor)getListAdapter().getItem(position);
+        Cursor cursor = (Cursor)requireListAdapter().getItem(position);
         if ((cursor == null) || (itsListener == null)) {
             return;
         }

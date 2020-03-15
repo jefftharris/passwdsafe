@@ -17,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,7 +49,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     private ListenerT itsListener;
 
     @Override
-    public void onAttach(Context ctx)
+    public void onAttach(@NonNull Context ctx)
     {
         super.onAttach(ctx);
         //noinspection unchecked
@@ -82,7 +84,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig)
+    public void onConfigurationChanged(@NonNull Configuration newConfig)
     {
         super.onConfigurationChanged(newConfig);
         // Forward the new configuration the drawer toggle component.
@@ -90,7 +92,8 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         // If the drawer is open, show the global app actions in the action bar
         if (itsDrawerLayout != null && isDrawerOpen()) {
@@ -103,7 +106,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         return itsDrawerToggle.onOptionsItemSelected(item) ||
                super.onOptionsItemSelected(item);
