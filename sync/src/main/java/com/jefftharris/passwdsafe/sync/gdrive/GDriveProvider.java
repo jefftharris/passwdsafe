@@ -36,11 +36,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
-import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
@@ -82,6 +84,10 @@ public class GDriveProvider extends AbstractSyncTimerProvider
 
     private static final int MIGRATION_V3API = 1;
     private static final int MIGRATION_SERVICE = 2;
+
+    private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+    private static final JsonFactory JSON_FACTORY =
+            JacksonFactory.getDefaultInstance();
 
     private static final String TAG = "GDriveProvider";
 
@@ -491,8 +497,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
             token = GoogleAuthUtil.getToken(ctx, acct, credential.getScope());
 
             Drive.Builder builder = new Drive.Builder(
-                    AndroidHttp.newCompatibleTransport(),
-                    JacksonFactory.getDefaultInstance(), credential);
+                    HTTP_TRANSPORT, JSON_FACTORY, credential);
             builder.setApplicationName(ctx.getString(R.string.app_name));
             drive = builder.build();
         } catch (UserRecoverableAuthException e) {
