@@ -44,6 +44,7 @@ public class SyncWorker extends Worker
     /**
      * Constructor
      */
+    @SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
     public SyncWorker(@NonNull Context context,
                       @NonNull WorkerParameters workerParams)
     {
