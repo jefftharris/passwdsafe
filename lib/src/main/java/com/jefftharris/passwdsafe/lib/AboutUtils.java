@@ -14,7 +14,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.regex.Pattern;
+
+import androidx.preference.PreferenceManager;
 
 /**
  * Utilities for about dialogs
