@@ -72,6 +72,9 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.8.0&lt;/b&gt; - Byttet til Google sitt innloggingsgrensesnitt
+        for å be om Disk-rettigheter istedenfor et varsel. Oppdaterte bibliotek.
+        \n\n
         &lt;b&gt;3.7.0&lt;/b&gt; - Forbedret planlegging av
         bakgrunnssynkronisering.  Oppdaterte Box- og Dropbox-bibliotekene.
         \n\n
