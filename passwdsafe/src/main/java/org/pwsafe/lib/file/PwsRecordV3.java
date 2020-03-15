@@ -425,7 +425,7 @@ public class PwsRecordV3 extends PwsRecord
 
     static final byte[] EOF_BYTES_RAW = "PWS3-EOFPWS3-EOF".getBytes();
 
-    protected class ItemV3 extends Item
+    protected static class ItemV3 extends Item
     {
         public ItemV3(PwsFileV3 file) throws EndOfFileException, IOException
         {
