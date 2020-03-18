@@ -1,5 +1,5 @@
 #!/bin/sh
-buildToolsVer=28.0.3
+buildToolsVer=29.0.3
 ~/opt/android-sdk-linux/build-tools/${buildToolsVer}/dexdump "$@" | \
     grep 'Class descriptor' | \
     sort
