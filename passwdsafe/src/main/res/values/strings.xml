@@ -337,6 +337,7 @@
     <string name="symbols_used_by_default">Symbols used by default in a password policy: %1$s</string>
     <string name="sync">Sync</string>
     <string name="sync_account_deleted">Sync account deleted.  Use the menu to choose another option.</string>
+    <string name="theme">Theme</string>
     <string name="times_header">TIMES</string>
     <string name="title">Title</string>
     <string name="touch_sensor_to_save_the_password">Touch sensor to save the password</string>
@@ -348,7 +349,6 @@
     <string name="username">User Name</string>
     <string name="use_count">Uses</string>
     <string name="use_digits">Digits</string>
-    <string name="use_light_theme">Use light theme</string>
     <string name="use_lowercase">Lowercase</string>
     <string name="use_symbols">Symbols</string>
     <string name="use_uppercase">Uppercase</string>
@@ -366,6 +366,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        -Translations: theme_pref array, remove use_light_theme, add theme
+
         &lt;b&gt;6.19.0&lt;/b&gt; - Use biometric credentials to save passwords
         instead of only fingerprints.  Fix matching passwords when finding
         similar records.
@@ -631,6 +633,13 @@
         <item>30 seconds</item>
         <item>1 minute</item>
         <item>5 minutes</item>
+    </string-array>
+
+    <!-- Order must match ThemePref enum values -->
+    <string-array name="theme_pref">
+        <item>Follow system</item>
+        <item>Always light</item>
+        <item>Always dark</item>
     </string-array>
 
     <!-- Order must match constants in PasswdExpiration.Type -->

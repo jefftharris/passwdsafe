@@ -23,6 +23,7 @@ import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
 import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
+import com.jefftharris.passwdsafe.pref.ThemePref;
 
 import org.pwsafe.lib.file.PwsFile;
 
@@ -115,8 +116,9 @@ public class Preferences
         "sortCaseSensitivePref";
     public static final boolean PREF_SORT_CASE_SENSITIVE_DEF = true;
 
-    public static final String PREF_DISPLAY_THEME_LIGHT = "displayThemeLightPref";
-    private static final boolean PREF_DISPLAY_THEME_LIGHT_DEF = true;
+    public static final String PREF_DISPLAY_THEME = "displayThemePref";
+    private static final ThemePref PREF_DISPLAY_THEME_DEF =
+            ThemePref.FOLLOW_SYSTEM;
 
     public static final String PREF_DISPLAY_VIBRATE_KEYBOARD =
             "displayVibrateKeyboard";
@@ -387,12 +389,17 @@ public class Preferences
     }
 
     /**
-     * Get whether to use the light theme
+     * Get which theme is used
      */
-    public static boolean getDisplayThemeLight(SharedPreferences prefs)
+    public static ThemePref getDisplayTheme(SharedPreferences prefs)
     {
-        return prefs.getBoolean(PREF_DISPLAY_THEME_LIGHT,
-                                PREF_DISPLAY_THEME_LIGHT_DEF);
+        try {
+            return ThemePref.valueOf(
+                    prefs.getString(PREF_DISPLAY_THEME,
+                                    PREF_DISPLAY_THEME_DEF.toString()));
+        } catch (IllegalArgumentException e) {
+            return PREF_DISPLAY_THEME_DEF;
+        }
     }
 
     /**
@@ -434,6 +441,17 @@ public class Preferences
             getFileLegacyFileChooserPref(prefs)) {
             prefs.edit().putBoolean(PREF_FILE_LEGACY_FILE_CHOOSER, false)
                  .apply();
+        }
+
+        String oldThemePrefKey = "displayThemeLightPref";
+        if (prefs.contains(oldThemePrefKey)) {
+            boolean oldThemePref = prefs.getBoolean(oldThemePrefKey, true);
+            SharedPreferences.Editor edit = prefs.edit();
+            if (!oldThemePref) {
+                edit.putString(PREF_DISPLAY_THEME, ThemePref.DARK.toString());
+            }
+            edit.remove(oldThemePrefKey);
+            edit.apply();
         }
     }
 

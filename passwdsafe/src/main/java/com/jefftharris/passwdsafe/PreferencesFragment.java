@@ -38,6 +38,7 @@ import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
 import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
+import com.jefftharris.passwdsafe.pref.ThemePref;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 
 import org.pwsafe.lib.file.PwsFile;
@@ -107,7 +108,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         Resources res = getResources();
 
         if ((key == null) || key.equals("top_prefs")) {
-            itsScreen = new RootScreen();
+            itsScreen = new RootScreen(prefs, res);
         } else if (key.equals("fileOptions")) {
             itsScreen = new FilesScreen(prefs, res);
         } else if (key.equals("passwordOptions")) {
@@ -218,11 +219,18 @@ public class PreferencesFragment extends PreferenceFragmentCompat
      */
     private final class RootScreen extends Screen
     {
+        private final ListPreference itsThemePref;
+
         /**
          * Constructor
          */
-        protected RootScreen()
+        protected RootScreen(SharedPreferences prefs, Resources res)
         {
+            itsThemePref = requirePreference(Preferences.PREF_DISPLAY_THEME);
+            itsThemePref.setEntries(ThemePref.getDisplayNames(res));
+            itsThemePref.setEntryValues(ThemePref.getValues());
+            updateThemePrefSummary(prefs);
+
             Preference pref =
                     findPreference(Preferences.PREF_DISPLAY_VIBRATE_KEYBOARD);
             if (pref != null) {
@@ -235,11 +243,19 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                                               String key)
         {
             switch (key) {
-            case Preferences.PREF_DISPLAY_THEME_LIGHT: {
+            case Preferences.PREF_DISPLAY_THEME: {
+                updateThemePrefSummary(prefs);
                 requireActivity().recreate();
                 break;
             }
             }
+        }
+
+        private void updateThemePrefSummary(SharedPreferences prefs)
+        {
+            ThemePref pref = Preferences.getDisplayTheme(prefs);
+            Resources res = getResources();
+            itsThemePref.setSummary(pref.getDisplayName(res));
         }
     }
 

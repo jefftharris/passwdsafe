@@ -15,6 +15,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -182,9 +183,7 @@ public final class PasswdSafeApp extends Application
      */
     public static void setupTheme(Activity act)
     {
-        SharedPreferences prefs = Preferences.getSharedPrefs(act);
-        act.setTheme(Preferences.getDisplayThemeLight(prefs) ?
-                     R.style.PwsAppTheme : R.style.PwsAppThemeDark);
+        setupActTheme(act, false);
     }
 
     /**
@@ -192,10 +191,7 @@ public final class PasswdSafeApp extends Application
      */
     public static void setupDialogTheme(Activity act)
     {
-        SharedPreferences prefs = Preferences.getSharedPrefs(act);
-        act.setTheme(Preferences.getDisplayThemeLight(prefs) ?
-                             R.style.PwsAppTheme_Dialog :
-                             R.style.PwsAppThemeDark_Dialog);
+        setupActTheme(act, true);
     }
 
     /**
@@ -239,5 +235,44 @@ public final class PasswdSafeApp extends Application
             SharedPreferences prefs)
     {
         return Preferences.getPasswdExpiryNotifPref(prefs).getFilter();
+    }
+
+    /**
+     * Setup the theme on a normal or dialog activity
+     */
+    private static void setupActTheme(Activity act, boolean isDialog)
+    {
+        int uimode = Configuration.UI_MODE_NIGHT_UNDEFINED;
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(act);
+        switch (Preferences.getDisplayTheme(prefs)) {
+        case FOLLOW_SYSTEM: {
+            uimode = act.getResources().getConfiguration().uiMode &
+                     Configuration.UI_MODE_NIGHT_MASK;
+            break;
+        }
+        case LIGHT: {
+            uimode = Configuration.UI_MODE_NIGHT_NO;
+            break;
+        }
+        case DARK: {
+            uimode = Configuration.UI_MODE_NIGHT_YES;
+            break;
+        }
+        }
+
+        switch (uimode) {
+        case Configuration.UI_MODE_NIGHT_NO:
+        case Configuration.UI_MODE_NIGHT_UNDEFINED: {
+            act.setTheme(isDialog ? R.style.PwsAppTheme_Dialog :
+                                 R.style.PwsAppTheme);
+            break;
+        }
+        case Configuration.UI_MODE_NIGHT_YES: {
+            act.setTheme(isDialog ? R.style.PwsAppThemeDark_Dialog :
+                                 R.style.PwsAppThemeDark);
+            break;
+        }
+        }
     }
 }

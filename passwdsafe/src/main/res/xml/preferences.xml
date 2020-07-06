@@ -171,11 +171,10 @@
                         android:title="@string/display">
 
         <!--suppress AndroidElementNotAllowed -->
-        <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
-            android:name="displayTheme Pref"
-            android:defaultValue="true"
-            android:key="displayThemeLightPref"
-            android:title="@string/use_light_theme"/>
+        <com.jefftharris.passwdsafe.view.LongListPreference
+            android:name="displayThemePref"
+            android:key="displayThemePref"
+            android:title="@string/theme"/>
 
         <!--suppress AndroidElementNotAllowed -->
         <com.jefftharris.passwdsafe.lib.view.LongSwitchPreference
