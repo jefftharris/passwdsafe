@@ -277,6 +277,13 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             itsFileBackupPref.setEntries(FileBackupPref.getDisplayNames(res));
             itsFileBackupPref.setEntryValues(FileBackupPref.getValues());
             onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_BACKUP);
+
+            if (!ApiCompat.supportsExternalFilesDirs()) {
+                Preference fileChooserPref = requirePreference(
+                        Preferences.PREF_FILE_LEGACY_FILE_CHOOSER);
+                fileChooserPref.setEnabled(false);
+                fileChooserPref.setVisible(false);
+            }
         }
 
         @Override

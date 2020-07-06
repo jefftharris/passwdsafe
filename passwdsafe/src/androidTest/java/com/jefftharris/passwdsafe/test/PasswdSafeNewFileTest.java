@@ -20,6 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
@@ -76,8 +77,8 @@ import static org.hamcrest.Matchers.equalTo;
 @RunWith(AndroidJUnit4.class)
 public class PasswdSafeNewFileTest
 {
-    private static final File FILE = new File(FileListActivityTest.DIR,
-                                              "ZZZtest.psafe3");
+    private static final File FILE = FileListActivityTest.FILE;
+
 
     @Rule
     public IntentsTestRule<PasswdSafe> itsActivityRule =
@@ -101,6 +102,9 @@ public class PasswdSafeNewFileTest
     @Test
     public void testNewFile()
     {
+        if (!ApiCompat.supportsExternalFilesDirs()) {
+            return;
+        }
         itsActivityRule.launchActivity(
                 PasswdSafeUtil.createNewFileIntent(
                             Uri.fromFile(FileListActivityTest.DIR)));

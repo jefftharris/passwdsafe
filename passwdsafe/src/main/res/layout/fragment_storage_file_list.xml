@@ -6,24 +6,36 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/no_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/none_paren"
+        app:layout_constraintBottom_toTopOf="@+id/recent_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
     <TextView
         android:id="@+id/recent_label"
         style="@android:style/TextAppearance.Medium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/recent_files"
+        app:layout_constraintBottom_toTopOf="@+id/separator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/no_default" />
 
     <View
         android:id="@+id/separator"
         style="@style/Separator.Light"
         android:layout_width="0dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/empty"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recent_label"/>
+        app:layout_constraintTop_toBottomOf="@+id/recent_label" />
 
     <TextView
         android:id="@+id/empty"
@@ -33,9 +45,10 @@
         android:text="@string/no_files_select_to_open"
         android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/files"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator"/>
+        app:layout_constraintTop_toBottomOf="@+id/separator" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/files"
@@ -47,7 +60,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/empty"/>
+        app:layout_constraintTop_toBottomOf="@+id/empty" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -56,6 +69,6 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_passwdsafe_light"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

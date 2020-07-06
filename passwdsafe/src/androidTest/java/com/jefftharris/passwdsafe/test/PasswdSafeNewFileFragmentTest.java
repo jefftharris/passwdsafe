@@ -17,12 +17,15 @@ import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.io.IOException;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -55,6 +58,21 @@ public class PasswdSafeNewFileFragmentTest
                 }
             };
 
+    @Before
+    public void setup()
+    {
+        PasswdSafeUtil.setIsTesting(true);
+        if (FileListActivityTest.FILE.exists()) {
+            Assert.assertTrue(FileListActivityTest.FILE.delete());
+        }
+    }
+
+    @After
+    public void teardown()
+    {
+        PasswdSafeUtil.setIsTesting(false);
+    }
+
     @Test
     public void testInitialState()
     {
@@ -78,21 +96,21 @@ public class PasswdSafeNewFileFragmentTest
     }
 
     @Test
-    public void testExistingFile()
+    public void testExistingFile() throws IOException
     {
-        Assert.assertTrue(
-                new File(FileListActivityTest.DIR, "test.psafe3").exists());
+        Assert.assertTrue(FileListActivityTest.FILE.createNewFile());
+        Assert.assertTrue(FileListActivityTest.FILE.exists());
         Assert.assertFalse(
-                new File(FileListActivityTest.DIR, "ZZZtest.psafe3").exists());
+                new File(FileListActivityTest.DIR, "ZZZnotest.psafe3").exists());
 
         onFileNameView()
-                .perform(replaceText("ZZZtest.psafe3"));
+                .perform(replaceText("ZZZnotest.psafe3"));
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError(null)));
 
         onView(allOf(withId(R.id.file_name),
                      withParent(withParent(withId(R.id.file_name_input)))))
-                .perform(replaceText("test.psafe3"));
+                .perform(replaceText(FileListActivityTest.FILE.getName()));
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError("File exists")));
     }

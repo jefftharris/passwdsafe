@@ -85,8 +85,8 @@ public final class PasswdSafeApp extends Application
             fileListEdit.apply();
             prefsEdit.apply();
         }
-        Preferences.upgradePasswdPolicy(prefs, this);
-        Preferences.upgradeDefaultFilePref(prefs);
+        Preferences.upgrade(prefs, this);
+
 
         setPasswordEncodingPref(prefs);
         setPasswordDefaultSymsPref(prefs);

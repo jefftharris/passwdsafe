@@ -189,7 +189,7 @@
     <string name="no_alias_chosen">Ingen alias valgt</string>
     <string name="no_biometrics_registered">Ingen biometrisk legitimasjon er registrert</string>
     <string name="no_file_permission">PasswdSafe krever filtilgang. \n\nTrykk reload for å bli spurt på nytt. Hvis du ikke blir spurt, trykk app-innstillinger og aktiver lagringstilgang.</string>
-    <string name="no_files_select_to_open">Ingen filer - velg en handling for å åpne eller opprette en ny fil \n\nHvis filene ikke vises i dokumentoversikten, bruk menyen for å vise internt lager eller SD-kortet. \n\nDen tidligere filvelgeren er aktivert i innstillingene som den gamle filvelgeren.</string>
+    <string name="no_files_select_to_open">Ingen filer - velg en handling for å åpne eller opprette en ny fil \n\nHvis filene ikke vises i dokumentoversikten, bruk menyen for å vise internt lager eller SD-kortet.</string>
     <string name="no_groups">Ingen grupper</string>
     <string name="no_shortcut_chosen">Ingen snarvei valgt</string>
     <string name="no_policies">Ingen regler</string>

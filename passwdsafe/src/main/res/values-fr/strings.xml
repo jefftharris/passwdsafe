@@ -219,8 +219,6 @@
         fichier
         \n\nSi les fichiers ne sont pas affichés dans l\'écran des documents,
         utiliser le menu pour montrer le stockage interne ou sur la carte SD.
-        \n\nLe sélecteur de fichier précédent est activé dans les préférences
-        comme étant l\'ancienne méthode de selection.
     </string>
     <string name="no_groups">Aucun Groupes</string>
     <string name="no_shortcut_chosen">Aucun raccourci choisi</string>

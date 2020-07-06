@@ -32,6 +32,7 @@ public final class ApiCompat
     public static final int SDK_KITKAT = 19;
     public static final int SDK_LOLLIPOP = 21;
     public static final int SDK_OREO = 26;
+    public static final int SDK_Q = 29;
 
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
 
@@ -58,6 +59,15 @@ public final class ApiCompat
         } else {
             return new File[] {ctx.getExternalFilesDir(type)};
         }
+    }
+
+
+    /**
+     * Are the external files directories supported
+     */
+    public static boolean supportsExternalFilesDirs()
+    {
+        return SDK_VERSION < SDK_Q;
     }
 
 

@@ -214,7 +214,6 @@
         Keine Dateien - Öffnen Sie eine Datei oder erstellen Sie eine Neue.
         \n\nWenn Ihre Dateien beim öffnen nicht angezeigt werden, können Sie
         im Menü den internen Speicher und/oder die SD-Karte einblenden.
-        \n\nDie alte Dateiauswahl können Sie in den Einstellungen aktivieren.
     </string>
     <string name="no_groups">Keine Gruppen</string>
     <string name="no_shortcut_chosen">Keine Verknüpfung ausgewählt</string>

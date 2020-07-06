@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import androidx.preference.PreferenceManager;
 
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
@@ -248,7 +249,8 @@ public class Preferences
     /** Get the preference for use of the legacy file chooser */
     public static boolean getFileLegacyFileChooserPref(SharedPreferences prefs)
     {
-        return prefs.getBoolean(PREF_FILE_LEGACY_FILE_CHOOSER,
+        return ApiCompat.supportsExternalFilesDirs() &&
+               prefs.getBoolean(PREF_FILE_LEGACY_FILE_CHOOSER,
                                 PREF_FILE_LEGACY_FILE_CHOOSER_DEF);
     }
 
@@ -296,89 +298,6 @@ public class Preferences
                                     PREF_PASSWD_VISIBLE_TIMEOUT_DEF.name()));
         } catch (IllegalArgumentException e) {
             return PREF_PASSWD_VISIBLE_TIMEOUT_DEF;
-        }
-    }
-
-    /** Upgrade the default password policy preference if needed */
-    public static void upgradePasswdPolicy(SharedPreferences prefs,
-                                           Context ctx)
-    {
-        if (prefs.contains(PREF_DEF_PASSWD_POLICY)) {
-            PasswdSafeUtil.dbginfo(TAG, "Have default policy");
-            return;
-        }
-
-        SharedPreferences.Editor prefsEdit = prefs.edit();
-        String policyStr = PREF_DEF_PASSWD_POLICY_DEF;
-        if (prefs.contains(PREF_GEN_LOWER) ||
-            prefs.contains(PREF_GEN_UPPER) ||
-            prefs.contains(PREF_GEN_DIGITS) ||
-            prefs.contains(PREF_GEN_SYMBOLS) ||
-            prefs.contains(PREF_GEN_EASY) ||
-            prefs.contains(PREF_GEN_HEX) ||
-            prefs.contains(PREF_GEN_LENGTH)) {
-            PasswdSafeUtil.dbginfo(TAG, "Upgrade old prefs");
-
-            int flags = 0;
-            if (prefs.getBoolean(PREF_GEN_HEX, PREF_GEN_HEX_DEF)) {
-                flags |= PasswdPolicy.FLAG_USE_HEX_DIGITS;
-            } else {
-                if (prefs.getBoolean(PREF_GEN_EASY, PREF_GEN_EASY_DEF)) {
-                    flags |= PasswdPolicy.FLAG_USE_EASY_VISION;
-                }
-
-                if (prefs.getBoolean(PREF_GEN_LOWER, PREF_GEN_LOWER_DEF)) {
-                    flags |= PasswdPolicy.FLAG_USE_LOWERCASE;
-                }
-                if (prefs.getBoolean(PREF_GEN_UPPER, PREF_GEN_UPPER_DEF)) {
-                    flags |= PasswdPolicy.FLAG_USE_UPPERCASE;
-                }
-                if (prefs.getBoolean(PREF_GEN_DIGITS, PREF_GEN_DIGITS_DEF)) {
-                    flags |= PasswdPolicy.FLAG_USE_DIGITS;
-                }
-                if (prefs.getBoolean(PREF_GEN_SYMBOLS, PREF_GEN_SYMBOLS_DEF)) {
-                    flags |= PasswdPolicy.FLAG_USE_SYMBOLS;
-                }
-            }
-            int length;
-            try {
-                length = Integer.parseInt(Objects.requireNonNull(
-                        prefs.getString(PREF_GEN_LENGTH, PREF_GEN_LENGTH_DEF)));
-            } catch (NumberFormatException | NullPointerException e) {
-                length = Integer.parseInt(PREF_GEN_LENGTH_DEF);
-            }
-            PasswdPolicy policy = PasswdPolicy.createDefaultPolicy(ctx, flags,
-                                                                   length);
-            policyStr = policy.toHdrPolicyString();
-
-            prefsEdit.remove(PREF_GEN_LOWER);
-            prefsEdit.remove(PREF_GEN_UPPER);
-            prefsEdit.remove(PREF_GEN_DIGITS);
-            prefsEdit.remove(PREF_GEN_SYMBOLS);
-            prefsEdit.remove(PREF_GEN_EASY);
-            prefsEdit.remove(PREF_GEN_HEX);
-            prefsEdit.remove(PREF_GEN_LENGTH);
-        }
-
-        PasswdSafeUtil.dbginfo(TAG, "Save new default policy: %s", policyStr);
-        prefsEdit.putString(PREF_DEF_PASSWD_POLICY, policyStr);
-        prefsEdit.apply();
-    }
-
-    /** Upgrade the default file preference if needed */
-    public static void upgradeDefaultFilePref(SharedPreferences prefs)
-    {
-        Uri defFileUri = getDefFilePref(prefs);
-        if ((defFileUri != null) && (defFileUri.getScheme() == null)) {
-            String path = defFileUri.getPath();
-            if (path != null) {
-                File defDir = getFileDirPref(prefs);
-                File def = new File(defDir, path);
-                defFileUri = Uri.fromFile(def);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString(PREF_DEF_FILE, defFileUri.toString());
-                editor.apply();
-            }
         }
     }
 
@@ -502,5 +421,102 @@ public class Preferences
                                               SharedPreferences prefs)
     {
         prefs.edit().putBoolean(PREF_COPY_PASSWORD_CONFIRM, confirm).apply();
+    }
+
+    /**
+     * Upgrade preferences
+     */
+    public static void upgrade(SharedPreferences prefs, Context ctx)
+    {
+        upgradePasswdPolicy(prefs, ctx);
+        upgradeDefaultFilePref(prefs);
+        if (!ApiCompat.supportsExternalFilesDirs() &&
+            getFileLegacyFileChooserPref(prefs)) {
+            prefs.edit().putBoolean(PREF_FILE_LEGACY_FILE_CHOOSER, false)
+                 .apply();
+        }
+    }
+
+    /** Upgrade the default password policy preference if needed */
+    private static void upgradePasswdPolicy(SharedPreferences prefs,
+                                            Context ctx)
+    {
+        if (prefs.contains(PREF_DEF_PASSWD_POLICY)) {
+            PasswdSafeUtil.dbginfo(TAG, "Have default policy");
+            return;
+        }
+
+        SharedPreferences.Editor prefsEdit = prefs.edit();
+        String policyStr = PREF_DEF_PASSWD_POLICY_DEF;
+        if (prefs.contains(PREF_GEN_LOWER) ||
+            prefs.contains(PREF_GEN_UPPER) ||
+            prefs.contains(PREF_GEN_DIGITS) ||
+            prefs.contains(PREF_GEN_SYMBOLS) ||
+            prefs.contains(PREF_GEN_EASY) ||
+            prefs.contains(PREF_GEN_HEX) ||
+            prefs.contains(PREF_GEN_LENGTH)) {
+            PasswdSafeUtil.dbginfo(TAG, "Upgrade old prefs");
+
+            int flags = 0;
+            if (prefs.getBoolean(PREF_GEN_HEX, PREF_GEN_HEX_DEF)) {
+                flags |= PasswdPolicy.FLAG_USE_HEX_DIGITS;
+            } else {
+                if (prefs.getBoolean(PREF_GEN_EASY, PREF_GEN_EASY_DEF)) {
+                    flags |= PasswdPolicy.FLAG_USE_EASY_VISION;
+                }
+
+                if (prefs.getBoolean(PREF_GEN_LOWER, PREF_GEN_LOWER_DEF)) {
+                    flags |= PasswdPolicy.FLAG_USE_LOWERCASE;
+                }
+                if (prefs.getBoolean(PREF_GEN_UPPER, PREF_GEN_UPPER_DEF)) {
+                    flags |= PasswdPolicy.FLAG_USE_UPPERCASE;
+                }
+                if (prefs.getBoolean(PREF_GEN_DIGITS, PREF_GEN_DIGITS_DEF)) {
+                    flags |= PasswdPolicy.FLAG_USE_DIGITS;
+                }
+                if (prefs.getBoolean(PREF_GEN_SYMBOLS, PREF_GEN_SYMBOLS_DEF)) {
+                    flags |= PasswdPolicy.FLAG_USE_SYMBOLS;
+                }
+            }
+            int length;
+            try {
+                length = Integer.parseInt(Objects.requireNonNull(
+                        prefs.getString(PREF_GEN_LENGTH, PREF_GEN_LENGTH_DEF)));
+            } catch (NumberFormatException | NullPointerException e) {
+                length = Integer.parseInt(PREF_GEN_LENGTH_DEF);
+            }
+            PasswdPolicy policy = PasswdPolicy.createDefaultPolicy(ctx, flags,
+                                                                   length);
+            policyStr = policy.toHdrPolicyString();
+
+            prefsEdit.remove(PREF_GEN_LOWER);
+            prefsEdit.remove(PREF_GEN_UPPER);
+            prefsEdit.remove(PREF_GEN_DIGITS);
+            prefsEdit.remove(PREF_GEN_SYMBOLS);
+            prefsEdit.remove(PREF_GEN_EASY);
+            prefsEdit.remove(PREF_GEN_HEX);
+            prefsEdit.remove(PREF_GEN_LENGTH);
+        }
+
+        PasswdSafeUtil.dbginfo(TAG, "Save new default policy: %s", policyStr);
+        prefsEdit.putString(PREF_DEF_PASSWD_POLICY, policyStr);
+        prefsEdit.apply();
+    }
+
+    /** Upgrade the default file preference if needed */
+    private static void upgradeDefaultFilePref(SharedPreferences prefs)
+    {
+        Uri defFileUri = getDefFilePref(prefs);
+        if ((defFileUri != null) && (defFileUri.getScheme() == null)) {
+            String path = defFileUri.getPath();
+            if (path != null) {
+                File defDir = getFileDirPref(prefs);
+                File def = new File(defDir, path);
+                defFileUri = Uri.fromFile(def);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(PREF_DEF_FILE, defFileUri.toString());
+                editor.apply();
+            }
+        }
     }
 }

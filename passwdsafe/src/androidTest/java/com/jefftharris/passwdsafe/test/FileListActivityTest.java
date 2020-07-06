@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.view.Gravity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -25,6 +26,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.jefftharris.passwdsafe.BuildConfig;
 import com.jefftharris.passwdsafe.FileListActivity;
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.test.util.ChildCheckedViewAction;
@@ -33,14 +35,17 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onData;
@@ -84,12 +89,29 @@ import static org.hamcrest.Matchers.nullValue;
 @RunWith(AndroidJUnit4.class)
 public class FileListActivityTest
 {
-    public static final File DIR = Environment.getExternalStorageDirectory();
-    private static final String TEST_FILE = "test.psafe3";
+    public static final File DIR =
+            ApplicationProvider.getApplicationContext().getFilesDir();
+    private static final File LEGACY_DIR =
+            Environment.getExternalStorageDirectory();
+    public static final File FILE = new File(DIR, "ZZZtest.psafe3");
+    private static final File LEGACY_FILE = new File(LEGACY_DIR,
+                                                     FILE.getName());
 
     @Rule
     public IntentsTestRule<FileListActivity> itsActivityRule =
             new IntentsTestRule<>(FileListActivity.class);
+
+    @Before
+    public void setup()
+    {
+        PasswdSafeUtil.setIsTesting(true);
+        if (FILE.exists()) {
+            Assert.assertTrue(FILE.delete());
+        }
+        if (ApiCompat.supportsExternalFilesDirs() && LEGACY_FILE.exists()) {
+            Assert.assertTrue(LEGACY_FILE.delete());
+        }
+    }
 
     @After
     public void teardown()
@@ -98,16 +120,22 @@ public class FileListActivityTest
     }
 
     @Test
-    public void testLegacyFiles()
+    public void testLegacyFiles() throws IOException
     {
+        if (!ApiCompat.supportsExternalFilesDirs()) {
+            return;
+        }
+        Assert.assertTrue(LEGACY_FILE.createNewFile());
+
         verifyDrawerClosed();
         setLegacyFileChooser(true);
 
         onView(withId(android.R.id.list));
-        onTestFile(TEST_FILE).check(matches(anything()));
+        onTestFile(LEGACY_FILE.getName()).check(matches(anything()));
 
         onView(withId(android.R.id.list))
-                .check(matches(withAdaptedData(withFileData(TEST_FILE))));
+                .check(matches(withAdaptedData(
+                        withFileData(LEGACY_FILE.getName()))));
         onView(withId(android.R.id.list))
                 .check(matches(not(withAdaptedData(withFileData("none.psafe3")))));
     }
@@ -115,27 +143,35 @@ public class FileListActivityTest
     @Test
     public void testLegacyFileNav()
     {
+        if (!ApiCompat.supportsExternalFilesDirs()) {
+            return;
+        }
         verifyDrawerClosed();
         setLegacyFileChooser(true);
 
         Assert.assertTrue(
-                DIR.equals(new File("/storage/emulated/0")) ||
-                DIR.equals(new File("/mnt/sdcard")));
+                LEGACY_DIR.equals(new File("/storage/emulated/0")) ||
+                LEGACY_DIR.equals(new File("/mnt/sdcard")));
         onView(withId(R.id.current_group_label))
-                .check(matches(withText(DIR.getPath())));
+                .check(matches(withText(LEGACY_DIR.getPath())));
         onView(withId(R.id.current_group_label))
                 .perform(click());
         onView(withId(R.id.current_group_label))
-                .check(matches(withText(DIR.getParentFile().getPath())));
+                .check(matches(withText(
+                        Objects.requireNonNull(
+                                LEGACY_DIR.getParentFile()).getPath())));
         onView(withId(R.id.home))
                 .perform(click());
         onView(withId(R.id.current_group_label))
-                .check(matches(withText(DIR.getPath())));
+                .check(matches(withText(LEGACY_DIR.getPath())));
     }
 
     @Test
     public void testLegacyLaunchFileNew()
     {
+        if (!ApiCompat.supportsExternalFilesDirs()) {
+            return;
+        }
         verifyDrawerClosed();
         setLegacyFileChooser(true);
 
@@ -145,7 +181,7 @@ public class FileListActivityTest
         intended(allOf(
                 hasAction(equalTo("com.jefftharris.passwdsafe.action.NEW")),
                 toPackage("com.jefftharris.passwdsafe"),
-                hasData("file://" + DIR.getAbsolutePath())));
+                hasData("file://" + LEGACY_DIR.getAbsolutePath())));
     }
 
     @Test
@@ -164,17 +200,16 @@ public class FileListActivityTest
      }
 
      @Test
-     public void testNewFileOpen()
+     public void testNewFileOpen() throws IOException
      {
-         PasswdSafeUtil.setIsTesting(true);
          verifyDrawerClosed();
          setLegacyFileChooser(false);
          clearRecents();
 
-         Uri fileUri = Uri.fromFile(new File(DIR, TEST_FILE));
+         Uri fileUri = Uri.fromFile(FILE);
          Intent openResponse =
                  new Intent().setData(fileUri)
-                             .putExtra("__test_display_name", TEST_FILE);
+                             .putExtra("__test_display_name", FILE.getName());
 
          intending(allOf(
                  hasAction(equalTo(
@@ -185,6 +220,7 @@ public class FileListActivityTest
                  .respondWith(new Instrumentation.ActivityResult(
                          Activity.RESULT_OK, openResponse));
 
+         Assert.assertTrue(FILE.createNewFile());
          onView(withId(R.id.fab))
                  .perform(click());
          intended(allOf(hasAction(PasswdSafeUtil.VIEW_INTENT),
@@ -203,7 +239,7 @@ public class FileListActivityTest
                  .check(hasRecyclerViewItemAtPosition(
                          0,
                          hasDescendant(allOf(withId(R.id.text),
-                                             withText(TEST_FILE)))));
+                                             withText(FILE.getName())))));
 
          onView(withId(R.id.empty))
                  .check(matches(withEffectiveVisibility(
@@ -268,16 +304,24 @@ public class FileListActivityTest
                                             withText(R.string.files))),
                         click()));
 
-        ChildCheckedViewAction legacyCheckAction =
-                new ChildCheckedViewAction(android.R.id.checkbox, showLegacy);
-        onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.actionOnItem(
-                        hasDescendant(
-                                allOf(withId(android.R.id.title),
-                                      withText(R.string.legacy_file_chooser))),
-                        legacyCheckAction));
-        pressBack();
-        if (legacyCheckAction.isPrevChecked() == showLegacy) {
+        if (ApiCompat.supportsExternalFilesDirs()) {
+
+            ChildCheckedViewAction legacyCheckAction =
+                    new ChildCheckedViewAction(android.R.id.checkbox,
+                                               showLegacy);
+            onView(withId(R.id.recycler_view))
+                    .perform(RecyclerViewActions.actionOnItem(
+                            hasDescendant(
+                                    allOf(withId(android.R.id.title),
+                                          withText(R.string.legacy_file_chooser))),
+                            legacyCheckAction));
+            pressBack();
+            if (legacyCheckAction.isPrevChecked() == showLegacy) {
+                pressBack();
+            }
+
+        } else {
+            pressBack();
             pressBack();
         }
     }
@@ -322,6 +366,7 @@ public class FileListActivityTest
         // use preconditions to fail fast when a test is creating an
         // invalid matcher.
         checkNotNull(titleMatcher);
+        //noinspection rawtypes
         return new BoundedMatcher<Object, Map>(Map.class)
         {
             @Override

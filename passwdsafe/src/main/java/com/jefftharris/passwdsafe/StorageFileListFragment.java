@@ -60,6 +60,9 @@ public final class StorageFileListFragment extends Fragment
         /** Does the activity have a menu */
         boolean activityHasMenu();
 
+        /** Does the activity have a 'none' item */
+        boolean activityHasNoneItem();
+
         /** Update the view for a list of files */
         void updateViewFiles();
     }
@@ -76,6 +79,8 @@ public final class StorageFileListFragment extends Fragment
     private View itsEmptyText;
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
+
+    // TODO: support open default file
 
     @Override
     public void onAttach(@NonNull Context ctx)
@@ -102,7 +107,8 @@ public final class StorageFileListFragment extends Fragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        if (itsListener.activityHasMenu()) {
+        boolean hasMenu = itsListener.activityHasMenu();
+        if (hasMenu) {
             setHasOptionsMenu(true);
         }
 
@@ -116,30 +122,48 @@ public final class StorageFileListFragment extends Fragment
         RecyclerView files = rootView.findViewById(R.id.files);
         files.setAdapter(itsFilesAdapter);
 
-        ItemTouchHelper.SimpleCallback swipeCb =
-                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |
-                                                      ItemTouchHelper.RIGHT)
-        {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView,
-                                  @NonNull RecyclerView.ViewHolder viewHolder,
-                                  @NonNull RecyclerView.ViewHolder target)
-            {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder,
-                                 int direction)
-            {
-                removeFile(((StorageFileListHolder)viewHolder).getUri());
-            }
-        };
-        ItemTouchHelper swipeHelper = new ItemTouchHelper(swipeCb);
-        swipeHelper.attachToRecyclerView(files);
-
         View fab = rootView.findViewById(R.id.fab);
-        fab.setOnClickListener(this);
+        View noDefault = rootView.findViewById(R.id.no_default);
+        if (hasMenu) {
+            ItemTouchHelper.SimpleCallback swipeCb =
+                    new ItemTouchHelper.SimpleCallback(
+                            0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+            {
+                @Override
+                public boolean onMove(
+                        @NonNull RecyclerView recyclerView,
+                        @NonNull RecyclerView.ViewHolder viewHolder,
+                        @NonNull RecyclerView.ViewHolder target)
+                {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(
+                        @NonNull RecyclerView.ViewHolder viewHolder,
+                        int direction)
+                {
+                    removeFile(((StorageFileListHolder)viewHolder).getUri());
+                }
+            };
+            ItemTouchHelper swipeHelper = new ItemTouchHelper(swipeCb);
+            swipeHelper.attachToRecyclerView(files);
+
+            fab.setOnClickListener(this);
+        } else {
+            GuiUtils.setVisible(fab, false);
+
+            // Wrap content for entries when shown in chooser dialog
+            files.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            rootView.getLayoutParams().height =
+                    ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+
+        if (itsListener.activityHasNoneItem()) {
+            noDefault.setOnClickListener(this);
+        } else {
+            GuiUtils.setVisible(noDefault, false);
+        }
 
         return rootView;
     }
@@ -198,6 +222,10 @@ public final class StorageFileListFragment extends Fragment
         switch (v.getId()) {
         case R.id.fab: {
             startOpenFile();
+            break;
+        }
+        case R.id.no_default: {
+            openUri(null, null);
             break;
         }
         }
@@ -339,10 +367,12 @@ public final class StorageFileListFragment extends Fragment
     {
         PasswdSafeUtil.dbginfo(TAG, "openUri %s: %s", uri, title);
 
-        try {
-            itsRecentFilesDb.insertOrUpdateFile(uri, title);
-        } catch (Exception e) {
-            Log.e(TAG, "Error inserting recent file", e);
+        if (uri != null) {
+            try {
+                itsRecentFilesDb.insertOrUpdateFile(uri, title);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting recent file", e);
+            }
         }
 
         itsListener.openFile(uri, title);
