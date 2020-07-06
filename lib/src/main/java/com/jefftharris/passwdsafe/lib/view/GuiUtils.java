@@ -209,6 +209,17 @@ public final class GuiUtils
 
 
     /**
+     * Disable force-dark mode
+     */
+    public static void disableForceDark(View view)
+    {
+        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_Q) {
+            GuiUtilsQ.disableForceDark(view);
+        }
+    }
+
+
+    /**
      * Get a drawable resource
      */
     public static Drawable getDrawable(Resources res, int id)

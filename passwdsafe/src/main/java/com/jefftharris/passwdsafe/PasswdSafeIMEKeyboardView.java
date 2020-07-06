@@ -12,6 +12,8 @@ import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.util.AttributeSet;
 
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+
 /**
  * The keyboard view for the PasswdSafe IME
  */
@@ -24,6 +26,7 @@ public class PasswdSafeIMEKeyboardView extends KeyboardView
                                      AttributeSet attrs)
     {
         super(context, attrs);
+        GuiUtils.disableForceDark(this);
     }
 
     /**
@@ -33,6 +36,7 @@ public class PasswdSafeIMEKeyboardView extends KeyboardView
                                      int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
+        GuiUtils.disableForceDark(this);
     }
 
     @Override
