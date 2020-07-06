@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -80,7 +81,6 @@ public final class StorageFileListFragment extends Fragment
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
 
-    // TODO: support open default file
 
     @Override
     public void onAttach(@NonNull Context ctx)
@@ -315,6 +315,22 @@ public final class StorageFileListFragment extends Fragment
         GuiUtils.setVisible(itsEmptyText,
                             (cursor == null) || (cursor.getCount() == 0));
         itsFilesAdapter.changeCursor(cursor);
+
+        // Open the default file
+        Activity act = requireActivity();
+        PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
+        if (app.checkOpenDefault()) {
+            SharedPreferences prefs = Preferences.getSharedPrefs(act);
+            Uri defFile = Preferences.getDefFilePref(prefs);
+            if (defFile != null) {
+                try {
+                    itsRecentFilesDb.touchFile(defFile);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error touching file", e);
+                }
+                itsListener.openFile(defFile, null);
+            }
+        }
     }
 
     @Override

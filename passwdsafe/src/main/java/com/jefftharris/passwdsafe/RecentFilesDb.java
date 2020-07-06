@@ -123,6 +123,21 @@ public final class RecentFilesDb
     }
 
 
+    /** Touch an entry for the file */
+    public void touchFile(final Uri uri) throws Exception
+    {
+        itsDb.useDb((PasswdSafeDb.DbUser<Void>)db -> {
+            String uristr = uri.toString();
+            ContentValues values = new ContentValues();
+            values.put(PasswdSafeDb.DB_COL_FILES_DATE,
+                       System.currentTimeMillis());
+            db.update(PasswdSafeDb.DB_TABLE_FILES, values, WHERE_BY_URI,
+                      new String[] {uristr});
+            return null;
+        });
+    }
+
+
     /** Delete a recent file with the given uri */
     public void removeUri(final Uri permUri) throws Exception
     {
