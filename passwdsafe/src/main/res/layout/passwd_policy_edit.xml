@@ -173,11 +173,13 @@
                         android:layout_height="wrap_content"
                         android:text="@string/generate"/>
 
-                <TextView android:id="@+id/generated_passwd"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:textAppearance="?android:textAppearanceSmall"
-                          android:typeface="monospace"/>
+                <TextView
+                    android:id="@+id/generated_passwd"
+                    style="@android:style/Widget.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:typeface="monospace" />
 
             </LinearLayout>
 

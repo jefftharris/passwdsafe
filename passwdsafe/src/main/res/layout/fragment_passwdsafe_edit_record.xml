@@ -183,15 +183,17 @@
                           android:text="@string/current"
                           android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-                <TextView android:id="@+id/password_current"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:layout_marginLeft="6dp"
-                          android:layout_marginStart="6dp"
-                          android:inputType="textPassword"
-                          android:textAppearance="?android:attr/textAppearanceMedium"
-                          android:typeface="monospace"
-                          tools:ignore="TextViewEdits"/>
+                <TextView
+                    android:id="@+id/password_current"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:inputType="textMultiLine|textPassword"
+                    android:singleLine="false"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:typeface="monospace"
+                    tools:ignore="TextViewEdits" />
 
             </LinearLayout>
 
@@ -207,8 +209,7 @@
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:maxLines="1"/>
+                        android:inputType="textMultiLine|textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <ImageView android:id="@+id/password_visibility"
@@ -248,8 +249,7 @@
                     android:id="@+id/password_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1"/>
+                    android:inputType="textMultiLine|textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Password policy -->

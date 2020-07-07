@@ -84,7 +84,8 @@ public final class GuiUtils
 
     public static boolean isPasswordVisible(TextView tv)
     {
-        return tv.getInputType() == INPUT_TEXT_PASSWORD_VISIBLE;
+        return (tv.getInputType() & InputType.TYPE_MASK_VARIATION) ==
+               InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
 
 
@@ -96,8 +97,15 @@ public final class GuiUtils
                                           Context ctx)
     {
         int pos = tv.getSelectionStart();
-        tv.setInputType(visible ? INPUT_TEXT_PASSWORD_VISIBLE :
-                                INPUT_TEXT_PASSWORD);
+        int type = tv.getInputType();
+        boolean hasMultiline =
+                (type & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+        type = visible ? INPUT_TEXT_PASSWORD_VISIBLE : INPUT_TEXT_PASSWORD;
+        if (hasMultiline) {
+            type |= InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+        }
+
+        tv.setInputType(type);
         // Reset monospace as the input type change resets to default monospace
         // font
         TypefaceUtils.setMonospace(tv, ctx);

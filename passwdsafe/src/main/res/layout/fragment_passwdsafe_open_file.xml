@@ -50,10 +50,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="fill_horizontal"
                 android:imeOptions="actionGo"
-                android:inputType="textPassword"
-                android:maxLines="1"
+                android:inputType="textMultiLine|textPassword"
                 android:scrollHorizontally="true"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
