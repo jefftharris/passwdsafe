@@ -134,6 +134,7 @@ public class PasswdSafeEditRecordFragment
     private View itsEmailInput;
     private TextView itsEmail;
     private View itsPasswordLabel;
+    private View itsPasswordGenerate;
     private View itsPasswordFields;
     private TextView itsPasswordCurrent;
     private TextInputLayout itsPasswordInput;
@@ -223,10 +224,9 @@ public class PasswdSafeEditRecordFragment
         itsPasswordInput = rootView.findViewById(R.id.password_input);
         itsPassword = rootView.findViewById(R.id.password);
         TypefaceUtils.setMonospace(itsPassword, ctx);
-        View passwordGenerate =
-                rootView.findViewById(R.id.password_generate);
-        passwordGenerate.setOnClickListener(this);
-        passwordGenerate.setOnLongClickListener(this);
+        itsPasswordGenerate = rootView.findViewById(R.id.password_generate);
+        itsPasswordGenerate.setOnClickListener(this);
+        itsPasswordGenerate.setOnLongClickListener(this);
         itsValidator.registerTextView(itsPassword);
         itsPasswordConfirmInput =
                 rootView.findViewById(R.id.password_confirm_input);
@@ -1045,6 +1045,7 @@ public class PasswdSafeEditRecordFragment
         GuiUtils.setVisible(itsUrlInput, itsIsV3 && itsTypeHasDetails);
         GuiUtils.setVisible(itsEmailInput, itsIsV3 && itsTypeHasDetails);
         GuiUtils.setVisible(itsPasswordLabel, itsTypeHasNormalPassword);
+        GuiUtils.setVisible(itsPasswordGenerate, itsTypeHasNormalPassword);
         GuiUtils.setVisible(itsPasswordFields, itsTypeHasNormalPassword);
         GuiUtils.setVisible(itsNotesLabel, itsTypeHasDetails);
         GuiUtils.setVisible(itsNotes, itsTypeHasDetails);
