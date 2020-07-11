@@ -210,31 +210,20 @@
             android:paddingRight="6dp"
             android:paddingBottom="12dp">
 
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_current_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:orientation="horizontal">
+                android:hint="@string/current"
+                app:passwordToggleEnabled="true">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/current"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password_current"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginLeft="6dp"
-                    android:inputType="textMultiLine|textPassword"
-                    android:singleLine="false"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:typeface="monospace"
-                    tools:ignore="TextViewEdits" />
-
-            </LinearLayout>
+                    android:enabled="false"
+                    android:inputType="textMultiLine|textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_input"

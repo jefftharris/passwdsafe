@@ -1176,20 +1176,25 @@ public class PasswdSafeEditRecordFragment
      */
     private void initProtViews(View v)
     {
-        if ((v instanceof Spinner) || (v instanceof TextInputLayout) ||
-            (v instanceof EditText) || (v instanceof Button)) {
+        switch (v.getId()) {
+        case R.id.password_current_input:
+        case R.id.password_current: {
+            break;
+        }
+        case R.id.expire_date_date:
+        case R.id.expire_date_time:
+        case R.id.link_ref:
+        case R.id.password_generate: {
             itsProtectViews.add(v);
-        } else {
-            switch (v.getId()) {
-            case R.id.expire_date_date:
-            case R.id.expire_date_time:
-            case R.id.link_ref:
-            case R.id.password_current:
-            case R.id.password_generate: {
+            break;
+        }
+        default: {
+            if ((v instanceof Spinner) || (v instanceof TextInputLayout) ||
+                (v instanceof EditText) || (v instanceof Button)) {
                 itsProtectViews.add(v);
-                break;
             }
-            }
+            break;
+        }
         }
 
         if (v instanceof ViewGroup) {
