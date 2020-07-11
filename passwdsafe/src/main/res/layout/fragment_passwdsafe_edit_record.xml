@@ -6,68 +6,75 @@
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/fragment_full_horizontal_margin"
+    android:paddingTop="@dimen/fragment_full_vertical_margin"
+    android:paddingRight="@dimen/fragment_full_horizontal_margin"
+    android:paddingBottom="@dimen/fragment_full_vertical_margin"
+    tools:context="com.jefftharris.passwdsafe.PasswdSafeEditRecordFragment">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/type_group"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/fragment_full_vertical_margin"
-            android:paddingLeft="@dimen/fragment_full_horizontal_margin"
-            android:paddingRight="@dimen/fragment_full_horizontal_margin"
-            android:paddingTop="@dimen/fragment_full_vertical_margin"
-            tools:context="com.jefftharris.passwdsafe.PasswdSafeEditRecordFragment">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="2dp">
 
-    <LinearLayout android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical">
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingLeft="4dp"
+                android:paddingEnd="4dp"
+                android:paddingRight="4dp"
+                android:text="@string/type" />
 
-        <LinearLayout android:id="@+id/type_group"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical"
-                      android:paddingBottom="2dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <TextView style="@style/TextAppearance.AppCompat.Caption"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:paddingEnd="4dp"
-                      android:paddingLeft="4dp"
-                      android:paddingRight="4dp"
-                      android:paddingStart="4dp"
-                      android:text="@string/type"/>
+                <Spinner
+                    android:id="@+id/type"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:entries="@array/record_type"
+                    android:prompt="@string/choose_type"
+                    android:spinnerMode="dropdown"
+                    tools:ignore="UnusedAttribute" />
 
-            <LinearLayout android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:orientation="horizontal">
-
-                <Spinner android:id="@+id/type"
-                         style="@style/Widget.AppCompat.Spinner.Underlined"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_weight="0"
-                         android:entries="@array/record_type"
-                         android:prompt="@string/choose_type"
-                         android:spinnerMode="dropdown"
-                         tools:ignore="UnusedAttribute"/>
-
-                <TextView android:id="@+id/link_ref"
-                          style="@style/Widget.AppCompat.Spinner.Underlined"
-                          android:layout_width="0dp"
-                          android:layout_height="wrap_content"
-                          android:layout_marginLeft="8dp"
-                          android:layout_marginStart="8dp"
-                          android:layout_weight="1"
-                          android:hint="@string/choose"/>
+                <TextView
+                    android:id="@+id/link_ref"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:hint="@string/choose" />
 
             </LinearLayout>
 
-            <TextView android:id="@+id/type_error"
-                      style="@style/TextAppearance.Design.Error"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:paddingEnd="4dp"
-                      android:paddingLeft="4dp"
-                      android:paddingRight="4dp"
-                      android:paddingStart="4dp"/>
+            <TextView
+                android:id="@+id/type_error"
+                style="@style/TextAppearance.Design.Error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingLeft="4dp"
+                android:paddingEnd="4dp"
+                android:paddingRight="4dp" />
 
         </LinearLayout>
 
@@ -76,46 +83,52 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/title">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapSentences|textAutoCorrect"
                 android:maxLines="1">
-                <requestFocus/>
+
+                <requestFocus />
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical"
-                      android:paddingBottom="2dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="2dp">
 
-            <TextView style="@style/TextAppearance.AppCompat.Caption"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:paddingEnd="4dp"
-                      android:paddingLeft="4dp"
-                      android:paddingRight="4dp"
-                      android:paddingStart="4dp"
-                      android:text="@string/group"/>
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingLeft="4dp"
+                android:paddingEnd="4dp"
+                android:paddingRight="4dp"
+                android:text="@string/group" />
 
-            <Spinner android:id="@+id/group"
-                     style="@style/Widget.AppCompat.Spinner.Underlined"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:prompt="@string/choose_group"
-                     android:spinnerMode="dialog"
-                     tools:ignore="UnusedAttribute"/>
+            <Spinner
+                android:id="@+id/group"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:prompt="@string/choose_group"
+                android:spinnerMode="dialog"
+                tools:ignore="UnusedAttribute" />
 
-            <TextView android:id="@+id/group_error"
-                      style="@style/TextAppearance.Design.Error"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:paddingEnd="4dp"
-                      android:paddingLeft="4dp"
-                      android:paddingRight="4dp"
-                      android:paddingStart="4dp"/>
+            <TextView
+                android:id="@+id/group_error"
+                style="@style/TextAppearance.Design.Error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingLeft="4dp"
+                android:paddingEnd="4dp"
+                android:paddingRight="4dp" />
 
         </LinearLayout>
 
@@ -123,12 +136,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/user"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textNoSuggestions"
-                android:maxLines="1"/>
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -136,12 +150,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/url">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textUri"
-                android:maxLines="1"/>
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -149,39 +164,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:maxLines="1"/>
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password fields -->
-        <TextView android:id="@+id/password_label"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:text="@string/password"
-                  android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <TextView
+            android:id="@+id/password_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/password"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <LinearLayout android:id="@+id/password_fields"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical"
-                      android:paddingBottom="12dp"
-                      android:paddingLeft="6dp"
-                      android:paddingRight="6dp"
-                      android:paddingTop="6dp">
+        <LinearLayout
+            android:id="@+id/password_fields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="6dp"
+            android:paddingTop="6dp"
+            android:paddingRight="6dp"
+            android:paddingBottom="12dp">
 
-            <LinearLayout android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:layout_marginBottom="6dp"
-                          android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:orientation="horizontal">
 
-                <TextView android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:text="@string/current"
-                          android:textAppearance="?android:attr/textAppearanceMedium"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/current"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <TextView
                     android:id="@+id/password_current"
@@ -197,14 +217,17 @@
 
             </LinearLayout>
 
-            <RelativeLayout android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/password_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/password"
                     app:passwordToggleEnabled="false">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password"
                         android:layout_width="match_parent"
@@ -212,31 +235,33 @@
                         android:inputType="textMultiLine|textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <ImageView android:id="@+id/password_visibility"
-                           style="@style/Widget.AppCompat.ActionButton"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:layout_alignParentEnd="true"
-                           android:layout_alignParentRight="true"
-                           android:layout_marginTop="10dp"
-                           android:clickable="true"
-                           android:contentDescription="@string/show_passwords"
-                           android:focusable="true"
-                           android:longClickable="true"
-                           android:src="?attr/drawableActionVisibility"/>
+                <ImageView
+                    android:id="@+id/password_visibility"
+                    style="@style/Widget.AppCompat.ActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="10dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/show_passwords"
+                    android:focusable="true"
+                    android:longClickable="true"
+                    android:src="?attr/drawableActionVisibility" />
 
-                <ImageView android:id="@+id/password_generate"
-                           style="@style/Widget.AppCompat.ActionButton"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:layout_marginTop="10dp"
-                           android:layout_toLeftOf="@id/password_visibility"
-                           android:layout_toStartOf="@id/password_visibility"
-                           android:clickable="true"
-                           android:contentDescription="@string/generate_password"
-                           android:focusable="true"
-                           android:longClickable="true"
-                           android:src="?attr/drawableActionNewPassword"/>
+                <ImageView
+                    android:id="@+id/password_generate"
+                    style="@style/Widget.AppCompat.ActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_toStartOf="@id/password_visibility"
+                    android:layout_toLeftOf="@id/password_visibility"
+                    android:clickable="true"
+                    android:contentDescription="@string/generate_password"
+                    android:focusable="true"
+                    android:longClickable="true"
+                    android:src="?attr/drawableActionNewPassword" />
             </RelativeLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -245,6 +270,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/confirm"
                 app:passwordToggleEnabled="false">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password_confirm"
                     android:layout_width="match_parent"
@@ -253,27 +279,31 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Password policy -->
-            <TextView android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:text="@string/password_policy"
-                      android:textAppearance="?android:attr/textAppearanceMedium"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/password_policy"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <LinearLayout android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <Spinner android:id="@+id/policy"
-                         style="@style/Widget.AppCompat.Spinner.Underlined"
-                         android:layout_width="0dp"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center_vertical"
-                         android:layout_weight="1"
-                         android:gravity="fill_vertical"/>
+                <Spinner
+                    android:id="@+id/policy"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="fill_vertical" />
 
-                <Button android:id="@+id/policy_edit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/edit"/>
+                <Button
+                    android:id="@+id/policy_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/edit" />
 
             </LinearLayout>
 
@@ -281,161 +311,180 @@
                 android:id="@+id/policy_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"/>
+                android:layout_margin="4dp" />
 
             <!-- Pasword expiration -->
-            <LinearLayout android:id="@+id/expire_group"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/expire_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:text="@string/password_expiration"
-                          android:textAppearance="?android:attr/textAppearanceMedium"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/password_expiration"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <Spinner android:id="@+id/expire_choice"
-                         style="@style/Widget.AppCompat.Spinner.Underlined"
-                         android:layout_width="fill_parent"
-                         android:layout_height="wrap_content"
-                         android:entries="@array/expire_type"
-                         android:prompt="@string/choose_type"/>
+                <Spinner
+                    android:id="@+id/expire_choice"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/expire_type"
+                    android:prompt="@string/choose_type" />
 
-                <LinearLayout android:id="@+id/expire_date_fields"
-                              android:layout_width="match_parent"
-                              android:layout_height="wrap_content"
-                              android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/expire_date_fields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                    <TextView android:id="@+id/expire_date_time"
-                              style="@style/Widget.AppCompat.Spinner.Underlined"
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/expire_date_time"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                    <TextView android:id="@+id/expire_date_date"
-                              style="@style/Widget.AppCompat.Spinner.Underlined"
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:layout_marginLeft="8dp"
-                              android:layout_marginStart="8dp"/>
+                    <TextView
+                        android:id="@+id/expire_date_date"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp" />
 
                 </LinearLayout>
 
-                <TextView android:id="@+id/expire_date_error"
-                          style="@style/TextAppearance.Design.Error"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:paddingEnd="4dp"
-                          android:paddingLeft="4dp"
-                          android:paddingRight="4dp"
-                          android:paddingStart="4dp"
-                          android:text="@string/password_expiration_in_past"/>
+                <TextView
+                    android:id="@+id/expire_date_error"
+                    style="@style/TextAppearance.Design.Error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:paddingLeft="4dp"
+                    android:paddingEnd="4dp"
+                    android:paddingRight="4dp"
+                    android:text="@string/password_expiration_in_past" />
 
-                <RelativeLayout android:id="@+id/expire_interval_fields"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:id="@+id/expire_interval_fields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/expire_interval_val_input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:hint="@string/days">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/expire_interval_val"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
-                            android:minWidth="64dp"/>
+                            android:minWidth="64dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <CheckBox android:id="@+id/expire_interval_recurring"
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:layout_marginLeft="8dp"
-                              android:layout_marginStart="8dp"
-                              android:layout_marginTop="16dp"
-                              android:layout_toEndOf="@id/expire_interval_val_input"
-                              android:layout_toRightOf="@id/expire_interval_val_input"
-                              android:text="@string/recurring"/>
+                    <CheckBox
+                        android:id="@+id/expire_interval_recurring"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_toEndOf="@id/expire_interval_val_input"
+                        android:layout_toRightOf="@id/expire_interval_val_input"
+                        android:text="@string/recurring" />
 
                 </RelativeLayout>
             </LinearLayout>
 
             <!-- Password history -->
-            <RelativeLayout android:id="@+id/history_group"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content">
-                <Button android:id="@+id/history_addremove"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:text="@string/add"/>
+            <RelativeLayout
+                android:id="@+id/history_group"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
 
-                <TextView android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:layout_alignBaseline="@id/history_addremove"
-                          android:layout_alignBottom="@id/history_addremove"
-                          android:layout_alignParentLeft="true"
-                          android:layout_alignParentStart="true"
-                          android:layout_alignTop="@id/history_addremove"
-                          android:layout_toLeftOf="@id/history_addremove"
-                          android:layout_toStartOf="@id/history_addremove"
-                          android:text="@string/history"
-                          android:textAppearance="?android:attr/textAppearanceMedium"/>
+                <Button
+                    android:id="@+id/history_addremove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:text="@string/add" />
 
-                <CheckBox android:id="@+id/history_enabled"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:layout_alignParentLeft="true"
-                          android:layout_alignParentStart="true"
-                          android:layout_below="@+id/history_addremove"
-                          android:layout_marginTop="16dp"
-                          android:text="@string/enabled"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@id/history_addremove"
+                    android:layout_alignTop="@id/history_addremove"
+                    android:layout_alignBottom="@id/history_addremove"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toStartOf="@id/history_addremove"
+                    android:layout_toLeftOf="@id/history_addremove"
+                    android:text="@string/history"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <CheckBox
+                    android:id="@+id/history_enabled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/history_addremove"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/enabled" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/history_max_size_input"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/history_addremove"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_toEndOf="@+id/history_enabled"
                     android:layout_toRightOf="@+id/history_enabled"
                     android:hint="@string/max_size">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/history_max_size"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:maxLines="1"
-                        android:minWidth="100dip"/>
+                        android:minWidth="100dip" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <ListView android:id="@+id/history"
-                          android:layout_width="fill_parent"
-                          android:layout_height="wrap_content"
-                          android:layout_below="@+id/history_max_size_input"
-                          tools:ignore="NestedScrolling"/>
+                <ListView
+                    android:id="@+id/history"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/history_max_size_input"
+                    tools:ignore="NestedScrolling" />
 
             </RelativeLayout>
 
         </LinearLayout>
 
         <!-- Notes -->
-        <TextView android:id="@+id/notes_label"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:text="@string/notes"
-                  android:textAppearance="?android:attr/textAppearanceLarge"/>
+        <TextView
+            android:id="@+id/notes_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notes"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <EditText android:id="@+id/notes"
-                  android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:hint="@string/notes"
-                  android:importantForAutofill="no"
-                  android:inputType="textCapSentences|textMultiLine|textLongMessage|textAutoCorrect"
-                  android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                  tools:targetApi="o"/>
+        <EditText
+            android:id="@+id/notes"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/notes"
+            android:importantForAutofill="no"
+            android:inputType="textCapSentences|textMultiLine|textLongMessage|textAutoCorrect"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:targetApi="o" />
     </LinearLayout>
 
 </ScrollView>
