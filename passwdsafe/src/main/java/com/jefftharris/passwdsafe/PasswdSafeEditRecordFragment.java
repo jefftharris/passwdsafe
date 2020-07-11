@@ -223,10 +223,6 @@ public class PasswdSafeEditRecordFragment
         itsPasswordInput = rootView.findViewById(R.id.password_input);
         itsPassword = rootView.findViewById(R.id.password);
         TypefaceUtils.setMonospace(itsPassword, ctx);
-        View passwordVisibility =
-                rootView.findViewById(R.id.password_visibility);
-        passwordVisibility.setOnClickListener(this);
-        passwordVisibility.setOnLongClickListener(this);
         View passwordGenerate =
                 rootView.findViewById(R.id.password_generate);
         passwordGenerate.setOnClickListener(this);
@@ -538,11 +534,6 @@ public class PasswdSafeEditRecordFragment
             }
             break;
         }
-        case R.id.password_visibility: {
-            boolean visible = GuiUtils.isPasswordVisible(itsPassword);
-            setPasswordVisibility(!visible);
-            break;
-        }
         case R.id.policy_edit: {
             PasswdPolicyEditDialog dlg =
                     PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
@@ -557,12 +548,6 @@ public class PasswdSafeEditRecordFragment
     public boolean onLongClick(View v)
     {
         switch (v.getId()) {
-        case R.id.password_visibility: {
-            int msg = GuiUtils.isPasswordVisible(itsPassword) ?
-                    R.string.hide_passwords : R.string.show_passwords;
-            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-            return true;
-        }
         case R.id.password_generate: {
             Toast.makeText(getContext(), R.string.generate_password,
                            Toast.LENGTH_SHORT).show();
@@ -1103,12 +1088,12 @@ public class PasswdSafeEditRecordFragment
     /**
      * Set the visibility of the password fields
      */
-    private void setPasswordVisibility(boolean visible)
+    private void setPasswordsVisibile()
     {
         Context ctx = getContext();
-        GuiUtils.setPasswordVisible(itsPasswordCurrent, visible, ctx);
-        GuiUtils.setPasswordVisible(itsPassword, visible, ctx);
-        GuiUtils.setPasswordVisible(itsPasswordConfirm, visible, ctx);
+        GuiUtils.setPasswordVisible(itsPasswordCurrent, true, ctx);
+        GuiUtils.setPasswordVisible(itsPassword, true, ctx);
+        GuiUtils.setPasswordVisible(itsPasswordConfirm, true, ctx);
     }
 
     /**
@@ -1123,7 +1108,7 @@ public class PasswdSafeEditRecordFragment
         } finally {
             itsValidator.setPaused(false);
         }
-        setPasswordVisibility(true);
+        setPasswordsVisibile();
     }
 
     /**
