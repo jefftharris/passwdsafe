@@ -366,8 +366,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
-        -Translations: theme_pref array, remove use_light_theme, add theme
-
+        &lt;b&gt;6.20.0&lt;/b&gt; - Display full password in fields.  Support
+        system day/night mode.  Always use new file chooser on Android Q and
+        higher.
+        \n\n
         &lt;b&gt;6.19.0&lt;/b&gt; - Use biometric credentials to save passwords
         instead of only fingerprints.  Fix matching passwords when finding
         similar records.

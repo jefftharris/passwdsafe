@@ -301,6 +301,7 @@
     <string name="symbols_used_by_default">Symboler brukt som standard i passordregler: %1$s</string>
     <string name="sync">Synkroniser</string>
     <string name="sync_account_deleted">Synkroniseringskonto slettet. Bruk menyen til å velge en annen mulighet.</string>
+    <string name="theme">Tema</string>
     <string name="times_header">ANTALL</string>
     <string name="title">Tittel</string>
     <string name="touch_sensor_to_save_the_password">Berør sensor for å lagre passordet</string>
@@ -312,7 +313,6 @@
     <string name="username">Brukernavn</string>
     <string name="use_count">Bruker</string>
     <string name="use_digits">Sifre</string>
-    <string name="use_light_theme">Bruk lett tema</string>
     <string name="use_lowercase">Små bokstaver</string>
     <string name="use_symbols">Symboler</string>
     <string name="use_uppercase">Store bokstaver</string>
@@ -330,8 +330,12 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.20.0&lt;/b&gt; - Vis fullstendig passord i felt.  Støtt
+        systemets dag/natt-modus.  Alltid bruk den nye filvelgeren på Android Q
+        og høyere.
+        \n\n
         &lt;b&gt;6.19.0&lt;/b&gt; - Bruk biometrisk legitimasjon for å lagre
-        password istedenfor bare fingeravtrykk.  Fiks matchende passord når man
+        passord istedenfor bare fingeravtrykk.  Fiks matchende passord når man
         finner lignende oppføringer.
         \n\n
         &lt;b&gt;6.18.2&lt;/b&gt; - Feilrettinger.
@@ -577,6 +581,14 @@
         <item>1 minutt</item>
         <item>5 minutter</item>
     </string-array>
+
+    <!-- Order must match ThemePref enum values -->
+    <string-array name="theme_pref">
+        <item>Følg systemet</item>
+        <item>Alltid lyst</item>
+        <item>Alltid mørkt</item>
+    </string-array>
+
     <string-array name="expire_type">
         <item>Aldri</item>
         <item>Dato</item>

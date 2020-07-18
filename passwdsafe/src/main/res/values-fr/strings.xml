@@ -343,6 +343,7 @@
     <string name="symbols_used_by_default">Les symboles utilisés par défaut dans de mot de passe stratégie: %1$s</string>
     <string name="sync">Synchroniser</string>
     <string name="sync_account_deleted">Synchronisation compte effacé. Utiliser le menu pour choisir une autre option.</string>
+    <string name="theme">Thème</string>
     <string name="times_header">TEMPS</string>
     <string name="title">Titre</string>
     <string name="touch_sensor_to_save_the_password">Toucher le lecteur
@@ -356,7 +357,6 @@
     <string name="username">Nom utilisateur</string>
     <string name="use_count">Utiliser compteur</string>
     <string name="use_digits">Chiffres</string>
-    <string name="use_light_theme">Utilise le thème clair</string>
     <string name="use_lowercase">Minuscules</string>
     <string name="use_symbols">Symboles</string>
     <string name="use_uppercase">Majuscules</string>
@@ -374,6 +374,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.20.0&lt;/b&gt; - Affichage mots de passe en clair dans les
+        champs.  Support mode jour/nuit du système.  Utilisation toujours du
+        nouveau sélecteur de fichier à partir d Android Q.
+        \n\n
         &lt;b&gt;6.19.0&lt;/b&gt; - Utilisation de l\'identification biométrique
         au lieu de seulement les empreintes digitales
         \n\n
@@ -660,6 +664,13 @@
         <item>30 secondes</item>
         <item>1 minute</item>
         <item>5 minutes</item>
+    </string-array>
+
+    <!-- Order must match ThemePref enum values -->
+    <string-array name="theme_pref">
+        <item>Comme le système</item>
+        <item>Toujours clair</item>
+        <item>Toujours foncé</item>
     </string-array>
 
     <!-- Order must match constants in PasswdExpiration.Type -->
