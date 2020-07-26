@@ -147,6 +147,7 @@ public class Preferences
 
     private static final String TAG = "Preferences";
 
+    // TODO file backups??
 
     /**
      * Get the default shared preferences
@@ -525,15 +526,22 @@ public class Preferences
     private static void upgradeDefaultFilePref(SharedPreferences prefs)
     {
         Uri defFileUri = getDefFilePref(prefs);
-        if ((defFileUri != null) && (defFileUri.getScheme() == null)) {
-            String path = defFileUri.getPath();
-            if (path != null) {
-                File defDir = getFileDirPref(prefs);
-                File def = new File(defDir, path);
-                defFileUri = Uri.fromFile(def);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString(PREF_DEF_FILE, defFileUri.toString());
-                editor.apply();
+        if (ApiCompat.supportsExternalFilesDirs()) {
+            if ((defFileUri != null) && (defFileUri.getScheme() == null)) {
+                String path = defFileUri.getPath();
+                if (path != null) {
+                    File defDir = getFileDirPref(prefs);
+                    File def = new File(defDir, path);
+                    defFileUri = Uri.fromFile(def);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString(PREF_DEF_FILE, defFileUri.toString());
+                    editor.apply();
+                }
+            }
+        } else {
+            if ((defFileUri != null) &&
+                (TextUtils.equals(defFileUri.getScheme(), "file"))) {
+                prefs.edit().remove(PREF_DEF_FILE).apply();
             }
         }
     }
