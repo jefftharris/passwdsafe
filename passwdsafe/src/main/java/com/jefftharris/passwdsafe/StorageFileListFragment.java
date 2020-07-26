@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -25,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -78,6 +80,8 @@ public final class StorageFileListFragment extends Fragment
     private RecentFilesDb itsRecentFilesDb;
     private ManagedRef<RecentFilesDb> itsRecentFilesDbRef;
     private View itsEmptyText;
+    private View itsFab;
+    private boolean itsIsFabBounced = false;
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
 
@@ -122,7 +126,7 @@ public final class StorageFileListFragment extends Fragment
         RecyclerView files = rootView.findViewById(R.id.files);
         files.setAdapter(itsFilesAdapter);
 
-        View fab = rootView.findViewById(R.id.fab);
+        itsFab = rootView.findViewById(R.id.fab);
         View noDefault = rootView.findViewById(R.id.no_default);
         if (hasMenu) {
             ItemTouchHelper.SimpleCallback swipeCb =
@@ -149,9 +153,9 @@ public final class StorageFileListFragment extends Fragment
             ItemTouchHelper swipeHelper = new ItemTouchHelper(swipeCb);
             swipeHelper.attachToRecyclerView(files);
 
-            fab.setOnClickListener(this);
+            itsFab.setOnClickListener(this);
         } else {
-            GuiUtils.setVisible(fab, false);
+            GuiUtils.setVisible(itsFab, false);
 
             // Wrap content for entries when shown in chooser dialog
             files.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -312,8 +316,12 @@ public final class StorageFileListFragment extends Fragment
     public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader,
                                Cursor cursor)
     {
-        GuiUtils.setVisible(itsEmptyText,
-                            (cursor == null) || (cursor.getCount() == 0));
+        boolean empty = (cursor == null) || (cursor.getCount() == 0);
+        GuiUtils.setVisible(itsEmptyText, empty);
+        if (empty && !itsIsFabBounced) {
+            bounceView(itsFab);
+            itsIsFabBounced = true;
+        }
         itsFilesAdapter.changeCursor(cursor);
 
         // Open the default file
@@ -416,6 +424,19 @@ public final class StorageFileListFragment extends Fragment
             PasswdSafeUtil.showFatalMsg(e, "Remove recent file error",
                                         requireActivity());
         }
+    }
+
+    /**
+     * Bounce a view
+     */
+    private static void bounceView(View v)
+    {
+        ObjectAnimator anim = ObjectAnimator.ofFloat(v, "translationY",
+                                                     0, -30, 0);
+        anim.setInterpolator(new BounceInterpolator());
+        anim.setStartDelay(1000);
+        anim.setDuration(2500);
+        anim.start();
     }
 
     /**
