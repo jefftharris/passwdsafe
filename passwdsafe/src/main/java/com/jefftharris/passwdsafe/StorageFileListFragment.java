@@ -36,6 +36,7 @@ import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
@@ -366,12 +367,19 @@ public final class StorageFileListFragment extends Fragment
     /** Open a password file URI from an intent */
     private void openUri(Intent openIntent)
     {
+        Context ctx = requireContext();
+
         Uri uri = openIntent.getData();
+        if (uri == null) {
+            PasswdSafeUtil.showError("No URI to open: " + openIntent, TAG, null,
+                                     new ActContext(ctx));
+            return;
+        }
+
         int flags = openIntent.getFlags() &
                     (Intent.FLAG_GRANT_READ_URI_PERMISSION |
                      Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-        Context ctx = requireContext();
         String title = RecentFilesDb.getSafDisplayName(uri, ctx);
         if (isCheckPermissions()) {
             RecentFilesDb.updateOpenedSafFile(uri, flags, ctx);
