@@ -184,6 +184,16 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     /**
+     * Hide a preference
+     */
+    private void hidePreference(String key)
+    {
+        Preference pref = requirePreference(key);
+        pref.setEnabled(false);
+        pref.setVisible(false);
+    }
+
+    /**
      * A screen of preferences
      */
     private static abstract class Screen
@@ -295,10 +305,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_BACKUP);
 
             if (!ApiCompat.supportsExternalFilesDirs()) {
-                Preference fileChooserPref = requirePreference(
-                        Preferences.PREF_FILE_LEGACY_FILE_CHOOSER);
-                fileChooserPref.setEnabled(false);
-                fileChooserPref.setVisible(false);
+                hidePreference(Preferences.PREF_FILE_DIR);
+                hidePreference(Preferences.PREF_FILE_LEGACY_FILE_CHOOSER);
             }
         }
 
