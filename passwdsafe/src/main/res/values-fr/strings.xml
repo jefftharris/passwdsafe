@@ -215,10 +215,14 @@
         permissions de stockage.
     </string>
     <string name="no_files_select_to_open">
-        Aucun fichier - Sélectionnez l\'action pour ouvrir ou créer un nouveau
-        fichier
-        \n\nSi les fichiers ne sont pas affichés dans l\'écran des documents,
-        utiliser le menu pour montrer le stockage interne ou sur la carte SD.
+        Sélectionnez le bouton pour ouvrir un fichier ou utilisez le menu pour
+        créer un nouveau fichier.
+        \n\n
+        Utilisation du sélectionneur de fichier:\n
+        - Pour les fichiers locaux, utilisez le menu pour afficher le stockage
+        interne.\n
+        - Utilisez le menu en haut à gauche pour sélectionner un endroit
+        différent de fichier.
     </string>
     <string name="no_groups">Aucun Groupes</string>
     <string name="no_shortcut_chosen">Aucun raccourci choisi</string>

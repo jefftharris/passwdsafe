@@ -210,9 +210,11 @@
         settings and enable storage permissions.
     </string>
     <string name="no_files_select_to_open">
-        No Files - Select action to open or create a new file
-        \n\nIf files are not showing in the documents screen, use the menu to
-        show internal storage or the SD card.
+        Select action button to open a file or use menu to create a new file.
+        \n\n
+        Using the file chooser:\n
+        - For local files, use the menu to show internal storage\n
+        - Use the top-left menu to select different file locations.
     </string>
     <string name="no_groups">No Groups</string>
     <string name="no_shortcut_chosen">No shortcut chosen</string>

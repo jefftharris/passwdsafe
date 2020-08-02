@@ -211,9 +211,13 @@
         können Sie die Speicherberechtigung in den App-Einstellungen aktivieren.
     </string>
     <string name="no_files_select_to_open">
-        Keine Dateien - Öffnen Sie eine Datei oder erstellen Sie eine Neue.
-        \n\nWenn Ihre Dateien beim öffnen nicht angezeigt werden, können Sie
-        im Menü den internen Speicher und/oder die SD-Karte einblenden.
+        Aktionsbutton auswählen um eine Datei zu öffnen oder das Menü, um eine
+        neue Datei zu erstellen.
+        \n\n
+        Die Dateiauswahl benutzen:\n
+        - Für lokale Dateien, nutze das Menü um den internen Speicher
+        anzuzeigen.\n
+        - Nutze das Menü oben links um einen anderen Dateiort auszuwählen.
     </string>
     <string name="no_groups">Keine Gruppen</string>
     <string name="no_shortcut_chosen">Keine Verknüpfung ausgewählt</string>
