@@ -378,6 +378,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.20.1&lt;/b&gt; - Mise à jour de l\'aide pour le sélectionneur
+        de nouveau fichier.
+        \n\n
         &lt;b&gt;6.20.0&lt;/b&gt; - Affichage mots de passe en clair dans les
         champs.  Support mode jour/nuit du système.  Utilisation toujours du
         nouveau sélecteur de fichier à partir d Android Q.
