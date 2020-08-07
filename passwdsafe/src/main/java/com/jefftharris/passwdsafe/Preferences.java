@@ -249,6 +249,11 @@ public class Preferences
         return Uri.parse(defFile);
     }
 
+    public static void clearDefFilePref(SharedPreferences prefs)
+    {
+        prefs.edit().remove(PREF_DEF_FILE).apply();
+    }
+
     /** Get the preference for use of the legacy file chooser */
     public static boolean getFileLegacyFileChooserPref(SharedPreferences prefs)
     {

@@ -2046,7 +2046,15 @@ public class PasswdSafe extends AppCompatActivity
         {
             Context ctx = getContext();
             RecentFilesDb recentFilesDb = new RecentFilesDb(ctx);
-            recentFilesDb.removeUri(itsFileUri.getUri());
+
+            SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
+            Uri defaultFile = Preferences.getDefFilePref(prefs);
+
+            Uri fileUri = itsFileUri.getUri();
+            if (fileUri.equals(defaultFile)) {
+                Preferences.clearDefFilePref(prefs);
+            }
+            recentFilesDb.removeUri(fileUri);
 
             itsFileUri.delete(ctx);
             return true;
