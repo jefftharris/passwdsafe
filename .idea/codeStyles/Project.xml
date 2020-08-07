@@ -6,19 +6,36 @@
       </value>
     </option>
     <option name="LINE_SEPARATOR" value="&#10;" />
+    <option name="FIELD_NAME_PREFIX" value="its" />
+    <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
+    <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
+    <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+      <value />
+    </option>
+    <option name="IMPORT_LAYOUT_TABLE">
+      <value>
+        <package name="android" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="com" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="junit" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="net" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="org" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="java" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="javax" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="" withSubpackages="true" static="true" />
+        <emptyLine />
+      </value>
+    </option>
     <option name="RIGHT_MARGIN" value="80" />
-    <AndroidXmlCodeStyleSettings>
-      <option name="LAYOUT_SETTINGS">
-        <value>
-          <option name="INSERT_BLANK_LINE_BEFORE_TAG" value="false" />
-        </value>
-      </option>
-      <option name="OTHER_SETTINGS">
-        <value>
-          <option name="INSERT_LINE_BREAK_BEFORE_FIRST_ATTRIBUTE" value="false" />
-        </value>
-      </option>
-    </AndroidXmlCodeStyleSettings>
+    <option name="WRAP_COMMENTS" value="true" />
     <JavaCodeStyleSettings>
       <option name="FIELD_NAME_PREFIX" value="its" />
       <option name="IMPORT_LAYOUT_TABLE">
@@ -44,28 +61,31 @@
           <emptyLine />
         </value>
       </option>
+      <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
+      <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
+      <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />
+      <option name="JD_ADD_BLANK_AFTER_RETURN" value="true" />
     </JavaCodeStyleSettings>
-    <Objective-C>
-      <option name="FUNCTION_BRACE_PLACEMENT" value="2" />
-    </Objective-C>
     <XML>
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
     <codeStyleSettings language="JAVA">
+      <option name="KEEP_LINE_BREAKS" value="false" />
+      <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
       <option name="CLASS_BRACE_STYLE" value="2" />
       <option name="METHOD_BRACE_STYLE" value="2" />
       <option name="INDENT_CASE_FROM_SWITCH" value="false" />
       <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
       <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
+      <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="true" />
       <option name="ALIGN_MULTILINE_THROWS_LIST" value="true" />
       <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
       <option name="ALIGN_MULTILINE_PARENTHESIZED_EXPRESSION" value="true" />
       <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
       <option name="SPACE_AFTER_TYPE_CAST" value="false" />
       <option name="CALL_PARAMETERS_WRAP" value="1" />
-      <option name="METHOD_PARAMETERS_WRAP" value="1" />
-      <option name="RESOURCE_LIST_WRAP" value="1" />
+      <option name="METHOD_PARAMETERS_WRAP" value="5" />
       <option name="EXTENDS_LIST_WRAP" value="1" />
       <option name="THROWS_LIST_WRAP" value="1" />
       <option name="EXTENDS_KEYWORD_WRAP" value="1" />
@@ -74,35 +94,22 @@
       <option name="BINARY_OPERATION_WRAP" value="1" />
       <option name="TERNARY_OPERATION_WRAP" value="1" />
       <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
+      <option name="FOR_STATEMENT_WRAP" value="1" />
       <option name="ARRAY_INITIALIZER_WRAP" value="1" />
+      <option name="ASSIGNMENT_WRAP" value="1" />
+      <option name="WRAP_COMMENTS" value="true" />
+      <option name="ASSERT_STATEMENT_WRAP" value="1" />
       <option name="IF_BRACE_FORCE" value="3" />
       <option name="DOWHILE_BRACE_FORCE" value="3" />
       <option name="WHILE_BRACE_FORCE" value="3" />
       <option name="FOR_BRACE_FORCE" value="3" />
-      <option name="ENUM_CONSTANTS_WRAP" value="2" />
-      <indentOptions>
-        <option name="TAB_SIZE" value="8" />
-      </indentOptions>
-    </codeStyleSettings>
-    <codeStyleSettings language="ObjectiveC">
-      <option name="CLASS_BRACE_STYLE" value="2" />
-      <option name="INDENT_CASE_FROM_SWITCH" value="false" />
-      <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
-      <option name="ALIGN_MULTILINE_ASSIGNMENT" value="false" />
-      <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="false" />
-      <option name="SPACE_WITHIN_BRACES" value="false" />
-      <option name="SPACE_AFTER_TYPE_CAST" value="false" />
-      <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
-      <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="false" />
-      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="false" />
-      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="false" />
+      <option name="WRAP_LONG_LINES" value="true" />
       <option name="ENUM_CONSTANTS_WRAP" value="2" />
       <indentOptions>
         <option name="TAB_SIZE" value="8" />
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="XML">
-      <option name="WRAP_ON_TYPING" value="0" />
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="4" />
       </indentOptions>
