@@ -506,32 +506,20 @@ public final class StorageFileListFragment extends Fragment
             }
 
             if (isCheckPermissions()) {
-                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                ContentResolver cr = getContext().getContentResolver();
+                Context ctx = getContext();
+                ContentResolver cr = ctx.getContentResolver();
+
+                SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
+                Uri defaultFile = Preferences.getDefFilePref(prefs);
+                if (defaultFile != null) {
+                    checkUriPerm(defaultFile, defaultFile, cr, recentFilesDb,
+                                 prefs);
+                }
+
                 List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
                 for (Uri permUri : permUris) {
-                    PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s",
-                                           permUri);
-                    Cursor cursor = null;
-                    try {
-                        cursor = cr.query(permUri, null, null, null, null);
-                        if ((cursor != null) && (cursor.moveToFirst())) {
-                            ApiCompat.takePersistableUriPermission(cr, permUri,
-                                                                   flags);
-                        } else {
-                            ApiCompat.releasePersistableUriPermission(cr,
-                                                                      permUri,
-                                                                      flags);
-                            recentFilesDb.removeUri(permUri);
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "File remove error: " + permUri, e);
-                    } finally {
-                        if (cursor != null) {
-                            cursor.close();
-                        }
-                    }
+                    checkUriPerm(permUri, defaultFile, cr, recentFilesDb,
+                                 prefs);
                 }
             }
 
@@ -541,6 +529,46 @@ public final class StorageFileListFragment extends Fragment
                 Log.e(TAG, "Files load error", e);
             }
             return null;
+        }
+
+        /**
+         * Check permissions on a URI
+         */
+        private static void checkUriPerm(Uri uri,
+                                         Uri defaultFile,
+                                         ContentResolver cr,
+                                         RecentFilesDb recentFilesDb,
+                                         SharedPreferences prefs)
+        {
+            PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s", uri);
+
+            boolean doRemove = false;
+            try (Cursor cursor = cr.query(uri, null, null, null, null)) {
+                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+
+                if ((cursor != null) && (cursor.moveToFirst())) {
+                    ApiCompat.takePersistableUriPermission(cr, uri, flags);
+                } else {
+                    ApiCompat.releasePersistableUriPermission(cr, uri, flags);
+                    doRemove = true;
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Permission remove error: " + uri, e);
+                doRemove = true;
+            }
+
+            if (doRemove) {
+                try {
+                    recentFilesDb.removeUri(uri);
+                } catch (Exception e) {
+                    Log.e(TAG, "Recent files remove error: " + uri, e);
+                }
+
+                if (uri.equals(defaultFile)) {
+                    Preferences.clearDefFilePref(prefs);
+                }
+            }
         }
     }
 }
