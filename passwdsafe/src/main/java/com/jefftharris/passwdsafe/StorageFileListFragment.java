@@ -276,19 +276,27 @@ public final class StorageFileListFragment extends Fragment
                 }
                 List<Uri> recentUris = itsRecentFilesDb.clear();
                 if (isCheckPermissions()) {
+                    SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
+                    Uri defaultFile = Preferences.getDefFilePref(prefs);
+
                     ContentResolver cr = ctx.getContentResolver();
                     int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
                                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
                     for (Uri uri : recentUris) {
-                        ApiCompat.releasePersistableUriPermission(cr, uri,
-                                                                  flags);
+                        if (!uri.equals(defaultFile)) {
+                            ApiCompat.releasePersistableUriPermission(cr, uri,
+                                                                      flags);
+                        }
                     }
 
                     List<Uri> permUris =
                             ApiCompat.getPersistedUriPermissions(cr);
                     for (Uri permUri : permUris) {
-                        ApiCompat.releasePersistableUriPermission(cr, permUri,
-                                                                  flags);
+                        if (!permUri.equals(defaultFile)) {
+                            ApiCompat.releasePersistableUriPermission(cr,
+                                                                      permUri,
+                                                                      flags);
+                        }
                     }
                 }
 
