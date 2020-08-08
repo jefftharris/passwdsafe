@@ -371,6 +371,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.20.2&lt;/b&gt; - Fehlerbehebungen
+        \n\n
         &lt;b&gt;6.20.1&lt;/b&gt; - Hilfe für neue Dateiauswahl verbessert.
         \n\n
         &lt;b&gt;6.20.0&lt;/b&gt; - Zeigt vollständiges Passwort in Feldern an.
