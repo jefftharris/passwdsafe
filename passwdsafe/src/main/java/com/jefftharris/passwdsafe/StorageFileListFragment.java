@@ -36,6 +36,7 @@ import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
@@ -517,13 +518,25 @@ public final class StorageFileListFragment extends Fragment
                 Context ctx = getContext();
                 ContentResolver cr = ctx.getContentResolver();
 
+                // Check default file
                 SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
                 Uri defaultFile = Preferences.getDefFilePref(prefs);
                 if (defaultFile != null) {
-                    checkUriPerm(defaultFile, defaultFile, cr, recentFilesDb,
-                                 prefs);
+                    switch (PasswdFileUri.getUriType(defaultFile)) {
+                    case GENERIC_PROVIDER: {
+                        checkUriPerm(defaultFile, defaultFile, cr,
+                                     recentFilesDb, prefs);
+                        break;
+                    }
+                    case FILE:
+                    case EMAIL:
+                    case SYNC_PROVIDER: {
+                        break;
+                    }
+                    }
                 }
 
+                // Check any file for which we have permissions
                 List<Uri> permUris = ApiCompat.getPersistedUriPermissions(cr);
                 for (Uri permUri : permUris) {
                     checkUriPerm(permUri, defaultFile, cr, recentFilesDb,
