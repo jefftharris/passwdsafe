@@ -44,7 +44,6 @@ public final class PasswdSafeApp extends Application
     private PasswdPolicy itsDefaultPasswdPolicy = null;
     private NotificationMgr itsNotifyMgr;
     private boolean itsIsOpenDefault = true;
-    private PasswdSafeDb itsPasswdSafeDb;
 
     private static final String TAG = "PasswdSafeApp";
 
@@ -93,8 +92,6 @@ public final class PasswdSafeApp extends Application
         setPasswordDefaultSymsPref(prefs);
         itsDefaultPasswdPolicy = Preferences.getDefPasswdPolicyPref(prefs,
                                                                     this);
-
-        itsPasswdSafeDb = new PasswdSafeDb(this);
     }
 
     /* (non-Javadoc)
@@ -168,14 +165,6 @@ public final class PasswdSafeApp extends Application
     public NotificationMgr getNotifyMgr()
     {
         return itsNotifyMgr;
-    }
-
-    /**
-     * Get the PasswdSafe database
-     */
-    public PasswdSafeDb getPasswdSafeDb()
-    {
-        return itsPasswdSafeDb;
     }
 
     /**

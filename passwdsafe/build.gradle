@@ -21,6 +21,13 @@ android {
         versionName "6.20.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -44,10 +51,14 @@ android {
 
 
 dependencies {
+    def room_version = "2.2.5"
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
 
     implementation 'androidx.biometric:biometric:1.0.1'
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 
     // Core library
     androidTestImplementation 'androidx.test:core:1.2.0'

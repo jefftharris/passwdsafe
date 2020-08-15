@@ -27,6 +27,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.jefftharris.passwdsafe.db.PasswdSafeDb;
+import com.jefftharris.passwdsafe.db.RecentFilesDao;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
@@ -253,7 +255,7 @@ public class PasswdSafeNewFileFragment
 
             Context ctx = requireContext();
             Uri newUri = data.getData();
-            String title = RecentFilesDb.getSafDisplayName(newUri, ctx);
+            String title = RecentFilesDao.getSafDisplayName(newUri, ctx);
 
             boolean checkPermissions = isCheckPermissions();
             if (!checkPermissions && (title == null)) {
@@ -273,16 +275,17 @@ public class PasswdSafeNewFileFragment
             }
 
             if (checkPermissions) {
-                RecentFilesDb.updateOpenedSafFile(
+                RecentFilesDao.updateOpenedSafFile(
                         newUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION |
                                  Intent.FLAG_GRANT_WRITE_URI_PERMISSION),
                         ctx);
             }
 
-            if (!TextUtils.isEmpty(title)) {
-                RecentFilesDb recentFilesDb = new RecentFilesDb(ctx);
+            if ((newUri != null) && !TextUtils.isEmpty(title)) {
+                RecentFilesDao recentFilesDao =
+                        PasswdSafeDb.get(ctx).accessRecentFiles();
                 try {
-                    recentFilesDb.insertOrUpdateFile(newUri, title);
+                    recentFilesDao.insertOrUpdate(newUri, title);
                 } catch (Exception e) {
                     Log.e(TAG, "Error saving recent file: " + newUri, e);
                 }

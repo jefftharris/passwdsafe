@@ -36,6 +36,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.jefftharris.passwdsafe.db.PasswdSafeDb;
+import com.jefftharris.passwdsafe.db.RecentFilesDao;
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
@@ -2045,7 +2047,8 @@ public class PasswdSafe extends AppCompatActivity
         protected Boolean doInBackground() throws Throwable
         {
             Context ctx = getContext();
-            RecentFilesDb recentFilesDb = new RecentFilesDb(ctx);
+            RecentFilesDao recentFilesDao =
+                    PasswdSafeDb.get(ctx).accessRecentFiles();
 
             SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
             Uri defaultFile = Preferences.getDefFilePref(prefs);
@@ -2054,7 +2057,7 @@ public class PasswdSafe extends AppCompatActivity
             if (fileUri.equals(defaultFile)) {
                 Preferences.clearDefFilePref(prefs);
             }
-            recentFilesDb.removeUri(fileUri);
+            recentFilesDao.removeUri(fileUri.toString());
 
             itsFileUri.delete(ctx);
             return true;

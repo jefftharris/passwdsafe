@@ -36,6 +36,8 @@ import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jefftharris.passwdsafe.db.PasswdSafeDb;
+import com.jefftharris.passwdsafe.db.RecentFilesDao;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
@@ -79,8 +81,8 @@ public final class StorageFileListFragment extends Fragment
     private static final int LOADER_FILES = 0;
 
     private Listener itsListener;
-    private RecentFilesDb itsRecentFilesDb;
-    private ManagedRef<RecentFilesDb> itsRecentFilesDbRef;
+    private RecentFilesDao itsRecentFilesDao;
+    private ManagedRef<RecentFilesDao> itsRecentFilesDaoRef;
     private View itsEmptyText;
     private View itsFab;
     private boolean itsIsFabBounced = false;
@@ -104,8 +106,10 @@ public final class StorageFileListFragment extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        itsRecentFilesDb = new RecentFilesDb(requireActivity());
-        itsRecentFilesDbRef = new ManagedRef<>(itsRecentFilesDb);
+
+        itsRecentFilesDao =
+                PasswdSafeDb.get(requireContext()).accessRecentFiles();
+        itsRecentFilesDaoRef = new ManagedRef<>(itsRecentFilesDao);
     }
 
     @Override
@@ -198,9 +202,9 @@ public final class StorageFileListFragment extends Fragment
     public void onDestroy()
     {
         super.onDestroy();
-        itsRecentFilesDb = null;
-        itsRecentFilesDbRef.clear();
-        itsRecentFilesDbRef = null;
+        itsRecentFilesDao = null;
+        itsRecentFilesDaoRef.clear();
+        itsRecentFilesDaoRef = null;
     }
 
     @Override
@@ -275,7 +279,7 @@ public final class StorageFileListFragment extends Fragment
                 if (ctx == null) {
                     return true;
                 }
-                List<Uri> recentUris = itsRecentFilesDb.clear();
+                List<Uri> recentUris = itsRecentFilesDao.clear();
                 if (isCheckPermissions()) {
                     SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
                     Uri defaultFile = Preferences.getDefFilePref(prefs);
@@ -319,7 +323,7 @@ public final class StorageFileListFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
     {
-        return new FileLoader(itsRecentFilesDbRef, requireContext());
+        return new FileLoader(itsRecentFilesDaoRef, requireContext());
     }
 
     @Override
@@ -342,7 +346,7 @@ public final class StorageFileListFragment extends Fragment
             Uri defFile = Preferences.getDefFilePref(prefs);
             if (defFile != null) {
                 try {
-                    itsRecentFilesDb.touchFile(defFile);
+                    itsRecentFilesDao.touchFile(defFile);
                 } catch (Exception e) {
                     Log.e(TAG, "Error touching file", e);
                 }
@@ -389,9 +393,9 @@ public final class StorageFileListFragment extends Fragment
                     (Intent.FLAG_GRANT_READ_URI_PERMISSION |
                      Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-        String title = RecentFilesDb.getSafDisplayName(uri, ctx);
+        String title = RecentFilesDao.getSafDisplayName(uri, ctx);
         if (isCheckPermissions()) {
-            RecentFilesDb.updateOpenedSafFile(uri, flags, ctx);
+            RecentFilesDao.updateOpenedSafFile(uri, flags, ctx);
         } else {
             if (title == null) {
                 title = openIntent.getStringExtra("__test_display_name");
@@ -410,7 +414,7 @@ public final class StorageFileListFragment extends Fragment
 
         if (uri != null) {
             try {
-                itsRecentFilesDb.insertOrUpdateFile(uri, title);
+                itsRecentFilesDao.insertOrUpdate(uri, title);
             } catch (Exception e) {
                 Log.e(TAG, "Error inserting recent file", e);
             }
@@ -426,7 +430,7 @@ public final class StorageFileListFragment extends Fragment
     {
         try {
             Uri uri = Uri.parse(uristr);
-            itsRecentFilesDb.removeUri(uri);
+            itsRecentFilesDao.removeUri(uristr);
 
             if (isCheckPermissions()) {
                 ContentResolver cr = requireContext().getContentResolver();
@@ -469,16 +473,16 @@ public final class StorageFileListFragment extends Fragment
      */
     private static final class FileLoader extends AsyncTaskLoader<Cursor>
     {
-        private final ManagedRef<RecentFilesDb> itsRecentFilesDb;
+        private final ManagedRef<RecentFilesDao> itsRecentFilesDao;
 
         /**
          * Constructor
          */
-        protected FileLoader(ManagedRef<RecentFilesDb> recentFilesDb,
+        protected FileLoader(ManagedRef<RecentFilesDao> recentFilesDao,
                              Context ctx)
         {
             super(ctx.getApplicationContext());
-            itsRecentFilesDb = recentFilesDb;
+            itsRecentFilesDao = recentFilesDao;
         }
 
         /** Handle when the loader is reset */
@@ -509,7 +513,7 @@ public final class StorageFileListFragment extends Fragment
         {
             PasswdSafeUtil.dbginfo(TAG, "loadInBackground");
 
-            RecentFilesDb recentFilesDb = itsRecentFilesDb.get();
+            RecentFilesDao recentFilesDb = itsRecentFilesDao.get();
             if (recentFilesDb == null) {
                 return null;
             }
@@ -545,7 +549,7 @@ public final class StorageFileListFragment extends Fragment
             }
 
             try {
-                return recentFilesDb.queryFiles();
+                return recentFilesDb.getOrderedByDateCursor();
             } catch (Exception e) {
                 Log.e(TAG, "Files load error", e);
             }
@@ -558,7 +562,7 @@ public final class StorageFileListFragment extends Fragment
         private static void checkUriPerm(Uri uri,
                                          Uri defaultFile,
                                          ContentResolver cr,
-                                         RecentFilesDb recentFilesDb,
+                                         RecentFilesDao recentFilesDao,
                                          SharedPreferences prefs)
         {
             PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s", uri);
@@ -581,7 +585,7 @@ public final class StorageFileListFragment extends Fragment
 
             if (doRemove) {
                 try {
-                    recentFilesDb.removeUri(uri);
+                    recentFilesDao.removeUri(uri.toString());
                 } catch (Exception e) {
                     Log.e(TAG, "Recent files remove error: " + uri, e);
                 }

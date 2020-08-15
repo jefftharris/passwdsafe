@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jefftharris.passwdsafe.db.RecentFile;
 import com.jefftharris.passwdsafe.lib.Utils;
 
 /**
@@ -49,9 +50,12 @@ public final class StorageFileListHolder
      */
     public void updateView(Cursor item)
     {
-        itsTitle = item.getString(RecentFilesDb.QUERY_COL_TITLE);
-        long date = item.getLong(RecentFilesDb.QUERY_COL_DATE);
-        itsUri = item.getString(RecentFilesDb.QUERY_COL_URI);
+        int titleIdx = item.getColumnIndex(RecentFile.COL_TITLE);
+        int dateIdx = item.getColumnIndex(RecentFile.COL_DATE);
+        int uriIdx = item.getColumnIndex(RecentFile.COL_URI);
+        itsTitle = item.getString(titleIdx);
+        long date = item.getLong(dateIdx);
+        itsUri = item.getString(uriIdx);
 
         itsText.setText(itsTitle);
         itsText.requestLayout();
