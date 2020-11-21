@@ -151,6 +151,7 @@ public class BackupFilesFragment extends Fragment
     {
         super.onViewStateRestored(savedInstanceState);
         itsSelTracker.onRestoreInstanceState(savedInstanceState);
+        onSelChanged(itsSelTracker.hasSelection());
     }
 
     @Override
