@@ -20,7 +20,8 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 /**
  * PasswdSafe database
  */
-@Database(entities = {RecentFile.class, SavedPassword.class}, version = 3)
+@Database(entities = {BackupFile.class, RecentFile.class, SavedPassword.class},
+          version = 3)
 public abstract class PasswdSafeDb extends RoomDatabase
 {
     private static final String TAG = "PasswdSafeDb";
@@ -46,6 +47,14 @@ public abstract class PasswdSafeDb extends RoomDatabase
             // previous database formats to V3.
 
             PasswdSafeUtil.dbginfo(TAG, "Migrate v2->v3");
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + BackupFile.TABLE + " (" +
+                       BackupFile.COL_ID + " INTEGER PRIMARY KEY " +
+                       "AUTOINCREMENT NOT NULL, " +
+                       BackupFile.COL_TITLE + " TEXT NOT NULL, " +
+                       BackupFile.COL_FILE_URI + " TEXT NOT NULL, " +
+                       BackupFile.COL_DATE + " INTEGER NOT NULL" +
+                       ");");
 
             db.execSQL("CREATE TABLE IF NOT EXISTS " + RecentFile.TABLE + " (" +
                        RecentFile.COL_ID + " INTEGER PRIMARY KEY," +
@@ -90,6 +99,11 @@ public abstract class PasswdSafeDb extends RoomDatabase
         }
         return INSTANCE;
     }
+
+    /**
+     * Access the backup files
+     */
+    public abstract BackupFilesDao accessBackupFiles();
 
     /**
      * Access the recent files
