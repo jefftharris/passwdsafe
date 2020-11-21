@@ -324,6 +324,14 @@ public class FileListActivityTest
             pressBack();
             pressBack();
         }
+
+        // Ensure files, not a sync provider, is selected
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.START)))
+                .perform(open());
+
+        onView(withId(R.id.navigation_drawer))
+                .perform(navigateTo(R.id.menu_drawer_files));
     }
 
     /**
