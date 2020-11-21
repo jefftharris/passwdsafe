@@ -300,11 +300,12 @@
         in the file preferences.
     </string>
     <string name="read_write">Read-write</string>
+    <string name="recurring">Recurring</string>
     <string name="references_label">REFERENCES</string>
     <string name="regular_expression">Regular expression</string>
     <string name="regular_expression_summary">Use a regular expression to search instead of a sub-string</string>
     <string name="remove">Remove</string>
-    <string name="recurring">Recurring</string>
+    <string name="restore">Restore</string>
     <string name="save">Save</string>
     <string name="save_password">Save password</string>
     <string name="save_password_p">Save password?</string>

@@ -44,6 +44,9 @@ public class FileListNavDrawerFragment
         /** Show the sync files */
         void showSyncProviderFiles(Uri uri);
 
+        /** Show the backup files */
+        void showBackupFiles();
+
         /** Show the preferences */
         void showPreferences();
 
@@ -62,6 +65,8 @@ public class FileListNavDrawerFragment
         FILES,
         /** Sync files */
         SYNC_FILES,
+        /** Backup files */
+        BACKUP_FILES,
         /** Preferences */
         PREFERENCES
     }
@@ -138,6 +143,10 @@ public class FileListNavDrawerFragment
             }
             break;
         }
+        case BACKUP_FILES: {
+            selNavItem = R.id.menu_drawer_backup_files;
+            break;
+        }
         case PREFERENCES: {
             selNavItem = R.id.menu_drawer_preferences;
             break;
@@ -172,6 +181,10 @@ public class FileListNavDrawerFragment
             switch (navItem) {
             case R.id.menu_drawer_about: {
                 listener.showAbout();
+                break;
+            }
+            case R.id.menu_drawer_backup_files: {
+                listener.showBackupFiles();
                 break;
             }
             case R.id.menu_drawer_files: {

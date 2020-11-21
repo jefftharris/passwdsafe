@@ -44,6 +44,7 @@ public class FileListActivity extends AppCompatActivity
         implements AboutFragment.Listener,
                    FileListFragment.Listener,
                    FileListNavDrawerFragment.Listener,
+                   BackupFilesFragment.Listener,
                    PreferencesFragment.Listener,
                    SharedPreferences.OnSharedPreferenceChangeListener,
                    StorageFileListFragment.Listener,
@@ -66,6 +67,8 @@ public class FileListActivity extends AppCompatActivity
     {
         /** View about info */
         ABOUT,
+        /** View backup files */
+        BACKUP_FILES,
         /** View files */
         FILES,
         /** Initial view of files */
@@ -80,6 +83,8 @@ public class FileListActivity extends AppCompatActivity
     {
         /** Viewing about info */
         ABOUT,
+        /** Viewing backup files */
+        BACKUP_FILES,
         /** Viewing files */
         FILES,
         /** Viewing sync files */
@@ -303,6 +308,12 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
+    public void updateViewBackupFiles()
+    {
+        doUpdateView(ViewMode.BACKUP_FILES, null);
+    }
+
+    @Override
     public void updateViewFiles()
     {
         doUpdateView(ViewMode.FILES, null);
@@ -343,6 +354,13 @@ public class FileListActivity extends AppCompatActivity
     public void showAbout()
     {
         doChangeView(ViewChange.ABOUT, AboutFragment.newInstance());
+    }
+
+    @Override
+    public void showBackupFiles()
+    {
+        doChangeView(ViewChange.BACKUP_FILES,
+                     BackupFilesFragment.newInstance());
     }
 
     @Override
@@ -417,6 +435,7 @@ public class FileListActivity extends AppCompatActivity
             break;
         }
         case ABOUT:
+        case BACKUP_FILES:
         case FILES:
         case PREFERENCES:
         case SYNC_FILES: {
@@ -467,6 +486,12 @@ public class FileListActivity extends AppCompatActivity
             drawerMode = FileListNavDrawerFragment.Mode.ABOUT;
             itsTitle = PasswdSafeApp.getAppTitle(getString(R.string.about),
                                                  this);
+            break;
+        }
+        case BACKUP_FILES: {
+            drawerMode = FileListNavDrawerFragment.Mode.BACKUP_FILES;
+            itsTitle = PasswdSafeApp.getAppTitle(
+                    getString(R.string.file_backups), this);
             break;
         }
         case FILES: {
