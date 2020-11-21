@@ -197,54 +197,54 @@ public class FileListActivityTest
                 hasAction(equalTo("com.jefftharris.passwdsafe.action.NEW")),
                 toPackage("com.jefftharris.passwdsafe"),
                 hasData(nullValue(Uri.class))));
-     }
+    }
 
-     @Test
-     public void testNewFileOpen() throws IOException
-     {
-         verifyDrawerClosed();
-         setLegacyFileChooser(false);
-         clearRecents();
+    @Test
+    public void testNewFileOpen() throws IOException
+    {
+        verifyDrawerClosed();
+        setLegacyFileChooser(false);
+        clearRecents();
 
-         Uri fileUri = Uri.fromFile(FILE);
-         Intent openResponse =
-                 new Intent().setData(fileUri)
-                             .putExtra("__test_display_name", FILE.getName());
+        Uri fileUri = Uri.fromFile(FILE);
+        Intent openResponse =
+                new Intent().setData(fileUri)
+                            .putExtra("__test_display_name", FILE.getName());
 
-         intending(allOf(
-                 hasAction(equalTo(
-                         DocumentsContractCompat.INTENT_ACTION_OPEN_DOCUMENT)),
-                 hasCategories(
-                         Collections.singleton(Intent.CATEGORY_OPENABLE)),
-                 hasType("application/*")))
-                 .respondWith(new Instrumentation.ActivityResult(
-                         Activity.RESULT_OK, openResponse));
+        intending(allOf(
+                hasAction(equalTo(
+                        DocumentsContractCompat.INTENT_ACTION_OPEN_DOCUMENT)),
+                hasCategories(
+                        Collections.singleton(Intent.CATEGORY_OPENABLE)),
+                hasType("application/*")))
+                .respondWith(new Instrumentation.ActivityResult(
+                        Activity.RESULT_OK, openResponse));
 
-         Assert.assertTrue(FILE.createNewFile());
-         onView(withId(R.id.fab))
-                 .perform(click());
-         intended(allOf(hasAction(PasswdSafeUtil.VIEW_INTENT),
-                        toPackage("com.jefftharris.passwdsafe"),
-                        hasData(fileUri)));
+        Assert.assertTrue(FILE.createNewFile());
+        onView(withId(R.id.fab))
+                .perform(click());
+        intended(allOf(hasAction(PasswdSafeUtil.VIEW_INTENT),
+                       toPackage("com.jefftharris.passwdsafe"),
+                       hasData(fileUri)));
 
-         closeSoftKeyboard();
-         pressBack();
+        closeSoftKeyboard();
+        pressBack();
 
-         onNewFileList()
-                 .check(matches(withEffectiveVisibility(
-                         ViewMatchers.Visibility.VISIBLE)));
-         onNewFileList()
-                 .check(withRecyclerViewCount(1));
-         onNewFileList()
-                 .check(hasRecyclerViewItemAtPosition(
-                         0,
-                         hasDescendant(allOf(withId(R.id.text),
-                                             withText(FILE.getName())))));
+        onNewFileList()
+                .check(matches(withEffectiveVisibility(
+                        ViewMatchers.Visibility.VISIBLE)));
+        onNewFileList()
+                .check(withRecyclerViewCount(1));
+        onNewFileList()
+                .check(hasRecyclerViewItemAtPosition(
+                        0,
+                        hasDescendant(allOf(withId(R.id.text),
+                                            withText(FILE.getName())))));
 
-         onView(withId(R.id.empty))
-                 .check(matches(withEffectiveVisibility(
-                         ViewMatchers.Visibility.GONE)));
-     }
+        onView(withId(R.id.empty))
+                .check(matches(withEffectiveVisibility(
+                        ViewMatchers.Visibility.GONE)));
+    }
 
      @Test
      public void testNewClearRecents()
