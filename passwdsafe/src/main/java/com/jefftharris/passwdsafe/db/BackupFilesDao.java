@@ -36,6 +36,7 @@ import java.util.Objects;
 @Dao
 public abstract class BackupFilesDao
 {
+    private static final String BACKUP_FILE_PFX = "backup-";
     private static final String TAG = "BackupFilesDao";
 
     /**
@@ -64,6 +65,19 @@ public abstract class BackupFilesDao
                     () -> Toast.makeText(ctx, R.string.backup_creation_failed,
                                          Toast.LENGTH_LONG).show());
         }
+    }
+
+    /**
+     * Delete all of the backup files
+     */
+    public void deleteAll(Context ctx)
+    {
+        for (String fileName : ctx.fileList()) {
+            if (fileName.startsWith(BACKUP_FILE_PFX)) {
+                ctx.deleteFile(fileName);
+            }
+        }
+        doDeleteAll();
     }
 
     /**
@@ -107,11 +121,17 @@ public abstract class BackupFilesDao
     protected abstract long doInsert(BackupFile file);
 
     /**
+     * Delete all backup file entries implementation
+     */
+    @Query("DELETE FROM " + BackupFile.TABLE)
+    protected abstract void doDeleteAll();
+
+    /**
      * Get the name of a backup file
      */
     private static String getBackupFile(long backupId)
     {
-        return String.format(Locale.US, "backup-%d", backupId);
+        return String.format(Locale.US, "%s%d", BACKUP_FILE_PFX, backupId);
     }
 
     /**

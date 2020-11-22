@@ -27,14 +27,15 @@ import androidx.recyclerview.selection.StorageStrategy;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 
 /**
  * A fragment for backup files
  */
 public class BackupFilesFragment extends Fragment
+    implements ConfirmPromptDialog.Listener
 {
     // TODO: cleanup menus
-    // TODO: delete all
     // TODO: delete selected
     // TODO: restore
     // TODO: share? after open?
@@ -54,11 +55,21 @@ public class BackupFilesFragment extends Fragment
         void updateViewBackupFiles();
     }
 
+    /** Action confirmed via ConfirmPromptDialog */
+    private enum ConfirmAction
+    {
+        /** Delete all backups */
+        DELETE_ALL
+    }
+
     private Listener itsListener;
     private BackupFilesModel itsBackupFiles;
     private BackupFilesAdapter itsBackupFilesAdapter;
     private SelectionTracker<Long> itsSelTracker;
     private ActionMode itsActionMode;
+
+    private static final String CONFIRM_ARG_ACTION = "action";
+
     private static final String TAG = "BackupFilesFragment";
 
     /**
@@ -158,6 +169,42 @@ public class BackupFilesFragment extends Fragment
     {
         inflater.inflate(R.menu.fragment_backup_files, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_delete_all) {
+            Bundle confirmArgs = new Bundle();
+            confirmArgs.putString(CONFIRM_ARG_ACTION,
+                                  ConfirmAction.DELETE_ALL.name());
+            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
+                    getString(R.string.delete_all_backups_p), null,
+                    getString(R.string.delete_all), confirmArgs);
+            dialog.setTargetFragment(this, 0);
+            dialog.show(getParentFragmentManager(), "Delete all");
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void promptConfirmed(Bundle confirmArgs)
+    {
+        PasswdSafeUtil.dbginfo(TAG, "promptConfirmed: %s", confirmArgs);
+
+        switch (ConfirmAction.valueOf(
+                confirmArgs.getString(CONFIRM_ARG_ACTION))) {
+        case DELETE_ALL: {
+            itsBackupFiles.deleteAll();
+            break;
+        }
+        }
+    }
+
+    @Override
+    public void promptCanceled()
+    {
     }
 
     /**

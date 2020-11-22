@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class BackupFilesModel extends AndroidViewModel
 {
+    private final BackupFilesDao itsBackupFilesDao;
     private final LiveData<List<BackupFile>> itsBackupFiles;
 
     /**
@@ -30,9 +31,8 @@ public class BackupFilesModel extends AndroidViewModel
     public BackupFilesModel(Application app)
     {
         super(app);
-        BackupFilesDao backupFilesDao =
-                PasswdSafeDb.get(app).accessBackupFiles();
-        itsBackupFiles = backupFilesDao.loadBackupFiles();
+        itsBackupFilesDao = PasswdSafeDb.get(app).accessBackupFiles();
+        itsBackupFiles = itsBackupFilesDao.loadBackupFiles();
     }
 
     /**
@@ -41,5 +41,13 @@ public class BackupFilesModel extends AndroidViewModel
     public LiveData<List<BackupFile>> getBackupFiles()
     {
         return itsBackupFiles;
+    }
+
+    /**
+     * Delete all of the backup files
+     */
+    public void deleteAll()
+    {
+        itsBackupFilesDao.deleteAll(getApplication());
     }
 }

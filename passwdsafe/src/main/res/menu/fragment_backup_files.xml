@@ -7,12 +7,10 @@
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
 <menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_clear"
-        android:title="@string/clear"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/menu_delete_all"
+        android:title="@string/delete_all"/>
 
 </menu>
