@@ -43,7 +43,6 @@ public class BackupFilesFragment extends Fragment
     // TODO: Update for no file - remove entry
     // TODO: max entries global and/or per file URL
     // TODO: label noting backups use temp files which can be cleared, etc.
-    // TODO: make backup before file save for all URIs
     // TODO: translations
 
     /**

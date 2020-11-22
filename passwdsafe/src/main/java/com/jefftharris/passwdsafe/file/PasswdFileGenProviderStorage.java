@@ -7,12 +7,6 @@
  */
 package com.jefftharris.passwdsafe.file;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.pwsafe.lib.file.PwsStreamStorage;
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -21,11 +15,18 @@ import android.util.Log;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 
+import org.pwsafe.lib.file.PwsStreamStorage;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 /** A PwsStreamStorage implementation for a generic provider */
 public class PasswdFileGenProviderStorage extends PwsStreamStorage
 {
-    private static final String TAG = "PasswdFileGenProviderSt";
     private final Uri itsUri;
+
+    private static final String TAG = "PasswdFileGenProviderSt";
 
     /** Constructor */
     public PasswdFileGenProviderStorage(Uri uri, String id, InputStream stream)
@@ -45,6 +46,8 @@ public class PasswdFileGenProviderStorage extends PwsStreamStorage
                 PasswdFileSaveHelper helper =
                         (PasswdFileSaveHelper)getSaveHelper();
                 Context ctx = helper.getContext();
+
+                helper.createBackup(itsUri, getIdentifier());
 
                 pfd = ctx.getContentResolver().openFileDescriptor(itsUri, "w");
                 if (pfd == null) {

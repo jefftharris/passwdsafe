@@ -9,9 +9,12 @@ package com.jefftharris.passwdsafe.file;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 
 import com.jefftharris.passwdsafe.Preferences;
+import com.jefftharris.passwdsafe.db.BackupFilesDao;
+import com.jefftharris.passwdsafe.db.PasswdSafeDb;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 
 import org.pwsafe.lib.file.PwsStorage;
@@ -64,9 +67,20 @@ public class PasswdFileSaveHelper implements PwsStorage.SaveHelper
     }
 
     @Override
+    public void createBackup(Uri fileUri, String identifier)
+    {
+        Context ctx = getContext();
+        BackupFilesDao backupFiles = PasswdSafeDb.get(ctx).accessBackupFiles();
+        backupFiles.insert(fileUri, identifier, ctx, ctx.getContentResolver());
+    }
+
+
+    @Override
     public void createBackupFile(File fromFile, File toFile)
             throws IOException
     {
+        createBackup(Uri.fromFile(toFile), toFile.getName());
+
         SharedPreferences prefs = Preferences.getSharedPrefs(itsContext);
         FileBackupPref backupPref = Preferences.getFileBackupPref(prefs);
 

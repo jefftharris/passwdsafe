@@ -60,14 +60,17 @@ public final class Utils
 
 
     /** Copy the input stream to the output */
-    public static void copyStream(InputStream is, OutputStream os)
+    public static int copyStream(InputStream is, OutputStream os)
             throws IOException
     {
+        int streamSize = 0;
         byte[] buf = new byte[4096];
         int len;
         while ((len = is.read(buf)) > 0) {
             os.write(buf, 0, len);
+            streamSize += len;
         }
+        return streamSize;
     }
 
 

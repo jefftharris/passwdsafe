@@ -8,7 +8,12 @@
 package com.jefftharris.passwdsafe.db;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -16,7 +21,14 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
+import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.Utils;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Access to the backup files database
@@ -24,6 +36,8 @@ import java.util.List;
 @Dao
 public abstract class BackupFilesDao
 {
+    private static final String TAG = "BackupFilesDao";
+
     /**
      * Get backup files
      */
@@ -34,17 +48,21 @@ public abstract class BackupFilesDao
     /**
      * Insert a backup file
      */
-    public void insert(@NonNull Uri fileUri, @NonNull String title,
-                       ContentResolver cr) throws Exception
+    public void insert(@NonNull Uri fileUri,
+                       @NonNull String title,
+                       Context ctx,
+                       ContentResolver cr)
     {
         try {
-            doInsert(fileUri, title, cr);
-        } catch (RuntimeException e) {
-            // Unpack a wrapped exception from doInsert
-            if (e.getCause() instanceof Exception) {
-                throw (Exception)e.getCause();
-            }
-            throw new RuntimeException("Error inserting backup", e);
+            doInsert(fileUri, title, ctx, cr);
+        } catch (SkipBackupException e) {
+            // exception reverts the backup
+        } catch (Exception e) {
+            Log.e(TAG, "Error inserting backup for: " + fileUri, e);
+
+            new Handler(Looper.getMainLooper()).post(
+                    () -> Toast.makeText(ctx, R.string.backup_creation_failed,
+                                         Toast.LENGTH_LONG).show());
         }
     }
 
@@ -54,22 +72,52 @@ public abstract class BackupFilesDao
     @Transaction
     protected void doInsert(Uri fileUri,
                             String title,
+                            Context ctx,
                             ContentResolver cr) throws RuntimeException
     {
         try {
             BackupFile backup = new BackupFile(fileUri, title);
-            doInsert(backup);
+            long id = doInsert(backup);
 
-//            try (ParcelFileDescriptor pfd = cr.openFileDescriptor(fileUri, "r")) {
-//            }
+            String backupFileName = getBackupFile(id);
+            try (InputStream is = Objects.requireNonNull(
+                    cr.openInputStream(fileUri));
+                 OutputStream os = Objects.requireNonNull(
+                         ctx.openFileOutput(backupFileName,
+                                            Context.MODE_PRIVATE))) {
+                if (Utils.copyStream(is, os) == 0) {
+                    // Skip backup on an empty file which is often a new file
+                    throw new SkipBackupException();
+                }
+            } catch (Exception e) {
+                ctx.deleteFile(backupFileName);
+                throw e;
+            }
+        } catch (SkipBackupException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error inserting backup", e);
         }
     }
 
     /**
-     * Insert a backup file entry
+     * Insert a backup file entry implementation
      */
     @Insert
-    protected abstract void doInsert(BackupFile file);
+    protected abstract long doInsert(BackupFile file);
+
+    /**
+     * Get the name of a backup file
+     */
+    private static String getBackupFile(long backupId)
+    {
+        return String.format(Locale.US, "backup-%d", backupId);
+    }
+
+    /**
+     * Exception to skip the backup and undo the file and database updates
+     */
+    private static class SkipBackupException extends RuntimeException
+    {
+    }
 }

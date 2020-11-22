@@ -52,6 +52,9 @@ public final class PasswdFileSyncStorage extends PwsStreamStorage
             PwsFileStorage.writeFile(file, data);
 
             Uri fileUri = PasswdClientProvider.addFile(file);
+
+            helper.createBackup(fileUri, getIdentifier());
+
             ContentResolver cr = ctx.getContentResolver();
             ContentValues values = new ContentValues();
             values.put(PasswdSafeContract.Files.COL_FILE, fileUri.toString());

@@ -7,6 +7,8 @@
  */
 package org.pwsafe.lib.file;
 
+import android.net.Uri;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -29,8 +31,19 @@ public interface PwsStorage
 {
     interface SaveHelper
     {
+        /**
+         * For file storage, get the file name for a file to save
+         */
         String getSaveFileName(File file, boolean isV3);
 
+        /**
+         * Create a backup
+         */
+        void createBackup(Uri fileUri, String identifier);
+
+        /**
+         * For file storage, create a backup
+         */
         void createBackupFile(File fromFile, File toFile)
                 throws IOException;
     }
