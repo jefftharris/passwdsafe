@@ -697,8 +697,10 @@ public class PasswdSafeEditRecordFragment
                 itsNotes.post(() -> itsNotes.setEnabled(notesEnabled));
 
                 if (itsIsV3) {
-                    itsUrl.setText(fileData.getURL(record));
-                    itsEmail.setText(fileData.getEmail(record));
+                    itsUrl.setText(fileData.getURL(
+                            record, PasswdFileData.UrlStyle.FULL));
+                    itsEmail.setText(fileData.getEmail(
+                            record, PasswdFileData.EmailStyle.FULL));
                     itsIsProtected = fileData.isProtected(record);
                     historyChanged(true);
                 } else {
@@ -1289,8 +1291,10 @@ public class PasswdSafeEditRecordFragment
         }
 
         if (itsIsV3) {
-            String currUrl = fileData.getURL(record);
-            String currEmail = fileData.getEmail(record);
+            String currUrl = fileData.getURL(
+                    record, PasswdFileData.UrlStyle.FULL);
+            String currEmail = fileData.getEmail(
+                    record, PasswdFileData.EmailStyle.FULL);
             PasswdHistory currHistory = fileData.getPasswdHistory(record);
             if (itsTypeHasDetails) {
                 updateStr = getUpdatedField(currUrl, itsUrl);

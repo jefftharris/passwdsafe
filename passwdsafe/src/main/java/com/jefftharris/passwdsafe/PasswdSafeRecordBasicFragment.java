@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
@@ -374,8 +375,10 @@ public class PasswdSafeRecordBasicFragment
         switch (info.itsPasswdRec.getType()) {
         case NORMAL: {
             itsBaseRow.setVisibility(View.GONE);
-            url = info.itsFileData.getURL(info.itsRec);
-            email = info.itsFileData.getEmail(info.itsRec);
+            url = info.itsFileData.getURL(info.itsRec,
+                                          PasswdFileData.UrlStyle.FULL);
+            email = info.itsFileData.getEmail(info.itsRec,
+                                              PasswdFileData.EmailStyle.FULL);
             creationTime = info.itsFileData.getCreationTime(info.itsRec);
             lastModTime = info.itsFileData.getLastModTime(info.itsRec);
             break;
@@ -386,8 +389,10 @@ public class PasswdSafeRecordBasicFragment
             itsBase.setText(info.itsFileData.getId(ref));
             hiddenId = R.string.hidden_password_alias;
             recForPassword = ref;
-            url = info.itsFileData.getURL(info.itsRec);
-            email = info.itsFileData.getEmail(info.itsRec);
+            url = info.itsFileData.getURL(info.itsRec,
+                                          PasswdFileData.UrlStyle.FULL);
+            email = info.itsFileData.getEmail(info.itsRec,
+                                              PasswdFileData.EmailStyle.FULL);
             creationTime = info.itsFileData.getCreationTime(recForPassword);
             lastModTime = info.itsFileData.getLastModTime(recForPassword);
             break;

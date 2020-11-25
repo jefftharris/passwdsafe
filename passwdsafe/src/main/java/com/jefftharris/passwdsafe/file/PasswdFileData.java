@@ -86,6 +86,18 @@ public class PasswdFileData
     private static final int FIELD_UNSUPPORTED = -1;
     private static final int FIELD_NOT_PRESENT = -2;
 
+    public enum EmailStyle
+    {
+        FULL,
+        ADDR_ONLY
+    }
+
+    public enum UrlStyle
+    {
+        FULL,
+        URL_ONLY
+    }
+
     public PasswdFileData(PasswdFileUri uri)
     {
         itsUri = uri;
@@ -287,9 +299,24 @@ public class PasswdFileData
         return getDateField(rec, PwsRecordV3.CREATION_TIME);
     }
 
-    public final String getEmail(PwsRecord rec)
+    public final String getEmail(PwsRecord rec, EmailStyle style)
     {
-        return getField(rec, PwsRecordV3.EMAIL);
+        String email = getField(rec, PwsRecordV3.EMAIL);
+        switch (style) {
+        case FULL: {
+            break;
+        }
+        case ADDR_ONLY: {
+            if (!TextUtils.isEmpty(email)) {
+                int queryPos = email.indexOf('?');
+                if (queryPos != -1) {
+                    email = email.substring(0, queryPos);
+                }
+            }
+            break;
+        }
+        }
+        return email;
     }
 
     public final void setEmail(String str, PwsRecord rec)
@@ -515,9 +542,24 @@ public class PasswdFileData
         setField(str, rec, PwsRecordV3.USERNAME);
     }
 
-    public final String getURL(PwsRecord rec)
+    public final String getURL(PwsRecord rec, UrlStyle style)
     {
-        return getField(rec, PwsRecordV3.URL);
+        String url = getField(rec, PwsRecordV3.URL);
+        switch (style) {
+        case FULL: {
+            break;
+        }
+        case URL_ONLY: {
+            if (!TextUtils.isEmpty(url)) {
+                for (String key: new String[]{"[alt]", "{alt}", "[ssh]",
+                                              "[autotype]", "[xa]"}) {
+                    url = url.replace(key, "");
+                }
+            }
+            break;
+        }
+        }
+        return url;
     }
 
     public final void setURL(String str, PwsRecord rec)
