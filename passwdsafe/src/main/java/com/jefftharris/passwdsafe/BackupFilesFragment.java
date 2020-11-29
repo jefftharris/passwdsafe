@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.selection.ItemKeyProvider;
 import androidx.recyclerview.selection.SelectionPredicates;
 import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.selection.StableIdKeyProvider;
@@ -65,6 +66,7 @@ public class BackupFilesFragment extends Fragment
     private Listener itsListener;
     private BackupFilesModel itsBackupFiles;
     private BackupFilesAdapter itsBackupFilesAdapter;
+    private ItemKeyProvider<Long> itsKeyProvider;
     private SelectionTracker<Long> itsSelTracker;
     private ActionMode itsActionMode;
 
@@ -112,10 +114,11 @@ public class BackupFilesFragment extends Fragment
                 getViewLifecycleOwner(),
                 backupFiles -> itsBackupFilesAdapter.submitList(backupFiles));
 
+        itsKeyProvider = new StableIdKeyProvider(files);
         itsSelTracker = new SelectionTracker.Builder<>(
                 "backup-file-selection",
                 files,
-                new StableIdKeyProvider(files),
+                itsKeyProvider,
                 itsBackupFilesAdapter.createItemLookup(files),
                 StorageStrategy.createLongStorage())
                 .withSelectionPredicate(
@@ -129,15 +132,7 @@ public class BackupFilesFragment extends Fragment
                 })
                 .build();
         itsBackupFilesAdapter.setSelectionTracker(itsSelTracker);
-        itsSelTracker.addObserver(new SelectionTracker.SelectionObserver<Long>()
-        {
-            @Override
-            public void onSelectionChanged()
-            {
-                super.onSelectionChanged();
-                onSelChanged(itsSelTracker.hasSelection());
-            }
-        });
+        itsSelTracker.addObserver(new SelectionObserver());
 
         return rootView;
     }
@@ -251,6 +246,36 @@ public class BackupFilesFragment extends Fragment
         {
             itsSelTracker.clearSelection();
             itsActionMode = null;
+        }
+    }
+
+    /**
+     * Selection observer
+     */
+    private class SelectionObserver
+            extends SelectionTracker.SelectionObserver<Long>
+    {
+        @Override
+        public void onItemStateChanged(@NonNull Long key, boolean selected)
+        {
+            super.onItemStateChanged(key, selected);
+
+            // Check for a key state change without a position.  The
+            // StableIdKeyProvider doesn't notify the adapter of the change
+            // resulting in hidden holders not updating with the selection
+            // change.  Force a delayed data set change to rebind all of the
+            // holders
+            if (itsKeyProvider.getPosition(key) < 0) {
+                requireView().post(
+                        () -> itsBackupFilesAdapter.notifyDataSetChanged());
+            }
+        }
+
+        @Override
+        public void onSelectionChanged()
+        {
+            super.onSelectionChanged();
+            onSelChanged(itsSelTracker.hasSelection());
         }
     }
 }
