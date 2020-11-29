@@ -39,8 +39,6 @@ public class BackupFilesFragment extends Fragment
     implements ConfirmPromptDialog.Listener
 {
     // TODO: cleanup menus
-    // TODO: disable delete all if no backups
-    // TODO: delete selected
     // TODO: restore
     // TODO: share? after open?
     // TODO: open read-only
@@ -167,6 +165,16 @@ public class BackupFilesFragment extends Fragment
     {
         inflater.inflate(R.menu.fragment_backup_files, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.menu_delete_all);
+        if (item != null) {
+            item.setEnabled(itsBackupFilesAdapter.getItemCount() != 0);
+        }
     }
 
     @Override
