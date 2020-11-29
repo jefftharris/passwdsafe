@@ -23,12 +23,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.selection.ItemKeyProvider;
 import androidx.recyclerview.selection.SelectionPredicates;
 import androidx.recyclerview.selection.SelectionTracker;
-import androidx.recyclerview.selection.StableIdKeyProvider;
 import androidx.recyclerview.selection.StorageStrategy;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jefftharris.passwdsafe.db.BackupFile;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
+
+import java.util.List;
 
 /**
  * A fragment for backup files
@@ -66,7 +68,6 @@ public class BackupFilesFragment extends Fragment
     private Listener itsListener;
     private BackupFilesModel itsBackupFiles;
     private BackupFilesAdapter itsBackupFilesAdapter;
-    private ItemKeyProvider<Long> itsKeyProvider;
     private SelectionTracker<Long> itsSelTracker;
     private ActionMode itsActionMode;
 
@@ -114,11 +115,10 @@ public class BackupFilesFragment extends Fragment
                 getViewLifecycleOwner(),
                 backupFiles -> itsBackupFilesAdapter.submitList(backupFiles));
 
-        itsKeyProvider = new StableIdKeyProvider(files);
         itsSelTracker = new SelectionTracker.Builder<>(
                 "backup-file-selection",
                 files,
-                itsKeyProvider,
+                new SelectionKeyProvider(),
                 itsBackupFilesAdapter.createItemLookup(files),
                 StorageStrategy.createLongStorage())
                 .withSelectionPredicate(
@@ -256,26 +256,46 @@ public class BackupFilesFragment extends Fragment
             extends SelectionTracker.SelectionObserver<Long>
     {
         @Override
-        public void onItemStateChanged(@NonNull Long key, boolean selected)
-        {
-            super.onItemStateChanged(key, selected);
-
-            // Check for a key state change without a position.  The
-            // StableIdKeyProvider doesn't notify the adapter of the change
-            // resulting in hidden holders not updating with the selection
-            // change.  Force a delayed data set change to rebind all of the
-            // holders
-            if (itsKeyProvider.getPosition(key) < 0) {
-                requireView().post(
-                        () -> itsBackupFilesAdapter.notifyDataSetChanged());
-            }
-        }
-
-        @Override
         public void onSelectionChanged()
         {
             super.onSelectionChanged();
             onSelChanged(itsSelTracker.hasSelection());
+        }
+    }
+
+    /**
+     * Selection key provider.  The number of items should be small, so linear
+     * searches shouldn't be too slow.
+     */
+    private class SelectionKeyProvider extends ItemKeyProvider<Long>
+    {
+        /**
+         * Constructor
+         */
+        public SelectionKeyProvider()
+        {
+            super(ItemKeyProvider.SCOPE_CACHED);
+        }
+
+        @Override
+        public Long getKey(int position)
+        {
+            BackupFile file =
+                    itsBackupFilesAdapter.getCurrentList().get(position);
+            return (file != null) ? file.id : null;
+        }
+
+        @Override
+        public int getPosition(@NonNull Long key)
+        {
+            final List<BackupFile> currentList =
+                    itsBackupFilesAdapter.getCurrentList();
+            for (int pos = 0; pos < currentList.size(); ++pos) {
+                if (currentList.get(pos).id == key) {
+                    return pos;
+                }
+            }
+            return RecyclerView.NO_POSITION;
         }
     }
 }
