@@ -65,6 +65,7 @@
     <string name="delete">Delete</string>
     <string name="delete_all">Delete All</string>
     <string name="delete_all_backups_p">Delete all backups?</string>
+    <string name="delete_backup_p">Delete backup?</string>
     <string name="delete_file">Delete File</string>
     <string name="delete_file_msg">Delete file \"%1$s\"?</string>
     <string name="delete_policy">Delete Policy</string>

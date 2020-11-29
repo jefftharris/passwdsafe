@@ -81,6 +81,14 @@ public abstract class BackupFilesDao
     }
 
     /**
+     * Delete a backup file by its primary key
+     */
+    public void delete(long backupFileId, Context ctx) {
+        ctx.deleteFile(getBackupFileName(backupFileId));
+        doDelete(backupFileId);
+    }
+
+    /**
      * Insert a backup file implementation
      */
     @Transaction
@@ -93,7 +101,7 @@ public abstract class BackupFilesDao
             BackupFile backup = new BackupFile(fileUri, title);
             long id = doInsert(backup);
 
-            String backupFileName = getBackupFile(id);
+            String backupFileName = getBackupFileName(id);
             try (InputStream is = Objects.requireNonNull(
                     cr.openInputStream(fileUri));
                  OutputStream os = Objects.requireNonNull(
@@ -127,9 +135,16 @@ public abstract class BackupFilesDao
     protected abstract void doDeleteAll();
 
     /**
+     * Delete a backup file entry implementation
+     */
+    @Query("DELETE FROM " + BackupFile.TABLE +
+           " WHERE " + BackupFile.COL_ID + " = :backupFileId")
+    protected abstract void doDelete(long backupFileId);
+
+    /**
      * Get the name of a backup file
      */
-    private static String getBackupFile(long backupId)
+    private static String getBackupFileName(long backupId)
     {
         return String.format(Locale.US, "%s%d", BACKUP_FILE_PFX, backupId);
     }

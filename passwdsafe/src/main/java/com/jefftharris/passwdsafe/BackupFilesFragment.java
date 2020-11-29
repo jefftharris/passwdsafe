@@ -39,6 +39,7 @@ public class BackupFilesFragment extends Fragment
     implements ConfirmPromptDialog.Listener
 {
     // TODO: cleanup menus
+    // TODO: disable delete all if no backups
     // TODO: delete selected
     // TODO: restore
     // TODO: share? after open?
@@ -62,7 +63,9 @@ public class BackupFilesFragment extends Fragment
     private enum ConfirmAction
     {
         /** Delete all backups */
-        DELETE_ALL
+        DELETE_ALL,
+        /** Delete selected backups */
+        DELETE_SELECTED
     }
 
     private Listener itsListener;
@@ -171,14 +174,7 @@ public class BackupFilesFragment extends Fragment
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_delete_all) {
-            Bundle confirmArgs = new Bundle();
-            confirmArgs.putString(CONFIRM_ARG_ACTION,
-                                  ConfirmAction.DELETE_ALL.name());
-            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                    getString(R.string.delete_all_backups_p), null,
-                    getString(R.string.delete_all), confirmArgs);
-            dialog.setTargetFragment(this, 0);
-            dialog.show(getParentFragmentManager(), "Delete all");
+            showPrompt(ConfirmAction.DELETE_ALL);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -192,6 +188,18 @@ public class BackupFilesFragment extends Fragment
                 confirmArgs.getString(CONFIRM_ARG_ACTION))) {
         case DELETE_ALL: {
             itsBackupFiles.deleteAll();
+            break;
+        }
+        case DELETE_SELECTED: {
+            for (Long selected : itsSelTracker.getSelection()) {
+                if (selected == null) {
+                    continue;
+                }
+
+                PasswdSafeUtil.dbginfo(TAG, "delete %d", selected);
+                itsBackupFiles.delete(selected);
+            }
+            itsSelTracker.clearSelection();
             break;
         }
         }
@@ -217,6 +225,42 @@ public class BackupFilesFragment extends Fragment
     }
 
     /**
+     * Delete the selected backups
+     */
+    private void deleteSelectedBackups()
+    {
+        showPrompt(ConfirmAction.DELETE_SELECTED);
+    }
+
+    /**
+     * Show a confirmation prompt for an action
+     */
+    private void showPrompt(ConfirmAction action)
+    {
+        String title = null;
+        String confirm = null;
+        switch (action) {
+        case DELETE_ALL: {
+            title = getString(R.string.delete_all_backups_p);
+            confirm = getString(R.string.delete_all);
+            break;
+        }
+        case DELETE_SELECTED: {
+            title = getString(R.string.delete_backup_p);
+            confirm = getString(R.string.delete);
+            break;
+        }
+        }
+
+        Bundle confirmArgs = new Bundle();
+        confirmArgs.putString(CONFIRM_ARG_ACTION, action.name());
+        ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
+                title, null, confirm, confirmArgs);
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getParentFragmentManager(), "prompt");
+    }
+
+    /**
      * Action mode callbacks
      */
     private class ActionModeCallback implements ActionMode.Callback
@@ -238,6 +282,11 @@ public class BackupFilesFragment extends Fragment
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item)
         {
+            final int itemId = item.getItemId();
+            if (itemId == R.id.menu_delete) {
+                deleteSelectedBackups();
+                return true;
+            }
             return false;
         }
 

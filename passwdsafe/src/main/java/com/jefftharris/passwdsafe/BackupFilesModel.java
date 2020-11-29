@@ -50,4 +50,12 @@ public class BackupFilesModel extends AndroidViewModel
     {
         itsBackupFilesDao.deleteAll(getApplication());
     }
+
+    /**
+     * Delete a backup file
+     */
+    public void delete(long backupFileId)
+    {
+        itsBackupFilesDao.delete(backupFileId, getApplication());
+    }
 }
