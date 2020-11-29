@@ -149,15 +149,19 @@ public class BackupFilesFragment extends Fragment
     public void onSaveInstanceState(@NonNull Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        itsSelTracker.onSaveInstanceState(outState);
+        if (itsSelTracker != null) {
+            itsSelTracker.onSaveInstanceState(outState);
+        }
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState)
     {
         super.onViewStateRestored(savedInstanceState);
-        itsSelTracker.onRestoreInstanceState(savedInstanceState);
-        onSelChanged(itsSelTracker.hasSelection());
+        if (itsSelTracker != null) {
+            itsSelTracker.onRestoreInstanceState(savedInstanceState);
+            onSelChanged(itsSelTracker.hasSelection());
+        }
     }
 
     @Override
