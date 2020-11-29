@@ -58,16 +58,16 @@ public class BackupFilesAdapter
     {
         BackupFile backup = getItem(position);
         boolean selected = (itsSelTracker != null) &&
-                           itsSelTracker.isSelected((long)position);
-        PasswdSafeUtil.dbginfo(TAG, "bind view pos %d, sel %b",
-                               position, selected);
+                           itsSelTracker.isSelected(backup.id);
+        PasswdSafeUtil.dbginfo(TAG, "bind view pos %d, id %d, sel %b",
+                               position, backup.id, selected);
         holder.bind(backup, selected);
     }
 
     @Override
     public long getItemId(int position)
     {
-        return position;
+        return getItem(position).id;
     }
 
     /**
