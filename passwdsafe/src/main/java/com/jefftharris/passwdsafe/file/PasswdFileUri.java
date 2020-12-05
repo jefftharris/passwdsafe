@@ -16,8 +16,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -51,7 +49,7 @@ import java.util.Objects;
 /**
  * The PasswdFileUri class encapsulates a URI to a password file
  */
-public class PasswdFileUri implements Parcelable
+public class PasswdFileUri
 {
     private static final String TAG = "PasswdFileUri";
 
@@ -71,31 +69,6 @@ public class PasswdFileUri implements Parcelable
         EMAIL,
         GENERIC_PROVIDER
     }
-
-
-    /** Parcelable CREATOR instance */
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<PasswdFileUri> CREATOR =
-            new Parcelable.Creator<PasswdFileUri>()
-            {
-                /* (non-Javadoc)
-                 * @see android.os.Parcelable.Creator#createFromParcel(android.os.Parcel)
-                 */
-                @Override
-                public PasswdFileUri createFromParcel(Parcel source)
-                {
-                    return new PasswdFileUri(source);
-                }
-
-                /* (non-Javadoc)
-                 * @see android.os.Parcelable.Creator#newArray(int)
-                 */
-                @Override
-                public PasswdFileUri[] newArray(int size)
-                {
-                    return new PasswdFileUri[size];
-                }
-            };
 
     /**
      * Creator for a PasswdFileUri that can work with an AsyncTask
@@ -208,20 +181,6 @@ public class PasswdFileUri implements Parcelable
         itsType = Type.FILE;
         itsFile = file;
         resolveFileUri(ctx);
-    }
-
-
-    /** Constructor from parcelable data */
-    private PasswdFileUri(Parcel source)
-    {
-        String str;
-        itsUri = source.readParcelable(getClass().getClassLoader());
-        itsType = Type.valueOf(source.readString());
-        str = source.readString();
-        itsFile = (str != null) ? new File(str) : null;
-        itsTitle = source.readString();
-        str = source.readString();
-        itsSyncType = (str != null) ? ProviderType.valueOf(str) : null;
     }
 
 
@@ -503,30 +462,6 @@ public class PasswdFileUri implements Parcelable
     public String toString()
     {
         return itsUri.toString();
-    }
-
-
-    /* (non-Javadoc)
-     * @see android.os.Parcelable#describeContents()
-     */
-    @Override
-    public int describeContents()
-    {
-        return 0;
-    }
-
-
-    /* (non-Javadoc)
-     * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
-        dest.writeParcelable(itsUri, flags);
-        dest.writeString(itsType.name());
-        dest.writeString((itsFile != null) ? itsFile.getAbsolutePath() : null);
-        dest.writeString(itsTitle);
-        dest.writeString((itsSyncType != null) ? itsSyncType.name() : null);
     }
 
 
