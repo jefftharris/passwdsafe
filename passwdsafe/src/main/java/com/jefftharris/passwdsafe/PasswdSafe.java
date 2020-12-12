@@ -1438,7 +1438,7 @@ public class PasswdSafe extends AppCompatActivity
     {
         Uri openUri = PasswdSafeApp.getOpenUriFromIntent(intent);
         Uri intentUri = intent.getData();
-        String recToOpen = (intentUri != null) ?
+        String recToOpen = ((intentUri != null) && intentUri.isHierarchical()) ?
                            intentUri.getQueryParameter("recToOpen") : null;
         Fragment openFrag = PasswdSafeOpenFileFragment.newInstance(openUri,
                                                                    recToOpen);

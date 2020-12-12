@@ -24,10 +24,14 @@ import androidx.core.os.EnvironmentCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.db.BackupFile;
+import com.jefftharris.passwdsafe.db.BackupFilesDao;
+import com.jefftharris.passwdsafe.db.PasswdSafeDb;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.util.Pair;
 
 import org.pwsafe.lib.exception.EndOfFileException;
@@ -42,6 +46,7 @@ import org.pwsafe.lib.file.PwsStorage;
 import org.pwsafe.lib.file.PwsStreamStorage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -56,6 +61,7 @@ public class PasswdFileUri
     private final Uri itsUri;
     private final Type itsType;
     private final File itsFile;
+    private final BackupFile itsBackupFile;
     private String itsTitle = null;
     private Pair<Boolean, Integer> itsWritableInfo;
     private boolean itsIsDeletable;
@@ -67,7 +73,8 @@ public class PasswdFileUri
         FILE,
         SYNC_PROVIDER,
         EMAIL,
-        GENERIC_PROVIDER
+        GENERIC_PROVIDER,
+        BACKUP
     }
 
     /**
@@ -101,7 +108,8 @@ public class PasswdFileUri
             }
             case FILE:
             case SYNC_PROVIDER:
-            case EMAIL: {
+            case EMAIL:
+            case BACKUP: {
                 break;
             }
             }
@@ -150,25 +158,33 @@ public class PasswdFileUri
         switch (itsType) {
         case FILE: {
             itsFile = new File(Objects.requireNonNull(uri.getPath()));
+            itsBackupFile = null;
             resolveFileUri(ctx);
             return;
         }
         case GENERIC_PROVIDER: {
             itsFile = null;
+            itsBackupFile = null;
             resolveGenericProviderUri(ctx);
             return;
         }
         case SYNC_PROVIDER: {
             itsFile = null;
+            itsBackupFile = null;
             resolveSyncProviderUri(ctx);
             return;
         }
-        case EMAIL:
-        {
+        case BACKUP: {
+            itsFile = null;
+            itsBackupFile = resolveBackupUri(ctx);
+            return;
+        }
+        case EMAIL: {
             break;
         }
         }
         itsFile = null;
+        itsBackupFile = null;
         itsWritableInfo = new Pair<>(false, null);
         itsIsDeletable = false;
     }
@@ -180,6 +196,7 @@ public class PasswdFileUri
         itsUri = Uri.fromFile(file);
         itsType = Type.FILE;
         itsFile = file;
+        itsBackupFile = null;
         resolveFileUri(ctx);
     }
 
@@ -213,6 +230,16 @@ public class PasswdFileUri
             }
             return PwsFileFactory.loadFromStorage(storage, passwd);
         }
+        case BACKUP: {
+            if (itsBackupFile == null) {
+                throw new FileNotFoundException(itsUri.toString());
+            }
+            InputStream is =
+                    BackupFilesDao.openBackupFile(itsBackupFile, context);
+            return PwsFileFactory.loadFromStorage(
+                    new PwsStreamStorage(getIdentifier(context, false), is),
+                    passwd);
+        }
         }
         return null;
     }
@@ -244,7 +271,8 @@ public class PasswdFileUri
             file.setStorage(new PasswdFileGenProviderStorage(itsUri, id, null));
             return file;
         }
-        case EMAIL: {
+        case EMAIL:
+        case BACKUP: {
             throw new IOException("no file");
         }
         }
@@ -270,7 +298,8 @@ public class PasswdFileUri
             return null;
         }
         case EMAIL:
-        case GENERIC_PROVIDER: {
+        case GENERIC_PROVIDER:
+        case BACKUP: {
             break;
         }
         }
@@ -295,7 +324,8 @@ public class PasswdFileUri
             return new PasswdFileUri(childUri, ctx);
         }
         case EMAIL:
-        case GENERIC_PROVIDER: {
+        case GENERIC_PROVIDER:
+        case BACKUP: {
             break;
         }
         }
@@ -330,7 +360,8 @@ public class PasswdFileUri
             }
             break;
         }
-        case EMAIL: {
+        case EMAIL:
+        case BACKUP: {
             throw new IOException("Delete not supported for " + toString());
         }
         }
@@ -351,6 +382,9 @@ public class PasswdFileUri
         case EMAIL:
         case GENERIC_PROVIDER: {
             return true;
+        }
+        case BACKUP: {
+            return (itsBackupFile != null);
         }
         }
         return false;
@@ -400,7 +434,8 @@ public class PasswdFileUri
             return itsFile.getName();
         }
         case SYNC_PROVIDER:
-        case GENERIC_PROVIDER: {
+        case GENERIC_PROVIDER:
+        case BACKUP: {
             return itsTitle;
         }
         case EMAIL: {
@@ -437,6 +472,12 @@ public class PasswdFileUri
             }
             return context.getString(R.string.content_file);
         }
+        case BACKUP: {
+            if (itsTitle != null) {
+                return itsTitle;
+            }
+            return context.getString(R.string.backup_file);
+        }
         }
         return "";
     }
@@ -469,8 +510,12 @@ public class PasswdFileUri
     public static Type getUriType(Uri uri)
     {
         String scheme = uri.getScheme();
-        if ((scheme != null) && scheme.equals(ContentResolver.SCHEME_FILE)) {
-            return Type.FILE;
+        if (scheme != null) {
+            if (scheme.equals(ContentResolver.SCHEME_FILE)) {
+                return Type.FILE;
+            } else if (scheme.equals(BackupFile.URL_SCHEME)) {
+                return Type.BACKUP;
+            }
         }
         String auth = uri.getAuthority();
         if (PasswdSafeContract.AUTHORITY.equals(auth)) {
@@ -694,5 +739,27 @@ public class PasswdFileUri
                 fileCursor.close();
             }
         }
+    }
+
+    /**
+     * Resolve fields for a backup file URI
+     */
+    private BackupFile resolveBackupUri(Context context)
+    {
+        itsWritableInfo = new Pair<>(false, null);
+        itsIsDeletable = false;
+
+        long backupFileId = Long.parseLong(itsUri.getSchemeSpecificPart());
+        BackupFilesDao backupFiles =
+                PasswdSafeDb.get(context).accessBackupFiles();
+        BackupFile backup = backupFiles.getBackupFile(backupFileId);
+        if (backup != null) {
+            itsTitle =
+                    context.getString(R.string.backup_for_file_on, backup.title,
+                                      Utils.formatDate(backup.date, context));
+        } else {
+            itsTitle = null;
+        }
+        return backup;
     }
 }

@@ -140,7 +140,9 @@ public final class PasswdSafeApp extends Application
         }
         Uri.Builder builder = uri.buildUpon();
         builder.fragment("");
-        builder.query("");
+        if (uri.isHierarchical()) {
+            builder.query("");
+        }
         return builder.build();
     }
 

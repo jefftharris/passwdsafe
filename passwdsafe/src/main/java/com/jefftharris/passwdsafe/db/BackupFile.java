@@ -16,6 +16,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+
 /**
  * Backup file database entry
  */
@@ -27,6 +29,9 @@ public class BackupFile
     public static final String COL_TITLE = "title";
     public static final String COL_FILE_URI = "fileUri";
     public static final String COL_DATE = "date";
+
+    public static final String URL_SCHEME =
+            PasswdSafeUtil.PACKAGE + ".backup";
 
     /**
      * Unique id for the backup file
@@ -79,6 +84,14 @@ public class BackupFile
         this.title = title;
         this.fileUri = fileUri.toString();
         this.date = System.currentTimeMillis();
+    }
+
+    /**
+     * Create a Uri for the backup file
+     */
+    public Uri createUri()
+    {
+        return Uri.fromParts(URL_SCHEME, Long.toString(id), null);
     }
 
 

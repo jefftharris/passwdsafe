@@ -24,6 +24,7 @@ import androidx.room.Transaction;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.Utils;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -45,6 +46,23 @@ public abstract class BackupFilesDao
     @Query("SELECT * FROM " + BackupFile.TABLE + " ORDER BY " +
            BackupFile.COL_DATE + " DESC")
     public abstract LiveData<List<BackupFile>> loadBackupFiles();
+
+    /**
+     * Get a backup file by its primary key
+     */
+    @Query("SELECT * FROM " + BackupFile.TABLE +
+           " WHERE " + BackupFile.COL_ID + " = :backupFileId")
+    public abstract BackupFile getBackupFile(long backupFileId);
+
+    /**
+     * Open an input stream for a backup file
+     */
+    public static InputStream openBackupFile(@NonNull BackupFile file,
+                                             @NonNull Context ctx)
+            throws FileNotFoundException
+    {
+        return ctx.openFileInput(getBackupFileName(file.id));
+    }
 
     /**
      * Insert a backup file

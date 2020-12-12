@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -41,18 +42,22 @@ public class BackupFilesFragment extends Fragment
     // TODO: cleanup menus
     // TODO: restore
     // TODO: share? after open?
-    // TODO: open read-only
     // TODO: Update db for no URL permission - clear URL but keep file, allow share/open
     // TODO: Update for no file - remove entry
     // TODO: max entries global and/or per file URL
     // TODO: label noting backups use temp files which can be cleared, etc.
+    // TODO: label noting to open file to restore/share
     // TODO: translations
+    // TODO: support delete of backup file from opened?
 
     /**
      * Listener interface for owning activity
      */
     public interface Listener
     {
+        /** Open a file */
+        void openFile(Uri uri, String fileName);
+
         /** Update the view for the backup files */
         void updateViewBackupFiles();
     }
@@ -69,6 +74,7 @@ public class BackupFilesFragment extends Fragment
     private Listener itsListener;
     private BackupFilesModel itsBackupFiles;
     private BackupFilesAdapter itsBackupFilesAdapter;
+    private SelectionKeyProvider itsKeyProvider;
     private SelectionTracker<Long> itsSelTracker;
     private ActionMode itsActionMode;
 
@@ -116,10 +122,10 @@ public class BackupFilesFragment extends Fragment
                 getViewLifecycleOwner(),
                 backupFiles -> itsBackupFilesAdapter.submitList(backupFiles));
 
+        itsKeyProvider = new SelectionKeyProvider();
         itsSelTracker = new SelectionTracker.Builder<>(
                 "backup-file-selection",
-                files,
-                new SelectionKeyProvider(),
+                files, itsKeyProvider,
                 itsBackupFilesAdapter.createItemLookup(files),
                 StorageStrategy.createLongStorage())
                 .withSelectionPredicate(
@@ -204,12 +210,10 @@ public class BackupFilesFragment extends Fragment
         }
         case DELETE_SELECTED: {
             for (Long selected : itsSelTracker.getSelection()) {
-                if (selected == null) {
-                    continue;
+                if (selected != null) {
+                    PasswdSafeUtil.dbginfo(TAG, "delete %d", selected);
+                    itsBackupFiles.delete(selected);
                 }
-
-                PasswdSafeUtil.dbginfo(TAG, "delete %d", selected);
-                itsBackupFiles.delete(selected);
             }
             itsSelTracker.clearSelection();
             break;
@@ -227,13 +231,30 @@ public class BackupFilesFragment extends Fragment
      */
     private void onSelChanged(boolean hasSelection)
     {
-        PasswdSafeUtil.dbginfo(TAG, "Selection: %b", hasSelection);
-        if (itsSelTracker.hasSelection() && (itsActionMode == null)) {
+        if (hasSelection && (itsActionMode == null)) {
             itsActionMode = requireActivity().startActionMode(
                     new ActionModeCallback());
-        } else if (!itsSelTracker.hasSelection() && (itsActionMode != null)) {
+        } else if (!hasSelection && (itsActionMode != null)) {
             itsActionMode.finish();
         }
+    }
+
+    /**
+     * Open the selected backup file
+     */
+    private void openSelectedBackup()
+    {
+        Long selected = getSelectedBackup();
+        if (selected != null) {
+            PasswdSafeUtil.dbginfo(TAG, "open %d", selected);
+            int pos = itsKeyProvider.getPosition(selected);
+            if (pos >= 0) {
+                BackupFile backup =
+                        itsBackupFilesAdapter.getCurrentList().get(pos);
+                itsListener.openFile(backup.createUri(), null);
+            }
+        }
+        itsSelTracker.clearSelection();
     }
 
     /**
@@ -242,6 +263,19 @@ public class BackupFilesFragment extends Fragment
     private void deleteSelectedBackups()
     {
         showPrompt(ConfirmAction.DELETE_SELECTED);
+    }
+
+    /**
+     * Get the selected backup file identifier; null if none
+     */
+    private @Nullable Long getSelectedBackup()
+    {
+        for (Long selected : itsSelTracker.getSelection()) {
+            if (selected != null) {
+                return selected;
+            }
+        }
+        return null;
     }
 
     /**
@@ -295,7 +329,10 @@ public class BackupFilesFragment extends Fragment
         public boolean onActionItemClicked(ActionMode mode, MenuItem item)
         {
             final int itemId = item.getItemId();
-            if (itemId == R.id.menu_delete) {
+            if (itemId == R.id.menu_file_open) {
+                openSelectedBackup();
+                return true;
+            } else if (itemId == R.id.menu_delete) {
                 deleteSelectedBackups();
                 return true;
             }
