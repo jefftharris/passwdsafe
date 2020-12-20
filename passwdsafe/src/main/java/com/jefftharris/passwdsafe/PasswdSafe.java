@@ -36,6 +36,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.jefftharris.passwdsafe.db.BackupFile;
 import com.jefftharris.passwdsafe.db.PasswdSafeDb;
 import com.jefftharris.passwdsafe.db.RecentFilesDao;
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
@@ -50,6 +51,7 @@ import com.jefftharris.passwdsafe.lib.FileSharer;
 import com.jefftharris.passwdsafe.lib.ManagedTask;
 import com.jefftharris.passwdsafe.lib.ManagedTasks;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.ProgressFragment;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
@@ -168,7 +170,9 @@ public class PasswdSafe extends AppCompatActivity
         /** Share a file */
         SHARE_FILE,
         /** Show settings to enable the keyboard */
-        SHOW_ENABLE_KEYBOARD
+        SHOW_ENABLE_KEYBOARD,
+        /** Restore a backup */
+        RESTORE_FILE
     }
 
     /** Method for finishing the edit of the file */
@@ -255,6 +259,7 @@ public class PasswdSafe extends AppCompatActivity
     private static final int MENU_BIT_PROTECT_ALL = 6;
     private static final int MENU_BIT_HAS_SEARCH = 7;
     private static final int MENU_BIT_HAS_CLOSE = 8;
+    private static final int MENU_BIT_HAS_RESTORE = 9;
 
     private static final String TAG = "PasswdSafe";
 
@@ -467,6 +472,20 @@ public class PasswdSafe extends AppCompatActivity
         options.set(MENU_BIT_HAS_CLOSE);
 
         itsFileDataFrag.useFileData((PasswdFileDataUser<Void>)fileData -> {
+            boolean fileCanRestore = false;
+            switch (fileData.getUri().getType()) {
+            case BACKUP: {
+                fileCanRestore = true;
+                break;
+            }
+            case FILE:
+            case SYNC_PROVIDER:
+            case EMAIL:
+            case GENERIC_PROVIDER: {
+                break;
+            }
+            }
+
             boolean fileEditable = fileData.canEdit();
             switch (itsCurrViewMode) {
             case VIEW_LIST: {
@@ -485,10 +504,12 @@ public class PasswdSafe extends AppCompatActivity
                     options.set(MENU_BIT_HAS_FILE_OPS, true);
                     options.set(MENU_BIT_HAS_FILE_DELETE, true);
                 }
+                options.set(MENU_BIT_HAS_RESTORE, fileCanRestore);
                 break;
             }
             case VIEW_RECORD: {
                 options.set(MENU_BIT_CAN_ADD, fileEditable);
+                options.set(MENU_BIT_HAS_RESTORE, fileCanRestore);
                 break;
             }
             case INIT:
@@ -515,6 +536,11 @@ public class PasswdSafe extends AppCompatActivity
         MenuItem item = menu.findItem(R.id.menu_add);
         if (item != null) {
             item.setVisible(options.get(MENU_BIT_CAN_ADD));
+        }
+
+        item = menu.findItem(R.id.menu_restore);
+        if (item != null) {
+            item.setVisible(options.get(MENU_BIT_HAS_RESTORE));
         }
 
         item = menu.findItem(R.id.menu_close);
@@ -583,6 +609,23 @@ public class PasswdSafe extends AppCompatActivity
         }
         case R.id.menu_add: {
             editRecord(itsLocation.selectRecord(null));
+            return true;
+        }
+        case R.id.menu_restore: {
+            BackupFile backup = itsFileDataFrag.useFileData(
+                    fileData -> fileData.getUri().getBackupFile());
+            if (backup == null) {
+                return true;
+            }
+
+            Bundle confirmArgs = new Bundle();
+            confirmArgs.putString(CONFIRM_ARG_ACTION,
+                                  ConfirmAction.RESTORE_FILE.name());
+            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
+                    getString(R.string.restore_file_p, backup.title,
+                              Utils.formatDate(backup.date, this)),
+                    null, getString(R.string.restore), confirmArgs);
+            dialog.show(getSupportFragmentManager(), "Restore file");
             return true;
         }
         case R.id.menu_close: {
@@ -1247,6 +1290,14 @@ public class PasswdSafe extends AppCompatActivity
             } catch (ActivityNotFoundException e) {
                 PasswdSafeUtil.showError("Keyboard settings not found", TAG, e,
                                          new ActContext(this));
+            }
+            break;
+        }
+        case RESTORE_FILE: {
+            PasswdFileUri uri = itsFileDataFrag.useFileData(
+                    PasswdFileData::getUri);
+            if (uri != null) {
+                itsTasks.startTask(new RestoreTask(uri, this));
             }
             break;
         }
@@ -1992,7 +2043,7 @@ public class PasswdSafe extends AppCompatActivity
         {
             Exception e = itsFileDataFrag.useFileData((fileData) -> {
                 try {
-                    fileData.saveAs(itsSharer.getFile(), getContext());
+                    fileData.saveAsNoBackup(itsSharer.getFile(), getContext());
                     PasswdSafeUtil.dbginfo(TAG, "ShareTask finished");
                     return null;
                 } catch (Exception ex) {
@@ -2072,6 +2123,87 @@ public class PasswdSafe extends AppCompatActivity
                 act.finish();
             } else if (error != null) {
                 PasswdSafeUtil.showFatalMsg(error, "Error deleting file", act);
+            }
+        }
+    }
+
+    /**
+     * Task to restore a file in the background
+     */
+    private static final class RestoreTask extends AbstractTask
+    {
+        private final PasswdFileUri itsBackupFileUri;
+        private final PasswdSafeFileDataFragment itsFileDataFrag;
+        private final PasswdFileUri.Creator itsUriCreator;
+
+        /**
+         * Constructor
+         */
+        protected RestoreTask(@NonNull PasswdFileUri backupFileUri,
+                              @NonNull PasswdSafe act)
+        {
+            super(act.getString(R.string.restoring), act);
+            itsBackupFileUri = backupFileUri;
+            itsFileDataFrag = act.itsFileDataFrag;
+
+            Uri restoreUri = null;
+            BackupFile backupFile = itsBackupFileUri.getBackupFile();
+            if (backupFile != null) {
+                restoreUri = Uri.parse(backupFile.fileUri);
+            }
+            if (restoreUri != null) {
+                itsUriCreator = new PasswdFileUri.Creator(restoreUri,
+                                                          getContext());
+            } else {
+                itsUriCreator = null;
+            }
+        }
+
+
+        @NonNull
+        @Override
+        protected Boolean doInBackground() throws Throwable
+        {
+            PasswdFileUri restoreUri =
+                    (itsUriCreator != null) ? itsUriCreator.finishCreate() :
+                    null;
+            if (restoreUri == null) {
+                throw new Exception("Restore URI not found");
+            } else if (!restoreUri.isWritable().first) {
+                throw new Exception("Restore file not writable");
+            }
+
+            Exception e = itsFileDataFrag.useFileData(fileData -> {
+                try {
+                    PasswdSafeUtil.info(TAG, "Restoring %s to '%s' from '%s'",
+                                        itsBackupFileUri.getIdentifier(
+                                                getContext(), false),
+                                        restoreUri.getUri(),
+                                        itsBackupFileUri.getUri());
+                    fileData.saveAs(restoreUri, getContext());
+                    PasswdSafeUtil.dbginfo(TAG, "RestoreTask finished");
+                    return null;
+                } catch (Exception e1) {
+                    return e1;
+                }
+            });
+            if (e != null) {
+                throw e;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onTaskFinished(Boolean result,
+                                      Throwable error,
+                                      @NonNull PasswdSafe act)
+        {
+            super.onTaskFinished(result, error, act);
+            if (error != null) {
+                PasswdSafeUtil.showError(
+                        act.getString(R.string.restore_failed_msg,
+                                      error.getMessage()), TAG, error,
+                        new ActContext(act));
             }
         }
     }

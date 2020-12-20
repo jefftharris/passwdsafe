@@ -250,25 +250,12 @@ public class PasswdFileUri
             throws IOException
     {
         switch (itsType) {
-        case FILE: {
-            PwsFile file = PwsFileFactory.newFile();
-            file.setPassphrase(passwd);
-            file.setStorage(new PwsFileStorage(itsFile.getAbsolutePath(),
-                                               null));
-            return file;
-        }
-        case SYNC_PROVIDER: {
-            PwsFile file = PwsFileFactory.newFile();
-            file.setPassphrase(passwd);
-            String id = getIdentifier(context, false);
-            file.setStorage(new PasswdFileSyncStorage(itsUri, id, null));
-            return file;
-        }
+        case FILE:
+        case SYNC_PROVIDER:
         case GENERIC_PROVIDER: {
             PwsFile file = PwsFileFactory.newFile();
             file.setPassphrase(passwd);
-            String id = getIdentifier(context, false);
-            file.setStorage(new PasswdFileGenProviderStorage(itsUri, id, null));
+            file.setStorage(createStorageForSave(context));
             return file;
         }
         case EMAIL:
@@ -277,6 +264,39 @@ public class PasswdFileUri
         }
         }
         return null;
+    }
+
+
+    /**
+     * Create file storage to save to this URI
+     */
+    public @NonNull PwsStorage createStorageForSave(Context context)
+            throws IOException
+    {
+        switch (itsType) {
+        case FILE: {
+            return new PwsFileStorage(itsFile.getAbsolutePath(), null);
+        }
+        case SYNC_PROVIDER: {
+            return new PasswdFileSyncStorage(itsUri,
+                                             getIdentifier(context, false),
+                                             null);
+        }
+        case EMAIL:
+        case GENERIC_PROVIDER: {
+            String id = getIdentifier(context, false);
+            if (itsWritableInfo.first) {
+                return new PasswdFileGenProviderStorage(itsUri, id, null);
+            } else {
+                return new PwsStreamStorage(id, null);
+            }
+        }
+        case BACKUP: {
+            return new PwsStreamStorage(getIdentifier(context, false), null);
+        }
+        }
+
+        throw new IOException("Unknown URI type");
     }
 
 
@@ -422,6 +442,12 @@ public class PasswdFileUri
     public ProviderType getSyncType()
     {
         return itsSyncType;
+    }
+
+    /** Get the backup file */
+    public BackupFile getBackupFile()
+    {
+        return itsBackupFile;
     }
 
     /**

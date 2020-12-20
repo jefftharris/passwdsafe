@@ -121,12 +121,23 @@ public class PasswdFileData
     }
 
     /**
-     * Save the file to the given file name
+     * Save the file to the given file name without a backup
      */
-    public void saveAs(File file, Context context)
+    public void saveAsNoBackup(@NonNull File file, Context context)
             throws IOException, ConcurrentModificationException
     {
         doSave(null, new PwsFileStorage(file.getPath(), null), context);
+    }
+
+    /**
+     * Save the file to the given URI
+     */
+    public void saveAs(@NonNull PasswdFileUri fileUri,
+                       @NonNull Context context)
+            throws IOException, ConcurrentModificationException
+    {
+        doSave(new PasswdFileSaveHelper(context),
+               fileUri.createStorageForSave(context), context);
     }
 
     public void close()
@@ -1264,21 +1275,22 @@ public class PasswdFileData
 
             setSaveHdrFields(context);
 
-            PwsStorage storage = itsPwsFile.getStorage();
+            PwsStorage storage = (saveAsStorage != null) ?
+                                 saveAsStorage : itsPwsFile.getStorage();
             try {
                 if (saveHelper != null) {
                     storage.setSaveHelper(saveHelper);
-                } else if (saveAsStorage != null) {
-                    itsPwsFile.setStorage(saveAsStorage);
                 }
 
-                itsPwsFile.save();
+                if (saveAsStorage != null) {
+                    itsPwsFile.saveAs(saveAsStorage);
+                } else {
+                    itsPwsFile.save();
+                }
                 notifyObservers(this);
             } finally {
                 if (saveHelper != null) {
                     storage.setSaveHelper(null);
-                } else if (saveAsStorage != null) {
-                    itsPwsFile.setStorage(storage);
                 }
             }
         }

@@ -40,7 +40,6 @@ public class BackupFilesFragment extends Fragment
     implements ConfirmPromptDialog.Listener
 {
     // TODO: cleanup menus
-    // TODO: restore
     // TODO: share? after open?
     // TODO: Update db for no URL permission - clear URL but keep file, allow share/open
     // TODO: Update for no file - remove entry
@@ -49,6 +48,8 @@ public class BackupFilesFragment extends Fragment
     // TODO: label noting to open file to restore/share
     // TODO: translations
     // TODO: support delete of backup file from opened?
+    // TODO: use restore icon in nav menu as backup looks like goes into cloud
+    // TODO: remove restore from selected backup menu
 
     /**
      * Listener interface for owning activity

@@ -22,6 +22,12 @@
           android:orderInCategory="100"
           app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/menu_restore"
+        android:icon="@drawable/ic_action_restore"
+        android:title="@string/restore"
+        app:showAsAction="ifRoom"/>
+
     <item android:id="@+id/menu_file_ops"
           android:title="@string/file_operations"
           android:orderInCategory="100">

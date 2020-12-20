@@ -237,6 +237,12 @@ public class PasswdSafeUtil
         showErrorMsg(msg, context);
     }
 
+    /** Log a formatted message at info level */
+    public static void info(String tag, String fmt, Object... args)
+    {
+        Log.i(tag, String.format(fmt, args));
+    }
+
     /**
      * Get whether the app is running while testing
      */

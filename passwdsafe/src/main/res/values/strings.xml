@@ -312,6 +312,9 @@
     <string name="regular_expression_summary">Use a regular expression to search instead of a sub-string</string>
     <string name="remove">Remove</string>
     <string name="restore">Restore</string>
+    <string name="restore_failed_msg">Restore failed: %1$s</string>
+    <string name="restore_file_p">Restore file %1$s from %2$s?</string>
+    <string name="restoring">Restoring…</string>
     <string name="save">Save</string>
     <string name="save_password">Save password</string>
     <string name="save_password_p">Save password?</string>
