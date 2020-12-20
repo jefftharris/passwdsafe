@@ -625,8 +625,34 @@ public abstract class PwsFile
      * @throws ConcurrentModificationException if the underlying store was
      *                                         independently changed
      */
-    public abstract void save()
-            throws IOException, ConcurrentModificationException;
+    public final void save()
+            throws IOException, ConcurrentModificationException
+    {
+        if (isReadOnly())
+            throw new IOException("File is read only");
+
+        // check for concurrent change
+        if (lastStorageChange != null) {
+            Date modDate = storage.getModifiedDate();
+            if ((modDate != null) && (modDate.after(lastStorageChange))) {
+                throw new ConcurrentModificationException(
+                        "Password store was changed independently - no save " +
+                        "possible!");
+            }
+        }
+
+        saveAs(storage);
+        modified = false;
+        lastStorageChange = storage.getModifiedDate();
+    }
+
+    /**
+     * Writes this file to the given storage
+     *
+     * @param storage The storage to which the file is written
+     * @throws IOException if the attempt fails.
+     */
+    public abstract void saveAs(PwsStorage storage) throws IOException;
 
     /**
      * Set the flag to indicate that the file has been modified.  There

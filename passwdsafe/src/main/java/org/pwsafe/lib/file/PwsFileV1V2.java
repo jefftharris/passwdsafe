@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -162,32 +161,9 @@ public abstract class PwsFileV1V2 extends PwsFile
         }
     }
 
-    /**
-     * Writes this file back to the filesystem.  If successful the modified
-     * flag is also reset on the file and all records.
-     *
-     * @throws IOException                     if the attempt fails.
-     * @throws ConcurrentModificationException if the underlying store was
-     *                                         independently changed
-     */
     @Override
-    public void save()
-            throws IOException, ConcurrentModificationException
+    public void saveAs(PwsStorage saveStorage) throws IOException
     {
-        if (isReadOnly())
-            throw new IOException("File is read only");
-
-        if (lastStorageChange != null && // check for concurrent change
-            storage.getModifiedDate().after(lastStorageChange)) {
-            throw new ConcurrentModificationException(
-                    "Password store was changed independently - no save " +
-                    "possible!");
-        }
-
-        // For safety we'll write to a temporary file which will be renamed
-	    // to the
-        // real name if we manage to write it successfully.
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         outStream = baos;
 
@@ -216,10 +192,7 @@ public abstract class PwsFileV1V2 extends PwsFile
 
             outStream.close();
 
-            if (storage.save(baos.toByteArray(), false)) {
-                modified = false;
-                lastStorageChange = storage.getModifiedDate();
-            } else {
+            if (!saveStorage.save(baos.toByteArray(), false)) {
                 throw new IOException("Unable to save file");
             }
         } catch (IOException e) {
