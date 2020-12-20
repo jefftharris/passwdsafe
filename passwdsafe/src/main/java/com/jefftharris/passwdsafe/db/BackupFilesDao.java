@@ -131,6 +131,11 @@ public abstract class BackupFilesDao
                 }
             } catch (Exception e) {
                 ctx.deleteFile(backupFileName);
+                if (e instanceof FileNotFoundException) {
+                    // Skip backup if a file can't be found, often a new sync
+                    // file
+                    throw new SkipBackupException();
+                }
                 throw e;
             }
         } catch (SkipBackupException e) {
