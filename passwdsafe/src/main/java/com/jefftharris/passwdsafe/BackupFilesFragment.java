@@ -39,7 +39,6 @@ import java.util.List;
 public class BackupFilesFragment extends Fragment
     implements ConfirmPromptDialog.Listener
 {
-    // TODO: share? after open?
     // TODO: Update db for no URL permission - clear URL but keep file, allow share/open
     // TODO: Update for no file - remove entry
     // TODO: max entries global and/or per file URL

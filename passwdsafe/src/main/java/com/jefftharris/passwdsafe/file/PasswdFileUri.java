@@ -460,9 +460,14 @@ public class PasswdFileUri
             return itsFile.getName();
         }
         case SYNC_PROVIDER:
-        case GENERIC_PROVIDER:
-        case BACKUP: {
+        case GENERIC_PROVIDER: {
             return itsTitle;
+        }
+        case BACKUP: {
+            if (itsBackupFile != null) {
+                return "backup - " + itsBackupFile.title;
+            }
+            return "backup.psafe3";
         }
         case EMAIL: {
             return null;

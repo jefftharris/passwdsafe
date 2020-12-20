@@ -41,13 +41,17 @@
             <item android:id="@+id/menu_file_unprotect_records"
                   android:title="@string/unprotect_all"/>
 
-            <item android:id="@+id/menu_file_share"
-                  android:title="@string/share_file"/>
-
             <item android:id="@+id/menu_file_delete"
                   android:title="@string/delete_file"/>
         </menu>
     </item>
+
+    <item
+        android:id="@+id/menu_share"
+        android:title="@string/share_file"
+        android:icon="@drawable/ic_action_share_light"
+        android:orderInCategory="1000"
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/menu_close"
           android:title="@string/close_file"

@@ -254,7 +254,7 @@ public class PasswdSafe extends AppCompatActivity
     private static final int MENU_BIT_HAS_FILE_OPS = 1;
     private static final int MENU_BIT_HAS_FILE_CHANGE_PASSWORD = 2;
     private static final int MENU_BIT_HAS_FILE_PROTECT = 3;
-    private static final int MENU_BIT_HAS_FILE_SHARE = 4;
+    private static final int MENU_BIT_HAS_SHARE = 4;
     private static final int MENU_BIT_HAS_FILE_DELETE = 5;
     private static final int MENU_BIT_PROTECT_ALL = 6;
     private static final int MENU_BIT_HAS_SEARCH = 7;
@@ -473,9 +473,11 @@ public class PasswdSafe extends AppCompatActivity
 
         itsFileDataFrag.useFileData((PasswdFileDataUser<Void>)fileData -> {
             boolean fileCanRestore = false;
+            boolean fileCanShare = false;
             switch (fileData.getUri().getType()) {
             case BACKUP: {
                 fileCanRestore = true;
+                fileCanShare = true;
                 break;
             }
             case FILE:
@@ -496,7 +498,7 @@ public class PasswdSafe extends AppCompatActivity
                     options.set(MENU_BIT_HAS_FILE_CHANGE_PASSWORD,
                                 fileData.isNotYubikey());
                     options.set(MENU_BIT_HAS_FILE_PROTECT, true);
-                    options.set(MENU_BIT_HAS_FILE_SHARE, true);
+                    fileCanShare = true;
                     options.set(MENU_BIT_PROTECT_ALL,
                                 itsLocation.getGroups().isEmpty());
                 }
@@ -504,6 +506,7 @@ public class PasswdSafe extends AppCompatActivity
                     options.set(MENU_BIT_HAS_FILE_OPS, true);
                     options.set(MENU_BIT_HAS_FILE_DELETE, true);
                 }
+                options.set(MENU_BIT_HAS_SHARE, fileCanShare);
                 options.set(MENU_BIT_HAS_RESTORE, fileCanRestore);
                 break;
             }
@@ -574,15 +577,15 @@ public class PasswdSafe extends AppCompatActivity
                                       R.string.unprotect_group);
             }
 
-            item = menu.findItem(R.id.menu_file_share);
-            if (item != null) {
-                item.setEnabled(options.get(MENU_BIT_HAS_FILE_SHARE));
-            }
-
             item = menu.findItem(R.id.menu_file_delete);
             if (item != null) {
                 item.setEnabled(options.get(MENU_BIT_HAS_FILE_DELETE));
             }
+        }
+
+        item = menu.findItem(R.id.menu_share);
+        if (item != null) {
+            item.setVisible(options.get(MENU_BIT_HAS_SHARE));
         }
 
         item = menu.findItem(R.id.menu_search);
@@ -658,7 +661,7 @@ public class PasswdSafe extends AppCompatActivity
             protectRecords(true);
             return true;
         }
-        case R.id.menu_file_share: {
+        case R.id.menu_share: {
             Bundle confirmArgs = new Bundle();
             confirmArgs.putString(CONFIRM_ARG_ACTION,
                                   ConfirmAction.SHARE_FILE.name());
