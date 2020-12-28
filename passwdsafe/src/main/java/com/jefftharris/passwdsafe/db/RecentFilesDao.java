@@ -21,7 +21,6 @@ import androidx.room.Update;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,21 +79,10 @@ public abstract class RecentFilesDao
     public abstract void removeUri(String uri);
 
     /**
-     * Clear the recent files
-     * @return the list of files removed
+     * Delete all recent files
      */
-    @Transaction
-    public List<Uri> clear()
-    {
-        List<Uri> uris = new ArrayList<>();
-        List<RecentFile> files = getAll();
-        for (RecentFile file: files) {
-            uris.add(Uri.parse(file.uri));
-        }
-
-        deleteAll();
-        return uris;
-    }
+    @Query("DELETE FROM " + RecentFile.TABLE)
+    public abstract void deleteAll();
 
     /** Update an opened storage access file */
     public static void updateOpenedSafFile(Uri uri, int flags, Context ctx)
@@ -120,12 +108,6 @@ public abstract class RecentFilesDao
         }
         return null;
     }
-
-    /**
-     * Query all recent files
-     */
-    @Query("SELECT * FROM " + RecentFile.TABLE)
-    protected abstract List<RecentFile> getAll();
 
     /**
      * Query all recent files ordered by date
@@ -166,10 +148,4 @@ public abstract class RecentFilesDao
      */
     @Delete
     protected abstract void delete(RecentFile file);
-
-    /**
-     * Delete all recent files
-     */
-    @Query("DELETE FROM " + RecentFile.TABLE)
-    protected abstract void deleteAll();
 }
