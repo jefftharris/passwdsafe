@@ -23,7 +23,9 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
+import com.jefftharris.passwdsafe.pref.FileBackupPref;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -96,11 +98,27 @@ public abstract class BackupFilesDao
      */
     public void insert(@NonNull Uri fileUri,
                        @NonNull String title,
-                       Context ctx,
-                       ContentResolver cr)
+                       @NonNull FileBackupPref backupPref,
+                       @NonNull Context ctx,
+                       @NonNull ContentResolver cr)
     {
         try {
-            doInsert(fileUri, title, ctx, cr);
+            switch (backupPref) {
+            case BACKUP_1:
+            case BACKUP_2:
+            case BACKUP_5:
+            case BACKUP_10:
+            case BACKUP_ALL: {
+                PasswdSafeUtil.info(TAG, "Backup %s from '%s'", title, fileUri);
+                BackupFile backup = doInsert(fileUri, title, ctx, cr);
+                pruneBackups(backup.fileUri, backupPref, ctx);
+                break;
+            }
+            case BACKUP_NONE: {
+                pruneBackups(fileUri.toString(), backupPref, ctx);
+                break;
+            }
+            }
         } catch (SkipBackupException e) {
             // exception reverts the backup
         } catch (Exception e) {
@@ -140,19 +158,28 @@ public abstract class BackupFilesDao
     }
 
     /**
+     * Get backup files for a URI ordered by date
+     */
+    @Query("SELECT * FROM " + BackupFile.TABLE +
+           " WHERE " + BackupFile.COL_FILE_URI + " = :fileUri ORDER BY " +
+           BackupFile.COL_DATE + " DESC")
+    protected abstract List<BackupFile> getBackupFilesOrderedByDate(
+            String fileUri);
+
+    /**
      * Insert a backup file implementation
      */
     @Transaction
-    protected void doInsert(Uri fileUri,
-                            String title,
-                            Context ctx,
-                            ContentResolver cr) throws RuntimeException
+    protected BackupFile doInsert(Uri fileUri,
+                                  String title,
+                                  Context ctx,
+                                  ContentResolver cr) throws RuntimeException
     {
         try {
             BackupFile backup = new BackupFile(fileUri, title);
-            long id = doInsert(backup);
+            backup.id = doInsert(backup);
 
-            String backupFileName = getBackupFileName(id);
+            String backupFileName = getBackupFileName(backup.id);
             try (InputStream is = Objects.requireNonNull(
                     cr.openInputStream(fileUri));
                  OutputStream os = Objects.requireNonNull(
@@ -171,6 +198,7 @@ public abstract class BackupFilesDao
                 }
                 throw e;
             }
+            return backup;
         } catch (SkipBackupException e) {
             throw e;
         } catch (Exception e) {
@@ -196,6 +224,38 @@ public abstract class BackupFilesDao
     @Query("DELETE FROM " + BackupFile.TABLE +
            " WHERE " + BackupFile.COL_ID + " = :backupFileId")
     protected abstract void doDelete(long backupFileId);
+
+    /**
+     * Prune the backups for the file URI
+     */
+    private void pruneBackups(@NonNull String backupFileUri,
+                              @NonNull FileBackupPref backupPref,
+                              @NonNull Context ctx)
+    {
+        switch (backupPref) {
+        case BACKUP_NONE:
+        case BACKUP_1:
+        case BACKUP_2:
+        case BACKUP_5:
+        case BACKUP_10: {
+            break;
+        }
+        case BACKUP_ALL: {
+            return;
+        }
+        }
+
+        int maxBackups = backupPref.getNumBackups();
+        List<BackupFile> backups = getBackupFilesOrderedByDate(backupFileUri);
+        int numBackups = 0;
+        for (BackupFile pruneBackup: backups) {
+            if (numBackups++ >= maxBackups) {
+                PasswdSafeUtil.dbginfo(TAG, "Pruning backup %d '%s'",
+                                       pruneBackup.id, pruneBackup.title);
+                delete(pruneBackup.id, ctx);
+            }
+        }
+    }
 
     /**
      * Get the name of a backup file

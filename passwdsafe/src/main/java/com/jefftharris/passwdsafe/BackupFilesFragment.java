@@ -40,7 +40,6 @@ import java.util.List;
 public class BackupFilesFragment extends Fragment
     implements ConfirmPromptDialog.Listener
 {
-    // TODO: max entries global and/or per file URL
     // TODO: label noting backups use temp files which can be cleared, etc.
     // TODO: label noting to open file to restore/share
     // TODO: translations

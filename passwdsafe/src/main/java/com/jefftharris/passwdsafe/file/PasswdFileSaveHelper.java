@@ -15,7 +15,6 @@ import android.util.Log;
 import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.db.BackupFilesDao;
 import com.jefftharris.passwdsafe.db.PasswdSafeDb;
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 
 import org.pwsafe.lib.file.PwsStorage;
@@ -70,10 +69,12 @@ public class PasswdFileSaveHelper implements PwsStorage.SaveHelper
     @Override
     public void createBackup(Uri fileUri, String identifier)
     {
-        Context ctx = getContext();
-        BackupFilesDao backupFiles = PasswdSafeDb.get(ctx).accessBackupFiles();
-        PasswdSafeUtil.info(TAG, "Backup %s from '%s'", identifier, fileUri);
-        backupFiles.insert(fileUri, identifier, ctx, ctx.getContentResolver());
+        BackupFilesDao backupFiles =
+                PasswdSafeDb.get(itsContext).accessBackupFiles();
+        SharedPreferences prefs = Preferences.getSharedPrefs(itsContext);
+        FileBackupPref backupPref = Preferences.getFileBackupPref(prefs);
+        backupFiles.insert(fileUri, identifier, backupPref, itsContext,
+                           itsContext.getContentResolver());
     }
 
 
