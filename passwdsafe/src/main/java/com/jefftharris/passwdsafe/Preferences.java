@@ -50,7 +50,7 @@ public class Preferences
 
     public static final String PREF_FILE_BACKUP = "fileBackupPref";
     private static final FileBackupPref PREF_FILE_BACKUP_DEF =
-        FileBackupPref.BACKUP_1;
+        FileBackupPref.BACKUP_5;
 
     public static final String PREF_FILE_CLOSE_CLEAR_CLIPBOARD =
         "fileCloseClearClipboardPref";
@@ -146,8 +146,6 @@ public class Preferences
     private static final String PREF_DEF_PASSWD_POLICY_DEF = "";
 
     private static final String TAG = "Preferences";
-
-    // TODO file backups??
 
     /**
      * Get the default shared preferences
