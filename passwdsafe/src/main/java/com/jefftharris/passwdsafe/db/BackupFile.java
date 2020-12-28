@@ -29,6 +29,8 @@ public class BackupFile
     public static final String COL_TITLE = "title";
     public static final String COL_FILE_URI = "fileUri";
     public static final String COL_DATE = "date";
+    public static final String COL_HAS_FILE = "hasFile";
+    public static final String COL_HAS_URI_PERM = "hasUriPerm";
 
     public static final String URL_SCHEME =
             PasswdSafeUtil.PACKAGE + ".backup";
@@ -61,17 +63,33 @@ public class BackupFile
     public long date;
 
     /**
+     * Is there a known file for the backup
+     */
+    @ColumnInfo(name = COL_HAS_FILE, defaultValue = "1")
+    public boolean hasFile = true;
+
+    /**
+     * Is there a known URI permission for the file
+     */
+    @ColumnInfo(name = COL_HAS_URI_PERM, defaultValue = "1")
+    public boolean hasUriPerm = true;
+
+    /**
      * Constructor from database entry
      */
     BackupFile(long id,
                @NonNull String title,
                @NonNull String fileUri,
-               long date)
+               long date,
+               boolean hasFile,
+               boolean hasUriPerm)
     {
         this.id = id;
         this.title = title;
         this.fileUri = fileUri;
         this.date = date;
+        this.hasFile = hasFile;
+        this.hasUriPerm = hasUriPerm;
     }
 
     /**
@@ -103,6 +121,7 @@ public class BackupFile
         }
         BackupFile backup = (BackupFile)obj;
         return (id == backup.id) && title.equals(backup.title) &&
-               fileUri.equals(backup.fileUri) && (date == backup.date);
+               fileUri.equals(backup.fileUri) && (date == backup.date) &&
+               (hasFile = backup.hasFile) && (hasUriPerm = backup.hasUriPerm);
     }
 }

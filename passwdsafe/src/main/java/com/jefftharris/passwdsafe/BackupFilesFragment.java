@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jefftharris.passwdsafe.db.BackupFile;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 
 import java.util.List;
@@ -39,13 +40,12 @@ import java.util.List;
 public class BackupFilesFragment extends Fragment
     implements ConfirmPromptDialog.Listener
 {
-    // TODO: Update db for no URL permission - clear URL but keep file, allow share/open
-    // TODO: Update for no file - remove entry
     // TODO: max entries global and/or per file URL
     // TODO: label noting backups use temp files which can be cleared, etc.
     // TODO: label noting to open file to restore/share
     // TODO: translations
     // TODO: support delete of backup file from opened?
+    // TODO: Add cancellation for backup file verify
 
     /**
      * Listener interface for owning activity
@@ -98,8 +98,8 @@ public class BackupFilesFragment extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        itsBackupFiles =
-                new ViewModelProvider(this).get(BackupFilesModel.class);
+        itsBackupFiles = new ViewModelProvider(requireActivity())
+                .get(BackupFilesModel.class);
     }
 
     @Override
@@ -117,7 +117,9 @@ public class BackupFilesFragment extends Fragment
         files.setAdapter(itsBackupFilesAdapter);
         itsBackupFiles.getBackupFiles().observe(
                 getViewLifecycleOwner(),
-                backupFiles -> itsBackupFilesAdapter.submitList(backupFiles));
+                backupFiles -> {
+                    itsBackupFiles.verify(backupFiles);
+                    itsBackupFilesAdapter.submitList(backupFiles);});
 
         itsKeyProvider = new SelectionKeyProvider();
         itsSelTracker = new SelectionTracker.Builder<>(
@@ -231,8 +233,12 @@ public class BackupFilesFragment extends Fragment
         if (hasSelection && (itsActionMode == null)) {
             itsActionMode = requireActivity().startActionMode(
                     new ActionModeCallback());
-        } else if (!hasSelection && (itsActionMode != null)) {
-            itsActionMode.finish();
+        } else if (itsActionMode != null) {
+            if (hasSelection) {
+                itsActionMode.invalidate();
+            } else {
+                itsActionMode.finish();
+            }
         }
     }
 
@@ -241,15 +247,10 @@ public class BackupFilesFragment extends Fragment
      */
     private void openSelectedBackup()
     {
-        Long selected = getSelectedBackup();
-        if (selected != null) {
-            PasswdSafeUtil.dbginfo(TAG, "open %d", selected);
-            int pos = itsKeyProvider.getPosition(selected);
-            if (pos >= 0) {
-                BackupFile backup =
-                        itsBackupFilesAdapter.getCurrentList().get(pos);
-                itsListener.openFile(backup.createUri(), null);
-            }
+        BackupFile backup = getSelectedBackup();
+        if (backup != null) {
+            PasswdSafeUtil.dbginfo(TAG, "open %d", backup.id);
+            itsListener.openFile(backup.createUri(), null);
         }
         itsSelTracker.clearSelection();
     }
@@ -263,13 +264,16 @@ public class BackupFilesFragment extends Fragment
     }
 
     /**
-     * Get the selected backup file identifier; null if none
+     * Get the selected backup file; null if none
      */
-    private @Nullable Long getSelectedBackup()
+    private @Nullable BackupFile getSelectedBackup()
     {
         for (Long selected : itsSelTracker.getSelection()) {
             if (selected != null) {
-                return selected;
+                int pos = itsKeyProvider.getPosition(selected);
+                if (pos >= 0) {
+                    return itsBackupFilesAdapter.getCurrentList().get(pos);
+                }
             }
         }
         return null;
@@ -319,7 +323,12 @@ public class BackupFilesFragment extends Fragment
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu)
         {
-            return false;
+            BackupFile backup = getSelectedBackup();
+            MenuItem item = menu.findItem(R.id.menu_file_open);
+            if ((backup != null) && (item != null)) {
+                GuiUtils.setMenuEnabled(item, backup.hasFile);
+            }
+            return true;
         }
 
         @Override

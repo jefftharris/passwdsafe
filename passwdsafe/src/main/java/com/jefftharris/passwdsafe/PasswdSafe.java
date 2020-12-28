@@ -260,6 +260,7 @@ public class PasswdSafe extends AppCompatActivity
     private static final int MENU_BIT_HAS_SEARCH = 7;
     private static final int MENU_BIT_HAS_CLOSE = 8;
     private static final int MENU_BIT_HAS_RESTORE = 9;
+    private static final int MENU_BIT_HAS_RESTORE_ENABLED = 10;
 
     private static final String TAG = "PasswdSafe";
 
@@ -473,10 +474,13 @@ public class PasswdSafe extends AppCompatActivity
 
         itsFileDataFrag.useFileData((PasswdFileDataUser<Void>)fileData -> {
             boolean fileCanRestore = false;
+            boolean fileCanRestoreEnabled = false;
             boolean fileCanShare = false;
             switch (fileData.getUri().getType()) {
             case BACKUP: {
+                BackupFile backup = fileData.getUri().getBackupFile();
                 fileCanRestore = true;
+                fileCanRestoreEnabled = (backup != null) && backup.hasUriPerm;
                 fileCanShare = true;
                 break;
             }
@@ -508,11 +512,15 @@ public class PasswdSafe extends AppCompatActivity
                 }
                 options.set(MENU_BIT_HAS_SHARE, fileCanShare);
                 options.set(MENU_BIT_HAS_RESTORE, fileCanRestore);
+                options.set(MENU_BIT_HAS_RESTORE_ENABLED,
+                            fileCanRestoreEnabled);
                 break;
             }
             case VIEW_RECORD: {
                 options.set(MENU_BIT_CAN_ADD, fileEditable);
                 options.set(MENU_BIT_HAS_RESTORE, fileCanRestore);
+                options.set(MENU_BIT_HAS_RESTORE_ENABLED,
+                            fileCanRestoreEnabled);
                 break;
             }
             case INIT:
@@ -544,6 +552,8 @@ public class PasswdSafe extends AppCompatActivity
         item = menu.findItem(R.id.menu_restore);
         if (item != null) {
             item.setVisible(options.get(MENU_BIT_HAS_RESTORE));
+            GuiUtils.setMenuEnabled(item,
+                                    options.get(MENU_BIT_HAS_RESTORE_ENABLED));
         }
 
         item = menu.findItem(R.id.menu_close);
@@ -2167,13 +2177,22 @@ public class PasswdSafe extends AppCompatActivity
         @Override
         protected Boolean doInBackground() throws Throwable
         {
-            PasswdFileUri restoreUri =
-                    (itsUriCreator != null) ? itsUriCreator.finishCreate() :
-                    null;
+            Context ctx = getContext();
+            PasswdFileUri restoreUri;
+            try {
+                restoreUri =
+                        (itsUriCreator != null) ? itsUriCreator.finishCreate() :
+                        null;
+            } catch (Exception e) {
+                throw new Exception(
+                        ctx.getString(R.string.restore_file_not_accessible), e);
+            }
             if (restoreUri == null) {
-                throw new Exception("Restore URI not found");
+                throw new Exception(
+                        ctx.getString(R.string.restore_file_not_found));
             } else if (!restoreUri.isWritable().first) {
-                throw new Exception("Restore file not writable");
+                throw new Exception(
+                        ctx.getString(R.string.restore_file_not_writable));
             }
 
             Exception e = itsFileDataFrag.useFileData(fileData -> {

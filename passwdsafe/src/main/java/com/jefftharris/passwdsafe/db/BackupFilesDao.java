@@ -16,6 +16,7 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.room.ColumnInfo;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -24,6 +25,7 @@ import androidx.room.Transaction;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.Utils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,6 +41,21 @@ public abstract class BackupFilesDao
 {
     private static final String BACKUP_FILE_PFX = "backup-";
     private static final String TAG = "BackupFilesDao";
+
+    /**
+     * Backup file update fields
+     */
+    public static class Update
+    {
+        @ColumnInfo(name = BackupFile.COL_ID)
+        public long id;
+
+        @ColumnInfo(name = BackupFile.COL_HAS_FILE)
+        public boolean hasFile = true;
+
+        @ColumnInfo(name = BackupFile.COL_HAS_URI_PERM)
+        public boolean hasUriPerm = true;
+    }
 
     /**
      * Get backup files
@@ -65,6 +82,16 @@ public abstract class BackupFilesDao
     }
 
     /**
+     * Does a file exist for the backup
+     */
+    public static boolean hasBackupFile(@NonNull BackupFile file,
+                                        @NonNull Context ctx)
+    {
+        File f = ctx.getFileStreamPath(getBackupFileName(file.id));
+        return f.isFile();
+    }
+
+    /**
      * Insert a backup file
      */
     public void insert(@NonNull Uri fileUri,
@@ -84,6 +111,12 @@ public abstract class BackupFilesDao
                                          Toast.LENGTH_LONG).show());
         }
     }
+
+    /**
+     * Update a backup file
+     */
+    @androidx.room.Update(entity = BackupFile.class)
+    public abstract void update(Update update);
 
     /**
      * Delete all of the backup files

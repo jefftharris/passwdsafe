@@ -209,6 +209,7 @@
     <string name="new_policy">New Policy</string>
     <string name="next">Next</string>
     <string name="no_alias_chosen">No alias chosen</string>
+    <string name="no_backup_file">No backup file</string>
     <string name="no_biometrics_registered">No biometric credentials are registered</string>
     <string name="no_file_permission">
         PasswdSafe requires file permissions.
@@ -224,6 +225,7 @@
     </string>
     <string name="no_groups">No Groups</string>
     <string name="no_shortcut_chosen">No shortcut chosen</string>
+    <string name="no_permission">No permission</string>
     <string name="no_policies">No Policies</string>
     <string name="no_records">No Records</string>
     <string name="no_records_open_file">No Records. Open a file first and then retry.</string>
@@ -313,6 +315,9 @@
     <string name="remove">Remove</string>
     <string name="restore">Restore</string>
     <string name="restore_failed_msg">Restore failed: %1$s</string>
+    <string name="restore_file_not_accessible">Restore file not accessible</string>
+    <string name="restore_file_not_found">Restore file not found</string>
+    <string name="restore_file_not_writable">Restore file not writable</string>
     <string name="restore_file_p">Restore file %1$s from %2$s?</string>
     <string name="restoring">Restoring…</string>
     <string name="save">Save</string>
