@@ -244,7 +244,8 @@ public class NotificationMgr implements PasswdFileDataObserver
             return true;
         }
         case EMAIL:
-        case GENERIC_PROVIDER: {
+        case GENERIC_PROVIDER:
+        case BACKUP: {
             return false;
         }
         }
