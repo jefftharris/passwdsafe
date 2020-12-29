@@ -163,6 +163,9 @@ public class BackupFilesModel extends AndroidViewModel
                 } else {
                     ApiCompat.releasePersistableUriPermission(cr, uri, flags);
                 }
+            } catch (SecurityException e) {
+                PasswdSafeUtil.dbginfo(TAG, e, "URI security error for %s",
+                                       uri);
             } catch (Exception e) {
                 Log.e(TAG, "Permission remove error: " + uri, e);
             }
