@@ -147,9 +147,11 @@ public final class PasswdRecordFilter implements Closeable
                     queryMatch = QUERY_MATCH_TITLE;
                 } else if (filterField(fileData.getUsername(rec))) {
                     queryMatch = QUERY_MATCH_USERNAME;
-                } else if (filterField(fileData.getURL(rec))) {
+                } else if (filterField(
+                        fileData.getURL(rec, PasswdFileData.UrlStyle.FULL))) {
                     queryMatch = QUERY_MATCH_URL;
-                } else if (filterField(fileData.getEmail(rec))) {
+                } else if (filterField(fileData.getEmail(
+                        rec, PasswdFileData.EmailStyle.FULL))) {
                     queryMatch = QUERY_MATCH_EMAIL;
                 } else if (filterField(
                         fileData.getNotes(rec, ctx).getNotes())) {
@@ -194,10 +196,12 @@ public final class PasswdRecordFilter implements Closeable
                     fileData.getPasswdHistory(rec))) {
                 matches = addMatch(matches, QUERY_MATCH_PASSWORD);
             }
-            if (itsSimilarFields.matchUrl(fileData.getURL(rec))) {
+            if (itsSimilarFields.matchUrl(
+                    fileData.getURL(rec, PasswdFileData.UrlStyle.FULL))) {
                 matches = addMatch(matches, QUERY_MATCH_URL);
             }
-            String email = fileData.getEmail(rec);
+            String email = fileData.getEmail(rec,
+                                             PasswdFileData.EmailStyle.FULL);
             if (itsSimilarFields.matchEmail(email) ||
                     itsSimilarFields.matchUserName(email)) {
                 matches = addMatch(matches, QUERY_MATCH_EMAIL);

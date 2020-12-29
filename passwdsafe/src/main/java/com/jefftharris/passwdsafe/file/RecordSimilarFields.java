@@ -43,8 +43,9 @@ public final class RecordSimilarFields implements Closeable
         PwsRecord rec = passwdRec.getRecord();
         itsTitle = getField(fileData.getTitle(rec));
         itsUserName = getField(fileData.getUsername(rec));
-        itsUrl = getField(fileData.getURL(rec));
-        itsEmail = getField(fileData.getEmail(rec));
+        itsUrl = getField(fileData.getURL(rec, PasswdFileData.UrlStyle.FULL));
+        itsEmail = getField(fileData.getEmail(rec,
+                                              PasswdFileData.EmailStyle.FULL));
         itsRecUuid = passwdRec.getUUID();
         itsIsCaseSensitive = caseSensitive;
 

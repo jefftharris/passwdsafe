@@ -319,10 +319,12 @@ public class PasswdSafeIME extends InputMethodService
                     return fileData.getTitle(rec);
                 }
                 case URL_KEY: {
-                    return fileData.getURL(rec);
+                    return fileData.getURL(
+                            rec, PasswdFileData.UrlStyle.URL_ONLY);
                 }
                 case EMAIL_KEY: {
-                    return fileData.getEmail(rec);
+                    return fileData.getEmail(
+                            rec, PasswdFileData.EmailStyle.ADDR_ONLY);
                 }
                 case NOTES_KEY: {
                     return fileData.getNotes(rec, this).getNotes();

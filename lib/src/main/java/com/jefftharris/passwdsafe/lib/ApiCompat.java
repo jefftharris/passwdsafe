@@ -18,6 +18,8 @@ import android.os.Vibrator;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.Collections;
@@ -117,6 +119,17 @@ public final class ApiCompat
     {
         return (SDK_VERSION >= SDK_KITKAT) &&
                 ApiCompatKitkat.documentsContractDeleteDocument(cr, uri);
+    }
+
+    /**
+     * API compatible call to get the root URI for the primary storage volume
+     */
+    public static @Nullable Uri getPrimaryStorageRootUri(@NonNull Context ctx)
+    {
+        if (SDK_VERSION >= SDK_Q) {
+            return ApiCompatQ.getPrimaryStorageRootUri(ctx);
+        }
+        return null;
     }
 
     /**

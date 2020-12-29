@@ -88,6 +88,7 @@ public final class StorageFileListFragment extends Fragment
     private boolean itsIsFabBounced = false;
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
+    private Uri itsLastOpenUri;
 
 
     @Override
@@ -342,6 +343,17 @@ public final class StorageFileListFragment extends Fragment
         Intent intent = new Intent(
                 DocumentsContractCompat.INTENT_ACTION_OPEN_DOCUMENT);
 
+        Uri initialUri = (itsLastOpenUri != null) ? itsLastOpenUri :
+                         ApiCompat.getPrimaryStorageRootUri(requireContext());
+        if (initialUri != null) {
+            intent.putExtra(DocumentsContractCompat.EXTRA_INITIAL_URI,
+                            initialUri);
+        }
+
+        intent.putExtra(DocumentsContractCompat.EXTRA_PROMPT,
+                        getString(R.string.open_password_file));
+        intent.putExtra(DocumentsContractCompat.EXTRA_SHOW_ADVANCED, true);
+
         // Filter to only show results that can be "opened", such as a
         // file (as opposed to a list of contacts or timezones)
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -377,6 +389,7 @@ public final class StorageFileListFragment extends Fragment
             }
         }
         if (title != null) {
+            itsLastOpenUri = uri;
             openUri(uri, title);
         }
     }

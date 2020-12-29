@@ -1036,14 +1036,16 @@ public class PasswdSafe extends AppCompatActivity
                 return fileData.getUsername(rec);
             }
             case URL: {
-                String url = fileData.getURL(rec);
+                String url = fileData.getURL(
+                        rec, PasswdFileData.UrlStyle.URL_ONLY);
                 if (!TextUtils.isEmpty(url)) {
                     return url;
                 }
                 break;
             }
             case EMAIL: {
-                String email = fileData.getEmail(rec);
+                String email = fileData.getEmail(
+                        rec, PasswdFileData.EmailStyle.ADDR_ONLY);
                 if (!TextUtils.isEmpty(email)) {
                     return email;
                 }
