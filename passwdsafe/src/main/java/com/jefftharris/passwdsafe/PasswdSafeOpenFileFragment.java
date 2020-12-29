@@ -462,7 +462,8 @@ public class PasswdSafeOpenFileFragment
         PasswdFileUri passwdFileUri = getPasswdFileUri();
         if (enabled && (passwdFileUri != null)) {
             switch (passwdFileUri.getType()) {
-            case EMAIL: {
+            case EMAIL:
+            case BACKUP: {
                 savePasswdEnabled = false;
                 break;
             }
@@ -619,8 +620,10 @@ public class PasswdSafeOpenFileFragment
             itsIsPasswordSaved =
                     itsSavedPasswordsMgr.isAvailable() &&
                     itsSavedPasswordsMgr.isSaved(getPasswdFileUri());
+            break;
         }
-        case EMAIL: {
+        case EMAIL:
+        case BACKUP: {
             break;
         }
         }

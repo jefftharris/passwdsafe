@@ -47,7 +47,8 @@ public abstract class SavedPasswordsDao
         }
         case FILE:
         case SYNC_PROVIDER:
-        case EMAIL: {
+        case EMAIL:
+        case BACKUP: {
             break;
         }
         }
