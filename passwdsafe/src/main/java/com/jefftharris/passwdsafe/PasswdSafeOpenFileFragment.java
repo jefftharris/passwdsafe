@@ -543,7 +543,7 @@ public class PasswdSafeOpenFileFragment
         case YUBIKEY: {
             itsYubiUser = new YubikeyUser();
             itsYubiMgr.start(itsYubiUser);
-            View root = Objects.requireNonNull(getView());
+            View root = requireView();
             setVisibility(R.id.yubi_progress_text, true, root);
             setProgressVisible(true, false);
             setFieldsDisabled(true);
