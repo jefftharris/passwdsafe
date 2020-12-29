@@ -17,6 +17,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import com.jefftharris.passwdsafe.db.BackupFile;
 import com.jefftharris.passwdsafe.db.BackupFilesDao;
@@ -35,6 +36,7 @@ public class BackupFilesModel extends AndroidViewModel
 {
     private final BackupFilesDao itsBackupFilesDao;
     private final LiveData<List<BackupFile>> itsBackupFiles;
+    private final Observer<List<BackupFile>> itsVerifyObserver;
 
     private static final String TAG = "BackupFilesModel";
 
@@ -46,7 +48,8 @@ public class BackupFilesModel extends AndroidViewModel
         super(app);
         itsBackupFilesDao = PasswdSafeDb.get(app).accessBackupFiles();
         itsBackupFiles = itsBackupFilesDao.loadBackupFiles();
-
+        itsVerifyObserver = this::verify;
+        itsBackupFiles.observeForever(itsVerifyObserver);
     }
 
     /**
@@ -73,20 +76,21 @@ public class BackupFilesModel extends AndroidViewModel
         itsBackupFilesDao.delete(backupFileId, getApplication());
     }
 
-    /**
-     * Verify a list of backup files in the background
-     */
-    @UiThread
-    public void verify(List<BackupFile> backupFiles)
-    {
-        Application app = getApplication();
-        PasswdSafeApp.scheduleTask(new VerifyRunnable(backupFiles, app), app);
-    }
-
     @Override
     protected void onCleared()
     {
         PasswdSafeUtil.dbginfo(TAG, "Cleared");
+        itsBackupFiles.removeObserver(itsVerifyObserver);
+    }
+
+    /**
+     * Verify a list of backup files in the background
+     */
+    @UiThread
+    private void verify(List<BackupFile> backupFiles)
+    {
+        Application app = getApplication();
+        PasswdSafeApp.scheduleTask(new VerifyRunnable(backupFiles, app), app);
     }
 
     /**

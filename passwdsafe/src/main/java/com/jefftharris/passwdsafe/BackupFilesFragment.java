@@ -43,8 +43,6 @@ public class BackupFilesFragment extends Fragment
         implements ConfirmPromptDialog.Listener, View.OnClickListener
 {
     // TODO: translations
-    // TODO: Add cancellation for backup file verify
-    // TODO: upgrade test for db conversion to room
 
     /**
      * Listener interface for owning activity
@@ -116,10 +114,7 @@ public class BackupFilesFragment extends Fragment
         itsBackupFilesAdapter = new BackupFilesAdapter();
         files.setAdapter(itsBackupFilesAdapter);
         itsBackupFiles.getBackupFiles().observe(
-                getViewLifecycleOwner(),
-                backupFiles -> {
-                    itsBackupFiles.verify(backupFiles);
-                    itsBackupFilesAdapter.submitList(backupFiles);});
+                getViewLifecycleOwner(), itsBackupFilesAdapter::submitList);
 
         itsKeyProvider = new SelectionKeyProvider();
         itsSelTracker = new SelectionTracker.Builder<>(
