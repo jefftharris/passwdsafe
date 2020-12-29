@@ -352,9 +352,11 @@ public class PasswdSafeNewFileFragment
                     break;
                 }
                 }
+                break;
             }
             case EMAIL:
-            case GENERIC_PROVIDER: {
+            case GENERIC_PROVIDER:
+            case BACKUP: {
                 break;
             }
             }
