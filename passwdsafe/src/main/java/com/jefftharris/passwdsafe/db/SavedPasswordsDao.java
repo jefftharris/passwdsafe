@@ -35,21 +35,23 @@ public abstract class SavedPasswordsDao
     @Transaction
     public SavedPassword get(PasswdFileUri fileUri, Context ctx)
     {
-        SavedPassword saved = queryByUri(fileUri.toString());
-        if (saved != null) {
-            return saved;
-        }
-
         switch (fileUri.getType()) {
         case GENERIC_PROVIDER: {
+            SavedPassword saved = queryByUri(fileUri.toString());
+            if (saved != null) {
+                return saved;
+            }
             Pair<String, String> provdisp = getProviderAndDisplay(fileUri, ctx);
             return queryByProvUriAndDispName(provdisp.first, provdisp.second);
         }
+        case BACKUP: {
+            BackupFile backup = fileUri.getBackupFile();
+            return (backup != null) ? queryByUri(backup.fileUri) : null;
+        }
         case FILE:
         case SYNC_PROVIDER:
-        case EMAIL:
-        case BACKUP: {
-            break;
+        case EMAIL: {
+            return queryByUri(fileUri.toString());
         }
         }
         return null;

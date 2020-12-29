@@ -43,9 +43,7 @@ public class BackupFilesFragment extends Fragment
         implements ConfirmPromptDialog.Listener, View.OnClickListener
 {
     // TODO: translations
-    // TODO: support delete of backup file from opened?
     // TODO: Add cancellation for backup file verify
-    // TODO: backup files and saved passwords?
     // TODO: upgrade test for db conversion to room
 
     /**

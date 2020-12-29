@@ -616,14 +616,14 @@ public class PasswdSafeOpenFileFragment
         switch (fileUri.getType()) {
         case FILE:
         case SYNC_PROVIDER:
-        case GENERIC_PROVIDER: {
+        case GENERIC_PROVIDER:
+        case BACKUP: {
             itsIsPasswordSaved =
                     itsSavedPasswordsMgr.isAvailable() &&
                     itsSavedPasswordsMgr.isSaved(getPasswdFileUri());
             break;
         }
-        case EMAIL:
-        case BACKUP: {
+        case EMAIL: {
             break;
         }
         }
