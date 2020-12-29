@@ -69,9 +69,12 @@ public class PasswdFileSaveHelper implements PwsStorage.SaveHelper
     @Override
     public void createBackup(Uri fileUri, String identifier)
     {
-        Context ctx = getContext();
-        BackupFilesDao backupFiles = PasswdSafeDb.get(ctx).accessBackupFiles();
-        backupFiles.insert(fileUri, identifier, ctx, ctx.getContentResolver());
+        BackupFilesDao backupFiles =
+                PasswdSafeDb.get(itsContext).accessBackupFiles();
+        SharedPreferences prefs = Preferences.getSharedPrefs(itsContext);
+        FileBackupPref backupPref = Preferences.getFileBackupPref(prefs);
+        backupFiles.insert(fileUri, identifier, backupPref, itsContext,
+                           itsContext.getContentResolver());
     }
 
 

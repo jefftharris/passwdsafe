@@ -17,6 +17,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.InputType;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -130,6 +131,15 @@ public final class GuiUtils
     public static void setVisible(View view, boolean visible)
     {
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /** Set whether a menu item is enabled */
+    public static void setMenuEnabled(MenuItem item, boolean enabled)
+    {
+        item.setEnabled(enabled);
+        Drawable d = item.getIcon().mutate();
+        d.setAlpha(enabled ? 255 : 138);
+        item.setIcon(d);
     }
 
     /**

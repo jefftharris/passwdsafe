@@ -25,6 +25,9 @@ import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public final class PasswdSafeApp extends Application
     implements SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -44,6 +47,8 @@ public final class PasswdSafeApp extends Application
     private PasswdPolicy itsDefaultPasswdPolicy = null;
     private NotificationMgr itsNotifyMgr;
     private boolean itsIsOpenDefault = true;
+    private final ExecutorService itsThreadExecutor =
+            Executors.newSingleThreadExecutor();
 
     private static final String TAG = "PasswdSafeApp";
 
@@ -140,7 +145,9 @@ public final class PasswdSafeApp extends Application
         }
         Uri.Builder builder = uri.buildUpon();
         builder.fragment("");
-        builder.query("");
+        if (uri.isHierarchical()) {
+            builder.query("");
+        }
         return builder.build();
     }
 
@@ -204,6 +211,15 @@ public final class PasswdSafeApp extends Application
         }
         builder.append(PasswdSafeUtil.getAppTitle(ctx));
         return builder.toString();
+    }
+
+    /**
+     * Schedule a background task
+     */
+    public static void scheduleTask(Runnable run, Context ctx)
+    {
+        PasswdSafeApp app = (PasswdSafeApp)ctx.getApplicationContext();
+        app.itsThreadExecutor.submit(run);
     }
 
     private static void setPasswordEncodingPref(SharedPreferences prefs)

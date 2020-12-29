@@ -17,6 +17,8 @@
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">At least</string>
     <string name="backup_creation_failed">Backup creation failed</string>
+    <string name="backup_file">Backup file</string>
+    <string name="backup_for_file_on">Backup for %1$s on %2$s</string>
     <string name="basic">Basic</string>
     <string name="canceled">Canceled</string>
     <string name="cannot_create_file">Cannot create file: %1$s</string>
@@ -65,6 +67,7 @@
     <string name="delete">Delete</string>
     <string name="delete_all">Delete All</string>
     <string name="delete_all_backups_p">Delete all backups?</string>
+    <string name="delete_backup_p">Delete backup?</string>
     <string name="delete_file">Delete File</string>
     <string name="delete_file_msg">Delete file \"%1$s\"?</string>
     <string name="delete_policy">Delete Policy</string>
@@ -206,6 +209,7 @@
     <string name="new_policy">New Policy</string>
     <string name="next">Next</string>
     <string name="no_alias_chosen">No alias chosen</string>
+    <string name="no_backup_file">No backup file</string>
     <string name="no_biometrics_registered">No biometric credentials are registered</string>
     <string name="no_file_permission">
         PasswdSafe requires file permissions.
@@ -221,6 +225,7 @@
     </string>
     <string name="no_groups">No Groups</string>
     <string name="no_shortcut_chosen">No shortcut chosen</string>
+    <string name="no_permission">No permission</string>
     <string name="no_policies">No Policies</string>
     <string name="no_records">No Records</string>
     <string name="no_records_open_file">No Records. Open a file first and then retry.</string>
@@ -309,6 +314,12 @@
     <string name="regular_expression_summary">Use a regular expression to search instead of a sub-string</string>
     <string name="remove">Remove</string>
     <string name="restore">Restore</string>
+    <string name="restore_failed_msg">Restore failed: %1$s</string>
+    <string name="restore_file_not_accessible">Restore file not accessible</string>
+    <string name="restore_file_not_found">Restore file not found</string>
+    <string name="restore_file_not_writable">Restore file not writable</string>
+    <string name="restore_file_p">Restore file %1$s from %2$s?</string>
+    <string name="restoring">Restoring…</string>
     <string name="save">Save</string>
     <string name="save_password">Save password</string>
     <string name="save_password_p">Save password?</string>

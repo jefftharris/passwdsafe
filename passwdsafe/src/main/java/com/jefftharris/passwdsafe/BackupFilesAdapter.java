@@ -7,6 +7,12 @@
  */
 package com.jefftharris.passwdsafe;
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.selection.ItemDetailsLookup;
@@ -14,14 +20,8 @@ import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.jefftharris.passwdsafe.db.BackupFile;
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 
 /**
@@ -31,8 +31,6 @@ public class BackupFilesAdapter
         extends ListAdapter<BackupFile, BackupFilesAdapter.ViewHolder>
 {
     private SelectionTracker<Long> itsSelTracker;
-
-    private static final String TAG = "BackupFilesAdapter";
 
     /**
      * Constructor
@@ -58,16 +56,14 @@ public class BackupFilesAdapter
     {
         BackupFile backup = getItem(position);
         boolean selected = (itsSelTracker != null) &&
-                           itsSelTracker.isSelected((long)position);
-        PasswdSafeUtil.dbginfo(TAG, "bind view pos %d, sel %b",
-                               position, selected);
+                           itsSelTracker.isSelected(backup.id);
         holder.bind(backup, selected);
     }
 
     @Override
     public long getItemId(int position)
     {
-        return position;
+        return getItem(position).id;
     }
 
     /**
@@ -128,8 +124,20 @@ public class BackupFilesAdapter
             itsText.setText(backup.title);
             itsText.requestLayout();
 
-            itsModDate.setText(
-                    Utils.formatDate(backup.date, itemView.getContext()));
+            Context ctx = itemView.getContext();
+            StringBuilder details = new StringBuilder(
+                    Utils.formatDate(backup.date, ctx));
+            if (!backup.hasFile) {
+                details.append(" (")
+                       .append(ctx.getString(R.string.no_backup_file))
+                       .append(")");
+            }
+            if (!backup.hasUriPerm) {
+                details.append(" (")
+                       .append(ctx.getString(R.string.no_permission))
+                       .append(")");
+            }
+            itsModDate.setText(details);
         }
 
         /**

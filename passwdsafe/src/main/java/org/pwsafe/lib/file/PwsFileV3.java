@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
 import java.util.Iterator;
 
 import javax.crypto.BadPaddingException;
@@ -211,28 +209,9 @@ public final class PwsFileV3 extends PwsFile
     }
 
 
-    /**
-     * Writes this file back to the filesystem.  If successful the modified
-     * flag is also reset on the file and all records.
-     *
-     * @throws IOException if the attempt fails.
-     */
     @Override
-    public void save() throws IOException
+    public void saveAs(PwsStorage saveStorage) throws IOException
     {
-        if (isReadOnly())
-            throw new IOException("File is read only");
-
-        // check for concurrent change
-        if (lastStorageChange != null) {
-            Date modDate = storage.getModifiedDate();
-            if ((modDate != null) && (modDate.after(lastStorageChange))) {
-                throw new ConcurrentModificationException(
-                        "Password store was changed independently - no save " +
-                        "possible!");
-            }
-        }
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         outStream = baos;
 
@@ -260,10 +239,7 @@ public final class PwsFileV3 extends PwsFile
 
             outStream.close();
 
-            if (storage.save(baos.toByteArray(), true)) {
-                modified = false;
-                lastStorageChange = storage.getModifiedDate();
-            } else {
+            if (!saveStorage.save(baos.toByteArray(), true)) {
                 throw new IOException("Unable to save file");
             }
         } catch (IOException e) {

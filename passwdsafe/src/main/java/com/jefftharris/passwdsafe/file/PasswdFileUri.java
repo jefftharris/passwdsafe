@@ -16,8 +16,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -26,10 +24,14 @@ import androidx.core.os.EnvironmentCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.jefftharris.passwdsafe.R;
+import com.jefftharris.passwdsafe.db.BackupFile;
+import com.jefftharris.passwdsafe.db.BackupFilesDao;
+import com.jefftharris.passwdsafe.db.PasswdSafeDb;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.util.Pair;
 
 import org.pwsafe.lib.exception.EndOfFileException;
@@ -44,6 +46,7 @@ import org.pwsafe.lib.file.PwsStorage;
 import org.pwsafe.lib.file.PwsStreamStorage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -51,13 +54,14 @@ import java.util.Objects;
 /**
  * The PasswdFileUri class encapsulates a URI to a password file
  */
-public class PasswdFileUri implements Parcelable
+public class PasswdFileUri
 {
     private static final String TAG = "PasswdFileUri";
 
     private final Uri itsUri;
     private final Type itsType;
     private final File itsFile;
+    private final BackupFile itsBackupFile;
     private String itsTitle = null;
     private Pair<Boolean, Integer> itsWritableInfo;
     private boolean itsIsDeletable;
@@ -69,33 +73,9 @@ public class PasswdFileUri implements Parcelable
         FILE,
         SYNC_PROVIDER,
         EMAIL,
-        GENERIC_PROVIDER
+        GENERIC_PROVIDER,
+        BACKUP
     }
-
-
-    /** Parcelable CREATOR instance */
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<PasswdFileUri> CREATOR =
-            new Parcelable.Creator<PasswdFileUri>()
-            {
-                /* (non-Javadoc)
-                 * @see android.os.Parcelable.Creator#createFromParcel(android.os.Parcel)
-                 */
-                @Override
-                public PasswdFileUri createFromParcel(Parcel source)
-                {
-                    return new PasswdFileUri(source);
-                }
-
-                /* (non-Javadoc)
-                 * @see android.os.Parcelable.Creator#newArray(int)
-                 */
-                @Override
-                public PasswdFileUri[] newArray(int size)
-                {
-                    return new PasswdFileUri[size];
-                }
-            };
 
     /**
      * Creator for a PasswdFileUri that can work with an AsyncTask
@@ -128,7 +108,8 @@ public class PasswdFileUri implements Parcelable
             }
             case FILE:
             case SYNC_PROVIDER:
-            case EMAIL: {
+            case EMAIL:
+            case BACKUP: {
                 break;
             }
             }
@@ -177,25 +158,33 @@ public class PasswdFileUri implements Parcelable
         switch (itsType) {
         case FILE: {
             itsFile = new File(Objects.requireNonNull(uri.getPath()));
+            itsBackupFile = null;
             resolveFileUri(ctx);
             return;
         }
         case GENERIC_PROVIDER: {
             itsFile = null;
+            itsBackupFile = null;
             resolveGenericProviderUri(ctx);
             return;
         }
         case SYNC_PROVIDER: {
             itsFile = null;
+            itsBackupFile = null;
             resolveSyncProviderUri(ctx);
             return;
         }
-        case EMAIL:
-        {
+        case BACKUP: {
+            itsFile = null;
+            itsBackupFile = resolveBackupUri(ctx);
+            return;
+        }
+        case EMAIL: {
             break;
         }
         }
         itsFile = null;
+        itsBackupFile = null;
         itsWritableInfo = new Pair<>(false, null);
         itsIsDeletable = false;
     }
@@ -207,21 +196,8 @@ public class PasswdFileUri implements Parcelable
         itsUri = Uri.fromFile(file);
         itsType = Type.FILE;
         itsFile = file;
+        itsBackupFile = null;
         resolveFileUri(ctx);
-    }
-
-
-    /** Constructor from parcelable data */
-    private PasswdFileUri(Parcel source)
-    {
-        String str;
-        itsUri = source.readParcelable(getClass().getClassLoader());
-        itsType = Type.valueOf(source.readString());
-        str = source.readString();
-        itsFile = (str != null) ? new File(str) : null;
-        itsTitle = source.readString();
-        str = source.readString();
-        itsSyncType = (str != null) ? ProviderType.valueOf(str) : null;
     }
 
 
@@ -254,6 +230,16 @@ public class PasswdFileUri implements Parcelable
             }
             return PwsFileFactory.loadFromStorage(storage, passwd);
         }
+        case BACKUP: {
+            if (itsBackupFile == null) {
+                throw new FileNotFoundException(itsUri.toString());
+            }
+            InputStream is =
+                    BackupFilesDao.openBackupFile(itsBackupFile, context);
+            return PwsFileFactory.loadFromStorage(
+                    new PwsStreamStorage(getIdentifier(context, false), is),
+                    passwd);
+        }
         }
         return null;
     }
@@ -264,32 +250,53 @@ public class PasswdFileUri implements Parcelable
             throws IOException
     {
         switch (itsType) {
-        case FILE: {
-            PwsFile file = PwsFileFactory.newFile();
-            file.setPassphrase(passwd);
-            file.setStorage(new PwsFileStorage(itsFile.getAbsolutePath(),
-                                               null));
-            return file;
-        }
-        case SYNC_PROVIDER: {
-            PwsFile file = PwsFileFactory.newFile();
-            file.setPassphrase(passwd);
-            String id = getIdentifier(context, false);
-            file.setStorage(new PasswdFileSyncStorage(itsUri, id, null));
-            return file;
-        }
+        case FILE:
+        case SYNC_PROVIDER:
         case GENERIC_PROVIDER: {
             PwsFile file = PwsFileFactory.newFile();
             file.setPassphrase(passwd);
-            String id = getIdentifier(context, false);
-            file.setStorage(new PasswdFileGenProviderStorage(itsUri, id, null));
+            file.setStorage(createStorageForSave(context));
             return file;
         }
-        case EMAIL: {
+        case EMAIL:
+        case BACKUP: {
             throw new IOException("no file");
         }
         }
         return null;
+    }
+
+
+    /**
+     * Create file storage to save to this URI
+     */
+    public @NonNull PwsStorage createStorageForSave(Context context)
+            throws IOException
+    {
+        switch (itsType) {
+        case FILE: {
+            return new PwsFileStorage(itsFile.getAbsolutePath(), null);
+        }
+        case SYNC_PROVIDER: {
+            return new PasswdFileSyncStorage(itsUri,
+                                             getIdentifier(context, false),
+                                             null);
+        }
+        case EMAIL:
+        case GENERIC_PROVIDER: {
+            String id = getIdentifier(context, false);
+            if (itsWritableInfo.first) {
+                return new PasswdFileGenProviderStorage(itsUri, id, null);
+            } else {
+                return new PwsStreamStorage(id, null);
+            }
+        }
+        case BACKUP: {
+            return new PwsStreamStorage(getIdentifier(context, false), null);
+        }
+        }
+
+        throw new IOException("Unknown URI type");
     }
 
 
@@ -311,7 +318,8 @@ public class PasswdFileUri implements Parcelable
             return null;
         }
         case EMAIL:
-        case GENERIC_PROVIDER: {
+        case GENERIC_PROVIDER:
+        case BACKUP: {
             break;
         }
         }
@@ -336,7 +344,8 @@ public class PasswdFileUri implements Parcelable
             return new PasswdFileUri(childUri, ctx);
         }
         case EMAIL:
-        case GENERIC_PROVIDER: {
+        case GENERIC_PROVIDER:
+        case BACKUP: {
             break;
         }
         }
@@ -371,7 +380,8 @@ public class PasswdFileUri implements Parcelable
             }
             break;
         }
-        case EMAIL: {
+        case EMAIL:
+        case BACKUP: {
             throw new IOException("Delete not supported for " + toString());
         }
         }
@@ -392,6 +402,9 @@ public class PasswdFileUri implements Parcelable
         case EMAIL:
         case GENERIC_PROVIDER: {
             return true;
+        }
+        case BACKUP: {
+            return (itsBackupFile != null);
         }
         }
         return false;
@@ -431,6 +444,12 @@ public class PasswdFileUri implements Parcelable
         return itsSyncType;
     }
 
+    /** Get the backup file */
+    public BackupFile getBackupFile()
+    {
+        return itsBackupFile;
+    }
+
     /**
      * Get the name of the URI's file if known
      */
@@ -443,6 +462,12 @@ public class PasswdFileUri implements Parcelable
         case SYNC_PROVIDER:
         case GENERIC_PROVIDER: {
             return itsTitle;
+        }
+        case BACKUP: {
+            if (itsBackupFile != null) {
+                return "backup - " + itsBackupFile.title;
+            }
+            return "backup.psafe3";
         }
         case EMAIL: {
             return null;
@@ -478,6 +503,12 @@ public class PasswdFileUri implements Parcelable
             }
             return context.getString(R.string.content_file);
         }
+        case BACKUP: {
+            if (itsTitle != null) {
+                return itsTitle;
+            }
+            return context.getString(R.string.backup_file);
+        }
         }
         return "";
     }
@@ -506,36 +537,16 @@ public class PasswdFileUri implements Parcelable
     }
 
 
-    /* (non-Javadoc)
-     * @see android.os.Parcelable#describeContents()
-     */
-    @Override
-    public int describeContents()
-    {
-        return 0;
-    }
-
-
-    /* (non-Javadoc)
-     * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
-        dest.writeParcelable(itsUri, flags);
-        dest.writeString(itsType.name());
-        dest.writeString((itsFile != null) ? itsFile.getAbsolutePath() : null);
-        dest.writeString(itsTitle);
-        dest.writeString((itsSyncType != null) ? itsSyncType.name() : null);
-    }
-
-
     /** Get the URI type */
     public static Type getUriType(Uri uri)
     {
         String scheme = uri.getScheme();
-        if ((scheme != null) && scheme.equals(ContentResolver.SCHEME_FILE)) {
-            return Type.FILE;
+        if (scheme != null) {
+            if (scheme.equals(ContentResolver.SCHEME_FILE)) {
+                return Type.FILE;
+            } else if (scheme.equals(BackupFile.URL_SCHEME)) {
+                return Type.BACKUP;
+            }
         }
         String auth = uri.getAuthority();
         if (PasswdSafeContract.AUTHORITY.equals(auth)) {
@@ -759,5 +770,27 @@ public class PasswdFileUri implements Parcelable
                 fileCursor.close();
             }
         }
+    }
+
+    /**
+     * Resolve fields for a backup file URI
+     */
+    private BackupFile resolveBackupUri(Context context)
+    {
+        itsWritableInfo = new Pair<>(false, null);
+        itsIsDeletable = false;
+
+        long backupFileId = Long.parseLong(itsUri.getSchemeSpecificPart());
+        BackupFilesDao backupFiles =
+                PasswdSafeDb.get(context).accessBackupFiles();
+        BackupFile backup = backupFiles.getBackupFile(backupFileId);
+        if (backup != null) {
+            itsTitle =
+                    context.getString(R.string.backup_for_file_on, backup.title,
+                                      Utils.formatDate(backup.date, context));
+        } else {
+            itsTitle = null;
+        }
+        return backup;
     }
 }

@@ -53,7 +53,11 @@ public abstract class PasswdSafeDb extends RoomDatabase
                        "AUTOINCREMENT NOT NULL, " +
                        BackupFile.COL_TITLE + " TEXT NOT NULL, " +
                        BackupFile.COL_FILE_URI + " TEXT NOT NULL, " +
-                       BackupFile.COL_DATE + " INTEGER NOT NULL" +
+                       BackupFile.COL_DATE + " INTEGER NOT NULL, " +
+                       BackupFile.COL_HAS_FILE +
+                       " INTEGER NOT NULL DEFAULT 1, " +
+                       BackupFile.COL_HAS_URI_PERM +
+                       " INTEGER NOT NULL DEFAULT 1" +
                        ");");
 
             db.execSQL("CREATE TABLE IF NOT EXISTS " + RecentFile.TABLE + " (" +
