@@ -237,6 +237,7 @@
     <string name="ok">OK</string>
     <string name="open_file">Open %s</string>
     <string name="open_file_title">Open File</string>
+    <string name="open_password_file">Open password file</string>
     <string name="option_not_selected">At least one option must be selected</string>
     <string name="password">Password</string>
     <string name="password_encoding">Password encoding</string>
