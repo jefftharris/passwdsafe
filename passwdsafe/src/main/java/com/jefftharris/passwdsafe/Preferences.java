@@ -51,6 +51,9 @@ public class Preferences
     public static final String PREF_FILE_BACKUP = "fileBackupPref";
     private static final FileBackupPref PREF_FILE_BACKUP_DEF =
         FileBackupPref.BACKUP_5;
+    private static final String PREF_FILE_BACKUP_SHOW_HELP =
+            "fileBackupShowHelpPref";
+    private static final boolean PREF_FILE_BACKUP_SHOW_HELP_DEF = true;
 
     public static final String PREF_FILE_CLOSE_CLEAR_CLIPBOARD =
         "fileCloseClearClipboardPref";
@@ -181,6 +184,24 @@ public class Preferences
         } catch (IllegalArgumentException e) {
             return PREF_FILE_BACKUP_DEF;
         }
+    }
+
+    /**
+     * Get the preference to show help for file backups
+     */
+    public static boolean getFileBackupShowHelpPref(SharedPreferences prefs)
+    {
+        return prefs.getBoolean(PREF_FILE_BACKUP_SHOW_HELP,
+                                PREF_FILE_BACKUP_SHOW_HELP_DEF);
+    }
+
+    /**
+     * Set the preference to show help for file backups
+     */
+    public static void setFileBackupShowHelpPref(boolean show,
+                                                 SharedPreferences prefs)
+    {
+        prefs.edit().putBoolean(PREF_FILE_BACKUP_SHOW_HELP, show).apply();
     }
 
     public static boolean getFileCloseClearClipboardPref(SharedPreferences prefs)

@@ -18,6 +18,15 @@
     <string name="at_least">At least</string>
     <string name="backup_creation_failed">Backup creation failed</string>
     <string name="backup_file">Backup file</string>
+    <string name="backup_file_help">
+        To restore a backup file, select and open it.  Then, select the restore
+        icon to replace the original file.  The restore may not be possible if
+        the app no longer has permission to write to the original file.  An
+        opened backup file may be shared to export it from the device.
+        \n
+        \nBackup files are stored in a private directory.  The files will be
+        deleted if the app is uninstalled or its data is cleared.
+    </string>
     <string name="backup_for_file_on">Backup for %1$s on %2$s</string>
     <string name="basic">Basic</string>
     <string name="canceled">Canceled</string>

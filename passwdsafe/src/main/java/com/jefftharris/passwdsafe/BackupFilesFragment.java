@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.ActionMode;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -38,13 +40,13 @@ import java.util.List;
  * A fragment for backup files
  */
 public class BackupFilesFragment extends Fragment
-    implements ConfirmPromptDialog.Listener
+        implements ConfirmPromptDialog.Listener, View.OnClickListener
 {
-    // TODO: label noting backups use temp files which can be cleared, etc.
-    // TODO: label noting to open file to restore/share
     // TODO: translations
     // TODO: support delete of backup file from opened?
     // TODO: Add cancellation for backup file verify
+    // TODO: backup files and saved passwords?
+    // TODO: upgrade test for db conversion to room
 
     /**
      * Listener interface for owning activity
@@ -73,6 +75,7 @@ public class BackupFilesFragment extends Fragment
     private SelectionKeyProvider itsKeyProvider;
     private SelectionTracker<Long> itsSelTracker;
     private ActionMode itsActionMode;
+    private View itsHelp;
 
     private static final String CONFIRM_ARG_ACTION = "action";
 
@@ -139,6 +142,14 @@ public class BackupFilesFragment extends Fragment
         itsBackupFilesAdapter.setSelectionTracker(itsSelTracker);
         itsSelTracker.addObserver(new SelectionObserver());
 
+        itsHelp = rootView.findViewById(R.id.help);
+        ImageButton helpCloseBtn = rootView.findViewById(R.id.help_close);
+        helpCloseBtn.setOnClickListener(this);
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(requireContext());
+        GuiUtils.setVisible(itsHelp,
+                            Preferences.getFileBackupShowHelpPref(prefs));
+
         return rootView;
     }
 
@@ -189,10 +200,24 @@ public class BackupFilesFragment extends Fragment
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
-        if (itemId == R.id.menu_delete_all) {
+        if (itemId == R.id.menu_help) {
+            GuiUtils.setVisible(itsHelp, true);
+        } else if (itemId == R.id.menu_delete_all) {
             showPrompt(ConfirmAction.DELETE_ALL);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        int id = v.getId();
+        if (id == R.id.help_close) {
+            SharedPreferences prefs =
+                    Preferences.getSharedPrefs(requireContext());
+            Preferences.setFileBackupShowHelpPref(false, prefs);
+            GuiUtils.setVisible(itsHelp, false);
+        }
     }
 
     @Override
