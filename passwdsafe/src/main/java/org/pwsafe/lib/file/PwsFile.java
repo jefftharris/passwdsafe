@@ -179,7 +179,7 @@ public abstract class PwsFile
      * the storage has been modified in memory and not yet written back to the
      * filesystem.
      */
-    protected boolean modified = false;
+    private boolean modified = false;
 
     /**
      * Flag indicating whether the storage may be changed or saved.

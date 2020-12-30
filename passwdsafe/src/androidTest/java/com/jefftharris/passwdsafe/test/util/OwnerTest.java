@@ -28,9 +28,9 @@ public class OwnerTest
     private Item itsOwnedItem;
     private Owner<Item> itsItem;
 
-    public static class Item implements Closeable
+    protected static class Item implements Closeable
     {
-        public int itsCloseCount = 0;
+        protected int itsCloseCount = 0;
 
         @Override
         public void close() throws IOException
