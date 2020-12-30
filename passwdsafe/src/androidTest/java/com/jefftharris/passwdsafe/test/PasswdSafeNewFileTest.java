@@ -210,13 +210,11 @@ public class PasswdSafeNewFileTest
      */
     private static void validateOpenedEmptyFile(boolean newFile)
     {
-        if (newFile) {
-            validateMenus(true);
-        } else {
+        if (!newFile) {
             validateMenus(false);
             setWritable(true);
-            validateMenus(true);
         }
+        validateMenus(true);
         setWritable(false);
         validateMenus(false);
 
