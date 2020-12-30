@@ -81,6 +81,7 @@ public interface PwsStorage
      * @param isV3 Is the file version 3
      * @return true if save was successful
      */
+    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "RedundantSuppression"})
     boolean save(byte[] data, boolean isV3);
 
     /**
