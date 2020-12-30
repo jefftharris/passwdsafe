@@ -51,7 +51,7 @@ android {
 
 
 dependencies {
-    def room_version = "2.2.5"
+    def room_version = "2.2.6"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
