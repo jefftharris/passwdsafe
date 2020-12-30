@@ -33,21 +33,21 @@ public class RecentFile
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = COL_ID)
-    public Long id;
+    public final Long id;
 
     /**
      * The title of the recent file
      */
     @ColumnInfo(name = COL_TITLE)
     @NonNull
-    public String title;
+    public final String title;
 
     /**
      * The file URI
      */
     @ColumnInfo(name = COL_URI)
     @NonNull
-    public String uri;
+    public final String uri;
 
     /**
      * The last access date

@@ -47,32 +47,32 @@ public class BackupFile
      */
     @ColumnInfo(name = COL_TITLE)
     @NonNull
-    public String title;
+    public final String title;
 
     /**
      * The URI of the file
      */
     @ColumnInfo(name = COL_FILE_URI)
     @NonNull
-    public String fileUri;
+    public final String fileUri;
 
     /**
      * Backup date
      */
     @ColumnInfo(name = COL_DATE)
-    public long date;
+    public final long date;
 
     /**
      * Is there a known file for the backup
      */
     @ColumnInfo(name = COL_HAS_FILE, defaultValue = "1")
-    public boolean hasFile = true;
+    public boolean hasFile;
 
     /**
      * Is there a known URI permission for the file
      */
     @ColumnInfo(name = COL_HAS_URI_PERM, defaultValue = "1")
-    public boolean hasUriPerm = true;
+    public boolean hasUriPerm;
 
     /**
      * Constructor from database entry
@@ -102,6 +102,8 @@ public class BackupFile
         this.title = title;
         this.fileUri = fileUri.toString();
         this.date = System.currentTimeMillis();
+        this.hasFile = true;
+        this.hasUriPerm = true;
     }
 
     /**

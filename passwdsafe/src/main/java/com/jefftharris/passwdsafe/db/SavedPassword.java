@@ -36,42 +36,42 @@ public class SavedPassword
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = COL_ID)
-    public Long id;
+    public final Long id;
 
     /**
      * URI of the file
      */
     @ColumnInfo(name = COL_URI)
     @NonNull
-    public String uri;
+    public final String uri;
 
     /**
      * The URI of the provider of the file (without path, etc.)
      */
     @ColumnInfo(name = COL_PROVIDER_URI)
     @NonNull
-    public String providerUri;
+    public final String providerUri;
 
     /**
      * Display name of the file in the provider
      */
     @ColumnInfo(name = COL_DISPLAY_NAME)
     @NonNull
-    public String displayName;
+    public final String displayName;
 
     /**
      * Encryption initialization vector
      */
     @ColumnInfo(name = COL_IV)
     @NonNull
-    public String iv;
+    public final String iv;
 
     /**
      * Encrypted password
      */
     @ColumnInfo(name = COL_ENC_PASSWD)
     @NonNull
-    public String encPasswd;
+    public final String encPasswd;
 
     /**
      * Constructor from database entry
