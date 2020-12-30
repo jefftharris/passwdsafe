@@ -233,11 +233,11 @@
         - Use the top-left menu to select different file locations.
     </string>
     <string name="no_groups">No Groups</string>
-    <string name="no_shortcut_chosen">No shortcut chosen</string>
     <string name="no_permission">No permission</string>
     <string name="no_policies">No Policies</string>
     <string name="no_records">No Records</string>
     <string name="no_records_open_file">No Records. Open a file first and then retry.</string>
+    <string name="no_shortcut_chosen">No shortcut chosen</string>
     <string name="none_paren">(None)</string>
     <string name="none_selected_open">None selected.  Open PasswdSafe to choose.</string>
     <string name="notes">Notes</string>
@@ -396,6 +396,11 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.0&lt;/b&gt; - Add file backups.  The backups are stored
+        locally in the app\'s private storage.  When copying or pasting a URL
+        or email address, prune extra tags such as alt.  If supported by the
+        device, start the file chooser at the root of the primary storage.
+        \n\n
         &lt;b&gt;6.20.2&lt;/b&gt; - Bug fixes
         \n\n
         &lt;b&gt;6.20.1&lt;/b&gt; - Update help for new file chooser

@@ -9,6 +9,19 @@
     <string name="app_desc">Bruk PasswordSafe-databaser på Android</string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">Minst</string>
+    <string name="backup_creation_failed">Klarte ikke opprette sikkerhetskopi</string>
+    <string name="backup_file">Sikkerhetskopifil</string>
+    <string name="backup_file_help">
+        For å gjenopprette en sikkerhetskopi, velg filen og så åpne den. Velg
+        deretter ikonet for gjenoppretting for å erstatte den originale filen.
+        Gjenopprettingen er kanskje ikke mulig hvis appen ikke lenger har lov
+        til å skrive til den originale filen. En åpen sikkerhetskopifil kan
+        bli delt ved å eksportere den fra enheten.
+        \n
+        \nSikkerhetskopifiler lagres i en privat mappe. Filene slettes når appen
+        avinstalleres eller dens data tømmes.
+    </string>
+    <string name="backup_for_file_on">Sikkerhetskopi for %1$s på %2$s</string>
     <string name="basic">Grunnleggende</string>
     <string name="canceled">Avbrutt</string>
     <string name="cannot_create_file">Klarte ikke opprette fil: %1$s</string>
@@ -50,6 +63,9 @@
     <string name="default_symbols">Standardsymboler</string>
     <string name="default_symbols_empty_pref">Bruk en tom innstilling for standardsymboler: %1$s</string>
     <string name="delete">Slett</string>
+    <string name="delete_all">Slett alle</string>
+    <string name="delete_all_backups_p">Slett alle sikkerhetskopier?</string>
+    <string name="delete_backup_p">Slett sikkerhetskopi?</string>
     <string name="delete_file">Slett fil</string>
     <string name="delete_file_msg">Slett fil \"%1$s\"?</string>
     <string name="delete_policy">Slett regler</string>
@@ -141,7 +157,7 @@
     <string name="hidden_password_shortcut">***** (fra snarvei, trykk for å vise)</string>
     <string name="hide_password">Skjul passord</string>
     <string name="hide_passwords">Skjul passord</string>
-    <string name="history">Historie</string>
+    <string name="history">Slett sikkerhetskopi?Historie</string>
     <string name="history_header">HISTORIE</string>
     <string name="home">Hjem</string>
     <string name="interval">Intervall</string>
@@ -187,6 +203,7 @@
     <string name="new_policy">Nye relger</string>
     <string name="next">Neste</string>
     <string name="no_alias_chosen">Ingen alias valgt</string>
+    <string name="no_backup_file">Ingen sikkerhetskopifil</string>
     <string name="no_biometrics_registered">Ingen biometrisk legitimasjon er registrert</string>
     <string name="no_file_permission">PasswdSafe krever filtilgang. \n\nTrykk reload for å bli spurt på nytt. Hvis du ikke blir spurt, trykk app-innstillinger og aktiver lagringstilgang.</string>
     <string name="no_files_select_to_open">
@@ -198,10 +215,11 @@
         - Bruk menyen øverst til venstre for å velge forskjellig filplasseringer.
     </string>
     <string name="no_groups">Ingen grupper</string>
-    <string name="no_shortcut_chosen">Ingen snarvei valgt</string>
+    <string name="no_permission">Ingen rettighet</string>
     <string name="no_policies">Ingen regler</string>
     <string name="no_records">Ingen oppføringer</string>
     <string name="no_records_open_file">Ingen oppføringer. Åpne en fil først og prøv på nytt.</string>
+    <string name="no_shortcut_chosen">Ingen snarvei valgt</string>
     <string name="none_paren">(Ingen)</string>
     <string name="none_selected_open">Ingen valgt. Åpne PasswdSafe for å velge.</string>
     <string name="notes">Notater</string>
@@ -210,6 +228,7 @@
     <string name="ok">OK</string>
     <string name="open_file">Åpne %s</string>
     <string name="open_file_title">Åpne fil</string>
+    <string name="open_password_file">Åpne passordfil</string>
     <string name="option_not_selected">Minst en mulighet må være valgt</string>
     <string name="password">Passord</string>
     <string name="password_encoding">Passordkoding</string>
@@ -269,11 +288,18 @@
     <string name="read_only_provider">Tilbyderen av filen støtter ikke skriving eller har ikke gitt skrivetillatelse</string>
     <string name="read_only_sdcard">Filen er lokalisert på et SD-kort som ikke er skrivbart. Flytt filen til det interne lagret eller bruk den nye filvelgeren som kan aktiveres i filens innstillinger.</string>
     <string name="read_write">Skrivbart</string>
+    <string name="recurring">Gjentagende</string>
     <string name="references_label">REFERANSER</string>
     <string name="regular_expression">Regulært uttrykk</string>
     <string name="regular_expression_summary">Bruk et regulært uttrykk for å søke istedenfor en delstreng</string>
     <string name="remove">Fjern</string>
-    <string name="recurring">Gjentagende</string>
+    <string name="restore">Gjenopprett</string>
+    <string name="restore_failed_msg">Klarte ikke gjenopprette: %1$s</string>
+    <string name="restore_file_not_accessible">Gjenopprettingsfil ikke tilgjengelig</string>
+    <string name="restore_file_not_found">Gjenopprettingsfil ikke funnet</string>
+    <string name="restore_file_not_writable">Gjenopprettingsfil ikke skrivbar</string>
+    <string name="restore_file_p">Gjenopprett fil %1$s fra %2$s?</string>
+    <string name="restoring">Gjenoppretter…</string>
     <string name="save">Lagre</string>
     <string name="save_password">Lagre passord</string>
     <string name="save_password_p">Lagre passord?</string>
@@ -282,6 +308,10 @@
         Passordet blir kryptert med en AES-256 nøkkel som er beskyttet av en
         biometrisk scan. Den biometriske legitimasjonen er kanskje ikke like
         sikker som selve passordet.
+        \n
+        \nDet lagrede passordet kan forsvinne under en oppgradering eller hvis
+        fingeravtrykket endres. Husk passordet for å forsikre deg at filen
+        fortsatt kan brukes.
     </string>
     <string name="saving_file">Lagrer %s …</string>
     <string name="search">Søk</string>
@@ -337,6 +367,12 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.0&lt;/b&gt; - La til filsikkerhetskopiering.
+        Sikkerhetskopiene lagres lokalt i appens private lager. Når du kopierer
+        eller lagrer en nett-eller epostadresse, så fjernes ekstra tagger som
+        alt. Hvis støttet av enheten, så startes filvelgeren i roten av
+        hovedlageret.
+        \n\n
         &lt;b&gt;6.20.2&lt;/b&gt; - Feilrettinger
         \n\n
         &lt;b&gt;6.20.1&lt;/b&gt; - Oppdaterte hjelp for den nye filvelgeren.

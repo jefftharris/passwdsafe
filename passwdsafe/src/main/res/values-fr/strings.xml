@@ -16,6 +16,21 @@
     <string name="app_desc">Accès bases de données PasswordSafe sur Android </string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">Au moins</string>
+    <string name="backup_creation_failed">Création du fichier de sauvegarde a échoué</string>
+    <string name="backup_file">Fichier de sauvegarde</string>
+    <string name="backup_file_help">
+        Pour restaurer un fichier de sauvegarde, sélectionnez et ouvrez le.
+        Puis sélectionner l\'icône de restauration pour remplacer le fichier
+        original. La restauration peut ne pas être possible si l\'application
+        n\'as plus les autorisations d\'écriture sur le fichier original. Un
+        fichier de sauvegarde ouvert peut être partagé pour exportation hors de
+        l\'appareil.
+        \n
+        \nLes fichiers de sauvegardes sont stockés dans un répertoire privé.
+        Les fichiers seront effacés si l\'application est désinstallée ou si
+        ses données sont réinitialisées.
+    </string>
+    <string name="backup_for_file_on">Sauvegarde pour %1$s le %2$s</string>
     <string name="basic">"Général"</string>
     <string name="canceled">Annulé</string>
     <string name="cannot_create_file">Impossible de créer le fichier: %1$s</string>
@@ -63,6 +78,9 @@
     <string name="default_symbols">Symboles par défaut</string>
     <string name="default_symbols_empty_pref">Utilisez une préférence vide pour les symboles par défaut: %1$s</string>
     <string name="delete">Supprimer</string>
+    <string name="delete_all">Effacer tout</string>
+    <string name="delete_all_backups_p">Effacer toutes les sauvegarde?</string>
+    <string name="delete_backup_p">Effacer la sauvegarde?</string>
     <string name="delete_file">Supprimer base de données</string>
     <string name="delete_file_msg">Supprimer le fichier \"%1$s\"?</string>
     <string name="delete_policy">Supprimer la stratégie</string>
@@ -207,6 +225,7 @@
     <string name="new_policy">Nouvelle stratégie</string>
     <string name="next">Suivant</string>
     <string name="no_alias_chosen">Aucun alias choisi</string>
+    <string name="no_backup_file">Pas de fichier backup</string>
     <string name="no_biometrics_registered">Pas d\'identification biométrique enregistré</string>
     <string name="no_file_permission">
         PasswdSafe a besoin des droits sur le fichier.
@@ -225,10 +244,11 @@
         différent de fichier.
     </string>
     <string name="no_groups">Aucun Groupes</string>
-    <string name="no_shortcut_chosen">Aucun raccourci choisi</string>
+    <string name="no_permission">Pas de permission</string>
     <string name="no_policies">Aucune stratégie</string>
     <string name="no_records">Aucune entrée</string>
     <string name="no_records_open_file">Aucune entrée. Ouvrez un premier fichier, puis réessayez.</string>
+    <string name="no_shortcut_chosen">Aucun raccourci choisi</string>
     <string name="none_paren">"(Aucun)"</string>
     <string name="none_selected_open">Aucun sélectionné. Ouvrez PasswdSafe pour choisir.</string>
     <string name="notes">Notes</string>
@@ -237,6 +257,7 @@
     <string name="ok">OK</string>
     <string name="open_file">Ouvrir %s</string>
     <string name="open_file_title">Ouvrir un fichier</string>
+    <string name="open_password_file">Ouvrir le ficher de mots de passes</string>
     <string name="option_not_selected">Au moins une option doit être sélectionnée</string>
     <string name="password">Mot de passe</string>
     <string name="password_encoding">Encodage mot de passe</string>
@@ -308,11 +329,18 @@
         fichier qui peut être activé dans les préférences.
     </string>
     <string name="read_write">Lecture-écriture</string>
+    <string name="recurring">Périodique</string>
     <string name="references_label">RÉFÉRENCES</string>
     <string name="regular_expression">Expression régulière</string>
     <string name="regular_expression_summary">Utiliser une expression régulière pour la recherche au lieu d\'une sous-chaîne</string>
     <string name="remove">Supprimer</string>
-    <string name="recurring">Périodique</string>
+    <string name="restore">Restaurer</string>
+    <string name="restore_failed_msg">Restauration a échouée: %1$s</string>
+    <string name="restore_file_not_accessible">Fichier de restauration pas accessible</string>
+    <string name="restore_file_not_found">Fichier de restauration pas trouvé</string>
+    <string name="restore_file_not_writable">Fichier de restauration n\'est pas inscriptible</string>
+    <string name="restore_file_p">Restaurer le fichier %1$s depuis %2$s?</string>
+    <string name="restoring">Restauration en cours…</string>
     <string name="save">Enregistrer</string>
     <string name="save_password">Enregistrer mot de passe</string>
     <string name="save_password_p">Enregistrer mot de passe?</string>
@@ -321,6 +349,10 @@
         localement sous forme chiffré avec une clé AES-256 protégée par le scan
         biométrique. L\'identification biométrique peut ne pas être aussi
         sécurisé que le fichier lui même.
+        \n
+        \nLe mots de passe enregistré peut être perdu lors d\'une mise à jour
+        où changement d\'empreinte digitale. Souvenez vous bien du mots de
+        passe pour vous assurer que le fichier reste déchiffrable.
     </string>
     <string name="saving_file">Enregistrement %s…</string>
     <string name="search">Rechercher</string>
@@ -378,6 +410,12 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.0&lt;/b&gt; - Ajout de fichier de sauvegarde. Les
+        sauvegardes sont stockées localement dans l\'espace de stockage privé
+        de l\'application. Lors d\'une copie ou coller d\'une URL ou email,
+        nettoyage de certains tags comme les alt. Si supporté par l\'appareil,
+        lance le sélectionneur de fichier depuis la racine du stockage principal.
+        \n\n
         &lt;b&gt;6.20.2&lt;/b&gt; - Correction de bugs
         \n\n
         &lt;b&gt;6.20.1&lt;/b&gt; - Mise à jour de l\'aide pour le sélectionneur

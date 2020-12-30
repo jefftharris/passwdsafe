@@ -42,8 +42,6 @@ import java.util.List;
 public class BackupFilesFragment extends Fragment
         implements ConfirmPromptDialog.Listener, View.OnClickListener
 {
-    // TODO: translations
-
     /**
      * Listener interface for owning activity
      */

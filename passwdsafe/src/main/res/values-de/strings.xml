@@ -16,6 +16,20 @@
     <string name="app_desc">Programm zum Zugriff und Bearbeiten von PasswordSafe-Datenbanken für Android</string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">Mind.</string>
+    <string name="backup_creation_failed">Backup fehlgeschlagen</string>
+    <string name="backup_file">Backupdatei</string>
+    <string name="backup_file_help">
+        Um eine Backupdatei wiederherzustellen, wählen Sie sie auf und öffnen
+        sie. Danach wählen Sie das Wiederherstellen-Icon um die Originaldatei
+        zu ersetzen. Die Wiederherstellung kann nicht möglich sein, wenn die
+        Berechtigung für die Originaldatei fehlt. Eine geöffnete Backupdatei
+        kann vom Gerät exportiert werden.
+        \n
+        \nBackupdateien sind in einem privaten Verzeichnis gespeichert Die
+        Dateien werden gelöscht, wenn die App deinstalliert wird oder die Daten
+        gelöscht werden.
+    </string>
+    <string name="backup_for_file_on">Backup für %1$s vom %2$s</string>
     <string name="basic">Allgemein</string>
     <string name="canceled">Abgebrochen</string>
     <string name="cannot_create_file">Datei kann nicht erstellt werden: %1$s</string>
@@ -63,6 +77,9 @@
     <string name="default_symbols">Standardsymbole</string>
     <string name="default_symbols_empty_pref">Leere Voreinstellung für Standardsymbole verwenden: %1$s</string>
     <string name="delete">Löschen</string>
+    <string name="delete_all">Alle löschen</string>
+    <string name="delete_all_backups_p">Alle Backups löschen?</string>
+    <string name="delete_backup_p">Backup löschen?</string>
     <string name="delete_file">Datei löschen</string>
     <string name="delete_file_msg">Datei \"%1$s\" löschen?</string>
     <string name="delete_policy">Regel löschen</string>
@@ -204,6 +221,7 @@
     <string name="new_policy">Neue Regel</string>
     <string name="next">Weiter</string>
     <string name="no_alias_chosen">Kein Alias ausgewählt</string>
+    <string name="no_backup_file">Keine Backupdatei</string>
     <string name="no_biometrics_registered">Es ist kein biometrisches Merkmal registriert</string>
     <string name="no_file_permission">
         PasswdSafe benötigt Speicherberechtigung
@@ -220,10 +238,11 @@
         - Nutze das Menü oben links um einen anderen Dateiort auszuwählen.
     </string>
     <string name="no_groups">Keine Gruppen</string>
-    <string name="no_shortcut_chosen">Keine Verknüpfung ausgewählt</string>
+    <string name="no_permission">Keine Berechtigung</string>
     <string name="no_policies">Keine Regeln</string>
     <string name="no_records">Keine Einträge</string>
     <string name="no_records_open_file">Keine Einträge. Öffne eine Datei und probier es nochmal.</string>
+    <string name="no_shortcut_chosen">Keine Verknüpfung ausgewählt</string>
     <string name="none_paren">(Keine)</string>
     <string name="none_selected_open">Nichts gewählt. Öffne eine Datei in PasswdSafe.</string>
     <string name="notes">Notizen</string>
@@ -232,6 +251,7 @@
     <string name="ok">OK</string>
     <string name="open_file">%s öffnen</string>
     <string name="open_file_title">Datei öffnen</string>
+    <string name="open_password_file">Passwortdatei öffnen</string>
     <string name="option_not_selected">Mindestens eine Option auswählen</string>
     <string name="password">Passwort</string>
     <string name="password_encoding">Passwortkodierung</string>
@@ -303,11 +323,18 @@
         kann.
      </string>
     <string name="read_write">Lesen und Schreiben</string>
+    <string name="recurring">Wiederkehrend</string>
     <string name="references_label">VERWEISE</string>
     <string name="regular_expression">Reguläre Ausdrücke</string>
     <string name="regular_expression_summary">Suche mit regulären Ausdrücken statt Wortteilen.</string>
     <string name="remove">Entfernen</string>
-    <string name="recurring">Wiederkehrend</string>
+    <string name="restore">Wiederherstellen</string>
+    <string name="restore_failed_msg">Wiederherstellen fehlgeschlagen: %1$s</string>
+    <string name="restore_file_not_accessible">Wiederherstellungs-Datei ist nicht erreichbar</string>
+    <string name="restore_file_not_found">Wiederherstellungs-Datei nicht gefunden</string>
+    <string name="restore_file_not_writable">Wiederherstellungs-Datei schreibgeschützt</string>
+    <string name="restore_file_p">Wiederherstellungs-Datei %1$s vom %2$s</string>
+    <string name="restoring">Wiederherstellen…</string>
     <string name="save">Speichern</string>
     <string name="save_password">Passwort speichern</string>
     <string name="save_password_p">Passwort speichern?</string>
@@ -316,6 +343,10 @@
         Passwort ist mit einem AES-256-Schlüssel verschlüselt und durch ein
         biometrisches Merkmal geschützt. Biometrischen Merkmale können
         unsicherer als ein Dateipasswort sein.
+        \n
+        \nDas gespeicherte Passwort kann bei Update oder Fingerabdruckwechsel
+        verloren gehen. Bitte behalten Sie das Passwort im Gedächnis um
+        weiterhin Zugriff auf die Datei zu haben.
     </string>
     <string name="saving_file">Speichere %s …</string>
     <string name="search">Suchen</string>
@@ -371,6 +402,12 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.0&lt;/b&gt; - Dateibackups hinzugefügt. Die Backups werden
+        lokal im privaten Verzeichnis der App gespeichert. Wenn URL oder
+        E-Mail-Adressen kopiert werden, werden unnötige Tags entfernt. Wenn das
+        Gerät es unterstützt öffnet die Dateiauswahl im höchstes Verzeichnis des
+        primären Speichers.
+        \n\n
         &lt;b&gt;6.20.2&lt;/b&gt; - Fehlerbehebungen
         \n\n
         &lt;b&gt;6.20.1&lt;/b&gt; - Hilfe für neue Dateiauswahl verbessert.
