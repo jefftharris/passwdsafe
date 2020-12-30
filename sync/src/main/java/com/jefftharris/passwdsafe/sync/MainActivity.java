@@ -41,6 +41,7 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.sync.dropbox.DropboxFilesActivity;
+import com.jefftharris.passwdsafe.sync.lib.AbstractSyncedFilesActivity;
 import com.jefftharris.passwdsafe.sync.lib.AccountSyncFreqUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity
     private GDriveState itsGDriveState = GDriveState.OK;
     private final SparseArray<Uri> itsAccountLinkUris = new SparseArray<>();
     private boolean itsDropboxPendingAcctLink = false;
-    private NewAccountTask itsNewAccountTask = null;
+    private NewAccountTask<?> itsNewAccountTask = null;
     private final List<AccountUpdateTask> itsUpdateTasks = new ArrayList<>();
     private boolean itsIsRunning = false;
 
@@ -552,7 +553,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void handleProviderChooseFiles(ProviderType type, Uri providerUri)
     {
-        Class chooseActivity = null;
+        Class<? extends AbstractSyncedFilesActivity> chooseActivity = null;
         String uriKey = null;
         switch (type) {
         case DROPBOX: {
