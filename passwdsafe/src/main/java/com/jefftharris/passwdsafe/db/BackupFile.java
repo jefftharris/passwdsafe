@@ -122,6 +122,6 @@ public class BackupFile
         BackupFile backup = (BackupFile)obj;
         return (id == backup.id) && title.equals(backup.title) &&
                fileUri.equals(backup.fileUri) && (date == backup.date) &&
-               (hasFile = backup.hasFile) && (hasUriPerm = backup.hasUriPerm);
+               (hasFile == backup.hasFile) && (hasUriPerm == backup.hasUriPerm);
     }
 }
