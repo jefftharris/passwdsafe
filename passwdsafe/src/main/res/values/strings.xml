@@ -338,6 +338,9 @@
         The password is encrypted with an AES-256 key that is protected by a
         biometrics scan.  The biometrics credential may not be as secure as the
         file password itself.
+        \n
+        \nThe saved password may be lost during an upgrade or fingerprint
+        change.  Remember the password to ensure the file remains openable.
     </string>
     <string name="saving_file">Saving %s…</string>
     <string name="search">Search</string>

@@ -63,7 +63,7 @@ public class Preferences
     private static final boolean PREF_FILE_OPEN_YUBIKEY_DEF = false;
 
     private static final String PREF_FILE_SAVED_PASSWORD_CONFIRM =
-            "fileSavedPasswordConfirm";
+            "fileSavedPasswordConfirm2";
     private static final boolean PREF_FILE_SAVED_PASSWORD_CONFIRM_DEF = false;
 
     public static final String PREF_DEF_FILE = "defFilePref";
@@ -243,7 +243,10 @@ public class Preferences
      */
     public static void setFileSavedPasswordConfirmed(SharedPreferences prefs)
     {
-        prefs.edit().putBoolean(PREF_FILE_SAVED_PASSWORD_CONFIRM, true).apply();
+        prefs.edit().putBoolean(PREF_FILE_SAVED_PASSWORD_CONFIRM, true)
+             // Remove old pref
+             .remove("fileSavedPasswordConfirm")
+             .apply();
     }
 
     public static File getFileDirPref(SharedPreferences prefs)
