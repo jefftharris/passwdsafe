@@ -18,6 +18,8 @@
 #include <cstring>
 #include "sha256.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCDFAInspection"
 inline static uint32_t load32H(unsigned const char* y)
 {
     return (static_cast<uint32_t>(y[0] & 0xffU)<<24U) |
@@ -25,6 +27,7 @@ inline static uint32_t load32H(unsigned const char* y)
            (static_cast<uint32_t>(y[2] & 0xffU)<<8U)  |
            (static_cast<uint32_t>(y[3] & 0xffU));
 }
+#pragma clang diagnostic pop
 
 inline static void store32H(uint32_t x, unsigned char* y)
 {
