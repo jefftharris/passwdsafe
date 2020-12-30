@@ -15,7 +15,7 @@ import java.util.List;
  */
 public final class ManagedTasks
 {
-    private List<ManagedTask> itsTasks = new ArrayList<>();
+    private List<ManagedTask<?,?>> itsTasks = new ArrayList<>();
 
     /**
      * Constructor
@@ -27,7 +27,7 @@ public final class ManagedTasks
     /**
      * Start a managed task
      */
-    public void startTask(ManagedTask task)
+    public void startTask(ManagedTask<?,?> task)
     {
         itsTasks.add(task);
         task.start();
@@ -38,9 +38,9 @@ public final class ManagedTasks
      */
     public void cancelTasks()
     {
-        List<ManagedTask> tasks = itsTasks;
+        List<ManagedTask<?,?>> tasks = itsTasks;
         itsTasks = new ArrayList<>();
-        for (ManagedTask task: tasks) {
+        for (ManagedTask<?,?> task: tasks) {
             task.cancel();
         }
     }
@@ -48,7 +48,7 @@ public final class ManagedTasks
     /**
      * Update the tasks when one is finished
      */
-    public void taskFinished(ManagedTask task)
+    public void taskFinished(ManagedTask<?,?> task)
     {
         itsTasks.remove(task);
     }

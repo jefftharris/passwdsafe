@@ -63,7 +63,7 @@ public class TestUtils
                 if (!(view instanceof AdapterView)) {
                     return false;
                 }
-                Adapter adapter = ((AdapterView) view).getAdapter();
+                Adapter adapter = ((AdapterView<?>) view).getAdapter();
                 for (int i = 0; i < adapter.getCount(); i++) {
                     if (dataMatcher.matches(adapter.getItem(i))) {
                         return true;

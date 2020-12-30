@@ -106,11 +106,12 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     }
 
     @Override
-    public NewAccountTask finishAccountLink(FragmentActivity activity,
-                                            int activityRequestCode,
-                                            int activityResult,
-                                            Intent activityData,
-                                            Uri providerAcctUri)
+    public NewAccountTask<? extends AbstractSyncTimerProvider>
+    finishAccountLink(FragmentActivity activity,
+                      int activityRequestCode,
+                      int activityResult,
+                      Intent activityData,
+                      Uri providerAcctUri)
     {
         String accountName = null;
         if ((activityResult == Activity.RESULT_OK) &&

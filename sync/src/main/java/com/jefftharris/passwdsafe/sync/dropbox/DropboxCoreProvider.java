@@ -112,11 +112,12 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
 
 
     @Override
-    public NewAccountTask finishAccountLink(FragmentActivity activity,
-                                            int activityRequestCode,
-                                            int activityResult,
-                                            Intent activityData,
-                                            Uri providerAcctUri)
+    public NewAccountTask<? extends AbstractSyncTimerProvider>
+    finishAccountLink(FragmentActivity activity,
+                      int activityRequestCode,
+                      int activityResult,
+                      Intent activityData,
+                      Uri providerAcctUri)
     {
         String authToken = Auth.getOAuth2Token();
         if (authToken == null) {

@@ -109,7 +109,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
     /**
      * Start a managed task
      */
-    protected final void startTask(ManagedTask task)
+    protected final void startTask(ManagedTask<?,?> task)
     {
         itsTasks.startTask(task);
     }
@@ -117,7 +117,7 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
     /**
      * Update the tasks when one is finished.  Called from BackgroundTask.
      */
-    protected final void taskFinished(ManagedTask task)
+    protected final void taskFinished(ManagedTask<?,?> task)
     {
         itsTasks.taskFinished(task);
     }

@@ -7,13 +7,6 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -21,6 +14,13 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.view.inputmethod.InputMethodManager;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  *  The ApiCompatKitkat class contains helper compatibility methods for Kitkat
@@ -57,13 +57,13 @@ public final class ApiCompatKitkat
 
             ClassLoader loader = Objects.requireNonNull(
                     ApiCompatKitkat.class.getClassLoader());
-            Class docContractClass =
+            Class<?> docContractClass =
                     loader.loadClass("android.provider.DocumentsContract");
 
             itsDeleteDocumentMeth = docContractClass.getMethod(
                     "deleteDocument", ContentResolver.class, Uri.class);
 
-            Class uriPermissionsClass =
+            Class<?> uriPermissionsClass =
                     loader.loadClass("android.content.UriPermission");
             itsUriPermissionsGetUriMeth =
                     uriPermissionsClass.getMethod("getUri");

@@ -43,7 +43,7 @@ public final class RecyclerViewAssertions
             }
 
             RecyclerView rv = (RecyclerView)view;
-            RecyclerView.Adapter adapter = rv.getAdapter();
+            RecyclerView.Adapter<?> adapter = rv.getAdapter();
             Assert.assertNotNull(adapter);
             assertThat(adapter.getItemCount(), matcher);
         };

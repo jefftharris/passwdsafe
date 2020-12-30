@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -96,7 +97,7 @@ public final class NotifUtils
                                  String tag,
                                  Context ctx)
     {
-        Class activityClass = null;
+        Class<? extends Activity> activityClass = null;
         switch (type) {
         case OWNCLOUD_CERT_TRUSTED:
         case DROPBOX_MIGRATED:

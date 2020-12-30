@@ -118,11 +118,12 @@ public class BoxProvider extends AbstractSyncTimerProvider
     }
 
     @Override
-    public NewAccountTask finishAccountLink(FragmentActivity activity,
-                                            int activityRequestCode,
-                                            int activityResult,
-                                            Intent activityData,
-                                            Uri acctProviderUri)
+    public NewAccountTask<? extends AbstractSyncTimerProvider>
+    finishAccountLink(FragmentActivity activity,
+                      int activityRequestCode,
+                      int activityResult,
+                      Intent activityData,
+                      Uri acctProviderUri)
     {
         if (!isAccountAuthorized()) {
             Log.e(TAG, "finishAccountLink auth failed");

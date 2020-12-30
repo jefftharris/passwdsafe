@@ -124,12 +124,12 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
      * Finish the process of linking to an account
      */
     @Override
-    public synchronized NewAccountTask finishAccountLink(
-            FragmentActivity activity,
-            int activityRequestCode,
-            int activityResult,
-            Intent activityData,
-            Uri providerAcctUri)
+    public synchronized NewAccountTask<? extends AbstractSyncTimerProvider>
+    finishAccountLink(FragmentActivity activity,
+                      int activityRequestCode,
+                      int activityResult,
+                      Intent activityData,
+                      Uri providerAcctUri)
     {
         try {
             itsClientApp.handleInteractiveRequestRedirect(

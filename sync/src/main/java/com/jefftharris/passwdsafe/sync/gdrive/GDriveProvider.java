@@ -140,11 +140,12 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     }
 
     @Override
-    public NewAccountTask finishAccountLink(FragmentActivity activity,
-                                            int activityRequestCode,
-                                            int activityResult,
-                                            Intent activityData,
-                                            Uri acctProviderUri)
+    public NewAccountTask<? extends AbstractSyncTimerProvider>
+    finishAccountLink(FragmentActivity activity,
+                      int activityRequestCode,
+                      int activityResult,
+                      Intent activityData,
+                      Uri acctProviderUri)
     {
         if (activityResult != Activity.RESULT_OK) {
             return null;
