@@ -105,7 +105,7 @@ public class BackupFilesModel extends AndroidViewModel
          * Constructor
          */
         @UiThread
-        public VerifyRunnable(List<BackupFile> backupFiles, Application app)
+        protected VerifyRunnable(List<BackupFile> backupFiles, Application app)
         {
             itsBackupFiles = backupFiles;
             itsApp = app;

@@ -393,7 +393,7 @@ public class BackupFilesFragment extends Fragment
         /**
          * Constructor
          */
-        public SelectionKeyProvider()
+        protected SelectionKeyProvider()
         {
             super(ItemKeyProvider.SCOPE_CACHED);
         }

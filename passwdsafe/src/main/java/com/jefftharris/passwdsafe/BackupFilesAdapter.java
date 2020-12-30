@@ -107,7 +107,7 @@ public class BackupFilesAdapter
         /**
          * Constructor
          */
-        public ViewHolder(View view)
+        protected ViewHolder(View view)
         {
             super(view);
             itsText = view.findViewById(R.id.text);
@@ -117,7 +117,7 @@ public class BackupFilesAdapter
         /**
          * Bind a backup file to the view
          */
-        public void bind(BackupFile backup, boolean selected)
+        protected void bind(BackupFile backup, boolean selected)
         {
             itemView.setActivated(selected);
 
@@ -143,7 +143,7 @@ public class BackupFilesAdapter
         /**
          * Create the item details for tracking selection
          */
-        public ItemDetailsLookup.ItemDetails<Long> createItemDetails()
+        protected ItemDetailsLookup.ItemDetails<Long> createItemDetails()
         {
             return new ItemDetailsLookup.ItemDetails<Long>() {
 
