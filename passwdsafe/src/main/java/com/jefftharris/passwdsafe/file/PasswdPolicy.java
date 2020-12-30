@@ -56,7 +56,6 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     /**
      * Parcelable CREATOR instance
      */
-    @SuppressWarnings("unused")
     public static final Parcelable.Creator<PasswdPolicy> CREATOR =
             new Parcelable.Creator<PasswdPolicy>()
             {

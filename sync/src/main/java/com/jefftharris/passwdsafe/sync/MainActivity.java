@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity
 
 
     /** Button onClick handler to launch PasswdSafe */
-    @SuppressWarnings({"UnusedParameters", "unused"})
+    @SuppressWarnings({"UnusedParameters"})
     public void onLaunchPasswdSafeClick(View view)
     {
         PasswdSafeUtil.startMainActivity("com.jefftharris.passwdsafe", this);
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Button handler for an ownCloud survey
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("UnusedParameters")
     public void onOwncloudSurveyClick(View view)
     {
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);

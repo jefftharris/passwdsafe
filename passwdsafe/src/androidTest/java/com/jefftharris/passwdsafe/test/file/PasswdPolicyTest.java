@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests for the PasswdPolicy class
  */
-@SuppressWarnings({"unused", "ConstantConditions"})
+@SuppressWarnings({"ConstantConditions"})
 public class PasswdPolicyTest
 {
     //private static final String TAG = "PasswdPolicyTest";

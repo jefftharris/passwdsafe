@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertSame;
 /**
  * Unit tests for Owner
  */
-@SuppressWarnings({"unused", "ConstantConditions"})
+@SuppressWarnings({"ConstantConditions"})
 public class OwnerTest
 {
     private Item itsOwnedItem;

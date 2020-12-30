@@ -25,7 +25,7 @@ import java.util.Objects;
  *
  * @author Glen Smith (based on Kevin's code for V2 records)
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
 public class PwsRecordV3 extends PwsRecord
 {
     private static final long serialVersionUID = -3160317668375599155L;

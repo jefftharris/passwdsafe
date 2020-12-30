@@ -7,24 +7,22 @@
  */
 package com.jefftharris.passwdsafe.view;
 
-import java.util.ArrayList;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 
 import org.pwsafe.lib.file.PwsRecord;
 
+import java.util.ArrayList;
+
 /**
  * The PasswdLocation class encapsulates a location within a password file
  */
 public class PasswdLocation implements Parcelable
 {
-    @SuppressWarnings("unused")
     public static final Parcelable.Creator<PasswdLocation> CREATOR =
             new Parcelable.Creator<PasswdLocation>() {
                 public PasswdLocation createFromParcel(Parcel in)

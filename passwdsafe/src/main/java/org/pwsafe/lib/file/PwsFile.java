@@ -437,7 +437,7 @@ public abstract class PwsFile
      *
      * @return the PwsRecord at that index
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     public PwsRecord getRecord(int index)
     {
         return records.get(index);
@@ -450,7 +450,7 @@ public abstract class PwsFile
      * @return <code>true</code> if the file has been modified,
      * <code>false</code> if it hasn't.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     public boolean isModified()
     {
         return modified;
