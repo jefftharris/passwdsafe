@@ -383,21 +383,17 @@ public class PasswdSafeEditRecordFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_save: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_save) {
             saveRecord();
             return true;
-        }
-        case R.id.menu_protect: {
+        } else if (itemId == R.id.menu_protect) {
             itsIsProtected = !itsIsProtected;
             updateProtectedMenu(item);
             updateProtected();
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -425,26 +421,22 @@ public class PasswdSafeEditRecordFragment
         AdapterView.AdapterContextMenuInfo info =
                 (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 
-        switch (item.getItemId()) {
-        case R.id.menu_history_remove: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_history_remove) {
             List<PasswdHistory.Entry> passwds = itsHistory.getPasswds();
             if ((info.position >= 0) && (info.position < passwds.size())) {
                 passwds.remove(info.position);
                 historyChanged(true);
             }
             return true;
-        }
-        case R.id.menu_history_set_password: {
+        } else if (itemId == R.id.menu_history_set_password) {
             List<PasswdHistory.Entry> passwds = itsHistory.getPasswds();
             if ((info.position >= 0) && (info.position < passwds.size())) {
                 setPassword(passwds.get(info.position).getPasswd());
             }
             return true;
         }
-        default: {
-            return super.onContextItemSelected(item);
-        }
-        }
+        return super.onContextItemSelected(item);
     }
 
     @Override
@@ -462,8 +454,8 @@ public class PasswdSafeEditRecordFragment
     @Override
     public void onClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.expire_date_date: {
+        int id = v.getId();
+        if (id == R.id.expire_date_date) {
             DatePickerDialogFragment picker =
                     DatePickerDialogFragment.newInstance(
                             itsExpiryDate.get(Calendar.YEAR),
@@ -471,34 +463,26 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.DAY_OF_MONTH));
             picker.setTargetFragment(this, 0);
             picker.show(requireFragmentManager(), "datePicker");
-            break;
-        }
-        case R.id.expire_date_time: {
+        } else if (id == R.id.expire_date_time) {
             TimePickerDialogFragment picker =
                     TimePickerDialogFragment.newInstance(
                             itsExpiryDate.get(Calendar.HOUR_OF_DAY),
                             itsExpiryDate.get(Calendar.MINUTE));
             picker.setTargetFragment(this, 0);
             picker.show(requireFragmentManager(), "timePicker");
-            break;
-        }
-        case R.id.history_addremove: {
+        } else if (id == R.id.history_addremove) {
             if (itsHistory == null) {
                 itsHistory = new PasswdHistory();
             } else {
                 itsHistory = null;
             }
             historyChanged(true);
-            break;
-        }
-        case R.id.history_enabled: {
+        } else if (id == R.id.history_enabled) {
             if (itsHistory != null) {
                 itsHistory.setEnabled(!itsHistory.isEnabled());
             }
             historyChanged(true);
-            break;
-        }
-        case R.id.link_ref: {
+        } else if (id == R.id.link_ref) {
             Intent intent = new Intent(PasswdSafeApp.CHOOSE_RECORD_INTENT,
                                        requireActivity().getIntent().getData(),
                                        getContext(),
@@ -522,9 +506,7 @@ public class PasswdSafeEditRecordFragment
             }
 
             startActivityForResult(intent, RECORD_SELECTION_REQUEST);
-            break;
-        }
-        case R.id.password_generate: {
+        } else if (id == R.id.password_generate) {
             if (itsCurrPolicy != null) {
                 try {
                     setPassword(itsCurrPolicy.generate());
@@ -532,27 +514,21 @@ public class PasswdSafeEditRecordFragment
                     PasswdSafeUtil.showFatalMsg(e, getActivity());
                 }
             }
-            break;
-        }
-        case R.id.policy_edit: {
+        } else if (id == R.id.policy_edit) {
             PasswdPolicyEditDialog dlg =
                     PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
             dlg.setTargetFragment(this, 0);
             dlg.show(requireFragmentManager(), "PasswdPolicyEditDialog");
-            break;
-        }
         }
     }
 
     @Override
     public boolean onLongClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.password_generate: {
+        if (v.getId() == R.id.password_generate) {
             Toast.makeText(getContext(), R.string.generate_password,
                            Toast.LENGTH_SHORT).show();
             return true;
-        }
         }
         return false;
     }
@@ -561,8 +537,8 @@ public class PasswdSafeEditRecordFragment
     public void onItemSelected(AdapterView<?> spinnerView, View view,
                                int position, long id)
     {
-        switch (spinnerView.getId()) {
-        case R.id.type: {
+        int spinnerViewId = spinnerView.getId();
+        if (spinnerViewId == R.id.type) {
             PasswdRecord.Type type = PasswdRecord.Type.NORMAL;
             switch (position) {
             case TYPE_NORMAL: {
@@ -579,43 +555,28 @@ public class PasswdSafeEditRecordFragment
             }
             }
             setType(type, false);
-            break;
-        }
-        case R.id.group: {
+        } else if (spinnerViewId == R.id.group) {
             selectGroup(position);
-            break;
-        }
-        case R.id.policy: {
+        } else if (spinnerViewId == R.id.policy) {
             selectPolicy((PasswdPolicy)spinnerView.getSelectedItem());
-            break;
-        }
-        case R.id.expire_choice: {
+        } else if (spinnerViewId == R.id.expire_choice) {
             updatePasswdExpiryChoice(
                     PasswdExpiration.Type.fromStrIdx(position));
-            break;
-        }
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> spinnerView)
     {
-        switch (spinnerView.getId()) {
-        case R.id.type: {
+        int id = spinnerView.getId();
+        if (id == R.id.type) {
             setType(PasswdRecord.Type.NORMAL, false);
-            break;
-        }
-        case R.id.group: {
-            break;
-        }
-        case R.id.policy: {
+        } else //noinspection StatementWithEmptyBody
+            if (id == R.id.group) {
+        } else if (id == R.id.policy) {
             selectPolicy(null);
-            break;
-        }
-        case R.id.expire_choice: {
+        } else if (id == R.id.expire_choice) {
             updatePasswdExpiryChoice(PasswdExpiration.Type.NEVER);
-            break;
-        }
         }
     }
 
@@ -1178,25 +1139,19 @@ public class PasswdSafeEditRecordFragment
      */
     private void initProtViews(View v)
     {
-        switch (v.getId()) {
-        case R.id.password_current_input:
-        case R.id.password_current: {
-            break;
-        }
-        case R.id.expire_date_date:
-        case R.id.expire_date_time:
-        case R.id.link_ref:
-        case R.id.password_generate: {
+        int id = v.getId();
+        //noinspection StatementWithEmptyBody
+        if ((id == R.id.password_current_input) ||
+            (id == R.id.password_current)) {
+        } else if ((id == R.id.expire_date_date) ||
+                   (id == R.id.expire_date_time) || (id == R.id.link_ref) ||
+                   (id == R.id.password_generate)) {
             itsProtectViews.add(v);
-            break;
-        }
-        default: {
+        } else {
             if ((v instanceof Spinner) || (v instanceof TextInputLayout) ||
                 (v instanceof EditText) || (v instanceof Button)) {
                 itsProtectViews.add(v);
             }
-            break;
-        }
         }
 
         if (v instanceof ViewGroup) {

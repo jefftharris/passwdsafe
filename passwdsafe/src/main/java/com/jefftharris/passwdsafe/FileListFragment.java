@@ -204,16 +204,14 @@ public final class FileListFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_file_new: {
+        int menuId = item.getItemId();
+        if (menuId == R.id.menu_file_new) {
             if (itsDir != null) {
                 itsListener.createNewFile(Uri.fromFile(itsDir));
             }
             return true;
-        }
-        default: {
+        } else {
             return super.onOptionsItemSelected(item);
-        }
         }
     }
 
@@ -250,32 +248,26 @@ public final class FileListFragment extends ListFragment
     @Override
     public void onClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.current_group_panel: {
+        int id = v.getId();
+        if (id == R.id.current_group_panel) {
             doParentPressed();
-            break;
-        }
-        case R.id.home: {
+        } else if (id == R.id.home) {
             doHomePressed();
-            break;
-        }
         }
     }
 
     @Override
     public boolean onLongClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.current_group_panel: {
+        int id = v.getId();
+        if (id == R.id.current_group_panel) {
             Toast.makeText(getContext(), R.string.parent_directory,
                            Toast.LENGTH_SHORT).show();
             return true;
-        }
-        case R.id.home: {
+        } else if (id == R.id.home) {
             Toast.makeText(getContext(), R.string.home,
                            Toast.LENGTH_SHORT).show();
             return true;
-        }
         }
         return false;
     }
@@ -380,14 +372,13 @@ public final class FileListFragment extends ListFragment
                                         new int[] { R.id.text, R.id.icon,
                                                     R.id.mod_date });
             adapter.setViewBinder((view, data, textRepresentation) -> {
-                switch (view.getId()) {
-                case R.id.text: {
+                int id = view.getId();
+                if (id == R.id.text) {
                     TextView tv = (TextView)view;
                     tv.setText(textRepresentation);
                     tv.requestLayout();
                     return true;
-                }
-                case R.id.mod_date: {
+                } else if (id == R.id.mod_date) {
                     if (data == null) {
                         view.setVisibility(View.GONE);
                         return true;
@@ -395,7 +386,6 @@ public final class FileListFragment extends ListFragment
                         view.setVisibility(View.VISIBLE);
                         return false;
                     }
-                }
                 }
                 return false;
             });

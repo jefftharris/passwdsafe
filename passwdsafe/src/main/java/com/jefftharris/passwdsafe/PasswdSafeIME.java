@@ -212,11 +212,8 @@ public class PasswdSafeIME extends InputMethodService
     @Override
     public void onClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.record: {
+        if (v.getId() == R.id.record) {
             openPasswdSafe();
-            break;
-        }
         }
     }
 

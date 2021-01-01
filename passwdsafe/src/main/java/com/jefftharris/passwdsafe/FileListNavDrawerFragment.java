@@ -178,34 +178,22 @@ public class FileListNavDrawerFragment
         Listener listener = getListener();
         int navItem = menuItem.getItemId();
         if (itsSelNavItem != navItem) {
-            switch (navItem) {
-            case R.id.menu_drawer_about: {
+            if (navItem == R.id.menu_drawer_about) {
                 listener.showAbout();
-                break;
-            }
-            case R.id.menu_drawer_backup_files: {
+            } else if (navItem == R.id.menu_drawer_backup_files) {
                 listener.showBackupFiles();
-                break;
-            }
-            case R.id.menu_drawer_files: {
+            } else if (navItem == R.id.menu_drawer_files) {
                 listener.showFiles();
-                break;
-            }
-            case R.id.menu_drawer_preferences: {
+            } else if (navItem == R.id.menu_drawer_preferences) {
                 listener.showPreferences();
-                break;
-            }
-            default: {
+            } else {
                 Uri providerUri = itsProviders.get(navItem);
                 if (providerUri != null) {
                     listener.showSyncProviderFiles(providerUri);
                 } else if (itsNoProvidersNavItem != -1) {
                     PasswdSafeUtil.startMainActivity(
                             PasswdSafeUtil.SYNC_PACKAGE, getContext());
-
                 }
-                break;
-            }
             }
         }
 

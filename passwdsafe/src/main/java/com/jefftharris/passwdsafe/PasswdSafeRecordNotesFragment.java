@@ -69,30 +69,25 @@ public class PasswdSafeRecordNotesFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_copy_notes: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_copy_notes) {
             PasswdSafeUtil.copyToClipboard(itsNotes.getText().toString(),
                                            getActivity());
             return true;
-        }
-        case R.id.menu_monospace: {
+        } else if (itemId == R.id.menu_monospace) {
             itsIsMonospace = !itsIsMonospace;
             item.setChecked(itsIsMonospace);
             saveNotesOptionsPrefs();
             setNotesOptions();
             return true;
-        }
-        case R.id.menu_word_wrap: {
+        } else if (itemId == R.id.menu_word_wrap) {
             itsIsWordWrap = !itsIsWordWrap;
             item.setChecked(itsIsWordWrap);
             saveNotesOptionsPrefs();
             setNotesOptions();
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

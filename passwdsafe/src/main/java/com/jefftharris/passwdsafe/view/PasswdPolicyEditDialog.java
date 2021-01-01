@@ -462,27 +462,19 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 
         int labelId = 0;
         int lengthId = 0;
-        switch (option.getId()) {
-        case R.id.lowercase: {
+        int id = option.getId();
+        if (id == R.id.lowercase) {
             labelId = R.id.lowercase_label;
             lengthId = R.id.lowercase_len;
-            break;
-        }
-        case R.id.uppercase: {
+        } else if (id == R.id.uppercase) {
             labelId = R.id.uppercase_label;
             lengthId = R.id.uppercase_len;
-            break;
-        }
-        case R.id.digits: {
+        } else if (id == R.id.digits) {
             labelId = R.id.digits_label;
             lengthId = R.id.digits_len;
-            break;
-        }
-        case R.id.symbols: {
+        } else if (id == R.id.symbols) {
             labelId = R.id.symbols_label;
             lengthId = R.id.symbols_len;
-            break;
-        }
         }
 
         if (labelId != 0) {

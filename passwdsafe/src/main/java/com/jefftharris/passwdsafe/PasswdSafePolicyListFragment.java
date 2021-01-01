@@ -131,15 +131,11 @@ public class PasswdSafePolicyListFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_add_policy: {
+        if (item.getItemId() == R.id.menu_add_policy) {
             editPolicy(null);
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -441,32 +437,26 @@ public class PasswdSafePolicyListFragment extends ListFragment
             @Override
             public void onClick(View v)
             {
-                switch (v.getId()) {
-                case R.id.edit: {
+                int id = v.getId();
+                if (id == R.id.edit) {
                     itsListener.editPolicy(itsPolicy);
-                    break;
-                }
-                case R.id.delete: {
+                } else if (id == R.id.delete) {
                     itsListener.deletePolicy(itsPolicy);
-                    break;
-                }
                 }
             }
 
             @Override
             public boolean onLongClick(View v)
             {
-                switch (v.getId()) {
-                case R.id.edit: {
+                int id = v.getId();
+                if (id == R.id.edit) {
                     Toast.makeText(getContext(), R.string.edit_policy,
                                    Toast.LENGTH_SHORT).show();
                     return true;
-                }
-                case R.id.delete: {
+                } else if (id == R.id.delete) {
                     Toast.makeText(getContext(), R.string.delete_policy,
                                    Toast.LENGTH_SHORT).show();
                     return true;
-                }
                 }
                 return false;
             }

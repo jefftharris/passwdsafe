@@ -220,17 +220,13 @@ public class PasswdSafeListFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_sort: {
+        if (item.getItemId() == R.id.menu_sort) {
             if (itsListener != null) {
                 itsListener.showRecordPreferences();
             }
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -261,10 +257,10 @@ public class PasswdSafeListFragment extends ListFragment
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-        case R.id.menu_copy_password:
-        case R.id.menu_copy_user: {
-                AdapterView.AdapterContextMenuInfo info =
+        int itemId = item.getItemId();
+        if ((itemId == R.id.menu_copy_password) ||
+            (itemId == R.id.menu_copy_user)) {
+            AdapterView.AdapterContextMenuInfo info =
                     (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
             final PasswdRecordListData listItem =
                     itsAdapter.getItem(info.position);
@@ -277,7 +273,6 @@ public class PasswdSafeListFragment extends ListFragment
             }
 
             return true;
-        }
         }
         return super.onContextItemSelected(item);
     }
@@ -308,11 +303,8 @@ public class PasswdSafeListFragment extends ListFragment
     @Override
     public void onClick(View v)
     {
-        switch(v.getId()) {
-        case R.id.current_group_panel: {
+        if (v.getId() == R.id.current_group_panel) {
             itsListener.changeLocation(itsLocation.popGroup());
-            break;
-        }
         }
     }
 
