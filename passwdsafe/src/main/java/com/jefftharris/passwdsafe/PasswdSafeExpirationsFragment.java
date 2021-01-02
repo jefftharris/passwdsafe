@@ -124,8 +124,7 @@ public class PasswdSafeExpirationsFragment
     public void onCheckedChanged(CompoundButton button, boolean isChecked)
     {
         PasswdSafeUtil.dbginfo(TAG, "onCheckedChanged checked %b", isChecked);
-        switch (button.getId()) {
-        case R.id.enable_expiry_notifs: {
+        if (button.getId() == R.id.enable_expiry_notifs) {
             if (isChecked) {
                 ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
                         getString(R.string.expiration_notifications),
@@ -136,8 +135,6 @@ public class PasswdSafeExpirationsFragment
             } else {
                 setExpiryNotif(false);
             }
-            break;
-        }
         }
     }
 

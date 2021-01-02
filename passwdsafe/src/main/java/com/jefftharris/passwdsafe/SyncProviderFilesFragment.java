@@ -267,19 +267,15 @@ public class SyncProviderFilesFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_sync_files: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_sync_files) {
             itsSyncTask.start(itsProviderUri, requireContext());
             return true;
-        }
-        case R.id.menu_file_new: {
+        } else if (itemId == R.id.menu_file_new) {
             itsListener.createNewFile(itsFilesUri);
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
 

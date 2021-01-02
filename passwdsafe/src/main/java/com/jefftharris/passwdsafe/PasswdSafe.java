@@ -612,19 +612,17 @@ public class PasswdSafe extends AppCompatActivity
         if (!itsIsResumed) {
             return super.onOptionsItemSelected(item);
         }
-        switch (item.getItemId()) {
-        case android.R.id.home: {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
             if (itsNavDrawerFrag.isDrawerEnabled()) {
                 return super.onOptionsItemSelected(item);
             }
             onBackPressed();
             return true;
-        }
-        case R.id.menu_add: {
+        } else if (itemId == R.id.menu_add) {
             editRecord(itsLocation.selectRecord(null));
             return true;
-        }
-        case R.id.menu_restore: {
+        } else if (itemId == R.id.menu_restore) {
             BackupFile backup = itsFileDataFrag.useFileData(
                     fileData -> fileData.getUri().getBackupFile());
             if (backup == null) {
@@ -640,18 +638,15 @@ public class PasswdSafe extends AppCompatActivity
                     null, getString(R.string.restore), confirmArgs);
             dialog.show(getSupportFragmentManager(), "Restore file");
             return true;
-        }
-        case R.id.menu_close: {
+        } else if (itemId == R.id.menu_close) {
             checkNavigation(false, this::finish);
             return true;
-        }
-        case R.id.menu_file_change_password: {
+        } else if (itemId == R.id.menu_file_change_password) {
             PasswdSafeUtil.dbginfo(TAG, "change password");
             doChangeView(ChangeMode.CHANGE_PASSWORD,
                          PasswdSafeChangePasswordFragment.newInstance());
             return true;
-        }
-        case R.id.menu_file_delete: {
+        } else if (itemId == R.id.menu_file_delete) {
             String uriName = itsFileDataFrag.useFileData(
                     fileData -> fileData.getUri().getIdentifier(PasswdSafe.this,
                                                                 true));
@@ -666,12 +661,10 @@ public class PasswdSafe extends AppCompatActivity
                     null, getString(R.string.delete), confirmArgs);
             dialog.show(getSupportFragmentManager(), "Delete file");
             return true;
-        }
-        case R.id.menu_file_protect_records: {
+        } else if (itemId == R.id.menu_file_protect_records) {
             protectRecords(true);
             return true;
-        }
-        case R.id.menu_share: {
+        } else if (itemId == R.id.menu_share) {
             Bundle confirmArgs = new Bundle();
             confirmArgs.putString(CONFIRM_ARG_ACTION,
                                   ConfirmAction.SHARE_FILE.name());
@@ -682,15 +675,11 @@ public class PasswdSafe extends AppCompatActivity
             dialog.show(getSupportFragmentManager(), "Share file");
 
             return true;
-        }
-        case R.id.menu_file_unprotect_records: {
+        } else if (itemId == R.id.menu_file_unprotect_records) {
             protectRecords(false);
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -734,24 +723,18 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void onClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.query_clear_btn: {
+        int id = v.getId();
+        if (id == R.id.query_clear_btn) {
             setRecordQueryFilter(null);
-            break;
-        }
-        case R.id.expiry_panel: {
+        } else if (id == R.id.expiry_panel) {
             PasswdExpiryFilter filter =
                     itsFileDataFrag.getFileDataView().getExpiredRecordsFilter();
             if (filter != null) {
                 setRecordExpiryFilter(filter, null);
             }
             GuiUtils.setVisible(itsExpiryPanel, false);
-            break;
-        }
-        case R.id.expiry_clear_btn: {
+        } else if (id == R.id.expiry_clear_btn) {
             GuiUtils.setVisible(itsExpiryPanel, false);
-            break;
-        }
         }
     }
 

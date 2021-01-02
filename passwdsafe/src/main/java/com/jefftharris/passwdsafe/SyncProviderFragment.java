@@ -100,34 +100,25 @@ public class SyncProviderFragment extends ListFragment
                0);
         itsProviderAdapter.setViewBinder((view, cursor, colIdx) -> {
             int id = view.getId();
-            switch (id) {
-            case android.R.id.text1: {
+            if (id == android.R.id.text1) {
                 String displayName =
                         PasswdSafeContract.Providers.getDisplayName(cursor);
                 TextView tv = (TextView)view;
                 tv.setText(displayName);
                 return true;
-            }
-            case android.R.id.text2:
-            case R.id.icon: {
+            } else if ((id == android.R.id.text2) || (id == R.id.icon)) {
                 try {
                     String typeStr = cursor.getString(colIdx);
                     ProviderType type = ProviderType.valueOf(typeStr);
-                    switch (id) {
-                    case android.R.id.text2: {
+                    if (id == android.R.id.text2) {
                         type.setText((TextView)view);
-                        break;
-                    }
-                    case R.id.icon: {
+                    } else {
                         type.setIcon((ImageView)view);
-                        break;
-                    }
                     }
                     return true;
                 } catch (IllegalArgumentException e) {
                     return false;
                 }
-            }
             }
             return false;
         });
@@ -164,15 +155,11 @@ public class SyncProviderFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_sync: {
+        if (item.getItemId() == R.id.menu_sync) {
             itsSyncTask.start(null, requireContext());
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
 

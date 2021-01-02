@@ -247,31 +247,24 @@ public class PasswdSafeRecordBasicFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_copy_user: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_copy_user) {
             copyUser();
             return true;
-        }
-        case R.id.menu_copy_password: {
+        } else if (itemId == R.id.menu_copy_password) {
             copyPassword();
             return true;
-        }
-        case R.id.menu_copy_url: {
+        } else if (itemId == R.id.menu_copy_url) {
             copyUrl();
             return true;
-        }
-        case R.id.menu_copy_email: {
+        } else if (itemId == R.id.menu_copy_email) {
             copyEmail();
             return true;
-        }
-        case R.id.menu_toggle_password: {
+        } else if (itemId == R.id.menu_toggle_password) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -281,17 +274,13 @@ public class PasswdSafeRecordBasicFragment
     {
         super.onCreateContextMenu(menu, view, menuInfo);
         menu.setHeaderTitle(itsTitle);
-        switch (view.getId()) {
-        case R.id.user_row: {
-            menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
-                     R.id.menu_copy_user, 0, R.string.copy_user);
-            break;
-        }
-        case R.id.password_row: {
+        int id = view.getId();
+        if (id == R.id.user_row) {
+            menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC, R.id.menu_copy_user,
+                     0, R.string.copy_user);
+        } else if (id == R.id.password_row) {
             menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
                      R.id.menu_copy_password, 0, R.string.copy_password);
-            break;
-        }
         }
     }
 
@@ -302,15 +291,13 @@ public class PasswdSafeRecordBasicFragment
             return super.onContextItemSelected(item);
         }
 
-        switch (item.getItemId()) {
-        case R.id.menu_copy_password: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_copy_password) {
             copyPassword();
             return true;
-        }
-        case R.id.menu_copy_user: {
+        } else if (itemId == R.id.menu_copy_user) {
             copyUser();
             return true;
-        }
         }
         return super.onContextItemSelected(item);
     }
@@ -318,28 +305,21 @@ public class PasswdSafeRecordBasicFragment
     @Override
     public void onClick(View view)
     {
-        switch (view.getId()) {
-        case R.id.base_row:
-        case R.id.base_btn: {
+        int id = view.getId();
+        if ((id == R.id.base_row) || (id == R.id.base_btn)) {
             showRefRec(true, 0);
-            break;
-        }
-        case R.id.password_row: {
+        } else if (id == R.id.password_row) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
-            break;
-        }
         }
     }
 
     @Override
     public boolean onLongClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.password_subset_btn: {
+        if (v.getId() == R.id.password_subset_btn) {
             Toast.makeText(getContext(), R.string.password_subset,
                            Toast.LENGTH_SHORT).show();
             return true;
-        }
         }
         return false;
     }
@@ -347,12 +327,9 @@ public class PasswdSafeRecordBasicFragment
     @Override
     public void onCheckedChanged(CompoundButton btn, boolean checked)
     {
-        switch (btn.getId()) {
-        case R.id.password_subset_btn: {
-            updatePasswordShown(PasswordVisibilityChange.SHOW_SUBSET,
-                                0, checked);
-            break;
-        }
+        if (btn.getId() == R.id.password_subset_btn) {
+            updatePasswordShown(PasswordVisibilityChange.SHOW_SUBSET, 0,
+                                checked);
         }
     }
 

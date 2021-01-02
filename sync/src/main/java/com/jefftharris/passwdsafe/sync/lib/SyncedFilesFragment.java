@@ -175,15 +175,11 @@ public class SyncedFilesFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_parent_dir: {
+        if (item.getItemId() == R.id.menu_parent_dir) {
             itsListener.changeParentDir();
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     /* (non-Javadoc)

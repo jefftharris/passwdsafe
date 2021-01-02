@@ -215,8 +215,7 @@ public class PasswdSafeNewFileFragment
     @Override
     public void onClick(View view)
     {
-        switch (view.getId()) {
-        case R.id.ok: {
+        if (view.getId() == R.id.ok) {
             GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
             String fileName = itsFileName.getText().toString();
             if (itsUseStorage) {
@@ -232,14 +231,12 @@ public class PasswdSafeNewFileFragment
                 createIntent.putExtra(Intent.EXTRA_TITLE, fileName);
 
                 startActivityForResult(createIntent, CREATE_DOCUMENT_REQUEST);
-             } else {
+            } else {
                 try (Owner<PwsPassword> passwd =
                              PwsPassword.create(itsPassword.getText())) {
                     startTask(new NewTask(fileName, passwd.pass(), this));
                 }
             }
-            break;
-        }
         }
     }
 

@@ -183,32 +183,27 @@ public class PasswdSafeRecordFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_edit: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_edit) {
             Listener listener = getListener();
             if (listener != null) {
                 listener.editRecord(getLocation());
             }
             return true;
-        }
-        case R.id.menu_find_similar: {
+        } else if (itemId == R.id.menu_find_similar) {
             Listener listener = getListener();
             if (listener != null) {
                 listener.filterSimilarRecords(getLocation());
             }
             return true;
-        }
-        case R.id.menu_delete: {
+        } else if (itemId == R.id.menu_delete) {
             Listener listener = getListener();
             if (listener != null) {
                 listener.deleteRecord(getLocation(), itsTitle);
             }
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

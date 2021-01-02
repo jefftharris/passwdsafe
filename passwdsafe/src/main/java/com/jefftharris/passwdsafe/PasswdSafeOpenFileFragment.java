@@ -343,8 +343,8 @@ public class PasswdSafeOpenFileFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_file_open_help: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_file_open_help) {
             View root = getView();
             if (root != null) {
                 View help = root.findViewById(R.id.file_open_help_text);
@@ -354,51 +354,42 @@ public class PasswdSafeOpenFileFragment
                                             false);
             }
             return true;
-        }
-        case R.id.menu_slot_1: {
+        } else if (itemId == R.id.menu_slot_1) {
             item.setChecked(true);
             itsYubiSlot = 1;
             return true;
-        }
-        case R.id.menu_slot_2: {
+        } else if (itemId == R.id.menu_slot_2) {
             item.setChecked(true);
             itsYubiSlot = 2;
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View view)
     {
         int id = view.getId();
-        switch (id) {
-        case R.id.open: {
+        if (id == R.id.open) {
             if (itsYubikeyCb.isChecked()) {
                 setPhase(Phase.YUBIKEY);
             } else {
                 setPhase(Phase.OPENING);
             }
-            break;
-        }
         }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton button, boolean isChecked)
     {
-        switch (button.getId()) {
-        case R.id.save_password: {
+        if (button.getId() == R.id.save_password) {
             if (itsSavePasswdCb.isChecked()) {
                 Context ctx = getContext();
                 SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
                 if (!Preferences.isFileSavedPasswordConfirm(prefs)) {
                     FragmentManager fragMgr = getFragmentManager();
                     if (fragMgr == null) {
-                        break;
+                        return;
                     }
                     ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
                             getString(R.string.save_password_p),
@@ -408,8 +399,6 @@ public class PasswdSafeOpenFileFragment
                     dlg.show(fragMgr, "saveConfirm");
                 }
             }
-            break;
-        }
         }
     }
 

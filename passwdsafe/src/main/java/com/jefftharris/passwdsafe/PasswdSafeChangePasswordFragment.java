@@ -143,15 +143,11 @@ public class PasswdSafeChangePasswordFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_save: {
+        if (item.getItemId() == R.id.menu_save) {
             save();
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

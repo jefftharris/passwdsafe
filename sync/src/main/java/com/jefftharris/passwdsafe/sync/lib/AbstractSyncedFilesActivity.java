@@ -145,17 +145,15 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_reload: {
+        int menuId = item.getItemId();
+        if (menuId == R.id.menu_reload) {
             reloadFiles();
             LoaderManager lm = LoaderManager.getInstance(this);
             lm.restartLoader(LOADER_TITLE, null, itsProviderLoaderCb);
             lm.restartLoader(LOADER_FILES, null, itsFilesLoaderCb);
             return true;
-        }
-        default: {
+        } else {
             return super.onOptionsItemSelected(item);
-        }
         }
     }
 

@@ -230,15 +230,11 @@ public final class StorageFileListFragment extends Fragment
     @Override
     public void onClick(View v)
     {
-        switch (v.getId()) {
-        case R.id.fab: {
+        int id = v.getId();
+        if (id == R.id.fab) {
             startOpenFile();
-            break;
-        }
-        case R.id.no_default: {
+        } else if (id == R.id.no_default) {
             openUri(null, null);
-            break;
-        }
         }
     }
 
@@ -265,16 +261,14 @@ public final class StorageFileListFragment extends Fragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_file_open: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_file_open) {
             startOpenFile();
             return true;
-        }
-        case R.id.menu_file_new: {
+        } else if (itemId == R.id.menu_file_new) {
             startActivity(new Intent(PasswdSafeUtil.NEW_INTENT));
             return true;
-        }
-        case R.id.menu_clear_recent: {
+        } else if (itemId == R.id.menu_clear_recent) {
             try {
                 Context ctx = getContext();
                 if (ctx == null) {
@@ -289,10 +283,7 @@ public final class StorageFileListFragment extends Fragment
             }
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
 

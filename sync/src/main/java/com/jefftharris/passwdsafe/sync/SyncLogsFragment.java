@@ -216,18 +216,14 @@ public class SyncLogsFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_show_all: {
+        if (item.getItemId() == R.id.menu_show_all) {
             itsIsShowAll = !item.isChecked();
             item.setChecked(itsIsShowAll);
-            LoaderManager.getInstance(this).restartLoader(LOADER_LOGS,
-                                                          null, itsLogsCbs);
+            LoaderManager.getInstance(this).restartLoader(LOADER_LOGS, null,
+                                                          itsLogsCbs);
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -272,47 +272,37 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-        case R.id.menu_about: {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_about) {
             showAbout();
             return true;
-        }
-        case R.id.menu_logs: {
+        } else if (itemId == R.id.menu_logs) {
             Intent intent = new Intent();
             intent.setClass(this, SyncLogsActivity.class);
             startActivity(intent);
             return true;
-        }
-        case R.id.menu_preferences: {
+        } else if (itemId == R.id.menu_preferences) {
             Intent intent = new Intent();
             intent.setClass(this, PreferencesActivity.class);
             startActivity(intent);
             return true;
-        }
-        case R.id.menu_add_box: {
+        } else if (itemId == R.id.menu_add_box) {
             onBoxChoose(null);
             return true;
-        }
-        case R.id.menu_add_dropbox: {
+        } else if (itemId == R.id.menu_add_dropbox) {
             onDropboxChoose(null);
             return true;
-        }
-        case R.id.menu_add_google_drive: {
+        } else if (itemId == R.id.menu_add_google_drive) {
             onGdriveChoose(null);
             return true;
-        }
-        case R.id.menu_add_onedrive: {
+        } else if (itemId == R.id.menu_add_onedrive) {
             onOnedriveChoose(null);
             return true;
-        }
-        case R.id.menu_add_owncloud: {
+        } else if (itemId == R.id.menu_add_owncloud) {
             onOwncloudChoose(null);
             return true;
         }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
 
