@@ -32,7 +32,6 @@ import com.jefftharris.passwdsafe.sync.R;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  *  Fragment to show synced password files
@@ -101,7 +100,7 @@ public class SyncedFilesFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Bundle args = Objects.requireNonNull(getArguments());
+        Bundle args = requireArguments();
         itsPathDisplay = args.getString("pathDisplay");
         itsPathId = args.getString("pathId");
     }

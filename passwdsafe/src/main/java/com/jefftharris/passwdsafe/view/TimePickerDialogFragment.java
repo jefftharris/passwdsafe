@@ -50,7 +50,7 @@ public class TimePickerDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Bundle args = Objects.requireNonNull(getArguments());
+        Bundle args = requireArguments();
         Calendar now = Calendar.getInstance();
         int hourOfDay = args.getInt("hourOfDay", now.get(Calendar.HOUR_OF_DAY));
         int minute = args.getInt("minute", now.get(Calendar.MINUTE));

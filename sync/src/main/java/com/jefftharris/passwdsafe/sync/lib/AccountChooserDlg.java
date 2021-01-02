@@ -25,8 +25,6 @@ import androidx.fragment.app.DialogFragment;
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 import com.jefftharris.passwdsafe.sync.R;
 
-import java.util.Objects;
-
 /**
  * The AccountChooserDlg allows the user to choose an account of a given type
  */
@@ -53,7 +51,7 @@ public class AccountChooserDlg extends DialogFragment
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        Bundle args = Objects.requireNonNull(getArguments());
+        Bundle args = requireArguments();
         String accountType = args.getString("accountType");
 
         Activity act = requireActivity();
@@ -100,7 +98,7 @@ public class AccountChooserDlg extends DialogFragment
     /** Handle a selected account */
     private void onAccountSelected(String accountName)
     {
-        Bundle args = Objects.requireNonNull(getArguments());
+        Bundle args = requireArguments();
         int requestCode = args.getInt("requestCode");
 
         int result;
