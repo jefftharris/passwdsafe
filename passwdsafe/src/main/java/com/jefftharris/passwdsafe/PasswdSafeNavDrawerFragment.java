@@ -15,9 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -87,7 +87,7 @@ public class PasswdSafeNavDrawerFragment
     }
 
     private TextView itsFileName;
-    private Switch itsWritableSw;
+    private SwitchCompat itsWritableSw;
     private NavMenuItem itsSelNavItem = null;
 
     @Override
