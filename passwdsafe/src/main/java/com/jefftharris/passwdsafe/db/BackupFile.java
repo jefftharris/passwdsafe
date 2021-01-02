@@ -66,13 +66,13 @@ public class BackupFile
      * Is there a known file for the backup
      */
     @ColumnInfo(name = COL_HAS_FILE, defaultValue = "1")
-    public boolean hasFile;
+    public final boolean hasFile;
 
     /**
      * Is there a known URI permission for the file
      */
     @ColumnInfo(name = COL_HAS_URI_PERM, defaultValue = "1")
-    public boolean hasUriPerm;
+    public final boolean hasUriPerm;
 
     /**
      * Constructor from database entry
