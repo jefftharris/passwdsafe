@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
@@ -109,13 +110,14 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
         @SuppressLint("InflateParams")
         View dlgView = factory.inflate(R.layout.confirm_prompt, null);
 
+        TextView confirmMsg = dlgView.findViewById(R.id.confirm_message);
+        confirmMsg.setText(promptStr);
         itsConfirmCb = dlgView.findViewById(R.id.confirm);
         itsConfirmCb.setOnCheckedChangeListener(this);
 
         setCancelable(true);
         AlertDialog.Builder alert = new AlertDialog.Builder(ctx)
             .setTitle(titleStr)
-            .setMessage(promptStr)
             .setView(dlgView)
             .setPositiveButton(confirmStr, this)
             .setNegativeButton(R.string.cancel, this);
