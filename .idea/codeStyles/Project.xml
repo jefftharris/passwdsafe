@@ -36,6 +36,18 @@
     </option>
     <option name="RIGHT_MARGIN" value="80" />
     <option name="WRAP_COMMENTS" value="true" />
+    <AndroidXmlCodeStyleSettings>
+      <option name="LAYOUT_SETTINGS">
+        <value>
+          <option name="INSERT_LINE_BREAK_BEFORE_NAMESPACE_DECLARATION" value="true" />
+        </value>
+      </option>
+      <option name="MANIFEST_SETTINGS">
+        <value>
+          <option name="INSERT_LINE_BREAK_BEFORE_NAMESPACE_DECLARATION" value="true" />
+        </value>
+      </option>
+    </AndroidXmlCodeStyleSettings>
     <JavaCodeStyleSettings>
       <option name="FIELD_NAME_PREFIX" value="its" />
       <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
@@ -87,6 +99,7 @@
       </option>
     </JetCodeStyleSettings>
     <XML>
+      <option name="XML_SPACE_INSIDE_EMPTY_TAG" value="false" />
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
     <codeStyleSettings language="JAVA">
