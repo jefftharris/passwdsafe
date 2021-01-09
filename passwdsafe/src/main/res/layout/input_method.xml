@@ -28,7 +28,8 @@
                   android:drawableLeft="@drawable/ic_passwdsafe_light"
                   android:drawablePadding="6dp"
                   android:drawableStart="@drawable/ic_passwdsafe_light"
-                  android:textAppearance="?android:attr/textAppearanceSmall"/>
+                  android:textAppearance="?android:attr/textAppearanceSmall"
+                  tools:ignore="UseCompatTextViewDrawableXml"/>
 
         <TextView android:id="@+id/password_warning"
                   style="@style/InputMethodText"
