@@ -103,13 +103,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_fingerprint"
             android:drawablePadding="6dp"
-            android:drawableStart="@drawable/ic_fingerprint"
             android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/read_only_msg"/>
+            app:layout_constraintTop_toBottomOf="@+id/read_only_msg"
+            app:drawableLeftCompat="@drawable/ic_fingerprint"
+            app:drawableStartCompat="@drawable/ic_fingerprint"/>
 
         <TextView
             android:id="@+id/file_open_help_text"
