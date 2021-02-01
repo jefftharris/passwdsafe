@@ -159,6 +159,7 @@
                           android:hint="@string/custom_symbols"
                           android:importantForAutofill="no"
                           android:inputType="text"
+                          android:selectAllOnFocus="true"
                           tools:targetApi="o"/>
 
             </LinearLayout>
