@@ -422,6 +422,11 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         if (useCustom) {
             defView.setVisibility(View.GONE);
             itsCustomSymbolsEdit.setVisibility(View.VISIBLE);
+
+            if (TextUtils.isEmpty(itsCustomSymbolsEdit.getText())) {
+                itsCustomSymbolsEdit.setText(itsDefaultSymbols);
+            }
+
             itsCustomSymbolsEdit.requestFocus();
         } else {
             defView.setVisibility(View.VISIBLE);
