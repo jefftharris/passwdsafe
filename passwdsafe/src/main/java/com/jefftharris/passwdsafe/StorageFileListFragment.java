@@ -141,6 +141,19 @@ public final class StorageFileListFragment extends Fragment
                             0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
             {
                 @Override
+                public float getSwipeEscapeVelocity(float defaultValue)
+                {
+                    return defaultValue * 7f;
+                }
+
+                @Override
+                public float getSwipeThreshold(
+                        @NonNull RecyclerView.ViewHolder viewHolder)
+                {
+                    return .75f;
+                }
+
+                @Override
                 public boolean onMove(
                         @NonNull RecyclerView recyclerView,
                         @NonNull RecyclerView.ViewHolder viewHolder,
