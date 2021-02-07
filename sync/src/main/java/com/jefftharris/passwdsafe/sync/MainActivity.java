@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings({"UnusedParameters"})
     public void onLaunchPasswdSafeClick(View view)
     {
-        PasswdSafeUtil.startMainActivity("com.jefftharris.passwdsafe", this);
+        PasswdSafeUtil.startMainActivity(PasswdSafeUtil.PACKAGE, this);
     }
 
 
