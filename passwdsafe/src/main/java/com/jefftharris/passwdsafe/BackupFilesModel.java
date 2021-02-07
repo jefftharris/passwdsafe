@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer;
 import com.jefftharris.passwdsafe.db.BackupFile;
 import com.jefftharris.passwdsafe.db.BackupFilesDao;
 import com.jefftharris.passwdsafe.db.PasswdSafeDb;
+import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
@@ -154,6 +155,28 @@ public class BackupFilesModel extends AndroidViewModel
          */
         @WorkerThread
         private static boolean checkUriPerm(Uri uri, ContentResolver cr)
+        {
+            switch (PasswdFileUri.getUriType(uri)) {
+            case FILE: {
+                return true;
+            }
+            case SYNC_PROVIDER:
+            case GENERIC_PROVIDER: {
+                return checkProviderUriPerm(uri, cr);
+            }
+            case EMAIL:
+            case BACKUP: {
+                break;
+            }
+            }
+            return false;
+        }
+
+        /**
+         * Check permissions on a provider URI
+         */
+        @WorkerThread
+        private static boolean checkProviderUriPerm(Uri uri, ContentResolver cr)
         {
             PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s", uri);
 
