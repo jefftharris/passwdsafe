@@ -34,7 +34,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
-import androidx.biometric.BiometricConstants;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentManager;
 
@@ -955,25 +954,25 @@ public class PasswdSafeOpenFileFragment
         {
             PasswdSafeUtil.dbginfo(itsTag, "error: %s", errString);
             switch (errorCode) {
-            case BiometricConstants.ERROR_CANCELED:
-            case BiometricConstants.ERROR_USER_CANCELED:
-            case BiometricConstants.ERROR_NEGATIVE_BUTTON: {
+            case BiometricPrompt.ERROR_CANCELED:
+            case BiometricPrompt.ERROR_USER_CANCELED:
+            case BiometricPrompt.ERROR_NEGATIVE_BUTTON: {
                 Context ctx = getContext();
                 if (ctx != null) {
                     errString = ctx.getString(R.string.canceled);
                 }
                 break;
             }
-            case BiometricConstants.ERROR_HW_NOT_PRESENT:
-            case BiometricConstants.ERROR_HW_UNAVAILABLE:
-            case BiometricConstants.ERROR_LOCKOUT_PERMANENT:
-            case BiometricConstants.ERROR_LOCKOUT:
-            case BiometricConstants.ERROR_NO_BIOMETRICS:
-            case BiometricConstants.ERROR_NO_DEVICE_CREDENTIAL:
-            case BiometricConstants.ERROR_NO_SPACE:
-            case BiometricConstants.ERROR_TIMEOUT:
-            case BiometricConstants.ERROR_UNABLE_TO_PROCESS:
-            case BiometricConstants.ERROR_VENDOR: {
+            case BiometricPrompt.ERROR_HW_NOT_PRESENT:
+            case BiometricPrompt.ERROR_HW_UNAVAILABLE:
+            case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
+            case BiometricPrompt.ERROR_LOCKOUT:
+            case BiometricPrompt.ERROR_NO_BIOMETRICS:
+            case BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL:
+            case BiometricPrompt.ERROR_NO_SPACE:
+            case BiometricPrompt.ERROR_TIMEOUT:
+            case BiometricPrompt.ERROR_UNABLE_TO_PROCESS:
+            case BiometricPrompt.ERROR_VENDOR: {
                 break;
             }
             }
