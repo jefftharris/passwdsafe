@@ -30,6 +30,17 @@
         android:name="android.hardware.nfc"
         android:required="false"/>
 
+    <queries>
+        <package android:name="com.jefftharris.passwdsafe.sync"/>
+        <provider
+            android:authorities="com.jefftharris.passwdsafe.sync.provider"
+            tools:ignore="ExportedContentProvider"/>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+    </queries>
+
     <application
         android:name=".PasswdSafeApp"
         android:allowBackup="true"
