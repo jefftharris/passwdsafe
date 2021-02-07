@@ -410,6 +410,11 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.1&lt;/b&gt; - Pré-remplissage des symboles personnalisés
+        pour la politique mots de passe. Réduction de la sensibilité au
+        mouvement de balayage pour supprimer un fichier récent. Nettoyage du
+        code.
+        \n\n
         &lt;b&gt;6.21.0&lt;/b&gt; - Ajout de fichier de sauvegarde. Les
         sauvegardes sont stockées localement dans l\'espace de stockage privé
         de l\'application. Lors d\'une copie ou coller d\'une URL ou email,
