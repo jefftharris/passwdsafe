@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -149,7 +150,8 @@ public class LauncherRecordShortcuts extends AppCompatActivity
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                          @Nullable String key)
     {
         if (itsFileDataView.handleSharedPreferenceChanged(prefs, key)) {
             PasswdSafeFileDataFragment.useOpenFileData(

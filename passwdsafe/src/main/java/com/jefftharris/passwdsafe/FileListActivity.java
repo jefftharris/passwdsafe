@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -224,10 +225,21 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                          @Nullable String key)
     {
-        switch (key) {
-        case Preferences.PREF_FILE_LEGACY_FILE_CHOOSER: {
+        boolean updateLegacyFileChooser = false;
+        if (key == null) {
+            updateLegacyFileChooser = true;
+        } else {
+            switch (key) {
+            case Preferences.PREF_FILE_LEGACY_FILE_CHOOSER: {
+                updateLegacyFileChooser = true;
+                break;
+            }
+            }
+        }
+        if (updateLegacyFileChooser) {
             boolean legacy =
                     ((ApiCompat.SDK_VERSION < ApiCompat.SDK_KITKAT) ||
                      Preferences.getFileLegacyFileChooserPref(prefs));
@@ -235,8 +247,6 @@ public class FileListActivity extends AppCompatActivity
                 itsIsLegacyChooser = legacy;
                 itsIsLegacyChooserChanged = true;
             }
-            break;
-        }
         }
     }
 

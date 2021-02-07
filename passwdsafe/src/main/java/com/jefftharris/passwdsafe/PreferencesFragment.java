@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
@@ -250,14 +251,22 @@ public class PreferencesFragment extends PreferenceFragmentCompat
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs,
-                                              String key)
+                                              @Nullable String key)
         {
-            switch (key) {
-            case Preferences.PREF_DISPLAY_THEME: {
+            boolean updateTheme = false;
+            if (key == null) {
+                updateTheme = true;
+            } else {
+                switch (key) {
+                case Preferences.PREF_DISPLAY_THEME: {
+                    updateTheme = true;
+                    break;
+                }
+                }
+            }
+            if (updateTheme) {
                 updateThemePrefSummary(prefs);
                 requireActivity().recreate();
-                break;
-            }
             }
         }
 
@@ -312,10 +321,38 @@ public class PreferencesFragment extends PreferenceFragmentCompat
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs,
-                                              String key)
+                                              @Nullable String key)
         {
-            switch (key) {
-            case Preferences.PREF_FILE_DIR: {
+            boolean updateFileDir = false;
+            boolean updateDefFile = false;
+            boolean updateCloseTimeout = false;
+            boolean updateBackup = false;
+            if (key == null) {
+                updateFileDir = true;
+                updateDefFile = true;
+                updateCloseTimeout = true;
+                updateBackup = true;
+            } else {
+                switch (key) {
+                case Preferences.PREF_FILE_DIR: {
+                    updateFileDir = true;
+                    break;
+                }
+                case Preferences.PREF_DEF_FILE: {
+                    updateDefFile = true;
+                    break;
+                }
+                case Preferences.PREF_FILE_CLOSE_TIMEOUT: {
+                    updateCloseTimeout = true;
+                    break;
+                }
+                case Preferences.PREF_FILE_BACKUP: {
+                    updateBackup = true;
+                    break;
+                }
+                }
+            }
+            if (updateFileDir) {
                 File pref = Preferences.getFileDirPref(prefs);
                 if (TextUtils.isEmpty(pref.toString())) {
                     pref = new File(Preferences.PREF_FILE_DIR_DEF);
@@ -326,27 +363,22 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                     itsFileDirPref.setText(pref.toString());
                 }
                 itsFileDirPref.setSummary(pref.toString());
-                break;
             }
-            case Preferences.PREF_DEF_FILE: {
+            if (updateDefFile) {
                 new DefaultFileResolver(
                         Preferences.getDefFilePref(prefs),
-                        this,
-                        PreferencesFragment.this).execute();
-                break;
+                        this, PreferencesFragment.this).execute();
             }
-            case Preferences.PREF_FILE_CLOSE_TIMEOUT: {
+            if (updateCloseTimeout) {
                 FileTimeoutPref pref =
                         Preferences.getFileCloseTimeoutPref(prefs);
-                itsFileClosePref.setSummary(pref.getDisplayName(getResources()));
-                break;
+                itsFileClosePref.setSummary(
+                        pref.getDisplayName(getResources()));
             }
-            case Preferences.PREF_FILE_BACKUP: {
+            if (updateBackup) {
                 FileBackupPref pref = Preferences.getFileBackupPref(prefs);
                 itsFileBackupPref.setSummary(
                         pref.getDisplayName(getResources()));
-                break;
-            }
             }
         }
 
@@ -462,34 +494,57 @@ public class PreferencesFragment extends PreferenceFragmentCompat
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs,
-                                              String key)
+                                              @Nullable String key)
         {
-            switch (key) {
-            case Preferences.PREF_PASSWD_VISIBLE_TIMEOUT: {
+            boolean updateVisibleTimeout = false;
+            boolean updateEnc = false;
+            boolean updateExpiryNotif = false;
+            boolean updateDefaultSyms = false;
+            if (key == null) {
+                updateVisibleTimeout = true;
+                updateEnc = true;
+                updateExpiryNotif = true;
+                updateDefaultSyms = true;
+            } else {
+                switch (key) {
+                case Preferences.PREF_PASSWD_VISIBLE_TIMEOUT: {
+                    updateVisibleTimeout = true;
+                    break;
+                }
+                case Preferences.PREF_PASSWD_ENC: {
+                    updateEnc = true;
+                    break;
+                }
+                case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
+                    updateExpiryNotif = true;
+                    break;
+                }
+                case Preferences.PREF_PASSWD_DEFAULT_SYMS: {
+                    updateDefaultSyms = true;
+                    break;
+                }
+                }
+            }
+            if (updateVisibleTimeout) {
                 PasswdTimeoutPref pref =
                         Preferences.getPasswdVisibleTimeoutPref(prefs);
                 itsPasswdVisibleTimeoutPref.setSummary(
                         pref.getDisplayName(getResources()));
-                break;
             }
-            case Preferences.PREF_PASSWD_ENC: {
+            if (updateEnc) {
                 itsPasswdEncPref.setSummary(
                         Preferences.getPasswordEncodingPref(prefs));
-                break;
             }
-            case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
+            if (updateExpiryNotif) {
                 PasswdExpiryNotifPref pref =
                         Preferences.getPasswdExpiryNotifPref(prefs);
                 Resources res = getResources();
                 itsPasswdExpiryNotifPref.setSummary(pref.getDisplayName(res));
-                break;
             }
-            case Preferences.PREF_PASSWD_DEFAULT_SYMS: {
+            if (updateDefaultSyms) {
                 String val = Preferences.getPasswdDefaultSymbolsPref(prefs);
                 itsPasswdDefaultSymsPref.setSummary(
                         getString(R.string.symbols_used_by_default, val));
-                break;
-            }
             }
         }
 
@@ -581,23 +636,36 @@ public class PreferencesFragment extends PreferenceFragmentCompat
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs,
-                                              String key)
+                                              @Nullable String key)
         {
-            switch (key) {
-            case Preferences.PREF_RECORD_SORT_ORDER: {
+            boolean updateSortOrder = false;
+            boolean updateFieldSort = false;
+            if (key == null) {
+                updateSortOrder = true;
+                updateFieldSort = true;
+            } else {
+                switch (key) {
+                case Preferences.PREF_RECORD_SORT_ORDER: {
+                    updateSortOrder = true;
+                    break;
+                }
+                case Preferences.PREF_RECORD_FIELD_SORT: {
+                    updateFieldSort = true;
+                    break;
+                }
+                }
+            }
+            if (updateSortOrder) {
                 RecordSortOrderPref pref =
                         Preferences.getRecordSortOrderPref(prefs);
                 Resources res = getResources();
                 itsRecordSortOrderPref.setSummary(pref.getDisplayName(res));
-                break;
             }
-            case Preferences.PREF_RECORD_FIELD_SORT: {
+            if (updateFieldSort) {
                 RecordFieldSortPref pref =
                         Preferences.getRecordFieldSortPref(prefs);
                 Resources res = getResources();
                 itsRecordFieldSortPref.setSummary(pref.getDisplayName(res));
-                break;
-            }
             }
         }
     }

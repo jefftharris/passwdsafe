@@ -19,6 +19,7 @@ import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.PasswdSafeFileDataFragment;
 import com.jefftharris.passwdsafe.Preferences;
@@ -231,16 +232,21 @@ public class PasswdClientProvider extends ContentProvider
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                          @Nullable String key)
     {
-        switch (key) {
-        case Preferences.PREF_SORT_ASCENDING:
-        case Preferences.PREF_SORT_CASE_SENSITIVE:
-        case Preferences.PREF_SEARCH_CASE_SENSITIVE:
-        case Preferences.PREF_SEARCH_REGEX: {
+        if (key == null) {
             updatePrefs(prefs);
-            break;
-        }
+        } else {
+            switch (key) {
+            case Preferences.PREF_SORT_ASCENDING:
+            case Preferences.PREF_SORT_CASE_SENSITIVE:
+            case Preferences.PREF_SEARCH_CASE_SENSITIVE:
+            case Preferences.PREF_SEARCH_REGEX: {
+                updatePrefs(prefs);
+                break;
+            }
+            }
         }
     }
 

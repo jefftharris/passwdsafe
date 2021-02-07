@@ -13,6 +13,8 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.TypedValue;
 
+import androidx.annotation.Nullable;
+
 import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
@@ -126,37 +128,49 @@ public final class PasswdFileDataView
      * @return Whether the file data should be refreshed
      */
     public boolean handleSharedPreferenceChanged(SharedPreferences prefs,
-                                                 String key)
+                                                 @Nullable String key)
     {
         boolean rebuild = false;
         boolean rebuildSearch = false;
-        switch (key) {
-        case Preferences.PREF_SORT_ASCENDING:
-        case Preferences.PREF_SORT_CASE_SENSITIVE:
-        case Preferences.PREF_GROUP_RECORDS:
-        case Preferences.PREF_RECORD_SORT_ORDER:
-        case Preferences.PREF_RECORD_FIELD_SORT: {
+        if (key == null) {
             itsRecordOptions = new PasswdRecordDisplayOptions(prefs);
-            rebuild = true;
-            break;
-        }
-        case Preferences.PREF_SEARCH_CASE_SENSITIVE: {
             itsIsSearchCaseSensitive =
                     Preferences.getSearchCaseSensitivePref(prefs);
-            rebuildSearch = true;
-            break;
-        }
-        case Preferences.PREF_SEARCH_REGEX: {
             itsIsSearchRegex = Preferences.getSearchRegexPref(prefs);
-            rebuildSearch = true;
-            break;
-        }
-        case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
             itsExpiryNotifPref = Preferences.getPasswdExpiryNotifPref(prefs);
+            rebuildSearch = true;
             rebuild = true;
             itsIsExpiryChanged = true;
-            break;
-        }
+        } else {
+            switch (key) {
+            case Preferences.PREF_SORT_ASCENDING:
+            case Preferences.PREF_SORT_CASE_SENSITIVE:
+            case Preferences.PREF_GROUP_RECORDS:
+            case Preferences.PREF_RECORD_SORT_ORDER:
+            case Preferences.PREF_RECORD_FIELD_SORT: {
+                itsRecordOptions = new PasswdRecordDisplayOptions(prefs);
+                rebuild = true;
+                break;
+            }
+            case Preferences.PREF_SEARCH_CASE_SENSITIVE: {
+                itsIsSearchCaseSensitive =
+                        Preferences.getSearchCaseSensitivePref(prefs);
+                rebuildSearch = true;
+                break;
+            }
+            case Preferences.PREF_SEARCH_REGEX: {
+                itsIsSearchRegex = Preferences.getSearchRegexPref(prefs);
+                rebuildSearch = true;
+                break;
+            }
+            case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
+                itsExpiryNotifPref =
+                        Preferences.getPasswdExpiryNotifPref(prefs);
+                rebuild = true;
+                itsIsExpiryChanged = true;
+                break;
+            }
+            }
         }
 
         if (rebuildSearch &&

@@ -18,6 +18,8 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 
@@ -115,14 +117,19 @@ public class FileTimeoutReceiver extends BroadcastReceiver
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                          @Nullable String key)
     {
-        switch (key) {
-        case Preferences.PREF_FILE_CLOSE_SCREEN_OFF:
-        case Preferences.PREF_FILE_CLOSE_TIMEOUT: {
+        if (key == null) {
             updatePrefs(prefs);
-            break;
-        }
+        } else {
+            switch (key) {
+            case Preferences.PREF_FILE_CLOSE_SCREEN_OFF:
+            case Preferences.PREF_FILE_CLOSE_TIMEOUT: {
+                updatePrefs(prefs);
+                break;
+            }
+            }
         }
     }
 

@@ -19,6 +19,8 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
@@ -92,34 +94,35 @@ public final class PasswdSafeApp extends Application
         }
         Preferences.upgrade(prefs, this);
 
-
-        setPasswordEncodingPref(prefs);
-        setPasswordDefaultSymsPref(prefs);
-        itsDefaultPasswdPolicy = Preferences.getDefPasswdPolicyPref(prefs,
-                                                                    this);
+        initPrefs(prefs);
     }
 
-    /* (non-Javadoc)
-     * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
-     */
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                          @Nullable String key)
     {
-        PasswdSafeUtil.dbginfo(TAG, "Preference change: %s, value: %s",
-                               key, prefs.getAll().get(key));
-
-        switch (key) {
-        case Preferences.PREF_PASSWD_ENC: {
-            setPasswordEncodingPref(prefs);
-            break;
-        }
-        case Preferences.PREF_PASSWD_DEFAULT_SYMS: {
-            setPasswordDefaultSymsPref(prefs);
-            break;
-        }
-        case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
+        if (key == null) {
+            initPrefs(prefs);
             itsNotifyMgr.setPasswdExpiryFilter(getPasswdExpiryNotifPref(prefs));
-            break;
-        }
+        } else {
+            PasswdSafeUtil.dbginfo(TAG, "Preference change: %s, value: %s", key,
+                                   prefs.getAll().get(key));
+
+            switch (key) {
+            case Preferences.PREF_PASSWD_ENC: {
+                setPasswordEncodingPref(prefs);
+                break;
+            }
+            case Preferences.PREF_PASSWD_DEFAULT_SYMS: {
+                setPasswordDefaultSymsPref(prefs);
+                break;
+            }
+            case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
+                itsNotifyMgr.setPasswdExpiryFilter(
+                        getPasswdExpiryNotifPref(prefs));
+                break;
+            }
+            }
         }
     }
 
@@ -279,5 +282,17 @@ public final class PasswdSafeApp extends Application
             break;
         }
         }
+    }
+
+
+    /**
+     * Initialize settings from preferences
+     */
+    private void initPrefs(SharedPreferences prefs)
+    {
+        setPasswordEncodingPref(prefs);
+        setPasswordDefaultSymsPref(prefs);
+        itsDefaultPasswdPolicy = Preferences.getDefPasswdPolicyPref(prefs,
+                                                                    this);
     }
 }

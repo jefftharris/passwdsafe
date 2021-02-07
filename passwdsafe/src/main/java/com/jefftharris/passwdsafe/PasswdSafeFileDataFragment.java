@@ -86,14 +86,23 @@ public class PasswdSafeFileDataFragment extends Fragment
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+    public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                          @Nullable String key)
     {
-        switch (key) {
-        case Preferences.PREF_FILE_CLOSE_CLEAR_CLIPBOARD: {
+        boolean updateCloseClearClipboard = false;
+        if (key == null) {
+            updateCloseClearClipboard = true;
+        } else {
+            switch (key) {
+            case Preferences.PREF_FILE_CLOSE_CLEAR_CLIPBOARD: {
+                updateCloseClearClipboard = true;
+                break;
+            }
+            }
+        }
+        if (updateCloseClearClipboard) {
             itsIsCloseClearClipboard =
                     Preferences.getFileCloseClearClipboardPref(prefs);
-            break;
-        }
         }
         if (itsFileDataView.handleSharedPreferenceChanged(prefs, key)) {
             refreshFileData();
