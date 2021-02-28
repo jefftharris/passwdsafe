@@ -737,7 +737,8 @@ public class PasswdSafeOpenFileFragment
             title = "";
         }
         //noinspection ConstantConditions
-        if (PasswdSafeApp.DEBUG_AUTO_FILE != null) {
+        if ((PasswdSafeApp.DEBUG_AUTO_FILE != null) &&
+            !PasswdSafeUtil.isTesting()) {
             title += " - AUTOOPEN!!!!!";
         }
         itsTitle.setText(getResources().getString(label, title));

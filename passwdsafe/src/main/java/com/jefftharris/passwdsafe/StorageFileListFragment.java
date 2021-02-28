@@ -86,6 +86,7 @@ public final class StorageFileListFragment extends Fragment
     private View itsEmptyText;
     private View itsFab;
     private boolean itsIsFabBounced = false;
+    private boolean itsIsDebugOpened = false;
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
     private Uri itsLastOpenUri;
@@ -317,6 +318,20 @@ public final class StorageFileListFragment extends Fragment
             itsIsFabBounced = true;
         }
         itsFilesAdapter.changeCursor(cursor);
+
+        //noinspection ConstantConditions
+        if ((PasswdSafeApp.DEBUG_AUTO_FILE != null) &&
+            !empty && !itsIsDebugOpened && !PasswdSafeUtil.isTesting()) {
+            itsIsDebugOpened = true;
+            Uri rootUri = ApiCompat.getPrimaryStorageRootUri(
+                    requireContext());
+            if (rootUri != null) {
+                rootUri = rootUri.buildUpon().path(
+                        PasswdSafeApp.DEBUG_AUTO_FILE).build();
+                openUri(rootUri, PasswdSafeApp.DEBUG_AUTO_FILE);
+                return;
+            }
+        }
 
         // Open the default file
         Activity act = requireActivity();
