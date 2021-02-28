@@ -30,10 +30,10 @@ import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.test.util.ChildCheckedViewAction;
+import com.jefftharris.passwdsafe.test.util.TestModeRule;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -97,26 +97,22 @@ public class FileListActivityTest
     private static final File LEGACY_FILE = new File(LEGACY_DIR,
                                                      FILE.getName());
 
-    @Rule
+    @Rule(order=1)
+    public TestModeRule itsTestMode = new TestModeRule();
+
+    @Rule(order=2)
     public IntentsTestRule<FileListActivity> itsActivityRule =
             new IntentsTestRule<>(FileListActivity.class);
 
     @Before
     public void setup()
     {
-        PasswdSafeUtil.setIsTesting(true);
         if (FILE.exists()) {
             Assert.assertTrue(FILE.delete());
         }
         if (ApiCompat.supportsExternalFilesDirs() && LEGACY_FILE.exists()) {
             Assert.assertTrue(LEGACY_FILE.delete());
         }
-    }
-
-    @After
-    public void teardown()
-    {
-        PasswdSafeUtil.setIsTesting(false);
     }
 
     @Test

@@ -16,8 +16,8 @@ import androidx.test.rule.ActivityTestRule;
 import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.test.util.TestModeRule;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,7 +46,10 @@ import static org.hamcrest.Matchers.not;
 @RunWith(AndroidJUnit4.class)
 public class PasswdSafeNewFileFragmentTest
 {
-    @Rule
+    @Rule(order=1)
+    public TestModeRule itsTestMode = new TestModeRule();
+
+    @Rule(order=2)
     public ActivityTestRule<PasswdSafe> itsActivityRule =
             new ActivityTestRule<PasswdSafe>(PasswdSafe.class)
             {
@@ -61,16 +64,9 @@ public class PasswdSafeNewFileFragmentTest
     @Before
     public void setup()
     {
-        PasswdSafeUtil.setIsTesting(true);
         if (FileListActivityTest.FILE.exists()) {
             Assert.assertTrue(FileListActivityTest.FILE.delete());
         }
-    }
-
-    @After
-    public void teardown()
-    {
-        PasswdSafeUtil.setIsTesting(false);
     }
 
     @Test
