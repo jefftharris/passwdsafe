@@ -157,11 +157,6 @@ public final class FileListFragment extends ListFragment
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        //noinspection ConstantConditions
-        if (PasswdSafeApp.DEBUG_AUTO_FILE != null) {
-            openFile(new File(PasswdSafeApp.DEBUG_AUTO_FILE));
-        }
-
         LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(0, null, this);
     }

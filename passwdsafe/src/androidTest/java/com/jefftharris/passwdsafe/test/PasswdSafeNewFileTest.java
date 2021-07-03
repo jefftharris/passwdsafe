@@ -23,6 +23,7 @@ import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.test.util.TestModeRule;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -79,15 +80,17 @@ public class PasswdSafeNewFileTest
 {
     private static final File FILE = FileListActivityTest.FILE;
 
+    @Rule(order=1)
+    public TestModeRule itsTestMode = new TestModeRule();
 
-    @Rule
+    @Rule(order=2)
     public IntentsTestRule<PasswdSafe> itsActivityRule =
             new IntentsTestRule<>(PasswdSafe.class, false, false);
 
     @Before
     public void setup()
     {
-        PasswdSafeUtil.setIsTesting(true);
+        //PasswdSafeUtil.setIsTesting(true);
         if (FILE.exists()) {
             Assert.assertTrue(FILE.delete());
         }
@@ -96,7 +99,7 @@ public class PasswdSafeNewFileTest
     @After
     public void teardown()
     {
-        PasswdSafeUtil.setIsTesting(false);
+        //PasswdSafeUtil.setIsTesting(false);
     }
 
     @Test

@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import org.pwsafe.lib.file.PwsFile;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -27,6 +25,8 @@ import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
+import org.pwsafe.lib.file.PwsFile;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,8 +34,8 @@ public final class PasswdSafeApp extends Application
     implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String DEBUG_AUTO_FILE =
-        null;
-        //Preferences.PREF_FILE_DIR_DEF + "/test.psafe3";
+            null;
+            //"/document/primary:test.psafe3";
 
     public static final String EXPIRATION_TIMEOUT_INTENT =
         "com.jefftharris.passwdsafe.action.EXPIRATION_TIMEOUT";
