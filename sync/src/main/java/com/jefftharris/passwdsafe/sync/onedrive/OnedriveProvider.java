@@ -135,7 +135,9 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             itsClientApp.handleInteractiveRequestRedirect(
                     activityRequestCode, activityResult, activityData);
         } catch (NullPointerException npe) {
-            itsNewAcctCb.onCancel();
+            if (itsNewAcctCb != null) {
+                itsNewAcctCb.onCancel();
+            }
         }
         AcquireTokenCallback tokenCb = itsNewAcctCb;
         itsNewAcctCb = null;
