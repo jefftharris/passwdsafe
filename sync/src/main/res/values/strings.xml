@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
@@ -24,6 +23,11 @@
     <string name="dropbox_acct_unlinked">App unlinked from Dropbox account.  Sync again to allow Dropbox access for PasswdSafe Sync.</string>
     <string name="dropbox_service_updated">Dropbox service updated</string>
     <string name="dropbox_synced_files">Dropbox Synced Files</string>
+    <string name="gdrive_file_auth_changed">Google Drive file authorization changed</string>
+    <string name="gdrive_help">
+        Google Drive files must be individually given access to the PasswdSafe
+        Sync app.  Select &lt;a href=""&gt;Help&lt;/&gt; for instructions.
+    </string>
     <string name="gdrive_reauth_required">Google Drive reauthorization required</string>
     <string name="gdrive_state_auth_required">Google account authentication required.  Sync again to begin the authentication process.</string>
     <string name="google_acct_not_available">Google account not available</string>
@@ -89,6 +93,12 @@
     <string name="updating_account">Updating account&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.9.0&lt;/b&gt; - Support more restrictive permissions for
+        Google Drive.
+        \n\n
+        &lt;b&gt;Google Drive Notice:&lt;/b&gt; Users may need to re-authorize
+        access to synced Google Drive files.  See the help for the account for
+        instructions.
         &lt;b&gt;3.8.0&lt;/b&gt; - Use Google sign-in UI to request Drive
         permissions instead of a notification.  Update libraries.
         \n\n

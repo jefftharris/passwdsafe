@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.loader.app.LoaderManager;
@@ -131,6 +132,9 @@ public class MainActivity extends AppCompatActivity
         if (intent.getBooleanExtra(NotifUtils.OWNCLOUD_SURVEY_EXTRA, false)) {
             onOwncloudSurveyClick(null);
         }
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(this);
+        Preferences.clearShowGDriveFileMigrationPref(prefs);
     }
 
     /* (non-Javadoc)
@@ -674,6 +678,15 @@ public class MainActivity extends AppCompatActivity
     public boolean isActivityRunning()
     {
         return itsIsRunning;
+    }
+
+    @Override
+    public void openUrl(Uri url, @StringRes int titleId)
+    {
+        Intent intent = new Intent(Intent.ACTION_VIEW, url);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(Intent.createChooser(intent, getString(titleId)));
+        }
     }
 
     @Override

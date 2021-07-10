@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -126,6 +127,13 @@ public final class GuiUtils
         Runtime.getRuntime().gc();
     }
 
+    /**
+     * Is a view visible
+     */
+    public static boolean isVisible(@NonNull View view)
+    {
+        return view.getVisibility() == View.VISIBLE;
+    }
 
     /** Set whether a view is visible */
     public static void setVisible(View view, boolean visible)

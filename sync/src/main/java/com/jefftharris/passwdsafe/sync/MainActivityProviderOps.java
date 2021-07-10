@@ -9,6 +9,8 @@ package com.jefftharris.passwdsafe.sync;
 
 import android.net.Uri;
 
+import androidx.annotation.StringRes;
+
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 
@@ -59,4 +61,9 @@ interface MainActivityProviderOps
      * Is the activity running
      */
     boolean isActivityRunning();
+
+    /**
+     * Open a URL
+     */
+    void openUrl(Uri url, @StringRes int titleId);
 }

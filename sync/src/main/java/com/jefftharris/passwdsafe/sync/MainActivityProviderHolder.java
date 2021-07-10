@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.sync;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -18,12 +19,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 
 /**
@@ -34,6 +37,9 @@ class MainActivityProviderHolder
         implements View.OnClickListener,
                    AdapterView.OnItemSelectedListener
 {
+    private static final String GDRIVE_HELP_URL =
+            "https://sourceforge.net/p/passwdsafe/wiki/SyncGoogleDrive";
+
     private final MainActivityProviderOps itsProviderOps;
     private final TextView itsTitle;
     private final TextView itsAccount;
@@ -48,6 +54,8 @@ class MainActivityProviderHolder
     private final ImageButton itsSync;
     private final ImageButton itsEdit;
     private final Button itsChooseFiles;
+    private final ImageButton itsHelp;
+    private final TextView itsHelpText;
     private ProviderType itsType;
     private ProviderSyncFreqPref itsFreq;
     private Uri itsProviderUri;
@@ -78,6 +86,10 @@ class MainActivityProviderHolder
         itsEdit.setOnClickListener(this);
         itsChooseFiles = view.findViewById(R.id.choose_files);
         itsChooseFiles.setOnClickListener(this);
+        itsHelp = view.findViewById(R.id.help);
+        itsHelp.setOnClickListener(this);
+        itsHelpText = view.findViewById(R.id.help_text);
+        itsHelpText.setOnClickListener(this);
     }
 
     /**
@@ -122,7 +134,16 @@ class MainActivityProviderHolder
 
         boolean hasChooseFiles = false;
         boolean hasEditDialog = false;
+        boolean hasHelp = false;
         switch (itsType) {
+        case GDRIVE: {
+            hasHelp = true;
+            SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
+            if (Preferences.getShowHelpGDrivePref(prefs)) {
+                showHelp(true);
+            }
+            break;
+        }
         case DROPBOX:
         case ONEDRIVE: {
             hasChooseFiles = true;
@@ -133,12 +154,12 @@ class MainActivityProviderHolder
             hasEditDialog = true;
             break;
         }
-        case BOX:
-        case GDRIVE: {
+        case BOX: {
             break;
         }
         }
         itsFreqSpin.setSelection(itsFreq.getDisplayIdx());
+        GuiUtils.setVisible(itsHelp, hasHelp);
         GuiUtils.setVisible(itsEdit, hasEditDialog);
         GuiUtils.setVisible(itsFreqLabel, !hasEditDialog);
         GuiUtils.setVisible(itsFreqSpin, !hasEditDialog);
@@ -165,6 +186,10 @@ class MainActivityProviderHolder
                                                     itsFreq);
         } else if (v == itsChooseFiles) {
             itsProviderOps.handleProviderChooseFiles(itsType, itsProviderUri);
+        } else if (v == itsHelp) {
+            toggleHelp();
+        } else if (v == itsHelpText) {
+            itsProviderOps.openUrl(Uri.parse(GDRIVE_HELP_URL), R.string.help);
         }
     }
 
@@ -195,5 +220,41 @@ class MainActivityProviderHolder
         GuiUtils.setVisible(label, hasLast);
         GuiUtils.setVisible(time, hasLast);
         time.setText(timeStr);
+    }
+
+    /**
+     * Toggle help visibility for a provider
+     */
+    private void toggleHelp()
+    {
+        showHelp(!GuiUtils.isVisible(itsHelpText));
+    }
+
+    /**
+     * Set the help visibility for a provider
+     */
+    private void showHelp(boolean visible)
+    {
+        Context ctx = itemView.getContext();
+        if (visible) {
+            switch (itsType) {
+            case GDRIVE: {
+                itsHelpText.setText(HtmlCompat.fromHtml(
+                        ctx.getString(R.string.gdrive_help),
+                        HtmlCompat.FROM_HTML_MODE_LEGACY));
+                break;
+            }
+            case DROPBOX:
+            case BOX:
+            case ONEDRIVE:
+            case OWNCLOUD: {
+                break;
+            }
+            }
+        } else {
+            SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
+            Preferences.setShowHelpGDrivePref(prefs, false);
+        }
+        GuiUtils.setVisible(itsHelpText, visible);
     }
 }

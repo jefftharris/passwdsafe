@@ -60,7 +60,7 @@ dependencies {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
-    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
     // Google Drive
     implementation('com.google.api-client:google-api-client-android:1.30.8') {
         exclude group: 'org.apache.httpcomponents'

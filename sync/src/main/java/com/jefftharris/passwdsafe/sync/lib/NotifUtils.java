@@ -35,7 +35,8 @@ public final class NotifUtils
         SYNC_REPEAT_FAILURES(6),
         DRIVE_REAUTH_REQUIRED(7),
         ONEDRIVE_MIGRATED(8),
-        OWNCLOUD_USAGE(9);
+        OWNCLOUD_USAGE(9),
+        DRIVE_FILE_MIGRATION(10);
 
         protected final int itsNotifId;
 
@@ -67,7 +68,8 @@ public final class NotifUtils
         case DROPBOX_MIGRATED:
         case BOX_MIGRATGED:
         case DRIVE_REAUTH_REQUIRED:
-        case ONEDRIVE_MIGRATED: {
+        case ONEDRIVE_MIGRATED:
+        case DRIVE_FILE_MIGRATION: {
             content = ctx.getString(R.string.open_app_reauthorize);
             break;
         }
@@ -105,7 +107,8 @@ public final class NotifUtils
         case SYNC_PROGRESS:
         case DRIVE_REAUTH_REQUIRED:
         case ONEDRIVE_MIGRATED:
-        case OWNCLOUD_USAGE: {
+        case OWNCLOUD_USAGE:
+        case DRIVE_FILE_MIGRATION: {
             activityClass = MainActivity.class;
             break;
         }
@@ -117,8 +120,23 @@ public final class NotifUtils
         }
 
         Intent launchIntent = new Intent(ctx, activityClass);
-        if (type == Type.OWNCLOUD_USAGE) {
+        switch (type) {
+        case OWNCLOUD_USAGE: {
             launchIntent.putExtra(OWNCLOUD_SURVEY_EXTRA, true);
+            break;
+        }
+        case OWNCLOUD_CERT_TRUSTED:
+        case DROPBOX_MIGRATED:
+        case BOX_MIGRATGED:
+        case SYNC_PROGRESS:
+        case SYNC_RESULTS:
+        case SYNC_CONFLICT:
+        case SYNC_REPEAT_FAILURES:
+        case DRIVE_REAUTH_REQUIRED:
+        case ONEDRIVE_MIGRATED:
+        case DRIVE_FILE_MIGRATION: {
+            break;
+        }
         }
 
         PendingIntent intent = PendingIntent.getActivity(
@@ -183,6 +201,9 @@ public final class NotifUtils
         }
         case OWNCLOUD_USAGE: {
             return ctx.getString(R.string.owncloud_users_survey);
+        }
+        case DRIVE_FILE_MIGRATION: {
+            return ctx.getString(R.string.gdrive_file_auth_changed);
         }
         }
         return null;

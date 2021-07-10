@@ -18,6 +18,10 @@ public class Preferences
 {
     private static final String PREF_NOTIF_SHOW_SYNC = "notifShowSyncPref";
     private static final boolean PREF_NOTIF_SHOW_SYNC_DEF = true;
+    private static final String PREF_SHOW_HELP_GDRIVE = "showHelpGdrivePref";
+    private static final boolean PREF_SHOW_HELP_GDRIVE_DEF = true;
+    private static final String PREF_SHOW_GDRIVE_FILE_MIGRATION =
+            "showGdriveFileMigrationPref";
 
     public static final String PREF_OWNCLOUD_SURVEY = "owncloudSurvey";
 
@@ -35,5 +39,44 @@ public class Preferences
     public static boolean getNotifShowSyncPref(SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_NOTIF_SHOW_SYNC, PREF_NOTIF_SHOW_SYNC_DEF);
+    }
+
+    /**
+     * Get the preference to show the help for GDrive
+     */
+    public static boolean getShowHelpGDrivePref(SharedPreferences prefs)
+    {
+        return prefs.getBoolean(PREF_SHOW_HELP_GDRIVE,
+                                PREF_SHOW_HELP_GDRIVE_DEF);
+    }
+
+    /**
+     * Set the preference to show the help for GDrive
+     */
+    public static void setShowHelpGDrivePref(SharedPreferences prefs,
+                                             boolean show)
+    {
+        prefs.edit().putBoolean(PREF_SHOW_HELP_GDRIVE, show).apply();
+    }
+
+    /**
+     * Get whether to show the GDrive file migration prompt
+     */
+    public static boolean getShowGDriveFileMigrationPref(
+            SharedPreferences prefs)
+    {
+        return prefs.getBoolean(PREF_SHOW_GDRIVE_FILE_MIGRATION, true);
+    }
+
+    /**
+     * Clear the show the GDrive file migration prompt
+     */
+    public static void clearShowGDriveFileMigrationPref(
+            SharedPreferences prefs)
+    {
+        if (getShowGDriveFileMigrationPref(prefs)) {
+            prefs.edit().putBoolean(PREF_SHOW_GDRIVE_FILE_MIGRATION, false)
+                 .apply();
+        }
     }
 }

@@ -60,6 +60,7 @@ import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
+import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
@@ -107,7 +108,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
         super.init(dbProvider);
         int migration = checkMigration();
         updateAcct();
-        checkMigrationWithAcct(migration);
+        checkMigrationWithAcct(migration, dbProvider);
     }
 
 
@@ -432,7 +433,8 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     /**
      * Check whether any migrations are needed after the account is available
      */
-    private void checkMigrationWithAcct(int migration)
+    private void checkMigrationWithAcct(int migration,
+                                        @Nullable DbProvider dbProvider)
     {
         if (migration < MIGRATION_SERVICE) {
             // If there was a previous account, remove the automatic sync
@@ -454,6 +456,15 @@ public class GDriveProvider extends AbstractSyncTimerProvider
                     PreferenceManager.getDefaultSharedPreferences(getContext());
             prefs.edit().putInt(PREF_MIGRATION, MIGRATION_SERVICE).apply();
         }
+
+        if (dbProvider != null) {
+            Context ctx = getContext();
+            SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
+            if (Preferences.getShowGDriveFileMigrationPref(prefs)) {
+                NotifUtils.showNotif(NotifUtils.Type.DRIVE_FILE_MIGRATION,
+                                     ctx);
+            }
+        }
     }
 
     /**
@@ -464,7 +475,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     {
         GoogleSignInOptions.Builder builder =
                 new GoogleSignInOptions.Builder();
-        builder.requestScopes(new Scope(DriveScopes.DRIVE));
+        builder.requestScopes(new Scope(DriveScopes.DRIVE_FILE));
         builder.setAccountName(accountName);
         return GoogleSignIn.getClient(ctx, builder.build());
     }
@@ -474,7 +485,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     {
         return GoogleAccountCredential.usingOAuth2(
                 ctx.getApplicationContext(),
-                Collections.singletonList(DriveScopes.DRIVE));
+                Collections.singletonList(DriveScopes.DRIVE_FILE));
     }
 
     /**
