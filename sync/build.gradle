@@ -55,8 +55,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
     implementation project(':lib-owncloud')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.2.0'
-    implementation('androidx.work:work-runtime:2.4.0') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.3.1'
+    implementation('androidx.work:work-runtime:2.5.0') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
