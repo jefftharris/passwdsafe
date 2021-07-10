@@ -116,7 +116,10 @@ public final class SavedPasswordsMgr
         BiometricManager bioMgr = BiometricManager.from(itsContext);
         switch (bioMgr.canAuthenticate()) {
         case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
-        case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE: {
+        case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+        case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
+        case BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED:
+        case BiometricManager.BIOMETRIC_STATUS_UNKNOWN: {
             break;
         }
         case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED: {
