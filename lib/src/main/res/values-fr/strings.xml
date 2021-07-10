@@ -26,6 +26,7 @@
     <string name="error_msg">&lt;i&gt;%1$s&lt;/i&gt;</string>
     <string name="file_type_icon">Icône des types de fichier</string>
     <string name="google_drive">Google Drive</string>
+    <string name="help">Assistance</string>
     <string name="licenses">Licenses</string>
     <string name="new_drive_file">Nouveau fichier de Drive</string>
     <string name="no_files">Aucun fichier</string>

@@ -151,7 +151,6 @@
     <string name="group_cannot_start_with_dot">Gruppe kan ikke starte med «.»</string>
     <string name="group_header">GRUPPE</string>
     <string name="group_records">Gruppeoppføringer</string>
-    <string name="help">Hjelp</string>
     <string name="hidden_password_alias">***** (fra alias, trykk for å vise)</string>
     <string name="hidden_password_normal">***** (trykk for å vise)</string>
     <string name="hidden_password_shortcut">***** (fra snarvei, trykk for å vise)</string>

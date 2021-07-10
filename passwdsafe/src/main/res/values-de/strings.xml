@@ -164,7 +164,6 @@
     <string name="group_cannot_start_with_dot">Gruppe kann nicht mit einem \'.\' anfangen</string>
     <string name="group_header">GRUPPE</string>
     <string name="group_records">Gruppiere Einträge</string>
-    <string name="help">Hilfe</string>
     <string name="hidden_password_alias">**** (vom Alias, zum Anzeigen berühren)</string>
     <string name="hidden_password_normal">**** (zum Anzeigen berühren)</string>
     <string name="hidden_password_shortcut">**** (aus Verknüpfung, zum Anzeigen berühren)</string>

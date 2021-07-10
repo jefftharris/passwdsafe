@@ -18,6 +18,7 @@
     <string name="error_msg">&lt;i&gt;%1$s&lt;/i&gt;</string>
     <string name="file_type_icon">Filtypeikon</string>
     <string name="google_drive">Google Disk</string>
+    <string name="help">Hjelp</string>
     <string name="licenses">Lisenser</string>
     <string name="new_drive_file">Ny Google Disk-fil</string>
     <string name="no_files">Ingen filer</string>

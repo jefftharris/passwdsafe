@@ -161,7 +161,6 @@
     <string name="group_cannot_start_with_dot">Group cannot start with a \'.\'</string>
     <string name="group_header">GROUP</string>
     <string name="group_records">Group records</string>
-    <string name="help">Help</string>
     <string name="hidden_password_alias">***** (from alias, tap to show)</string>
     <string name="hidden_password_normal">***** (tap to show)</string>
     <string name="hidden_password_shortcut">***** (from shortcut, tap to show)</string>
