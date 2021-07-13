@@ -16,6 +16,11 @@
     <string name="dropbox_acct_unlinked">Appen er ikke lenger lenket til Dropbox-kontoen. Synkroniser igjen for å gi PasswdSafe Sync tilgang til Dropbox.</string>
     <string name="dropbox_service_updated">Dropbox-tjeneste oppdatert</string>
     <string name="dropbox_synced_files">Dropbox-synkroniserte filer</string>
+    <string name="gdrive_file_auth_changed">Godkjennelse for filer i Google Disk endret</string>
+    <string name="gdrive_help">
+        Filer i Google Disk må gies individuell tilgang til PasswdSafe Sync
+        appen. Velg &lt;a href=""&gt;Hjelp&lt;/&gt; for instruksjoner.
+    </string>
     <string name="gdrive_reauth_required">Google Disk krever at du autentiserer deg på nytt</string>
     <string name="gdrive_state_auth_required">Autentisering av Google-kontoen er påkrevd. Synkroniser igjen for å starte prosessen.</string>
     <string name="google_acct_not_available">Google-konto er ikke tilgjengelig</string>
@@ -72,6 +77,13 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.9.0&lt;/b&gt; - Støtte for mer restriktive rettigheter for Google
+        Disk.
+        \n
+        &lt;b&gt;Merknad for Google Disk:&lt;/b&gt; Brukere må kanskje godkjenne
+        tilgangen på nytt for å synke filer i Google Disk. Se hjelpen for
+        kontoen for instruksjoner.
+        \n\n
         &lt;b&gt;3.8.0&lt;/b&gt; - Byttet til Google sitt innloggingsgrensesnitt
         for å be om Disk-rettigheter istedenfor et varsel. Oppdaterte bibliotek.
         \n\n

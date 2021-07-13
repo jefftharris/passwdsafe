@@ -24,6 +24,12 @@
     <string name="dropbox_acct_unlinked">App dissociée de compte Dropbox. Synchronisez à nouveau pour permettre l\'accès Dropbox pour PasswdSafe Sync.</string>
     <string name="dropbox_service_updated">Service de Dropbox est mis à jour</string>
     <string name="dropbox_synced_files">Dropbox Fichiers Synchronisé</string>
+    <string name="gdrive_file_auth_changed">Autorisation du ficher Google Drive modifié</string>
+    <string name="gdrive_help">
+        Les fichier Google Drive doivent avoir l\'accès individuellement pour
+        l\'application PasswdSafe Sync. Sélectionner
+        &lt;a href=""&gt;Aide&lt;/&gt; pour les instructions.
+    </string>
     <string name="gdrive_reauth_required">Re-autorisation requise pour Google drive</string>
     <string name="gdrive_state_auth_required">Compte Google authentification requise. Synchronisez à nouveau pour commencer le processus d\'authentification.</string>
     <string name="google_acct_not_available">Compte Google n\'est pas disponible</string>
@@ -93,6 +99,13 @@
     <string name="updating_account">Mise à jour compte&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.9.0&lt;/b&gt; - Support de permissions plus restrictives avec Google
+        Drive
+        \n
+        &lt;b&gt;Remarque sur Google Drive:&lt;/b&gt; Les utilisateurs devront peut-être
+        re-autoriser l\'accès au fichiers synchronisés Google Drive. Voir
+        l\'aide sur le compte pour les instructions.
+        \n\n
         &lt;b&gt;3.8.0&lt;/b&gt; - Utilisation du sign-in Google pour la
         demande permission google Drive au lieu de la notification. Mise à jour
         des librairies

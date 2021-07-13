@@ -95,10 +95,11 @@
     <string name="release_notes">
         &lt;b&gt;3.9.0&lt;/b&gt; - Support more restrictive permissions for
         Google Drive.
-        \n\n
+        \n
         &lt;b&gt;Google Drive Notice:&lt;/b&gt; Users may need to re-authorize
         access to synced Google Drive files.  See the help for the account for
         instructions.
+        \n\n
         &lt;b&gt;3.8.0&lt;/b&gt; - Use Google sign-in UI to request Drive
         permissions instead of a notification.  Update libraries.
         \n\n
