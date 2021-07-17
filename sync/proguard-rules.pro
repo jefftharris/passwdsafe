@@ -61,9 +61,8 @@
 
 # OneDrive
 -keep class com.microsoft.graph.extensions.Hashes
--keep class com.microsoft.identity.common.** {
-  *;
-}
+-keep class com.microsoft.identity.common.** { *; }
+-keepclassmembers class com.microsoft.graph.extensions.** { *; }
 
 # Retrofit library
 -keep,includedescriptorclasses class retrofit.** { *; }
