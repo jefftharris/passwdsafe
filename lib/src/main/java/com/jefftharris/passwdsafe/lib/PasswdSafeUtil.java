@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017, 2021 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -134,10 +134,19 @@ public class PasswdSafeUtil
         try {
             ApiCompat.copyToClipboard(str, ctx);
         } catch (Throwable e) {
-            String err = ctx.getString(R.string.copy_clipboard_error,
-                                       getAppTitle(ctx));
-            Toast.makeText(ctx, err, Toast.LENGTH_LONG).show();
-            Log.e(TAG, err + ": " + e.toString());
+            showClipboardError(e, ctx);
+        }
+    }
+
+    /**
+     * Clear the clipboard
+     */
+    public static void clearClipboard(Context ctx)
+    {
+        try {
+            ApiCompat.clearClipboard(ctx);
+        } catch (Throwable e) {
+            showClipboardError(e, ctx);
         }
     }
 
@@ -292,5 +301,16 @@ public class PasswdSafeUtil
         if (DEBUG) {
             Log.i(tag, String.format(fmt, args), t);
         }
+    }
+
+    /**
+     * Show an error from updating the clipboard
+     */
+    private static void showClipboardError(Throwable e, Context ctx)
+    {
+        String err = ctx.getString(R.string.copy_clipboard_error,
+                                   getAppTitle(ctx));
+        Toast.makeText(ctx, err, Toast.LENGTH_LONG).show();
+        Log.e(TAG, err + ": " + e.toString());
     }
 }

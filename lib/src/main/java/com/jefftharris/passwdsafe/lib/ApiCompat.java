@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016, 2021 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -34,6 +34,7 @@ public final class ApiCompat
     public static final int SDK_KITKAT = 19;
     public static final int SDK_LOLLIPOP = 21;
     public static final int SDK_OREO = 26;
+    private static final int SDK_P = 28;
     public static final int SDK_Q = 29;
 
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
@@ -137,11 +138,17 @@ public final class ApiCompat
      */
     public static void copyToClipboard(String str, Context ctx)
     {
-        ClipboardManager clipMgr = (ClipboardManager)
-                ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-        if (clipMgr != null) {
-            ClipData clip = ClipData.newPlainText(null, str);
-            clipMgr.setPrimaryClip(clip);
+        setClipboardText(str, ctx);
+    }
+
+    /**
+     * Clear the clipboard
+     */
+    public static void clearClipboard(Context ctx)
+    {
+        ClipboardManager clipMgr = setClipboardText("", ctx);
+        if ((clipMgr != null) && (SDK_VERSION >= SDK_P)) {
+            ApiCompatP.clearClipboard(clipMgr);
         }
     }
 
@@ -190,5 +197,20 @@ public final class ApiCompat
         Vibrator vib = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
         return (vib != null) &&
                ((SDK_VERSION < SDK_KITKAT) || ApiCompatKitkat.hasVibrator(vib));
+    }
+
+    /**
+     * Set the text in the clipboard
+     * @return The clipboard manager
+     */
+    private static ClipboardManager setClipboardText(String str, Context ctx)
+    {
+        ClipboardManager clipMgr = (ClipboardManager)
+                ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipMgr != null) {
+            ClipData clip = ClipData.newPlainText(null, str);
+            clipMgr.setPrimaryClip(clip);
+        }
+        return clipMgr;
     }
 }
