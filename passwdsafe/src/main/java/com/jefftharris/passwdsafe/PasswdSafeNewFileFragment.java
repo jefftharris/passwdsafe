@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016, 2021 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -44,6 +44,8 @@ import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;
 
+import java.util.regex.Pattern;
+
 
 /**
  * Fragment for creating a new file
@@ -84,6 +86,10 @@ public class PasswdSafeNewFileFragment
     private static final String ARG_URI = "uri";
 
     private static final int CREATE_DOCUMENT_REQUEST = 0;
+
+    /// Regex for a valid new file name, without extension
+    private static final Pattern FILENAME_REGEX = Pattern.compile(
+            "^[\\p{Alnum}_-]+$");
 
     private static final String TAG = "PasswdSafeNewFileFrag";
 
@@ -418,15 +424,11 @@ public class PasswdSafeNewFileFragment
         String fileNameBase = fileName.substring(
                 0, fileName.length() - itsPsafe3Sfx.length());
 
-        if (fileNameBase.length() == 0) {
+        if (fileNameBase.isEmpty()) {
             return getString(R.string.empty_file_name);
-        } else {
-            for (int i = 0; i < fileNameBase.length(); ++i) {
-                char c = fileNameBase.charAt(i);
-                if (!Character.isLetterOrDigit(c)) {
-                    return getString(R.string.invalid_file_name);
-                }
-            }
+        }
+        if (!FILENAME_REGEX.matcher(fileNameBase).matches()) {
+            return getString(R.string.invalid_file_name);
         }
 
         if (!itsUseStorage) {

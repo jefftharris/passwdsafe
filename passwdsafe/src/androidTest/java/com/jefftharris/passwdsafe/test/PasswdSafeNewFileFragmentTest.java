@@ -124,13 +124,13 @@ public class PasswdSafeNewFileFragmentTest
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError(null)));
 
-        for (char c: "1234567890abcxyzABCXYZ".toCharArray()) {
+        for (char c: "1234567890abcxyzABCXYZ-_".toCharArray()) {
             onFileNameView().perform(replaceText("ZZZ" + c + "test.psafe3"));
             onView(withId(R.id.file_name_input))
                     .check(matches(withTextInputError(null)));
         }
 
-        for (char c: "`~!@#$%^&*()_+-={}[]|\\;:'\"<>,./?".toCharArray()) {
+        for (char c: "`~!@#$%^&*()+={}[]|\\;:'\"<>,./?".toCharArray()) {
             onFileNameView()
                     .perform(replaceText("ZZZ" + c + "test.psafe3"));
             onView(withId(R.id.file_name_input))
