@@ -25,7 +25,8 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation":
-                                     "$projectDir/schemas".toString()]
+                                     "$projectDir/schemas".toString(),
+                             "room.incremental":"true"]
             }
         }
     }
@@ -50,6 +51,11 @@ android {
         }
     }
     ndkVersion = '21.3.6528147'
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging false
+        }
+    }
     testOptions {
         animationsDisabled true
     }
