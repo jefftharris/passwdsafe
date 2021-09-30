@@ -56,7 +56,8 @@
 
         <activity
             android:name=".FileListActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -81,7 +82,8 @@
             android:name=".PasswdSafe"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:parentActivityName=".FileListActivity">
+            android:parentActivityName=".FileListActivity"
+            android:exported="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FileListActivity"/>
@@ -218,7 +220,7 @@
             android:name=".LauncherFileShortcuts"
             android:label="@string/password_file"
             android:theme="@style/PwsAppTheme_Dialog"
-            tools:ignore="ExportedActivity">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -229,7 +231,7 @@
             android:name=".LauncherRecordShortcuts"
             android:label="@string/password_record"
             android:theme="@style/PwsAppTheme_Dialog"
-            tools:ignore="ExportedActivity">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -273,7 +275,8 @@
         <service
             android:name=".PasswdSafeIME"
             android:label="@string/app_name"
-            android:permission="android.permission.BIND_INPUT_METHOD">
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.view.InputMethod"/>
             </intent-filter>
