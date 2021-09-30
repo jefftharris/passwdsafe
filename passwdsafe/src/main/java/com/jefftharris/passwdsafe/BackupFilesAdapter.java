@@ -150,7 +150,7 @@ public class BackupFilesAdapter
                 @Override
                 public int getPosition()
                 {
-                    return getAdapterPosition();
+                    return getBindingAdapterPosition();
                 }
 
                 @Override
