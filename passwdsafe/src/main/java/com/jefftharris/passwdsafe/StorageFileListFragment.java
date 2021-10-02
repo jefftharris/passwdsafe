@@ -576,18 +576,15 @@ public final class StorageFileListFragment extends Fragment
             PasswdSafeUtil.dbginfo(TAG, "Checking persist perm %s", uri);
 
             boolean doRemove = false;
-            try (Cursor cursor = cr.query(uri, null, null, null, null)) {
-                int flags = Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-
-                if ((cursor != null) && (cursor.moveToFirst())) {
-                    ApiCompat.takePersistableUriPermission(cr, uri, flags);
-                } else {
-                    ApiCompat.releasePersistableUriPermission(cr, uri, flags);
-                    doRemove = true;
-                }
+            try (Cursor ignored = cr.query(uri, null, null, null, null)) {
+                // Acquire the cursor to attempt to launch the app providing
+                // the file
+                ApiCompat.takePersistableUriPermission(
+                        cr, uri,
+                        (Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                         Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
             } catch (Exception e) {
-                Log.e(TAG, "Permission remove error: " + uri, e);
+                Log.e(TAG, "Take permission error for: " + uri, e);
                 doRemove = true;
             }
 
