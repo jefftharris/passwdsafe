@@ -31,7 +31,7 @@ public class PasswdHistory
 {
     public static class Entry implements Comparable<Entry>
     {
-        private final Date itsDate;
+        private Date itsDate;
         private final String itsPasswd;
 
         protected Entry(Date date, String passwd)
@@ -43,6 +43,11 @@ public class PasswdHistory
         protected Date getDate()
         {
             return itsDate;
+        }
+
+        protected void setDate(Date date)
+        {
+            itsDate = date;
         }
 
         public String getPasswd()
@@ -173,6 +178,18 @@ public class PasswdHistory
             if (passwdDate == null) {
                 passwdDate = new Date();
             }
+
+            // Adjust times of current entries if they are later than the
+            // date for the new password.  Ensure the same relative ordering
+            // is kept.
+            Date maxDate = passwdDate;
+            for (Entry entry: itsPasswds) {
+                if (entry.getDate().compareTo(maxDate) >= 0) {
+                    entry.setDate(maxDate);
+                    maxDate = new Date(maxDate.getTime() - 1*1000);
+                }
+            }
+
             itsPasswds.add(new Entry(passwdDate, passwd));
             Collections.sort(itsPasswds);
         }
