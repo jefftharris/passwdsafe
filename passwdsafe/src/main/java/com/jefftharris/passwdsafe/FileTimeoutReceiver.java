@@ -17,9 +17,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
 
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 
@@ -49,7 +49,9 @@ public class FileTimeoutReceiver extends BroadcastReceiver
                 itsActivity.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(PasswdSafeApp.FILE_TIMEOUT_INTENT);
         intent.setPackage("com.jefftharris.passwdsafe");
-        itsCloseIntent = PendingIntent.getBroadcast(itsActivity, 0, intent, 0);
+        itsCloseIntent = PendingIntent.getBroadcast(
+                itsActivity, 0, intent,
+                ApiCompat.getPendingIntentImmutableFlag());
         IntentFilter filter =
                 new IntentFilter(PasswdSafeApp.FILE_TIMEOUT_INTENT);
         filter.addAction(Intent.ACTION_SCREEN_OFF);

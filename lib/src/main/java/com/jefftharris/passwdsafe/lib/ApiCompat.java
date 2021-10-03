@@ -33,6 +33,7 @@ public final class ApiCompat
 {
     public static final int SDK_KITKAT = 19;
     public static final int SDK_LOLLIPOP = 21;
+    public static final int SDK_M = 23;
     public static final int SDK_OREO = 26;
     private static final int SDK_P = 28;
     public static final int SDK_Q = 29;
@@ -197,6 +198,15 @@ public final class ApiCompat
         Vibrator vib = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
         return (vib != null) &&
                ((SDK_VERSION < SDK_KITKAT) || ApiCompatKitkat.hasVibrator(vib));
+    }
+
+    /**
+     * Get the immutable flag for a pending intent
+     */
+    public static int getPendingIntentImmutableFlag()
+    {
+        return (SDK_VERSION < SDK_M) ?
+               0 : ApiCompatM.PENDING_INTENT_FLAG_IMMUTABLE;
     }
 
     /**

@@ -31,6 +31,7 @@ import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileDataObserver;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -403,7 +404,9 @@ public class NotificationMgr implements PasswdFileDataObserver
                 intent.setClass(itsCtx.getApplicationContext(),
                                 ExpirationTimeoutReceiver.class);
                 itsTimerIntent = PendingIntent.getBroadcast(
-                    itsCtx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    itsCtx, 0, intent,
+                    (PendingIntent.FLAG_CANCEL_CURRENT |
+                     ApiCompat.getPendingIntentImmutableFlag()));
             }
             long nextTimer = System.currentTimeMillis() +
                 (nextExpiration.itsValue - expiration);
@@ -479,7 +482,8 @@ public class NotificationMgr implements PasswdFileDataObserver
 
         PendingIntent intent = PendingIntent.getActivity(
             itsCtx, 0, PasswdSafeUtil.createOpenIntent(uri, record),
-            PendingIntent.FLAG_UPDATE_CURRENT);
+            (PendingIntent.FLAG_UPDATE_CURRENT |
+             ApiCompat.getPendingIntentImmutableFlag()));
 
         String title = itsCtx.getResources().getQuantityString(
             R.plurals.expiring_passwords, numExpired, numExpired);

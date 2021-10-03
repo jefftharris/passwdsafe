@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.core.app.NotificationCompat;
 
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.MainActivity;
 import com.jefftharris.passwdsafe.sync.R;
@@ -141,7 +142,8 @@ public final class NotifUtils
 
         PendingIntent intent = PendingIntent.getActivity(
                 ctx, type.itsNotifId, launchIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                (PendingIntent.FLAG_UPDATE_CURRENT |
+                 ApiCompat.getPendingIntentImmutableFlag()));
         builder.setContentIntent(intent);
 
         builder.setSmallIcon(R.drawable.ic_stat_app);
