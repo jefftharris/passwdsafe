@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity
                    MainActivityProviderOps,
                    SyncUpdateHandler,
                    AccountUpdateTask.Listener,
-                   OwncloudEditDialog.Listener
+                   OwncloudEditDialog.Listener,
+                   View.OnClickListener
 {
     private static final String TAG = "MainActivity";
 
@@ -116,6 +117,11 @@ public class MainActivity extends AppCompatActivity
         accounts.setAdapter(itsAccountsAdapter);
         accounts.setNestedScrollingEnabled(false);
 
+        View passwdSafe = findViewById(R.id.passwd_safe);
+        passwdSafe.setOnClickListener(this);
+        View owncloudSurvey = findViewById(R.id.owncloud_survey);
+        owncloudSurvey.setOnClickListener(this);
+
         LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_PROVIDERS, null, this);
 
@@ -130,7 +136,7 @@ public class MainActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra(NotifUtils.OWNCLOUD_SURVEY_EXTRA, false)) {
-            onOwncloudSurveyClick(null);
+            onOwncloudSurveyClick();
         }
 
         SharedPreferences prefs = Preferences.getSharedPrefs(this);
@@ -310,19 +316,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /** Button onClick handler to launch PasswdSafe */
-    @SuppressWarnings({"UnusedParameters"})
-    public void onLaunchPasswdSafeClick(View view)
+    @Override
+    public void onClick(View v)
     {
-        PasswdSafeUtil.startMainActivity(PasswdSafeUtil.PACKAGE, this);
+        int id = v.getId();
+        if (id == R.id.passwd_safe) {
+            PasswdSafeUtil.startMainActivity(PasswdSafeUtil.PACKAGE, this);
+        } else if (id == R.id.owncloud_survey) {
+            onOwncloudSurveyClick();
+        }
     }
 
 
     /**
      * Button handler for an ownCloud survey
      */
-    @SuppressWarnings("UnusedParameters")
-    public void onOwncloudSurveyClick(View view)
+    private void onOwncloudSurveyClick()
     {
         AlertDialog.Builder dlg = new AlertDialog.Builder(this);
         dlg.setTitle(R.string.owncloud_survey)

@@ -50,7 +50,6 @@
             android:id="@+id/owncloud_survey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onOwncloudSurveyClick"
             android:text="@string/owncloud_survey"
             android:visibility="gone"
             />
@@ -85,11 +84,11 @@
             app:drawableLeftCompat="@mipmap/ic_launcher_passwdsafe"/>
 
         <Button
+            android:id="@+id/passwd_safe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_action_play"
             android:drawablePadding="6dp"
-            android:onClick="onLaunchPasswdSafeClick"
             android:text="@string/open"/>
     </LinearLayout>
 
