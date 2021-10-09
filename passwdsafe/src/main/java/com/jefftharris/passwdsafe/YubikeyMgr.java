@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -21,7 +22,6 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.CheckResult;
 
-import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.util.ClearingByteArrayOutputStream;
@@ -98,6 +98,7 @@ public class YubikeyMgr
     }
 
     /// Start the interaction with the YubiKey
+    @SuppressLint("UnspecifiedImmutableFlag")
     public void start(User user)
     {
         if (itsUser != null) {
@@ -110,7 +111,7 @@ public class YubikeyMgr
             Intent intent = new Intent(act, act.getClass());
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             itsTagIntent = PendingIntent.getActivity(
-                    act, 0, intent, ApiCompat.getPendingIntentImmutableFlag());
+                    act, 0, intent, 0);
         }
 
         if (TEST) {
