@@ -366,6 +366,11 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.2&lt;/b&gt; - Fikset at nylige filer forsvinner. Tillatt
+        bindestrek og understrek i nye filnavn. Gjør et ekstra kall for å
+        forsøke å fjerne et passord fra utklippstavlen. Fiks passordhistorikk
+        med ugyldige datoer i fremtiden.
+        \n\n
         &lt;b&gt;6.21.1&lt;/b&gt; - Fyll ut tilpassede symboler for
         passordregler på forhånd. Redusert følsomhet for dra-bevegelsen som
         fjerner en nylig fil. Kode opprydning.

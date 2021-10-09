@@ -409,6 +409,12 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.2&lt;/b&gt; - Correction disparition fichier récent.
+        Autorise tiret et tiret bas dans les nouveaux nom de fichier. Demande
+        une fois de plus lors de la tentative de vider le mot de passe depuis
+        le presse papier. Correction historique mots de passe avec des date
+        dans le future.
+        \n\n
         &lt;b&gt;6.21.1&lt;/b&gt; - Pré-remplissage des symboles personnalisés
         pour la politique mots de passe. Réduction de la sensibilité au
         mouvement de balayage pour supprimer un fichier récent. Nettoyage du

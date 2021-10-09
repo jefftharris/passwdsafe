@@ -401,6 +401,11 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.2&lt;/b&gt; - Verschwinden von Dateien behoben.  Binde-
+        und Unterstriche sind nun in Dateinamen erlaubt.  Leerung der
+        Zwischenablage durch weiteren Aufruf verbessert.  Ungültige Daten beim
+        Password-Verlauf werden berichtigt.
+        \n\n
         &lt;b&gt;6.21.1&lt;/b&gt; - Vorbelegung von eigenen Symbolen für eine
         Passwortregel. Empfindlichkeit der Wischbewegung zum Entfernen einer
         kürzlich geöffneten Datei verringert. Code bereinigt.
