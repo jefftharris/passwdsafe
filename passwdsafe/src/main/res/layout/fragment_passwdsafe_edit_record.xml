@@ -333,15 +333,15 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/expire_date_error"
-                    style="@style/TextAppearance.Design.Error"
+                    android:id="@+id/expire_date_warning"
+                    style="@style/TextAppearance.Design.Hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="4dp"
                     android:paddingLeft="4dp"
                     android:paddingEnd="4dp"
                     android:paddingRight="4dp"
-                    android:text="@string/password_expiration_in_past" />
+                    android:text="@string/password_expiration_in_past"/>
 
                 <RelativeLayout
                     android:id="@+id/expire_interval_fields"

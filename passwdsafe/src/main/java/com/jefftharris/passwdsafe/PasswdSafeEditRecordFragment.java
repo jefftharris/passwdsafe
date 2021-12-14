@@ -149,7 +149,7 @@ public class PasswdSafeEditRecordFragment
     private View itsExpireDateFields;
     private TextView itsExpireDateTime;
     private TextView itsExpireDateDate;
-    private View itsExpireDateError;
+    private View itsExpireDateWarning;
     private View itsExpireIntervalFields;
     private TextInputLayout itsExpireIntervalInput;
     private TextView itsExpireInterval;
@@ -250,7 +250,7 @@ public class PasswdSafeEditRecordFragment
         itsExpireDateTime.setOnClickListener(this);
         itsExpireDateDate = rootView.findViewById(R.id.expire_date_date);
         itsExpireDateDate.setOnClickListener(this);
-        itsExpireDateError = rootView.findViewById(R.id.expire_date_error);
+        itsExpireDateWarning = rootView.findViewById(R.id.expire_date_warning);
         itsExpireIntervalFields =
                 rootView.findViewById(R.id.expire_interval_fields);
         itsExpireIntervalInput =
@@ -1587,7 +1587,7 @@ public class PasswdSafeEditRecordFragment
                     validatePasswordConfirm(), itsPasswordConfirmInput);
 
             if (itsIsV3) {
-                boolean invalidExpiryDate = false;
+                boolean warnExpiryDate = false;
                 switch (itsExpiryType) {
                 case NEVER: {
                     break;
@@ -1595,7 +1595,7 @@ public class PasswdSafeEditRecordFragment
                 case DATE: {
                     long now = System.currentTimeMillis();
                     long expiry = itsExpiryDate.getTimeInMillis();
-                    invalidExpiryDate = (expiry < now);
+                    warnExpiryDate = (expiry < now);
                     break;
                 }
                 case INTERVAL: {
@@ -1604,8 +1604,7 @@ public class PasswdSafeEditRecordFragment
                     break;
                 }
                 }
-                GuiUtils.setVisible(itsExpireDateError, invalidExpiryDate);
-                valid &= !invalidExpiryDate;
+                GuiUtils.setVisible(itsExpireDateWarning, warnExpiryDate);
             }
 
             boolean invalidHistory = false;
