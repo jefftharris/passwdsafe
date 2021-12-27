@@ -395,6 +395,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.21.3&lt;/b&gt; - Bug fixes
+        \n\n
         &lt;b&gt;6.21.2&lt;/b&gt; - Fix recent files disappearing.  Allow hyphen
         and underscore in new file names.  Make an extra call to attempt to
         clear a password from the clipboard.  Fixup password history for invalid
