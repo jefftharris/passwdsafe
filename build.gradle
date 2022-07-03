@@ -43,6 +43,7 @@ tasks.addRule("Pattern: hgpush_<ID>") { String taskName ->
             args = ["push", taskName - "hgpush_"]
             ignoreExitValue = true
             doLast {
+                def execResult = getExecutionResult()
                 def rc = execResult.getExitValue()
                 if ((rc != 0) && (rc != 1)) {
                     execResult.assertNormalExitValue()
