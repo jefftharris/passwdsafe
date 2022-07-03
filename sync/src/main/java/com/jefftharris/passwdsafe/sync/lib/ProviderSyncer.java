@@ -119,10 +119,10 @@ public abstract class ProviderSyncer<ProviderClientT>
                             return null;
                         });
                     } catch (Exception e) {
-                        e = updateSyncException(e);
+                        Exception updatedEx = updateSyncException(e);
                         Log.e(itsTag, "Sync error for file " + oper.getFile(),
-                              e);
-                        itsLogrec.addFailure(e);
+                              updatedEx);
+                        itsLogrec.addFailure(updatedEx);
                     } finally {
                         oper.finish();
                     }
