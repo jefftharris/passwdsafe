@@ -33,7 +33,7 @@ public final class ApiCompat
 {
     public static final int SDK_KITKAT = 19;
     public static final int SDK_LOLLIPOP = 21;
-    public static final int SDK_M = 23;
+    private static final int SDK_M = 23;
     public static final int SDK_OREO = 26;
     private static final int SDK_P = 28;
     public static final int SDK_Q = 29;
