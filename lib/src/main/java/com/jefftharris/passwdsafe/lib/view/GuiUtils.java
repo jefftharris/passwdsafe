@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
@@ -250,11 +251,7 @@ public final class GuiUtils
      */
     public static Drawable getDrawable(Resources res, int id)
     {
-        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_LOLLIPOP) {
-            return GuiUtilsLollipop.getDrawable(res, id);
-        } else {
-            return res.getDrawable(id);
-        }
+        return ResourcesCompat.getDrawable(res, id, null);
     }
 
 
