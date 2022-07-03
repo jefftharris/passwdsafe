@@ -429,8 +429,7 @@ public class ProviderSync
 
             long now = System.currentTimeMillis();
             if (itsTraces.size() > 0) {
-                @SuppressWarnings("ConstantConditions") long prev =
-                        itsTraces.get(itsTraces.size() - 1).second;
+                long prev = itsTraces.get(itsTraces.size() - 1).second;
                 if ((now - prev) > 20000) {
                     itsSaveTraces = true;
                 }
