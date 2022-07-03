@@ -192,13 +192,13 @@ public class PasswdSafeUtil
         AbstractDialogClickListener dlgClick = new AbstractDialogClickListener()
         {
             @Override
-            public final void onOkClicked(DialogInterface dialog)
+            public void onOkClicked(DialogInterface dialog)
             {
                 activity.finish();
             }
 
             @Override
-            public final void onCancelClicked()
+            public void onCancelClicked()
             {
                 activity.finish();
             }

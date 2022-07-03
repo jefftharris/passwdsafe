@@ -46,7 +46,7 @@ public abstract class DialogValidator
     private final String itsErrorFmt;
     private final TextWatcher itsTextWatcher = new AbstractTextWatcher()
     {
-        public final void afterTextChanged(Editable s)
+        public void afterTextChanged(Editable s)
         {
             validate();
         }

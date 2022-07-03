@@ -134,9 +134,9 @@ public final class PasswdRecordFilter implements Closeable
      * @return A non-null string if the record matches the filter; null if it
      * does not
      */
-    public final String filterRecord(PwsRecord rec,
-                                     PasswdFileData fileData,
-                                     Context ctx)
+    public String filterRecord(PwsRecord rec,
+                               PasswdFileData fileData,
+                               Context ctx)
     {
         PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
         String queryMatch = null;
@@ -252,7 +252,7 @@ public final class PasswdRecordFilter implements Closeable
      * Match a record's group against the filter
      * @return The group if matched; null otherwise
      */
-    public final String matchGroup(PwsRecord rec, PasswdFileData fileData)
+    public String matchGroup(PwsRecord rec, PasswdFileData fileData)
     {
         switch (itsType) {
         case QUERY: {
@@ -276,7 +276,7 @@ public final class PasswdRecordFilter implements Closeable
     /**
      * Is the filter's type a query
      */
-    public final boolean isQueryType()
+    public boolean isQueryType()
     {
         switch (itsType) {
         case QUERY: {
@@ -291,7 +291,7 @@ public final class PasswdRecordFilter implements Closeable
     }
 
     /** Convert the filter to a string */
-    public final String toString(Context ctx)
+    public String toString(Context ctx)
     {
         switch (itsType) {
         case QUERY: {

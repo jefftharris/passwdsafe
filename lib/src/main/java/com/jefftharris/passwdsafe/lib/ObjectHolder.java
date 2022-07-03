@@ -26,7 +26,7 @@ public final class ObjectHolder<T>
     /**
      * Get the object
      */
-    public final T get()
+    public T get()
     {
         return itsObj;
     }
@@ -34,7 +34,7 @@ public final class ObjectHolder<T>
     /**
      * Set the object
      */
-    public final void set(T obj)
+    public void set(T obj)
     {
         itsObj = obj;
     }

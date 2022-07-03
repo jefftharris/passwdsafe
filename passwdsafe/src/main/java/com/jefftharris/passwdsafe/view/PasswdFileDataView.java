@@ -593,7 +593,7 @@ public final class PasswdFileDataView
         }
 
         /** Add a record */
-        protected final void addRecord(MatchPwsRecord rec)
+        protected void addRecord(MatchPwsRecord rec)
         {
             if (itsRecords == null) {
                 itsRecords = new ArrayList<>();
@@ -602,14 +602,14 @@ public final class PasswdFileDataView
         }
 
         /** Get the records */
-        protected final List<MatchPwsRecord> getRecords()
+        protected List<MatchPwsRecord> getRecords()
         {
             return itsRecords;
         }
 
         /** Put a child group */
-        protected final void putGroup(String name, GroupNode node,
-                                      Comparator<String> groupComp)
+        protected void putGroup(String name, GroupNode node,
+                                Comparator<String> groupComp)
         {
             if (itsGroups == null) {
                 itsGroups = new TreeMap<>(groupComp);
@@ -618,7 +618,7 @@ public final class PasswdFileDataView
         }
 
         /** Get a group */
-        protected final GroupNode getGroup(String name)
+        protected GroupNode getGroup(String name)
         {
             if (itsGroups == null) {
                 return null;
@@ -628,13 +628,13 @@ public final class PasswdFileDataView
         }
 
         /** Get the groups */
-        protected final Map<String, GroupNode> getGroups()
+        protected Map<String, GroupNode> getGroups()
         {
             return itsGroups;
         }
 
         /** Get the number of records */
-        protected final int getNumRecords()
+        protected int getNumRecords()
         {
             int num = 0;
             if (itsRecords != null) {
@@ -691,7 +691,7 @@ public final class PasswdFileDataView
     private static final class StringComparator implements Comparator<String>
     {
         /** Compare the strings */
-        public final int compare(String arg0, String arg1)
+        public int compare(String arg0, String arg1)
         {
             return arg0.compareTo(arg1);
         }

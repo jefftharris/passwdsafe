@@ -95,7 +95,7 @@ public final class FileListFragment extends ListFragment
 
         @Override
         @NonNull
-        public final String toString()
+        public String toString()
         {
             return itsName;
         }
@@ -294,7 +294,7 @@ public final class FileListFragment extends ListFragment
     /**
      * @return true if a directory was popped, false to use default behavior
      */
-    public final boolean doBackPressed()
+    public boolean doBackPressed()
     {
         PasswdSafeUtil.dbginfo(TAG, "doBackPressed");
         if (itsDirHistory.size() == 0) {

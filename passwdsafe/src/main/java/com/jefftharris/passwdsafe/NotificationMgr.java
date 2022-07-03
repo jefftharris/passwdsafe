@@ -681,7 +681,7 @@ public class NotificationMgr implements PasswdFileDataObserver
 
 
         /** Convert the entry to a string for users */
-        protected final String toString(Context ctx)
+        protected String toString(Context ctx)
         {
             return PasswdRecord.getRecordId(itsGroup, itsTitle, null) +
                 " (" + Utils.formatDate(itsExpiry, ctx, false, true, true) +
