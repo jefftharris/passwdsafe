@@ -350,7 +350,7 @@ public class PasswdFileUri
         }
         }
         throw new IOException("Can't create child \"" + fileName +
-                              "\" for URI " + toString());
+                              "\" for URI " + this);
     }
 
 
@@ -361,7 +361,7 @@ public class PasswdFileUri
         switch (itsType) {
         case FILE: {
             if (!itsFile.delete()) {
-                throw new IOException("Could not delete file: " + toString());
+                throw new IOException("Could not delete file: " + this);
             }
             break;
         }
@@ -369,20 +369,20 @@ public class PasswdFileUri
             ContentResolver cr = context.getContentResolver();
             int rc = cr.delete(itsUri, null, null);
             if (rc != 1) {
-                throw new IOException("Could not delete file: " + toString());
+                throw new IOException("Could not delete file: " + this);
             }
             break;
         }
         case GENERIC_PROVIDER: {
             ContentResolver cr = context.getContentResolver();
             if (!ApiCompat.documentsContractDeleteDocument(cr, itsUri)) {
-                throw new IOException("Could not delete file: " + toString());
+                throw new IOException("Could not delete file: " + this);
             }
             break;
         }
         case EMAIL:
         case BACKUP: {
-            throw new IOException("Delete not supported for " + toString());
+            throw new IOException("Delete not supported for " + this);
         }
         }
     }
