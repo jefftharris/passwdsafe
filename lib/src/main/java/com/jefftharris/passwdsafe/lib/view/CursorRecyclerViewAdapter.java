@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib.view;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public abstract class CursorRecyclerViewAdapter
     /**
      * Change the cursor used by the adapter
      */
+    @SuppressLint("NotifyDataSetChanged")
     public void changeCursor(Cursor cursor)
     {
         if (cursor != itsCursor) {
@@ -99,6 +101,7 @@ public abstract class CursorRecyclerViewAdapter
      */
     private class Observer extends DataSetObserver
     {
+        @SuppressLint("NotifyDataSetChanged")
         @Override
         public void onChanged()
         {
@@ -107,6 +110,7 @@ public abstract class CursorRecyclerViewAdapter
             notifyDataSetChanged();
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         @Override
         public void onInvalidated()
         {
