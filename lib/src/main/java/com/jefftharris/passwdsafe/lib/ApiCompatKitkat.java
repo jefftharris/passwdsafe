@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -26,6 +27,7 @@ import java.util.Objects;
  *  The ApiCompatKitkat class contains helper compatibility methods for Kitkat
  *  and higher
  */
+@SuppressLint("ObsoleteSdkInt")
 @TargetApi(19)
 @SuppressWarnings({"unchecked", "CanBeFinal"})
 public final class ApiCompatKitkat

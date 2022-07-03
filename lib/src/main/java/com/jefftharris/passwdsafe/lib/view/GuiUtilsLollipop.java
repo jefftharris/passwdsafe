@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib.view;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,7 @@ import android.os.Build;
  * The GuiUtilsLollipop class contains helper GUI methods that are usable on
  * Lollipop and higher
  */
+@SuppressLint("ObsoleteSdkInt")
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class GuiUtilsLollipop
 {
