@@ -97,6 +97,7 @@ public class PasswdSafeNewFileTest
     }
 
     @After
+    @SuppressWarnings("EmptyMethod")
     public void teardown()
     {
         //PasswdSafeUtil.setIsTesting(false);
