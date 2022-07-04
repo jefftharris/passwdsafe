@@ -105,8 +105,8 @@ public final class SyncResults
                 TAG, "isRepeatedFailure dur %d, first %d last %d now %d",
                 failureDuration, itsFirstFailure, itsLastFailure, now);
         if (itsSyncFreq < freq1daySecs) {
-            return (failureDuration >= (freq1daySecs * 1000));
+            return (failureDuration >= (freq1daySecs * 1000L));
         }
-        return (failureDuration >= (3 * freq1daySecs * 1000));
+        return (failureDuration >= (3L * freq1daySecs * 1000L));
     }
 }

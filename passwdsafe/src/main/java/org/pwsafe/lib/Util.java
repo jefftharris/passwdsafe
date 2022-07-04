@@ -9,10 +9,10 @@
  */
 package org.pwsafe.lib;
 
+import org.pwsafe.lib.crypto.SHA256Pws;
+
 import java.security.SecureRandom;
 import java.util.Arrays;
-
-import org.pwsafe.lib.crypto.SHA256Pws;
 
 /**
  * This class exposes various utility methods.
@@ -321,7 +321,7 @@ public final class Util
         result = (buff[offset + 0] & 0x000000ff)
                  | ((buff[offset + 1] & 0x000000ff) << 8)
                  | ((buff[offset + 2] & 0x000000ff) << 16)
-                 | ((buff[offset + 3] & 0x000000ff) << 24);
+                 | ((long)(buff[offset + 3] & 0x000000ff) << 24);
 
         result *= 1000L; // convert from seconds to millis
 
