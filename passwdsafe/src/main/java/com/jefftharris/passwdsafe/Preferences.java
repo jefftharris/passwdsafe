@@ -252,7 +252,7 @@ public class Preferences
     public static File getFileDirPref(SharedPreferences prefs)
     {
         String prefstr = prefs.getString(PREF_FILE_DIR, PREF_FILE_DIR_DEF);
-        return new File(prefstr);
+        return new File(Objects.requireNonNull(prefstr));
     }
 
     public static void setFileDirPref(File dir, SharedPreferences prefs)
