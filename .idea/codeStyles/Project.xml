@@ -36,6 +36,7 @@
     </option>
     <option name="RIGHT_MARGIN" value="80" />
     <option name="WRAP_COMMENTS" value="true" />
+    <option name="SOFT_MARGINS" value="80" />
     <AndroidXmlCodeStyleSettings>
       <option name="LAYOUT_SETTINGS">
         <value>
@@ -82,7 +83,6 @@
     </JavaCodeStyleSettings>
     <XML>
       <option name="XML_SPACE_INSIDE_EMPTY_TAG" value="false" />
-      <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
     <codeStyleSettings language="JAVA">
       <option name="KEEP_LINE_BREAKS" value="false" />
