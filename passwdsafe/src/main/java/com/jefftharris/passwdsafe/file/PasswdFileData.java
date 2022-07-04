@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ActContext;
@@ -733,6 +734,7 @@ public class PasswdFileData
     }
 
     /** Get a field value as a string */
+    @Nullable
     private String getField(PwsRecord rec, int fieldId)
     {
         if (itsPwsFile == null) {
@@ -748,6 +750,7 @@ public class PasswdFileData
     }
 
     /** Get a field value as an 4 byte integer */
+    @Nullable
     private Integer getIntField(PwsRecord rec, int fieldId)
     {
         Integer val = null;
@@ -759,6 +762,7 @@ public class PasswdFileData
     }
 
     /** Get a field value as a Date */
+    @Nullable
     private Date getDateField(PwsRecord rec, int fieldId)
     {
         Date date = null;
