@@ -730,11 +730,6 @@ public class PasswdPolicyTest
                             for (int symbolIdx = 0;
                                 symbolIdx <= MAX_LEN - lowerIdx - upperIdx - digitIdx;
                                 symbolIdx += LEN_STEP) {
-                                /*
-                            PasswdSafeUtil.dbginfo(TAG, "Iter %x %d %d %d %d",
-                                                  flags, lowerIdx, upperIdx,
-                                                  digitIdx, symbolIdx);
-                                 */
                                 policy = new PasswdPolicy(
                                     "", PasswdPolicy.Location.DEFAULT,
                                     flags, MAX_LEN + minLen, lowerIdx,
@@ -857,9 +852,6 @@ public class PasswdPolicyTest
                     }
                 }
 
-                /*if (!useLower) {
-                    assertEquals(0, numLower);
-                }*/
                 if (!useUpper) {
                     assertEquals(0, numUpper);
                 }

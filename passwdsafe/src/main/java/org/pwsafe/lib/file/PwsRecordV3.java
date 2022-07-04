@@ -514,8 +514,6 @@ public class PwsRecordV3 extends PwsRecord
 
                 switch (item.getType()) {
                 case V3_ID_STRING:
-                    // itemVal = new PwsIntegerField( item.getType(), new byte[]
-                    // {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} );
                     itemVal = new PwsVersionField(item.getType(),
                                                   item.getByteData());
                     break;
