@@ -542,7 +542,6 @@ public class PasswdSafeEditRecordFragment
             PasswdRecord.Type type = PasswdRecord.Type.NORMAL;
             switch (position) {
             case TYPE_NORMAL: {
-                type = PasswdRecord.Type.NORMAL;
                 break;
             }
             case TYPE_ALIAS: {
