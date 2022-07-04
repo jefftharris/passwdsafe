@@ -131,6 +131,7 @@ public final class PasswdSafeContract
     }
 
     /** The table of files */
+    @SuppressWarnings("CommentedOutCode")
     public static final class Files implements BaseColumns
     {
         public static final String TABLE = "files";
@@ -209,6 +210,7 @@ public final class PasswdSafeContract
     }
 
     /** The table of sync logs */
+    @SuppressWarnings("CommentedOutCode")
     public static final class SyncLogs implements BaseColumns
     {
         private static final String TABLE = "sync_logs";
