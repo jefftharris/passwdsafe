@@ -26,6 +26,8 @@ import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.R;
 
+import java.util.Objects;
+
 /**
  * Dialog to confirm a prompt
  */
@@ -131,11 +133,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     {
         super.onAttach(ctx);
         Fragment frag = getTargetFragment();
-        if (frag != null) {
-            itsListener = (Listener)frag;
-        } else {
-            itsListener = (Listener)ctx;
-        }
+        itsListener = (Listener)Objects.requireNonNullElse(frag, ctx);
     }
 
     @Override
