@@ -74,7 +74,7 @@ public abstract class ProviderSyncer<ProviderClientT>
         try {
             List<SyncOper<ProviderClientT>> opers;
             try {
-                List<DbFile> dbfiles = useDb(new CheckedDbUser<List<DbFile>>()
+                List<DbFile> dbfiles = useDb(new CheckedDbUser<>()
                 {
                     @Override
                     public List<DbFile> useDb(SQLiteDatabase db)
@@ -86,21 +86,20 @@ public abstract class ProviderSyncer<ProviderClientT>
                 });
 
                 final SyncRemoteFiles remoteFiles = getSyncRemoteFiles(dbfiles);
-                opers = useDb(
-                        new CheckedDbUser<List<SyncOper<ProviderClientT>>>()
-                        {
-                            @Override
-                            public List<SyncOper<ProviderClientT>> useDb(
-                                    SQLiteDatabase db)
-                                    throws SQLException
-                            {
-                                if (remoteFiles != null) {
-                                    updateDbFiles(remoteFiles, db);
-                                    return resolveSyncOpers(db);
-                                }
-                                return null;
-                            }
-                        });
+                opers = useDb(new CheckedDbUser<>()
+                {
+                    @Override
+                    public List<SyncOper<ProviderClientT>> useDb(
+                            SQLiteDatabase db)
+                            throws SQLException
+                    {
+                        if (remoteFiles != null) {
+                            updateDbFiles(remoteFiles, db);
+                            return resolveSyncOpers(db);
+                        }
+                        return null;
+                    }
+                });
             } catch (Exception e) {
                 throw updateSyncException(e);
             }

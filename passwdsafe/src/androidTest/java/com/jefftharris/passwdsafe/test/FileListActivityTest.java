@@ -371,7 +371,7 @@ public class FileListActivityTest
         // invalid matcher.
         checkNotNull(titleMatcher);
         //noinspection rawtypes
-        return new BoundedMatcher<Object, Map>(Map.class)
+        return new BoundedMatcher<>(Map.class)
         {
             @Override
             public boolean matchesSafely(Map data)
@@ -379,8 +379,10 @@ public class FileListActivityTest
                 return hasEntry(equalTo("title"), hasToString(titleMatcher))
                         .matches(data);
             }
+
             @Override
-            public void describeTo(Description description) {
+            public void describeTo(Description description)
+            {
                 description.appendText("with file data: ");
                 titleMatcher.describeTo(description);
             }

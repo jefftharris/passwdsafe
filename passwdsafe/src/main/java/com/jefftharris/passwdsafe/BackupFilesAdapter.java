@@ -72,7 +72,7 @@ public class BackupFilesAdapter
     public ItemDetailsLookup<Long> createItemLookup(
             final RecyclerView recyclerView)
     {
-        return new ItemDetailsLookup<Long>()
+        return new ItemDetailsLookup<>()
         {
             @Nullable
             @Override
@@ -145,7 +145,8 @@ public class BackupFilesAdapter
          */
         protected ItemDetailsLookup.ItemDetails<Long> createItemDetails()
         {
-            return new ItemDetailsLookup.ItemDetails<Long>() {
+            return new ItemDetailsLookup.ItemDetails<>()
+            {
 
                 @Override
                 public int getPosition()

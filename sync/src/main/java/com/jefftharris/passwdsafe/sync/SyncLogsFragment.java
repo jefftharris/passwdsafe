@@ -149,7 +149,7 @@ public class SyncLogsFragment extends ListFragment
         setEmptyText(getString(R.string.no_logs));
         getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
-        itsLogsCbs = new LoaderCallbacks<Cursor>()
+        itsLogsCbs = new LoaderCallbacks<>()
         {
             @NonNull
             @Override

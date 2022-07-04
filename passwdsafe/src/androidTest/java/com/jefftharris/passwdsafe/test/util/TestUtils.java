@@ -49,7 +49,7 @@ public class TestUtils
             final Matcher<Object> dataMatcher)
     {
         checkNotNull(dataMatcher);
-        return new TypeSafeMatcher<View>()
+        return new TypeSafeMatcher<>()
         {
             @Override
             public void describeTo(Description description)
@@ -57,13 +57,14 @@ public class TestUtils
                 description.appendText("with class name: ");
                 dataMatcher.describeTo(description);
             }
+
             @Override
             public boolean matchesSafely(View view)
             {
                 if (!(view instanceof AdapterView)) {
                     return false;
                 }
-                Adapter adapter = ((AdapterView<?>) view).getAdapter();
+                Adapter adapter = ((AdapterView<?>)view).getAdapter();
                 for (int i = 0; i < adapter.getCount(); i++) {
                     if (dataMatcher.matches(adapter.getItem(i))) {
                         return true;
@@ -83,7 +84,7 @@ public class TestUtils
                 TextUtils.isEmpty(error) ?
                 isEmptyOrNullString() : equalTo(error);
         checkNotNull(errorMatcher);
-        return new BoundedMatcher<View, TextInputLayout>(TextInputLayout.class)
+        return new BoundedMatcher<>(TextInputLayout.class)
         {
             @Override
             protected boolean matchesSafely(TextInputLayout item)

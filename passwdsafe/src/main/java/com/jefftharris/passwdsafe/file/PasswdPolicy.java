@@ -57,7 +57,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
      * Parcelable CREATOR instance
      */
     public static final Parcelable.Creator<PasswdPolicy> CREATOR =
-            new Parcelable.Creator<PasswdPolicy>()
+            new Parcelable.Creator<>()
             {
                 @Override
                 public PasswdPolicy createFromParcel(Parcel source)

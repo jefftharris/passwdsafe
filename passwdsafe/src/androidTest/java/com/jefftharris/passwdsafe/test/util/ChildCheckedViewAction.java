@@ -47,7 +47,8 @@ public class ChildCheckedViewAction implements ViewAction
     @Override
     public Matcher<View> getConstraints()
     {
-        return new BaseMatcher<View>() {
+        return new BaseMatcher<>()
+        {
             @Override
             public boolean matches(Object item)
             {

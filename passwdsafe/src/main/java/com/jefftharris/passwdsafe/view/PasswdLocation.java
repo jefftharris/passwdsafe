@@ -24,7 +24,8 @@ import java.util.ArrayList;
 public class PasswdLocation implements Parcelable
 {
     public static final Parcelable.Creator<PasswdLocation> CREATOR =
-            new Parcelable.Creator<PasswdLocation>() {
+            new Parcelable.Creator<>()
+            {
                 public PasswdLocation createFromParcel(Parcel in)
                 {
                     return new PasswdLocation(in);

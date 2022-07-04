@@ -51,7 +51,7 @@ public class PasswdSafeNewFileFragmentTest
 
     @Rule(order=2)
     public ActivityTestRule<PasswdSafe> itsActivityRule =
-            new ActivityTestRule<PasswdSafe>(PasswdSafe.class)
+            new ActivityTestRule<>(PasswdSafe.class)
             {
                 @Override
                 protected Intent getActivityIntent()
