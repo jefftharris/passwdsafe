@@ -769,6 +769,7 @@ public class PasswdFileData
         return date;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private int getVersionFieldId(int fieldId)
     {
         if (itsPwsFile == null) {
