@@ -815,8 +815,8 @@ public class PasswdSafeOpenFileFragment
         /**
          * Constructor
          */
-        protected OpenTask(Owner<PwsPassword>.Param passwd,
-                           PasswdSafeOpenFileFragment frag)
+        private OpenTask(Owner<PwsPassword>.Param passwd,
+                         PasswdSafeOpenFileFragment frag)
         {
             super(frag);
             itsFileUri = frag.getPasswdFileUri();
@@ -1035,7 +1035,7 @@ public class PasswdSafeOpenFileFragment
         /**
          * Constructor
          */
-        protected LoadSavedPasswordUser()
+        private LoadSavedPasswordUser()
         {
             super("LoadSavedPasswordUser");
             setFieldsDisabled(true);
@@ -1092,7 +1092,7 @@ public class PasswdSafeOpenFileFragment
         /**
          * Constructor
          */
-        protected AddSavedPasswordUser(OpenResult result)
+        private AddSavedPasswordUser(OpenResult result)
         {
             super("AddSavedPasswordUser");
             itsOpenResult = result;

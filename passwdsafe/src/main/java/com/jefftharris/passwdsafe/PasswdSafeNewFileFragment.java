@@ -529,9 +529,9 @@ public class PasswdSafeNewFileFragment
         /**
          * Constructor
          */
-        protected NewTask(String fileName,
-                          Owner<PwsPassword>.Param passwd,
-                          PasswdSafeNewFileFragment frag)
+        private NewTask(String fileName,
+                        Owner<PwsPassword>.Param passwd,
+                        PasswdSafeNewFileFragment frag)
         {
             super(frag);
             itsFileName = fileName;

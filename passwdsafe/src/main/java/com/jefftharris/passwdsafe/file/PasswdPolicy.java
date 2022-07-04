@@ -80,7 +80,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         RECORD_NAME     (2),
         RECORD          (3);
 
-        protected final int itsSortOrder;
+        private final int itsSortOrder;
 
         Location(int sortOrder)
         {

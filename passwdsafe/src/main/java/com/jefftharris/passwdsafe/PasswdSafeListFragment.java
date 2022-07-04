@@ -454,7 +454,7 @@ public class PasswdSafeListFragment extends ListFragment
         private ItemSection[] itsSections = new ItemSection[0];
 
         /** Constructor */
-        protected ItemListAdapter(boolean isContents, Context context)
+        private ItemListAdapter(boolean isContents, Context context)
         {
             super(context, R.layout.passwdsafe_list_item, android.R.id.text1);
             itsInflater = (LayoutInflater)context.getSystemService(
@@ -463,8 +463,8 @@ public class PasswdSafeListFragment extends ListFragment
         }
 
         /** Set the list data */
-        protected int setData(List<PasswdRecordListData> data,
-                              String selectedRecord)
+        private int setData(List<PasswdRecordListData> data,
+                            String selectedRecord)
         {
             int selectedPos = -1;
             setNotifyOnChange(false);
@@ -562,13 +562,13 @@ public class PasswdSafeListFragment extends ListFragment
          */
         private static final class ItemSection
         {
-            protected final String itsTitle;
-            protected final int itsPosition;
+            private final String itsTitle;
+            private final int itsPosition;
 
             /**
              * Constructor
              */
-            protected ItemSection(String title, int position)
+            private ItemSection(String title, int position)
             {
                 itsTitle = title;
                 itsPosition = position;

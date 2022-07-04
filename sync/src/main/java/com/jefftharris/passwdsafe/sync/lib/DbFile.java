@@ -6,11 +6,11 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import java.util.Locale;
-
 import android.database.Cursor;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+
+import java.util.Locale;
 
 /**
  *  Entry in the files table
@@ -26,7 +26,7 @@ public class DbFile
         REMOVED;
 
         /** Get the FileChange from its string stored in the database */
-        protected static FileChange fromDbStr(String str)
+        private static FileChange fromDbStr(String str)
         {
             if (TextUtils.isEmpty(str)) {
                 return NO_CHANGE;

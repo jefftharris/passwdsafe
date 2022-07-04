@@ -485,8 +485,8 @@ public final class StorageFileListFragment extends Fragment
         /**
          * Constructor
          */
-        protected FileLoader(ManagedRef<RecentFilesDao> recentFilesDao,
-                             Context ctx)
+        private FileLoader(ManagedRef<RecentFilesDao> recentFilesDao,
+                           Context ctx)
         {
             super(ctx.getApplicationContext());
             itsRecentFilesDao = recentFilesDao;

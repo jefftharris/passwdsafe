@@ -1902,10 +1902,10 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        protected FinishSaveInfo(EditFinish task,
-                                 String popTag,
-                                 PasswdLocation newLocation,
-                                 Runnable postSaveRun)
+        private FinishSaveInfo(EditFinish task,
+                               String popTag,
+                               PasswdLocation newLocation,
+                               Runnable postSaveRun)
         {
             switch (task) {
             case ADD_RECORD: {
@@ -1944,8 +1944,8 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Should the location be reset
          */
-        protected boolean shouldResetLoc(PasswdFileDataView dataView,
-                                         PasswdLocation currLocation)
+        private boolean shouldResetLoc(PasswdFileDataView dataView,
+                                       PasswdLocation currLocation)
         {
             //noinspection SimplifiableIfStatement
             if (!itsIsSave || (itsNewLocation == null)) {
@@ -1969,9 +1969,9 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        protected SaveTask(String fileId,
-                           @NonNull FinishSaveInfo saveInfo,
-                           PasswdSafe act)
+        private SaveTask(String fileId,
+                         @NonNull FinishSaveInfo saveInfo,
+                         PasswdSafe act)
         {
             super(act.getString(R.string.saving_file, fileId), act);
             itsSaveInfo = saveInfo;
@@ -2026,7 +2026,7 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        protected ShareTask(String fileId, String fileName, PasswdSafe act)
+        private ShareTask(String fileId, String fileName, PasswdSafe act)
                 throws IOException
         {
             super(act.getString(R.string.sharing_file, fileId), act);
@@ -2086,7 +2086,7 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        protected DeleteTask(PasswdFileUri uri, PasswdSafe act)
+        private DeleteTask(PasswdFileUri uri, PasswdSafe act)
         {
             super(act.getString(R.string.delete_file), act);
             itsFileUri = uri;
@@ -2137,8 +2137,8 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        protected RestoreTask(@NonNull PasswdFileUri backupFileUri,
-                              @NonNull PasswdSafe act)
+        private RestoreTask(@NonNull PasswdFileUri backupFileUri,
+                            @NonNull PasswdSafe act)
         {
             super(act.getString(R.string.restoring), act);
             itsBackupFileUri = backupFileUri;

@@ -588,12 +588,12 @@ public final class PasswdFileDataView
         private TreeMap<String, GroupNode> itsGroups = null;
 
         /** Constructor */
-        protected GroupNode()
+        private GroupNode()
         {
         }
 
         /** Add a record */
-        protected void addRecord(MatchPwsRecord rec)
+        private void addRecord(MatchPwsRecord rec)
         {
             if (itsRecords == null) {
                 itsRecords = new ArrayList<>();
@@ -602,14 +602,15 @@ public final class PasswdFileDataView
         }
 
         /** Get the records */
-        protected List<MatchPwsRecord> getRecords()
+        private List<MatchPwsRecord> getRecords()
         {
             return itsRecords;
         }
 
         /** Put a child group */
-        protected void putGroup(String name, GroupNode node,
-                                Comparator<String> groupComp)
+        private void putGroup(String name,
+                              GroupNode node,
+                              Comparator<String> groupComp)
         {
             if (itsGroups == null) {
                 itsGroups = new TreeMap<>(groupComp);
@@ -618,7 +619,7 @@ public final class PasswdFileDataView
         }
 
         /** Get a group */
-        protected GroupNode getGroup(String name)
+        private GroupNode getGroup(String name)
         {
             if (itsGroups == null) {
                 return null;
@@ -628,13 +629,13 @@ public final class PasswdFileDataView
         }
 
         /** Get the groups */
-        protected Map<String, GroupNode> getGroups()
+        private Map<String, GroupNode> getGroups()
         {
             return itsGroups;
         }
 
         /** Get the number of records */
-        protected int getNumRecords()
+        private int getNumRecords()
         {
             int num = 0;
             if (itsRecords != null) {
@@ -655,16 +656,16 @@ public final class PasswdFileDataView
      */
     private static final class MatchPwsRecord
     {
-        protected final String itsTitle;
-        protected final String itsUsername;
-        protected final String itsUuid;
-        protected final Date itsCreationTime;
-        protected final Date itsModTime;
-        protected final String itsMatch;
+        private final String itsTitle;
+        private final String itsUsername;
+        private final String itsUuid;
+        private final Date itsCreationTime;
+        private final Date itsModTime;
+        private final String itsMatch;
 
-        protected MatchPwsRecord(PwsRecord rec,
-                                 PasswdFileData fileData,
-                                 String match)
+        private MatchPwsRecord(PwsRecord rec,
+                               PasswdFileData fileData,
+                               String match)
         {
             itsTitle = fileData.getTitle(rec);
             itsUsername = fileData.getUsername(rec);

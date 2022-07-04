@@ -39,7 +39,7 @@ public final class NotifUtils
         OWNCLOUD_USAGE(9),
         DRIVE_FILE_MIGRATION(10);
 
-        protected final int itsNotifId;
+        private final int itsNotifId;
 
         Type(int id)
         {

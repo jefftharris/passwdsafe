@@ -575,7 +575,7 @@ public class NotificationMgr implements PasswdFileDataObserver
         private static final int DB_VERSION = 1;
 
         /** Constructor */
-        protected DbHelper(Context context)
+        private DbHelper(Context context)
         {
             super(context, DB_NAME, null, DB_VERSION);
         }
@@ -640,14 +640,16 @@ public class NotificationMgr implements PasswdFileDataObserver
     /** The ExpiryEntry class represents an expiration entry for notifications */
     private static final class ExpiryEntry implements Comparable<ExpiryEntry>
     {
-        protected final String itsUuid;
-        protected final String itsTitle;
-        protected final String itsGroup;
-        protected final long itsExpiry;
+        private final String itsUuid;
+        private final String itsTitle;
+        private final String itsGroup;
+        private final long itsExpiry;
 
         /** Constructor */
-        protected ExpiryEntry(String uuid, String title, String group,
-                              long expiry)
+        private ExpiryEntry(String uuid,
+                            String title,
+                            String group,
+                            long expiry)
         {
             itsUuid = uuid;
             itsTitle = title;
@@ -681,7 +683,7 @@ public class NotificationMgr implements PasswdFileDataObserver
 
 
         /** Convert the entry to a string for users */
-        protected String toString(Context ctx)
+        private String toString(Context ctx)
         {
             return PasswdRecord.getRecordId(itsGroup, itsTitle, null) +
                 " (" + Utils.formatDate(itsExpiry, ctx, false, true, true) +
@@ -712,25 +714,25 @@ public class NotificationMgr implements PasswdFileDataObserver
         private final TreeSet<ExpiryEntry> itsEntries = new TreeSet<>();
 
         /** Constructor */
-        protected UriNotifInfo(int notifId)
+        private UriNotifInfo(int notifId)
         {
             itsNotifId = notifId;
         }
 
         /** Get the notification id */
-        protected int getNotifId()
+        private int getNotifId()
         {
             return itsNotifId;
         }
 
         /** Get the expired entries */
-        protected SortedSet<ExpiryEntry> getEntries()
+        private SortedSet<ExpiryEntry> getEntries()
         {
             return itsEntries;
         }
 
         /** Set the expired entries */
-        protected void setEntries(Set<ExpiryEntry> entries)
+        private void setEntries(Set<ExpiryEntry> entries)
         {
             itsEntries.clear();
             itsEntries.addAll(entries);

@@ -620,7 +620,7 @@ public class SyncDb
         private final Context itsContext;
 
         /** Constructor */
-        protected DbHelper(Context context)
+        private DbHelper(Context context)
         {
             super(context, DB_NAME, null, DB_VERSION);
             itsContext = context;

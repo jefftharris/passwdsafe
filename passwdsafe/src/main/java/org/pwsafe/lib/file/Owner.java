@@ -32,7 +32,7 @@ public final class Owner<T extends Closeable> implements Closeable
         /**
          * Constructor
          */
-        protected Param(@NonNull Owner<T> item)
+        private Param(@NonNull Owner<T> item)
         {
             itsOwnedItem = item;
         }

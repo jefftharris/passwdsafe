@@ -53,8 +53,8 @@ public final class PwsFileV3 extends PwsFile
     private static final byte[] EOF_BYTES_RAW = "PWS3-EOFPWS3-EOF".getBytes();
 
     private byte[] stretchedPassword;
-    protected byte[] decryptedRecordKey;
-    protected byte[] decryptedHmacKey;
+    public byte[] decryptedRecordKey;
+    public byte[] decryptedHmacKey;
 
     private TwofishPws twofishCbc;
     HmacPws hasher;

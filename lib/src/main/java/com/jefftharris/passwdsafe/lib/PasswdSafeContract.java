@@ -74,7 +74,7 @@ public final class PasswdSafeContract
     /** The table of providers */
     public static final class Providers implements BaseColumns
     {
-        protected static final String TABLE = "providers";
+        private static final String TABLE = "providers";
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(PasswdSafeContract.CONTENT_URI, TABLE);
         public static final String CONTENT_TYPE =
@@ -102,7 +102,7 @@ public final class PasswdSafeContract
         public static final int PROJECTION_IDX_TYPE = 1;
         public static final int PROJECTION_IDX_ACCT = 2;
         public static final int PROJECTION_IDX_SYNC_FREQ = 3;
-        protected static final int PROJECTION_IDX_DISPLAY_NAME = 4;
+        private static final int PROJECTION_IDX_DISPLAY_NAME = 4;
 
         /** Get the provider's display name */
         public static String getDisplayName(Cursor cursor)
@@ -211,7 +211,7 @@ public final class PasswdSafeContract
     /** The table of sync logs */
     public static final class SyncLogs implements BaseColumns
     {
-        protected static final String TABLE = "sync_logs";
+        private static final String TABLE = "sync_logs";
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(PasswdSafeContract.CONTENT_URI, TABLE);
         public static final String CONTENT_TYPE =
@@ -255,7 +255,7 @@ public final class PasswdSafeContract
     /** The 'table' for methods */
     public static final class Methods
     {
-        protected static final String TABLE = "methods";
+        private static final String TABLE = "methods";
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(PasswdSafeContract.CONTENT_URI, TABLE);
         public static final String CONTENT_TYPE =

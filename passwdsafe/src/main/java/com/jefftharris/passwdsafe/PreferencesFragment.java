@@ -235,7 +235,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        protected RootScreen(SharedPreferences prefs, Resources res)
+        private RootScreen(SharedPreferences prefs, Resources res)
         {
             itsThemePref = requirePreference(Preferences.PREF_DISPLAY_THEME);
             itsThemePref.setEntries(ThemePref.getDisplayNames(res));
@@ -291,7 +291,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        protected FilesScreen(SharedPreferences prefs, Resources res)
+        private FilesScreen(SharedPreferences prefs, Resources res)
         {
             itsFileDirPref = requirePreference(Preferences.PREF_FILE_DIR);
             itsFileDirPref.setDefaultValue(Preferences.PREF_FILE_DIR_DEF);
@@ -446,7 +446,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        protected PasswordScreen(SharedPreferences prefs, Resources res)
+        private PasswordScreen(SharedPreferences prefs, Resources res)
         {
             itsPasswdVisibleTimeoutPref =
                     requirePreference(Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
@@ -613,7 +613,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         /**
          * Constructor
          */
-        protected RecordScreen(SharedPreferences prefs, Resources res)
+        private RecordScreen(SharedPreferences prefs, Resources res)
         {
             itsRecordSortOrderPref =
                     requirePreference(Preferences.PREF_RECORD_SORT_ORDER);

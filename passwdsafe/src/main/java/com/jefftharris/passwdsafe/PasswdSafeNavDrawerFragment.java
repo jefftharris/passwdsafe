@@ -279,7 +279,7 @@ public class PasswdSafeNavDrawerFragment
         PREFERENCES          (R.id.menu_drawer_preferences),
         ABOUT                (R.id.menu_drawer_about);
 
-        protected final int itsMenuId;
+        private final int itsMenuId;
 
         /**
          * Constructor
@@ -292,7 +292,7 @@ public class PasswdSafeNavDrawerFragment
         /**
          * Get the enum from a menu id
          */
-        protected static NavMenuItem fromMenuId(int menuId)
+        private static NavMenuItem fromMenuId(int menuId)
         {
             for (NavMenuItem item: NavMenuItem.values()) {
                 if (item.itsMenuId == menuId) {
