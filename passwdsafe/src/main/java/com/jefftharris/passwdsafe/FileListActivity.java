@@ -280,6 +280,12 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public void openFile(Uri uri, String fileName)
     {
+        openFile(uri);
+    }
+
+    @Override
+    public void openFile(Uri uri)
+    {
         try {
             Intent intent = PasswdSafeUtil.createOpenIntent(uri, null);
             if (itsIsCloseOnOpen) {

@@ -48,7 +48,7 @@ public class BackupFilesFragment extends Fragment
     public interface Listener
     {
         /** Open a file */
-        void openFile(Uri uri, String fileName);
+        void openFile(Uri uri);
 
         /** Update the view for the backup files */
         void updateViewBackupFiles();
@@ -265,7 +265,7 @@ public class BackupFilesFragment extends Fragment
         BackupFile backup = getSelectedBackup();
         if (backup != null) {
             PasswdSafeUtil.dbginfo(TAG, "open %d", backup.id);
-            itsListener.openFile(backup.createUri(), null);
+            itsListener.openFile(backup.createUri());
         }
         itsSelTracker.clearSelection();
     }
