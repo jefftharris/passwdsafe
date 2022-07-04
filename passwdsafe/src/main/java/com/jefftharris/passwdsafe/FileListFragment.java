@@ -268,6 +268,7 @@ public final class FileListFragment extends ListFragment
     }
 
     /** Create a loader for files */
+    @NonNull
     @Override
     public Loader<List<Map<String, Object>>> onCreateLoader(int id, Bundle args)
     {
