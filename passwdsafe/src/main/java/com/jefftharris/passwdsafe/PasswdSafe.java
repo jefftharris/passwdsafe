@@ -1690,7 +1690,6 @@ public class PasswdSafe extends AppCompatActivity
                 fragMgr.popBackStackImmediate();
             }
 
-            txn.setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             if (contentFrag != null) {
                 txn.replace(R.id.content, contentFrag);
             } else {
@@ -1925,12 +1924,8 @@ public class PasswdSafe extends AppCompatActivity
             if (listFrag != null) {
                 FragmentTransaction txn = fragMgr.beginTransaction();
                 if (showLeftList) {
-                    txn.setTransitionStyle(
-                            FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     txn.show(listFrag);
                 } else {
-                    txn.setTransitionStyle(
-                            FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                     txn.hide(listFrag);
                 }
                 txn.commit();
