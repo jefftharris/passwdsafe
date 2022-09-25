@@ -219,6 +219,7 @@
     <string name="no_alias_chosen">No alias chosen</string>
     <string name="no_backup_file">No backup file</string>
     <string name="no_biometrics_registered">No biometric credentials are registered</string>
+    <string name="no_errors">No Errors</string>
     <string name="no_file_permission">
         PasswdSafe requires file permissions.
         \n\nPress reload for another prompt.  If no prompt is shown, press app
@@ -299,6 +300,14 @@
     <string name="recent_files">Recent Files</string>
     <string name="record">Record</string>
     <string name="records">Records</string>
+    <string name="record_errors">Record Errors</string>
+    <string name="record_error_note">
+        One or more records have failed to load.  The successful records are
+        available on the Records screen, and the errors are listed below.
+
+        To recover, use the menu to save or export the file to preserve the
+        successful records.
+    </string>
     <string name="record_has_references">Record has references</string>
     <string name="record_not_found">Record not found</string>
     <string name="record_policy">Record Policy</string>
@@ -395,6 +404,11 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.22.0&lt;/b&gt; - Improve handling of files with errors.
+        Records with errors are listed, and the file can be saved without them.
+        Attempt to ensure file is truncated before saving to prevent file
+        corruption.
+        \n\n
         &lt;b&gt;6.21.3&lt;/b&gt; - Bug fixes
         \n\n
         &lt;b&gt;6.21.2&lt;/b&gt; - Fix recent files disappearing.  Allow hyphen

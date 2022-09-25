@@ -19,6 +19,12 @@
               android:icon="@drawable/ic_action_people_outline"
               android:title="@string/records"/>
 
+        <item
+            android:id="@+id/menu_drawer_record_errors"
+            android:icon="@drawable/ic_action_alert_warning_dark"
+            android:title="@string/record_errors"
+            android:visible="false"/>
+
         <item android:id="@+id/menu_drawer_passwd_policies"
               android:icon="@drawable/ic_action_password"
               android:title="@string/password_policies"/>

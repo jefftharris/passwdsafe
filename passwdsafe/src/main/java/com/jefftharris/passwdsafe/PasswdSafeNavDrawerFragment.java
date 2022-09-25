@@ -43,6 +43,9 @@ public class PasswdSafeNavDrawerFragment
         /** Show the file records */
         void showFileRecords();
 
+        /** Show the file record errors */
+        void showFileRecordErrors();
+
         /** Show the file password policies */
         void showFilePasswordPolicies();
 
@@ -78,6 +81,8 @@ public class PasswdSafeNavDrawerFragment
         RECORDS_ACTION,
         /** Password policies */
         POLICIES,
+        /** Record errors */
+        RECORD_ERRORS,
         /** Password expirations */
         EXPIRATIONS,
         /** Preferences */
@@ -165,6 +170,11 @@ public class PasswdSafeNavDrawerFragment
             selNavItem = NavMenuItem.PASSWORD_POLICIES;
             break;
         }
+        case RECORD_ERRORS: {
+            drawerEnabled = true;
+            selNavItem = NavMenuItem.RECORD_ERRORS;
+            break;
+        }
         case EXPIRATIONS: {
             drawerEnabled = true;
             selNavItem = NavMenuItem.EXPIRED_PASSWORDS;
@@ -194,6 +204,7 @@ public class PasswdSafeNavDrawerFragment
             if (selNavItem == null) {
                 item.setChecked(false);
             } else if (selNavItem.itsMenuId == itemId) {
+                item.setVisible(true);
                 item.setChecked(true);
             }
 
@@ -239,6 +250,10 @@ public class PasswdSafeNavDrawerFragment
                 listener.showFileRecords();
                 break;
             }
+            case RECORD_ERRORS: {
+                listener.showFileRecordErrors();
+                break;
+            }
             case PASSWORD_POLICIES: {
                 listener.showFilePasswordPolicies();
                 break;
@@ -274,6 +289,7 @@ public class PasswdSafeNavDrawerFragment
     private enum NavMenuItem
     {
         RECORDS              (R.id.menu_drawer_records),
+        RECORD_ERRORS        (R.id.menu_drawer_record_errors),
         PASSWORD_POLICIES    (R.id.menu_drawer_passwd_policies),
         EXPIRED_PASSWORDS    (R.id.menu_drawer_expired_passwords),
         PREFERENCES          (R.id.menu_drawer_preferences),

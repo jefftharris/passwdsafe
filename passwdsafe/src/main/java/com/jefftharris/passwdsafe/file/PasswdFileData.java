@@ -25,6 +25,7 @@ import org.pwsafe.lib.UUID;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.InvalidPassphraseException;
+import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsByteField;
@@ -670,6 +671,15 @@ public class PasswdFileData
         } else {
             indexPasswdPolicies();
         }
+    }
+
+    /**
+     * Get the errors which occurred when opening the file
+     * @return The list of errors; null if none occurred
+     */
+    public @Nullable List<RecordLoadException> getRecordErrors()
+    {
+        return itsPwsFile.getLoadErrors();
     }
 
     private static int hexBytesToInt(byte[] bytes, int pos, int len)

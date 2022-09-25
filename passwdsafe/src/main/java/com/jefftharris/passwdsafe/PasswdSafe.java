@@ -86,6 +86,7 @@ public class PasswdSafe extends AppCompatActivity
                    PasswdSafePolicyListFragment.Listener,
                    PasswdSafeNavDrawerFragment.Listener,
                    PasswdSafeNewFileFragment.Listener,
+                   PasswdSafeRecordErrorsFragment.Listener,
                    PasswdSafeRecordFragment.Listener,
                    PreferencesFragment.Listener,
                    PreferenceFragmentCompat.OnPreferenceStartScreenCallback
@@ -118,6 +119,8 @@ public class PasswdSafe extends AppCompatActivity
         VIEW_EXPIRATION,
         /** View policy list */
         VIEW_POLICY_LIST,
+        /** View record errors */
+        VIEW_RECORD_ERRORS,
         /** View preferences */
         VIEW_PREFERENCES,
         /** Refresh the list of records */
@@ -128,6 +131,8 @@ public class PasswdSafe extends AppCompatActivity
         REFRESH_EXPIRATION,
         /** Refresh the policy list */
         REFRESH_POLICY_LIST,
+        /** Refresh the record errors */
+        REFRESH_RECORD_ERRORS,
         /** Refresh the preferences */
         REFRESH_PREFERENCES
     }
@@ -154,6 +159,8 @@ public class PasswdSafe extends AppCompatActivity
         VIEW_EXPIRATION,
         /** Viewing a list of policies */
         VIEW_POLICY_LIST,
+        /** Viewing record errors */
+        VIEW_RECORD_ERRORS,
         /** Viewing preferences */
         VIEW_PREFERENCES
     }
@@ -184,7 +191,8 @@ public class PasswdSafe extends AppCompatActivity
         EDIT_NOSAVE_RECORD,
         EDIT_SAVE_RECORD,
         POLICY_EDIT,
-        PROTECT_RECORD
+        PROTECT_RECORD,
+        RECOVER_RECORD_ERRORS
     }
 
     /** How to change the open view */
@@ -529,6 +537,7 @@ public class PasswdSafe extends AppCompatActivity
             case VIEW_ABOUT:
             case VIEW_EXPIRATION:
             case VIEW_POLICY_LIST:
+            case VIEW_RECORD_ERRORS:
             case VIEW_PREFERENCES: {
                 break;
             }
@@ -665,15 +674,7 @@ public class PasswdSafe extends AppCompatActivity
             protectRecords(true);
             return true;
         } else if (itemId == R.id.menu_share) {
-            Bundle confirmArgs = new Bundle();
-            confirmArgs.putString(CONFIRM_ARG_ACTION,
-                                  ConfirmAction.SHARE_FILE.name());
-            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                    getString(R.string.share_file_p),
-                    getString(R.string.share_file_msg),
-                    getString(R.string.share), confirmArgs);
-            dialog.show(getSupportFragmentManager(), "Share file");
-
+            shareFile();
             return true;
         } else if (itemId == R.id.menu_file_unprotect_records) {
             protectRecords(false);
@@ -706,6 +707,7 @@ public class PasswdSafe extends AppCompatActivity
             case VIEW_ABOUT:
             case VIEW_EXPIRATION:
             case VIEW_POLICY_LIST:
+            case VIEW_RECORD_ERRORS:
             case VIEW_PREFERENCES: {
                 break;
             }
@@ -768,6 +770,15 @@ public class PasswdSafe extends AppCompatActivity
     public void showFileRecords()
     {
         changeOpenView(itsLocation, OpenViewChange.VIEW);
+    }
+
+    /**
+     * Show the file record errors
+     */
+     @Override
+    public void showFileRecordErrors()
+    {
+        doShowRecordErrors(false);
     }
 
     /**
@@ -884,6 +895,10 @@ public class PasswdSafe extends AppCompatActivity
                 doShowPolicyList(true);
                 break;
             }
+            case VIEW_RECORD_ERRORS: {
+                doShowRecordErrors(true);
+                break;
+            }
             case VIEW_PREFERENCES: {
                 doShowPreferences(true);
                 break;
@@ -917,8 +932,10 @@ public class PasswdSafe extends AppCompatActivity
         PasswdSafeApp app = (PasswdSafeApp)getApplication();
         app.getNotifyMgr().cancelNotification(fileData.getUri());
 
-        // Jump to record to open if given
-        if (!TextUtils.isEmpty(recToOpen)) {
+        if (fileData.getRecordErrors() != null) {
+            showFileRecordErrors();
+        } else if (!TextUtils.isEmpty(recToOpen)) {
+            // Jump to record to open if given
             PwsRecord rec = fileData.getRecord(recToOpen);
             if (rec != null) {
                 changeLocation(new PasswdLocation(rec, fileData));
@@ -1190,6 +1207,26 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
+    public void recoverRecordErrors()
+    {
+        setFileWritable(true);
+        finishEdit(EditFinish.RECOVER_RECORD_ERRORS, null, null, null);
+    }
+
+    @Override
+    public void shareFile()
+    {
+        Bundle confirmArgs = new Bundle();
+        confirmArgs.putString(CONFIRM_ARG_ACTION,
+                              ConfirmAction.SHARE_FILE.name());
+        ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
+                getString(R.string.share_file_p),
+                getString(R.string.share_file_msg),
+                getString(R.string.share), confirmArgs);
+        dialog.show(getSupportFragmentManager(), "Share file");
+    }
+
+    @Override
     public void updateViewChangingPassword()
     {
         doUpdateView(ViewMode.CHANGING_PASSWORD, itsLocation);
@@ -1226,6 +1263,12 @@ public class PasswdSafe extends AppCompatActivity
     public void updateViewPreferences()
     {
         doUpdateView(ViewMode.VIEW_PREFERENCES, itsLocation);
+    }
+
+    @Override
+    public void updateViewRecordErrors()
+    {
+        doUpdateView(ViewMode.VIEW_RECORD_ERRORS, itsLocation);
     }
 
     @Override
@@ -1278,7 +1321,7 @@ public class PasswdSafe extends AppCompatActivity
             break;
         }
         case SHARE_FILE: {
-            shareFile();
+            finishShareFile();
             break;
         }
         case SHOW_ENABLE_KEYBOARD: {
@@ -1383,9 +1426,9 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     /**
-     * Share the file
+     * Finish sharing the file
      */
-    private void shareFile()
+    private void finishShareFile()
     {
         Pair<String, String> rc = itsFileDataFrag.useFileData((fileData) -> {
             PasswdFileUri uri = fileData.getUri();
@@ -1575,6 +1618,16 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     /**
+     * Show the file record errors
+     */
+    private void doShowRecordErrors(boolean refresh)
+    {
+        doChangeView(refresh ? ChangeMode.REFRESH_RECORD_ERRORS :
+                             ChangeMode.VIEW_RECORD_ERRORS,
+                     PasswdSafeRecordErrorsFragment.newInstance());
+    }
+
+    /**
      * Change the view of the activity
      */
     private void doChangeView(ChangeMode mode, Fragment contentFrag)
@@ -1612,6 +1665,7 @@ public class PasswdSafe extends AppCompatActivity
             case VIEW_ABOUT:
             case VIEW_EXPIRATION:
             case VIEW_POLICY_LIST:
+            case VIEW_RECORD_ERRORS:
             case VIEW_PREFERENCES: {
                 supportsBack = true;
                 break;
@@ -1620,6 +1674,7 @@ public class PasswdSafe extends AppCompatActivity
             case REFRESH_ABOUT:
             case REFRESH_EXPIRATION:
             case REFRESH_POLICY_LIST:
+            case REFRESH_RECORD_ERRORS:
             case REFRESH_PREFERENCES: {
                 supportsBack = true;
                 popCurrent = true;
@@ -1675,6 +1730,7 @@ public class PasswdSafe extends AppCompatActivity
         case VIEW_ABOUT:
         case VIEW_EXPIRATION:
         case VIEW_POLICY_LIST:
+        case VIEW_RECORD_ERRORS:
         case VIEW_PREFERENCES: {
             break;
         }
@@ -1819,6 +1875,13 @@ public class PasswdSafe extends AppCompatActivity
                     getString(R.string.password_policies), this);
             break;
         }
+        case VIEW_RECORD_ERRORS: {
+            drawerMode = PasswdSafeNavDrawerFragment.Mode.RECORD_ERRORS;
+            fileTimeoutPaused = false;
+            itsTitle = PasswdSafeApp.getAppTitle(
+                    getString(R.string.record_errors), this);
+            break;
+        }
         case VIEW_PREFERENCES: {
             drawerMode = PasswdSafeNavDrawerFragment.Mode.PREFERENCES;
             fileTimeoutPaused = false;
@@ -1929,7 +1992,8 @@ public class PasswdSafe extends AppCompatActivity
                 break;
             }
             case POLICY_EDIT:
-            case PROTECT_RECORD: {
+            case PROTECT_RECORD:
+            case RECOVER_RECORD_ERRORS: {
                 itsIsAddRecord = false;
                 itsIsSave = true;
                 itsIsPopBack = false;
