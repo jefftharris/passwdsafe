@@ -13,6 +13,7 @@ import org.pwsafe.lib.crypto.SHA256Pws;
 import org.pwsafe.lib.crypto.TwofishPws;
 import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.MemoryKeyException;
+import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 
 import java.io.ByteArrayInputStream;
@@ -132,7 +133,8 @@ public final class PwsFileV3 extends PwsFile
 
     @Override
     protected void open(Owner<PwsPassword>.Param passwdParam, String encoding)
-            throws EndOfFileException, IOException
+            throws EndOfFileException, IOException,
+                   UnsupportedFileVersionException
     {
         setPassphrase(passwdParam);
 
@@ -205,7 +207,11 @@ public final class PwsFileV3 extends PwsFile
         twofishCbc = new TwofishPws(decryptedRecordKey, false,
                                     theHeaderV3.getIV());
 
-        readExtraHeader(this);
+        try {
+            readExtraHeader();
+        } catch (RecordLoadException rle) {
+            throw new IOException("Error reading header record", rle);
+        }
     }
 
 
@@ -287,16 +293,15 @@ public final class PwsFileV3 extends PwsFile
     }
 
     /**
-     * Reads the extra header present in version 2 files.
+     * Reads the extra header present in version 3 files.
      *
-     * @param file the file to read the header from.
      * @throws EndOfFileException              If end of file is reached.
      * @throws IOException                     If an error occurs whilst
      * reading.
      */
     @Override
-    protected void readExtraHeader(PwsFile file)
-            throws EndOfFileException, IOException
+    protected void readExtraHeader()
+            throws EndOfFileException, IOException, RecordLoadException
     {
         //headerRecord = (PwsRecordV3) readRecord();
         headerRecord = new PwsRecordV3(this, true);

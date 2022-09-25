@@ -9,12 +9,15 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.Nullable;
+
 import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.crypto.InMemoryKey;
 import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.MemoryKeyException;
+import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 
 import java.io.IOException;
@@ -201,6 +204,8 @@ public abstract class PwsFile
      * The password encoding which was used to open the file
      */
     private String itsOpenPasswordEncoding;
+
+    private ArrayList<RecordLoadException> itsLoadErrors = null;
 
     /**
      * Constructs and initialises a new, empty PasswordSafe database in memory.
@@ -433,6 +438,15 @@ public abstract class PwsFile
     }
 
     /**
+     * Get the list of record errors that occurred while loading
+     * @return The record errors; null if none occurred
+     */
+    public @Nullable List<RecordLoadException> getLoadErrors()
+    {
+        return itsLoadErrors;
+    }
+
+    /**
      * Returns a record.
      *
      * @return the PwsRecord at that index
@@ -499,10 +513,14 @@ public abstract class PwsFile
         try {
             //noinspection InfiniteLoopStatement
             for (; ; ) {
-                final PwsRecord rec = PwsRecord.read(this);
+                try {
+                    final PwsRecord rec = PwsRecord.read(this);
 
-                if (rec.isValid()) {
-                    this.doAdd(rec);
+                    if (rec.isValid()) {
+                        this.doAdd(rec);
+                    }
+                } catch (RecordLoadException rle) {
+                    addLoadError(rle);
                 }
             }
         } catch (EndOfFileException e) {
@@ -569,14 +587,13 @@ public abstract class PwsFile
      * Reads any additional header from the file.  Subclasses should override
      * this a necessary as the default implementation does nothing.
      *
-     * @param file the {@link PwsFile} instance to read the header from.
-     *
      * @throws EndOfFileException              If end of file is reached.
      * @throws IOException                     If an error occurs while reading the file.
      * @throws UnsupportedFileVersionException If the file's version is unsupported.
      */
-    protected void readExtraHeader( PwsFile file )
-            throws EndOfFileException, IOException, UnsupportedFileVersionException
+    protected void readExtraHeader() throws EndOfFileException, IOException,
+                                            UnsupportedFileVersionException,
+                                            RecordLoadException
     {
     }
 
@@ -594,13 +611,18 @@ public abstract class PwsFile
             throws EndOfFileException, IOException,
                    UnsupportedFileVersionException
     {
-        final PwsRecord rec = PwsRecord.read(this);
+        try {
+            final PwsRecord rec = PwsRecord.read(this);
 
-        if (rec.isValid()) {
-            this.add(rec);
+            if (rec.isValid()) {
+                this.add(rec);
+            }
+
+            return rec;
+        } catch (RecordLoadException rle) {
+            addLoadError(rle);
+            return null;
         }
-
-        return rec;
     }
 
     /**
@@ -765,6 +787,17 @@ public abstract class PwsFile
     {
         itsPasswordEncoding = encoding;
     }
+
+    /**
+     * Add a record load error
+     */
+    private void addLoadError(RecordLoadException rle)
+    {
+        if (itsLoadErrors == null) {
+            itsLoadErrors = new ArrayList<>();
+        }
+        itsLoadErrors.add(rle);
+     }
 
     /**
      * This provides a wrapper around the <code>Iterator</code> that is returned

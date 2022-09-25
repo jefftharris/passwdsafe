@@ -205,6 +205,9 @@ public class PwsFileFactory
             file = new PwsFileV1(storage, passwd, encoding);
             rec = (PwsRecordV1)file.readRecord();
             file.close();
+            if (rec == null) {
+                return file;
+            }
 
             // The test will probably be fooled if someone is daft enough to
             // create a V1 file with the title of the first record set to the

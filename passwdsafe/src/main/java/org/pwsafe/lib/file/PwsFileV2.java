@@ -8,6 +8,7 @@
 package org.pwsafe.lib.file;
 
 import org.pwsafe.lib.exception.EndOfFileException;
+import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 
 import java.io.IOException;
@@ -89,22 +90,19 @@ public class PwsFileV2 extends PwsFileV1V2
     /**
      * Reads the extra header present in version 2 files.
      *
-     * @param file the file to read the header from.
      * @throws EndOfFileException              If end of file is reached.
-     * @throws IOException                     If an error occurs whilst
-     * reading.
      * @throws UnsupportedFileVersionException If the header is not a
      * valid V2 header.
      */
     @Override
-    protected void readExtraHeader(PwsFile file)
-            throws EndOfFileException, IOException,
-                   UnsupportedFileVersionException
+    protected void readExtraHeader() throws EndOfFileException,
+                                            UnsupportedFileVersionException,
+                                            RecordLoadException
     {
         PwsRecordV1 hdr;
 
         hdr = new PwsRecordV1();
-        hdr.loadRecord(file);
+        hdr.loadRecord(this);
 
         if (!isV2Header(hdr)) {
             throw new UnsupportedFileVersionException();

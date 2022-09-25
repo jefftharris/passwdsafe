@@ -13,6 +13,7 @@ import org.pwsafe.lib.crypto.BlowfishPws;
 import org.pwsafe.lib.crypto.SHA1;
 import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.PasswordSafeException;
+import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 
 import java.io.ByteArrayInputStream;
@@ -128,7 +129,11 @@ public abstract class PwsFileV1V2 extends PwsFile
         header = new PwsFileHeader(this);
         algorithm = makeBlowfish(passwd, encoding);
 
-        readExtraHeader(this);
+        try {
+            readExtraHeader();
+        } catch (RecordLoadException rle) {
+            throw new IOException("Error reading header record", rle);
+        }
 
         setOpenPasswordEncoding(
                 (encoding == null) ? Charset.defaultCharset().name() :

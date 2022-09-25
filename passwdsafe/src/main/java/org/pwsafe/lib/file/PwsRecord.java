@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
+import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 
 import java.io.IOException;
@@ -200,9 +201,8 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *                   "owns" this record.
      * @param validTypes an array of valid field types.
      */
-    PwsRecord(PwsFile owner, Object[] validTypes) throws
-                                                  EndOfFileException,
-                                                  IOException
+    PwsRecord(PwsFile owner, Object[] validTypes)
+            throws EndOfFileException, IOException, RecordLoadException
     {
         super();
 
@@ -226,7 +226,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
             PwsFile owner,
             @SuppressWarnings("SameParameterValue") Object[] validTypes,
             boolean ignoreFieldTypes)
-            throws EndOfFileException, IOException
+            throws EndOfFileException, IOException, RecordLoadException
     {
         super();
 
@@ -299,9 +299,8 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *
      * @param file the file to load the record from.
      */
-    protected abstract void loadRecord(PwsFile file) throws
-                                                     EndOfFileException,
-                                                     IOException;
+    protected abstract void loadRecord(PwsFile file)
+            throws EndOfFileException, IOException, RecordLoadException;
 
     /**
      * Saves this record to <code>file</code>.
@@ -382,7 +381,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      */
     public static PwsRecord read(PwsFile file)
             throws EndOfFileException, IOException,
-                   UnsupportedFileVersionException
+                   UnsupportedFileVersionException, RecordLoadException
     {
         switch (file.getFileVersionMajor()) {
         case PwsFileV1.VERSION:

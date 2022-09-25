@@ -11,9 +11,11 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.UUID;
 import org.pwsafe.lib.exception.EndOfFileException;
+import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnimplementedConversionException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -152,7 +154,8 @@ public class PwsRecordV2 extends PwsRecord
      * @throws EndOfFileException If end of file is reached
      * @throws IOException        If a read error occurs.
      */
-    PwsRecordV2(PwsFile file) throws EndOfFileException, IOException
+    PwsRecordV2(PwsFile file)
+            throws EndOfFileException, IOException, RecordLoadException
     {
         super(file, VALID_TYPES);
     }
@@ -216,58 +219,76 @@ public class PwsRecordV2 extends PwsRecord
      */
     @Override
     protected void loadRecord(PwsFile file)
-            throws EndOfFileException, IOException
+            throws EndOfFileException, RecordLoadException
     {
-        Item item;
-        PwsField itemVal = null;
-
+        ArrayList<Throwable> itemErrors = null;
         for (; ; ) {
-            item = new Item(file);
+            try {
+                Item item = new Item(file);
+                if (item.getType() == END_OF_RECORD) {
+                    break; // out of the for loop
+                }
 
-            if (item.getType() == END_OF_RECORD) {
-                break; // out of the for loop
+                PwsField itemVal = null;
+                switch (item.getType()) {
+                case UUID:
+                    itemVal = new PwsUUIDField(item.getType(),
+                                               item.getByteData());
+                    break;
+
+                case V2_ID_STRING:
+                case GROUP:
+                case TITLE:
+                case USERNAME:
+                case NOTES:
+                case URL:
+                    itemVal =
+                            new PwsStringField(item.getType(), item.getData());
+                    break;
+
+                case PASSWORD:
+                    itemVal = new PwsPasswdField(item.getType(), item.getData(),
+                                                 file);
+                    item.clear();
+                    break;
+
+                case CREATION_TIME:
+                case PASSWORD_MOD_TIME:
+                case LAST_ACCESS_TIME:
+                case LAST_MOD_TIME:
+                    itemVal = new PwsTimeField(item.getType(),
+                                               item.getByteData());
+                    break;
+
+                case PASSWORD_LIFETIME:
+                    itemVal = new PwsIntegerField(item.getType(),
+                                                  item.getByteData());
+                    break;
+
+                case PASSWORD_POLICY:
+                    break;
+
+                default:
+                    throw new UnimplementedConversionException();
+                }
+                if (itemVal != null) {
+                    setField(itemVal);
+                }
+            } catch (EndOfFileException eof) {
+                if (itemErrors != null) {
+                    throw new RecordLoadException(this, itemErrors);
+                }
+                throw eof;
+            } catch (Throwable t) {
+                if (itemErrors == null) {
+                    itemErrors = new ArrayList<>();
+                }
+                itemErrors.add(t);
             }
-            switch (item.getType()) {
-            case UUID:
-                itemVal = new PwsUUIDField(item.getType(), item.getByteData());
-                break;
+        }
 
-            case V2_ID_STRING:
-            case GROUP:
-            case TITLE:
-            case USERNAME:
-            case NOTES:
-            case URL:
-                itemVal = new PwsStringField(item.getType(), item.getData());
-                break;
-
-            case PASSWORD:
-                itemVal = new PwsPasswdField(item.getType(), item.getData(),
-                                             file);
-                item.clear();
-                break;
-
-            case CREATION_TIME:
-            case PASSWORD_MOD_TIME:
-            case LAST_ACCESS_TIME:
-            case LAST_MOD_TIME:
-                itemVal = new PwsTimeField(item.getType(), item.getByteData());
-                break;
-
-            case PASSWORD_LIFETIME:
-                itemVal = new PwsIntegerField(item.getType(),
-                                              item.getByteData());
-                break;
-
-            case PASSWORD_POLICY:
-                break;
-
-            default:
-                throw new UnimplementedConversionException();
-            }
-            if (itemVal != null) {
-                setField(itemVal);
-            }
+        if (itemErrors != null) {
+            throw new RecordLoadException(this, itemErrors);
         }
     }
 

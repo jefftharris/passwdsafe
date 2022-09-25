@@ -13,8 +13,10 @@ import org.pwsafe.lib.Log;
 import org.pwsafe.lib.UUID;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
+import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -327,7 +329,8 @@ public class PwsRecordV3 extends PwsRecord
      * @throws EndOfFileException If end of file is reached
      * @throws IOException        If a read error occurs.
      */
-    PwsRecordV3(PwsFile file) throws EndOfFileException, IOException
+    PwsRecordV3(PwsFile file)
+            throws EndOfFileException, IOException, RecordLoadException
     {
         super(file, VALID_TYPES);
     }
@@ -342,10 +345,10 @@ public class PwsRecordV3 extends PwsRecord
      * @throws EndOfFileException If end of file is reached
      * @throws IOException        If a read error occurs.
      */
-    PwsRecordV3(
-            PwsFile file,
-            @SuppressWarnings("SameParameterValue") boolean ignoreFieldTypes)
-            throws EndOfFileException, IOException
+    PwsRecordV3(PwsFile file,
+                @SuppressWarnings("SameParameterValue")
+                        boolean ignoreFieldTypes)
+            throws EndOfFileException, IOException, RecordLoadException
     {
         super(file, VALID_TYPES, ignoreFieldTypes);
     }
@@ -493,92 +496,107 @@ public class PwsRecordV3 extends PwsRecord
      */
     @Override
     protected void loadRecord(PwsFile file)
-            throws EndOfFileException, IOException
+            throws EndOfFileException, RecordLoadException
     {
-        Item item;
-        PwsField itemVal;
-
+        ArrayList<Throwable> itemErrors = null;
         for (; ; ) {
-            item = new ItemV3((PwsFileV3)file);
+            try {
+                Item item = new ItemV3((PwsFileV3)file);
 
-            if (item.getType() == END_OF_RECORD) {
-                break; // out of the for loop
-            }
+                if (item.getType() == END_OF_RECORD) {
+                    break; // out of the for loop
+                }
 
-            if (ignoreFieldTypes) {
-                // header record has no valid types...
-                itemVal =
-                        new PwsUnknownField(item.getType(), item.getByteData());
-                attributes.put(item.getType(), itemVal);
-            } else {
-
-                switch (item.getType()) {
-                case V3_ID_STRING:
-                    itemVal = new PwsVersionField(item.getType(),
-                                                  item.getByteData());
-                    break;
-
-                case UUID:
-                    itemVal = new PwsUUIDField(item.getType(),
-                                               item.getByteData());
-                    break;
-
-                case GROUP:
-                case TITLE:
-                case USERNAME:
-                case NOTES:
-                case PASSWORD_POLICY:
-                case PASSWORD_HISTORY:
-                case URL:
-                case AUTOTYPE:
-                case RUN_COMMAND:
-                case EMAIL:
-                case OWN_PASSWORD_SYMBOLS:
-                case PASSWORD_POLICY_NAME:
-                    itemVal = new PwsStringUnicodeField(item.getType(),
-                                                        item.getByteData());
-                    break;
-
-                case PASSWORD:
-                    itemVal = new PwsPasswdUnicodeField(item.getType(),
-                                                        item.getByteData(),
-                                                        file);
-                    item.clear();
-                    break;
-
-                case CREATION_TIME:
-                case PASSWORD_MOD_TIME:
-                case LAST_ACCESS_TIME:
-                case LAST_MOD_TIME:
-                case PASSWORD_LIFETIME:
-                    itemVal = new PwsTimeField(item.getType(),
-                                               item.getByteData());
-                    break;
-
-                case PASSWORD_EXPIRY_INTERVAL:
-                case ENTRY_KEYBOARD_SHORTCUT:
-                    itemVal = new PwsIntegerField(item.getType(),
-                                                  item.getByteData());
-                    break;
-
-                case DOUBLE_CLICK_ACTION:
-                case SHIFT_DOUBLE_CLICK_ACTION:
-                    itemVal = new PwsShortField(item.getType(),
-                                                item.getByteData());
-                    break;
-
-                case PROTECTED_ENTRY:
-                    itemVal = new PwsByteField(item.getType(),
-                                               item.getByteData());
-                    break;
-
-                default:
+                PwsField itemVal;
+                if (ignoreFieldTypes) {
+                    // header record has no valid types...
                     itemVal = new PwsUnknownField(item.getType(),
                                                   item.getByteData());
-                    break;
+                    attributes.put(item.getType(), itemVal);
+                } else {
+
+                    switch (item.getType()) {
+                    case V3_ID_STRING:
+                        itemVal = new PwsVersionField(item.getType(),
+                                                      item.getByteData());
+                        break;
+
+                    case UUID:
+                        itemVal = new PwsUUIDField(item.getType(),
+                                                   item.getByteData());
+                        break;
+
+                    case GROUP:
+                    case TITLE:
+                    case USERNAME:
+                    case NOTES:
+                    case PASSWORD_POLICY:
+                    case PASSWORD_HISTORY:
+                    case URL:
+                    case AUTOTYPE:
+                    case RUN_COMMAND:
+                    case EMAIL:
+                    case OWN_PASSWORD_SYMBOLS:
+                    case PASSWORD_POLICY_NAME:
+                        itemVal = new PwsStringUnicodeField(item.getType(),
+                                                            item.getByteData());
+                        break;
+
+                    case PASSWORD:
+                        itemVal = new PwsPasswdUnicodeField(item.getType(),
+                                                            item.getByteData(),
+                                                            file);
+                        item.clear();
+                        break;
+
+                    case CREATION_TIME:
+                    case PASSWORD_MOD_TIME:
+                    case LAST_ACCESS_TIME:
+                    case LAST_MOD_TIME:
+                    case PASSWORD_LIFETIME:
+                        itemVal = new PwsTimeField(item.getType(),
+                                                   item.getByteData());
+                        break;
+
+                    case PASSWORD_EXPIRY_INTERVAL:
+                    case ENTRY_KEYBOARD_SHORTCUT:
+                        itemVal = new PwsIntegerField(item.getType(),
+                                                      item.getByteData());
+                        break;
+
+                    case DOUBLE_CLICK_ACTION:
+                    case SHIFT_DOUBLE_CLICK_ACTION:
+                        itemVal = new PwsShortField(item.getType(),
+                                                    item.getByteData());
+                        break;
+
+                    case PROTECTED_ENTRY:
+                        itemVal = new PwsByteField(item.getType(),
+                                                   item.getByteData());
+                        break;
+
+                    default:
+                        itemVal = new PwsUnknownField(item.getType(),
+                                                      item.getByteData());
+                        break;
+                    }
+                    setField(itemVal);
                 }
-                setField(itemVal);
+            } catch (EndOfFileException eof) {
+                if (itemErrors != null) {
+                    throw new RecordLoadException(this, itemErrors);
+                }
+                throw eof;
+            } catch (Throwable t) {
+                if (itemErrors == null) {
+                    itemErrors = new ArrayList<>();
+                }
+                itemErrors.add(t);
             }
+        }
+
+        if (itemErrors != null) {
+            throw new RecordLoadException(this, itemErrors);
         }
     }
 
@@ -684,7 +702,8 @@ public class PwsRecordV3 extends PwsRecord
             if (key <= VALID_TYPES.length) {
                 Object[] type = (Object[])VALID_TYPES[key];
                 sb.append(type[1]);
-                showValue = ((Integer)type[0] != PASSWORD);
+                int typeVal = (Integer)type[0];
+                showValue = (typeVal != PASSWORD) && (typeVal != NOTES);
             }
             else {
                 sb.append(key);

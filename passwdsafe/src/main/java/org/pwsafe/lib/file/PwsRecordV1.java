@@ -10,9 +10,11 @@ package org.pwsafe.lib.file;
 import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.exception.EndOfFileException;
+import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 
 /**
  * Encapsulates a version 1 record.
@@ -119,7 +121,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      * @throws IOException        If a read error occurs.
      */
     PwsRecordV1(PwsFile file)
-            throws EndOfFileException, IOException
+            throws EndOfFileException, IOException, RecordLoadException
     {
         super(file, VALID_TYPES);
     }
@@ -234,44 +236,50 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      */
     @Override
     protected void loadRecord(PwsFile file)
-            throws EndOfFileException, IOException
+            throws EndOfFileException, RecordLoadException
     {
-        String str;
-        int pos;
+        try {
+            String str;
+            int pos;
 
-        str = new Item(file).getData();
+            str = new Item(file).getData();
 
-        String title;
-        String username;
-        pos = str.indexOf(SplitChar);
-        if (pos == -1) {
-            // This is not a composite of title and username
-
-            pos = str.indexOf(DefUserString);
+            String title;
+            String username;
+            pos = str.indexOf(SplitChar);
             if (pos == -1) {
-                title = str;
-            } else {
-                title = str.substring(0, pos);
-            }
-            username = "";
-        } else {
-            title = str.substring(0, pos).trim();
-            username = str.substring(pos + 1).trim();
-        }
-        setField(new PwsStringField(TITLE, title));
-        setField(new PwsStringField(USERNAME, username));
-        Item item = new Item(file);
-        setField(new PwsPasswdField(PASSWORD, item.getData(), file));
-        item.clear();
-        setField(new PwsStringField(NOTES, new Item(file).getData()));
+                // This is not a composite of title and username
 
-        String uuid;
-        if (username.trim().length() == 0) {
-            uuid = title;
-        } else {
-            uuid = title + SplitString + username;
+                pos = str.indexOf(DefUserString);
+                if (pos == -1) {
+                    title = str;
+                } else {
+                    title = str.substring(0, pos);
+                }
+                username = "";
+            } else {
+                title = str.substring(0, pos).trim();
+                username = str.substring(pos + 1).trim();
+            }
+            setField(new PwsStringField(TITLE, title));
+            setField(new PwsStringField(USERNAME, username));
+            Item item = new Item(file);
+            setField(new PwsPasswdField(PASSWORD, item.getData(), file));
+            item.clear();
+            setField(new PwsStringField(NOTES, new Item(file).getData()));
+
+            String uuid;
+            if (username.trim().length() == 0) {
+                uuid = title;
+            } else {
+                uuid = title + SplitString + username;
+            }
+            setField(new PwsStringField(UUID, uuid));
+        } catch (EndOfFileException eof) {
+            throw eof;
+        } catch (Throwable t) {
+            throw new RecordLoadException(this, Collections.singletonList(t));
         }
-        setField(new PwsStringField(UUID, uuid));
     }
 
     /**
