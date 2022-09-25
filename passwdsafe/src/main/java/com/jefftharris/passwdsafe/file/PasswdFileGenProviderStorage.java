@@ -49,11 +49,25 @@ public class PasswdFileGenProviderStorage extends PwsStreamStorage
 
                 helper.createBackup(itsUri, getIdentifier());
 
-                pfd = ctx.getContentResolver().openFileDescriptor(itsUri, "w");
+
+                var cr = ctx.getContentResolver();
+                try {
+                    pfd = cr.openFileDescriptor(itsUri, "wt");
+                } catch (Exception e) {
+                    Log.w(TAG, "Error opening for truncate", e);
+                    pfd = cr.openFileDescriptor(itsUri, "w");
+                }
+
                 if (pfd == null) {
                     throw new IOException(itsUri.toString());
                 }
                 fos = new FileOutputStream(pfd.getFileDescriptor());
+                try {
+                    fos.getChannel().truncate(0);
+                } catch (Exception e) {
+                    Log.w(TAG, "Error truncating file", e);
+                }
+
                 fos.write(data);
 
                 PasswdSafeUtil.dbginfo(TAG, "GenProviderStorage update %s",
