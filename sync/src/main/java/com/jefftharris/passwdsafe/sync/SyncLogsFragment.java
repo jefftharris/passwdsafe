@@ -63,13 +63,10 @@ public class SyncLogsFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-     */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onViewCreated(@NonNull View fragView, Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
+        super.onViewCreated(fragView, savedInstanceState);
 
         itsLogsAdapter = new SimpleCursorAdapter(
                 requireContext(), R.layout.listview_sync_log_item, null,

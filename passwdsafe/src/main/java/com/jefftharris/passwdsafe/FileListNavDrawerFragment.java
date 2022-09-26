@@ -90,10 +90,9 @@ public class FileListNavDrawerFragment
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onViewCreated(@NonNull View fragView, Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
-        // TODO: check file launcher activity
+        super.onViewCreated(fragView, savedInstanceState);
         //LoaderManager.enableDebugLogging(true);
         LoaderManager.getInstance(this).initLoader(1, null, this);
     }

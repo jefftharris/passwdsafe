@@ -70,9 +70,9 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onViewCreated(@NonNull View viewFrag, Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
+        super.onViewCreated(viewFrag, savedInstanceState);
         setHasOptionsMenu(true);
     }
 

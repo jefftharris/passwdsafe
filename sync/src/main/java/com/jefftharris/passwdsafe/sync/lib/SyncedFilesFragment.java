@@ -129,13 +129,10 @@ public class SyncedFilesFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-     */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onViewCreated(@NonNull View fragView, Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
+        super.onViewCreated(fragView, savedInstanceState);
 
         itsFilesAdapter = new FilesAdapter(getActivity());
         setListAdapter(itsFilesAdapter);

@@ -150,13 +150,10 @@ public final class FileListFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-     */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onViewCreated(@NonNull View viewFrag, Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
+        super.onViewCreated(viewFrag, savedInstanceState);
         LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(0, null, this);
     }

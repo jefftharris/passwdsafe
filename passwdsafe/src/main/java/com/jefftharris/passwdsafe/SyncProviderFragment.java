@@ -87,9 +87,9 @@ public class SyncProviderFragment extends ListFragment
 
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onViewCreated(@NonNull View fragView, Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
+        super.onViewCreated(fragView, savedInstanceState);
 
         itsProviderAdapter = new SimpleCursorAdapter(
                requireContext(), R.layout.sync_provider_list_item, null,
