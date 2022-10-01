@@ -129,6 +129,5 @@ public class DynamicPermissionMgr implements View.OnClickListener
     private void restart()
     {
         itsActivity.recreate();
-        System.exit(0);
     }
 }

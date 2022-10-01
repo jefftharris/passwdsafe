@@ -370,7 +370,6 @@ public class FileListActivityTest
         // use preconditions to fail fast when a test is creating an
         // invalid matcher.
         checkNotNull(titleMatcher);
-        //noinspection rawtypes
         return new BoundedMatcher<>(Map.class)
         {
             @Override

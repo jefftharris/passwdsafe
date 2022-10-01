@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.os.Build;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,7 +35,6 @@ import java.io.UnsupportedEncodingException;
 /**
  * The YubikeyMgr class encapsulates the interaction with a YubiKey
  */
-@TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class YubikeyMgr
 {
     /// Command to select the app running on the key
