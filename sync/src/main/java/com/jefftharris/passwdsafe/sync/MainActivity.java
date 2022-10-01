@@ -97,10 +97,11 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "onCreate");
 
         itsPermissionMgr = new DynamicPermissionMgr(
-                Manifest.permission.GET_ACCOUNTS, this,
-                ActivityRequest.PERMISSIONS,
-                ActivityRequest.APP_SETTINGS,
+                this, ActivityRequest.PERMISSIONS, ActivityRequest.APP_SETTINGS,
                 PasswdSafeUtil.SYNC_PACKAGE, R.id.reload, R.id.app_settings);
+        itsPermissionMgr.addPerm(Manifest.permission.GET_ACCOUNTS, true);
+        itsPermissionMgr.addPerm(DynamicPermissionMgr.PERM_POST_NOTIFICATIONS,
+                                 false);
         View noPermGroup = findViewById(R.id.no_permission_group);
         GuiUtils.setVisible(noPermGroup, !itsPermissionMgr.checkPerms());
 
@@ -245,8 +246,8 @@ public class MainActivity extends AppCompatActivity
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults)
     {
-        if (!itsPermissionMgr.handlePermissionsResult(requestCode,
-                                                      grantResults)) {
+        if (!itsPermissionMgr.handlePermissionsResult(
+                requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions,
                                              grantResults);
         }
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onPrepareOptionsMenu(Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_add);
-        item.setEnabled(itsPermissionMgr.hasPerms());
+        item.setEnabled(itsPermissionMgr.hasRequiredPerms());
 
         setProviderMenuEnabled(menu, R.id.menu_add_box,
                                MENU_BIT_HAS_BOX);

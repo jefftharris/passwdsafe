@@ -129,10 +129,12 @@ public class FileListActivity extends AppCompatActivity
                                   Preferences.PREF_FILE_LEGACY_FILE_CHOOSER);
 
         itsPermissionMgr = new DynamicPermissionMgr(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE, this,
-                REQUEST_STORAGE_PERM, REQUEST_APP_SETTINGS,
-                "com.jefftharris.passwdsafe",
-                R.id.reload, R.id.app_settings);
+                this, REQUEST_STORAGE_PERM, REQUEST_APP_SETTINGS,
+                "com.jefftharris.passwdsafe", R.id.reload, R.id.app_settings);
+        itsPermissionMgr.addPerm(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                 true);
+        itsPermissionMgr.addPerm(DynamicPermissionMgr.PERM_POST_NOTIFICATIONS,
+                                 false);
         showFiles(true, savedInstanceState);
         if (itsTitle == null) {
             itsTitle = getTitle();
@@ -217,8 +219,8 @@ public class FileListActivity extends AppCompatActivity
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults)
     {
-        if (!itsPermissionMgr.handlePermissionsResult(requestCode,
-                                                      grantResults)) {
+        if (!itsPermissionMgr.handlePermissionsResult(
+                requestCode, permissions, grantResults)) {
             super.onRequestPermissionsResult(requestCode, permissions,
                                              grantResults);
         }
@@ -320,7 +322,7 @@ public class FileListActivity extends AppCompatActivity
     @Override
     public boolean appHasFilePermission()
     {
-        return itsPermissionMgr.hasPerms();
+        return itsPermissionMgr.hasRequiredPerms();
     }
 
     @Override
@@ -513,7 +515,7 @@ public class FileListActivity extends AppCompatActivity
         case FILES: {
             drawerMode = FileListNavDrawerFragment.Mode.FILES;
             itsTitle = getString(R.string.app_name);
-            hasPermission = itsPermissionMgr.hasPerms();
+            hasPermission = itsPermissionMgr.hasRequiredPerms();
             break;
         }
         case SYNC_FILES: {

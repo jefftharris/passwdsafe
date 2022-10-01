@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import android.app.NotificationManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
@@ -33,9 +34,11 @@ public final class ApiCompat
 {
     public static final int SDK_KITKAT = 19;
     private static final int SDK_M = 23;
+    private static final int SDK_N = 24;
     public static final int SDK_OREO = 26;
     private static final int SDK_P = 28;
     public static final int SDK_Q = 29;
+    private static final int SDK_TIRAMISU = 33;
 
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
 
@@ -71,6 +74,37 @@ public final class ApiCompat
     public static boolean supportsExternalFilesDirs()
     {
         return SDK_VERSION < SDK_Q;
+    }
+
+
+    /**
+     * Is the write external storage permission supported
+     */
+    public static boolean supportsWriteExternalStoragePermission()
+    {
+        return SDK_VERSION < SDK_TIRAMISU;
+    }
+
+
+    /**
+     * Is the post notifications permission supported
+     */
+    public static boolean supportsPostNotificationsPermission()
+    {
+        return SDK_VERSION >= SDK_TIRAMISU;
+    }
+
+    /**
+     * Are notifications enabled
+     */
+    public static boolean areNotificationsEnabled(
+            @NonNull NotificationManager notifyMgr)
+    {
+        if (SDK_VERSION >= SDK_N) {
+            return ApiCompatN.areNotificationsEnabled(notifyMgr);
+        } else {
+            return true;
+        }
     }
 
 
