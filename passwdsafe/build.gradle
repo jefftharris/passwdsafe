@@ -9,13 +9,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
         minSdkVersion 14
         resConfigs 'de', 'fr', 'nb'
-        targetSdkVersion 30
+        targetSdkVersion 33
         // <major><minor><bugfix><beta/extra>
         versionCode 6210300
         versionName "6.21.3"
@@ -63,7 +63,7 @@ android {
 
 
 dependencies {
-    def room_version = "2.3.0"
+    def room_version = "2.4.3"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')

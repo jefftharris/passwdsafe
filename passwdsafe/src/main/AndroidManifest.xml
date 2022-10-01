@@ -16,8 +16,11 @@
         android:name="com.jefftharris.passwdsafe.client.provider.permission.ACCESS"
         android:protectionLevel="signature"/>
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
         tools:ignore="ScopedStorage"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!--suppress DeprecatedClassUsageInspection -->
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
@@ -25,6 +28,7 @@
     <uses-permission android:name="com.jefftharris.passwdsafe.client.provider.permission.ACCESS"/>
     <uses-permission android:name="com.jefftharris.passwdsafe.sync.provider.permission.ACCESS"/>
     <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-feature
         android:name="android.hardware.nfc"
