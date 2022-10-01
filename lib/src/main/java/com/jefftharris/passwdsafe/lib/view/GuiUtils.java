@@ -291,6 +291,10 @@ public final class GuiUtils
                                         String notifyTag,
                                         Context ctx)
     {
+        if (!ApiCompat.areNotificationsEnabled(notifyMgr)) {
+            return;
+        }
+
         Drawable draw = getDrawable(ctx.getResources(), bigIcon);
         Bitmap icon;
         if (draw instanceof BitmapDrawable) {
