@@ -98,8 +98,8 @@ public abstract class RecentFilesDao
         Cursor cursor = cr.query(uri, null, null, null, null);
         try {
             if ((cursor != null) && (cursor.moveToFirst())) {
-                return cursor.getString(
-                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                return cursor.getString(cursor.getColumnIndexOrThrow(
+                        OpenableColumns.DISPLAY_NAME));
             }
         } finally {
             if (cursor != null) {
