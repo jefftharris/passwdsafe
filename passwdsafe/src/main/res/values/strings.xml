@@ -305,7 +305,7 @@
         One or more records have failed to load.  The successful records are
         available on the Records screen, and the errors are listed below.
 
-        To recover, use the menu to save or export the file to preserve the
+        \n\nTo recover, use the menu to save or export the file to preserve the
         successful records.
     </string>
     <string name="record_has_references">Record has references</string>

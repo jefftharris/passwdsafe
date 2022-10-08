@@ -204,6 +204,7 @@
     <string name="no_alias_chosen">Ingen alias valgt</string>
     <string name="no_backup_file">Ingen sikkerhetskopifil</string>
     <string name="no_biometrics_registered">Ingen biometrisk legitimasjon er registrert</string>
+    <string name="no_errors">Ingen feil</string>
     <string name="no_file_permission">PasswdSafe krever filtilgang. \n\nTrykk reload for å bli spurt på nytt. Hvis du ikke blir spurt, trykk app-innstillinger og aktiver lagringstilgang.</string>
     <string name="no_files_select_to_open">
         Velg handlingsknappen for å åpne en fil eller bruk menyen for å
@@ -276,6 +277,15 @@
     <string name="recent_files">Nylige files</string>
     <string name="record">Oppføring</string>
     <string name="records">Oppføringer</string>
+    <string name="record_errors">Feil med oppføringer</string>
+    <string name="record_error_note">
+        Klarte ikke lese inn en eller flere oppføringer. De vellykkede
+        oppføringene er tilgjengelig på oppføringsskjermen, og feilene er
+        listet nedenfor.
+
+        \n\nFor å gjenopprette, bruk menyen for å lagre eller eksportere filen
+        for å bevare de vellykkede oppføringene.
+    </string>
     <string name="record_has_references">Oppføring har referanser</string>
     <string name="record_not_found">Oppføring ikke funnet</string>
     <string name="record_policy">Regler for oppføring</string>
@@ -366,6 +376,11 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.22.0&lt;/b&gt; - Forbedret behandling av filer med feil.
+        Oppføringer med feil blir listet opp, og filen kan lagres uten dem.
+        Filen blir forsøkt forkortet før lagring slik at den ikke lenger er
+        ødelagt.
+        \n\n
         &lt;b&gt;6.21.3&lt;/b&gt; - Feilrettinger
         \n\n
         &lt;b&gt;6.21.2&lt;/b&gt; - Fikset at nylige filer forsvinner. Tillatt

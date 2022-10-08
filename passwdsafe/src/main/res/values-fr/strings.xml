@@ -226,6 +226,7 @@
     <string name="no_alias_chosen">Aucun alias choisi</string>
     <string name="no_backup_file">Pas de fichier backup</string>
     <string name="no_biometrics_registered">Pas d\'identification biométrique enregistré</string>
+    <string name="no_errors">Aucune erreur</string>
     <string name="no_file_permission">
         PasswdSafe a besoin des droits sur le fichier.
         \n\nAppuyer sur rafraîchir pour une autre demande. Si la demande n\'est
@@ -310,6 +311,15 @@
     <string name="recent_files">Fichiers Récents</string>
     <string name="record">Entrée</string>
     <string name="records">Entrées</string>
+    <string name="record_errors">Erreurs dans l\'enregistrement</string>
+    <string name="record_error_note">
+        Un ou plusieurs enregistrements n\'ont pas pu être chargés.
+        Les enregistrements réussis sont disponibles dans l\'écran
+        Enregistrements et les erreurs sont répertoriées ci-dessous.
+
+        \n\nPour récupérer, utilisez le menu pour enregistrer ou exporter le
+        fichier pour conserver les bons enregistrements.
+    </string>
     <string name="record_has_references">L\'entrée contient des références</string>
     <string name="record_not_found">Entrée introuvable</string>
     <string name="record_policy">Stratégie Entrée</string>
@@ -409,6 +419,12 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.22.0&lt;/b&gt; - Amélioration de la gestion des fichiers
+        contenant des erreurs. Les enregistrements avec les erreurs sont
+        répertoriées et le fichier peut être enregistré sans elles. Tente de
+        sassurer que le fichier est tronqué avant de l\'enregistrer pour éviter
+        la corruption du fichier.
+        \n\n
         &lt;b&gt;6.21.3&lt;/b&gt; - Correction de bugs
         \n\n
         &lt;b&gt;6.21.2&lt;/b&gt; - Correction disparition fichier récent.
