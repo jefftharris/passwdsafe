@@ -109,7 +109,7 @@ public class YubikeyMgr
             Intent intent = new Intent(act, act.getClass());
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             itsTagIntent = PendingIntent.getActivity(
-                    act, 0, intent, ApiCompat.getPendingIntentImmutableFlag());
+                    act, 0, intent, ApiCompat.getPendingIntentMutableFlag());
         }
 
         if (TEST) {
