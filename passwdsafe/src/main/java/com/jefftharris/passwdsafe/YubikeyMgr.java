@@ -20,6 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.CheckResult;
 
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.util.ClearingByteArrayOutputStream;
@@ -108,7 +109,7 @@ public class YubikeyMgr
             Intent intent = new Intent(act, act.getClass());
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             itsTagIntent = PendingIntent.getActivity(
-                    act, 0, intent, 0);
+                    act, 0, intent, ApiCompat.getPendingIntentMutableFlag());
         }
 
         if (TEST) {
