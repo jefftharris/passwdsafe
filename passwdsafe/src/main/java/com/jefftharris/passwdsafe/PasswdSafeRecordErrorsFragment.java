@@ -160,7 +160,7 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
             }
             return null;
         });
-        PasswdSafeUtil.copyToClipboard(sb.toString(), ctx);
+        PasswdSafeUtil.copyToClipboard(sb.toString(), false, ctx);
     }
 
     /**

@@ -129,10 +129,12 @@ public class PasswdSafeUtil
     /**
      * Copy text to the clipboard
      */
-    public static void copyToClipboard(String str, Context ctx)
+    public static void copyToClipboard(String str,
+                                       boolean sensitive,
+                                       Context ctx)
     {
         try {
-            ApiCompat.copyToClipboard(str, ctx);
+            ApiCompat.copyToClipboard(str, sensitive, ctx);
         } catch (Throwable e) {
             showClipboardError(e, ctx);
         }
@@ -185,7 +187,7 @@ public class PasswdSafeUtil
             if (copyTrace) {
                 StringWriter writer = new StringWriter();
                 t.printStackTrace(new PrintWriter(writer));
-                copyToClipboard(writer.toString(), activity);
+                copyToClipboard(writer.toString(), false, activity);
             }
         }
 

@@ -9,7 +9,9 @@ package com.jefftharris.passwdsafe.lib;
 
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
+import android.content.ClipData;
 import android.os.Build;
+import android.os.PersistableBundle;
 import androidx.annotation.NonNull;
 
 /**
@@ -18,6 +20,9 @@ import androidx.annotation.NonNull;
 @TargetApi(Build.VERSION_CODES.N)
 public class ApiCompatN
 {
+    private static final String CLIPBOARD_SENSITIVE_FLAG =
+            "android.content.extra.IS_SENSITIVE";
+
     /**
      * Are notifications enabled
      */
@@ -25,5 +30,15 @@ public class ApiCompatN
             @NonNull NotificationManager notifyMgr)
     {
         return notifyMgr.areNotificationsEnabled();
+    }
+
+    /**
+     * Set the clipboard data as sensitive
+     */
+    public static void setClipboardSensitive(@NonNull ClipData clip)
+    {
+        var extras = new PersistableBundle();
+        extras.putBoolean(CLIPBOARD_SENSITIVE_FLAG, true);
+        clip.getDescription().setExtras(extras);
     }
 }

@@ -171,9 +171,11 @@ public final class ApiCompat
     /**
      * Copy text to the clipboard
      */
-    public static void copyToClipboard(String str, Context ctx)
+    public static void copyToClipboard(String str,
+                                       boolean sensitive,
+                                       Context ctx)
     {
-        setClipboardText(str, ctx);
+        setClipboardText(str, sensitive, ctx);
     }
 
     /**
@@ -181,7 +183,7 @@ public final class ApiCompat
      */
     public static void clearClipboard(Context ctx)
     {
-        ClipboardManager clipMgr = setClipboardText("", ctx);
+        ClipboardManager clipMgr = setClipboardText("", true, ctx);
         if ((clipMgr != null) && (SDK_VERSION >= SDK_P)) {
             ApiCompatP.clearClipboard(clipMgr);
         }
@@ -256,12 +258,17 @@ public final class ApiCompat
      * Set the text in the clipboard
      * @return The clipboard manager
      */
-    private static ClipboardManager setClipboardText(String str, Context ctx)
+    private static ClipboardManager setClipboardText(String str,
+                                                     boolean sensitive,
+                                                     Context ctx)
     {
         ClipboardManager clipMgr = (ClipboardManager)
                 ctx.getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipMgr != null) {
             ClipData clip = ClipData.newPlainText(null, str);
+            if (sensitive && (SDK_VERSION >= SDK_N)) {
+                ApiCompatN.setClipboardSensitive(clip);
+            }
             clipMgr.setPrimaryClip(clip);
         }
         return clipMgr;

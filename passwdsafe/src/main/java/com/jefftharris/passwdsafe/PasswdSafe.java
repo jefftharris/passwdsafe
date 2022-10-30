@@ -988,6 +988,7 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void copyField(final CopyField field, final String recUuid)
     {
+        boolean sensitive = true;
         switch (field) {
         case PASSWORD: {
             SharedPreferences prefs = Preferences.getSharedPrefs(this);
@@ -1014,6 +1015,7 @@ public class PasswdSafe extends AppCompatActivity
         case USER_NAME:
         case URL:
         case EMAIL: {
+            sensitive = false;
             break;
         }
         }
@@ -1055,7 +1057,7 @@ public class PasswdSafe extends AppCompatActivity
             return null;
         });
         if (copyStr != null) {
-            PasswdSafeUtil.copyToClipboard(copyStr, PasswdSafe.this);
+            PasswdSafeUtil.copyToClipboard(copyStr, sensitive, PasswdSafe.this);
         }
     }
 

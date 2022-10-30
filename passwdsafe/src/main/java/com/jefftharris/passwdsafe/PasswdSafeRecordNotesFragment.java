@@ -72,7 +72,7 @@ public class PasswdSafeRecordNotesFragment
         int itemId = item.getItemId();
         if (itemId == R.id.menu_copy_notes) {
             PasswdSafeUtil.copyToClipboard(itsNotes.getText().toString(),
-                                           getActivity());
+                                           true, getActivity());
             return true;
         } else if (itemId == R.id.menu_monospace) {
             itsIsMonospace = !itsIsMonospace;
