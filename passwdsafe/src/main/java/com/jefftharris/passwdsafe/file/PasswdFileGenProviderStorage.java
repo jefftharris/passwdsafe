@@ -49,10 +49,16 @@ public class PasswdFileGenProviderStorage extends PwsStreamStorage
 
                 helper.createBackup(itsUri, getIdentifier());
 
-
                 var cr = ctx.getContentResolver();
                 try {
-                    pfd = cr.openFileDescriptor(itsUri, "wt");
+                    String mode = "wt";
+                    String host = itsUri.getHost();
+                    if ((host != null) &&
+                        host.startsWith("com.box.android.documents")) {
+                        mode = "w";
+                    }
+
+                    pfd = cr.openFileDescriptor(itsUri, mode);
                 } catch (Exception e) {
                     Log.w(TAG, "Error opening for truncate", e);
                     pfd = cr.openFileDescriptor(itsUri, "w");
