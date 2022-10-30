@@ -124,7 +124,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
-            <!-- Dropbox, Astro -->
+            <!-- Local files (legacy) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -195,7 +195,7 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.ibak"/>
             </intent-filter>
 
-            <!-- Content providers - e.g. mail app attachments -->
+            <!-- Content providers - e.g. opening from other apps -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -207,7 +207,20 @@
                 <data android:mimeType="application/x-psafe3"/>
                 <data android:mimeType="application/x-psafe"/>
                 <data android:mimeType="application/x-dat"/>
+                <data android:mimeType="application/application/x-psafe3"/>
+                <data android:mimeType="application/application/x-psafe"/>
+                <data android:mimeType="application/spplication/x-dat"/>
                 <data android:mimeType="application/octet-stream"/>
+            </intent-filter>
+
+            <!-- Google Files app -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:scheme="content"
+                    android:host="com.google.android.apps.nbu.files.provider"
+                    android:mimeType="*/*"/>
             </intent-filter>
 
             <!-- Search -->
