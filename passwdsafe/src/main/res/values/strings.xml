@@ -404,6 +404,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.22.2&lt;/b&gt; - Fix Dropbox and Google Files app
+        integration.
+        \n\n
         &lt;b&gt;6.22.1&lt;/b&gt; - Fix bug opening files with a YubiKey.
         \n\n
         &lt;b&gt;6.22.0&lt;/b&gt; - Improve handling of files with errors.
