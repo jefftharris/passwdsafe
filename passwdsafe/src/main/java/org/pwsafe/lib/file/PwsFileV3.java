@@ -133,8 +133,7 @@ public final class PwsFileV3 extends PwsFile
 
     @Override
     protected void open(Owner<PwsPassword>.Param passwdParam, String encoding)
-            throws EndOfFileException, IOException,
-                   UnsupportedFileVersionException
+            throws EndOfFileException, IOException
     {
         setPassphrase(passwdParam);
 
