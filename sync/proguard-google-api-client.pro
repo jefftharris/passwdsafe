@@ -28,7 +28,3 @@
 
 # Suppress notes on LicensingServices
 -dontnote **.ILicensingService
-
-# Suppress warnings on sun.misc.Unsafe
--dontnote sun.misc.Unsafe
--dontwarn sun.misc.Unsafe

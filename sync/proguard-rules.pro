@@ -56,9 +56,6 @@
 # Box library
 -keepclasseswithmembers,includedescriptorclasses class com.box.boxandroidlibv2.dao.** { *; }
 
-# OkHttp
--dontwarn okio.ForwardingSink
-
 # OneDrive
 -keep class com.microsoft.graph.extensions.Hashes
 -keep class com.microsoft.identity.common.** { *; }
