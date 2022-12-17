@@ -741,14 +741,14 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public boolean onMenuItemActionExpand(MenuItem item)
+    public boolean onMenuItemActionExpand(@NonNull MenuItem item)
     {
         invalidateOptionsMenu();
         return true;
     }
 
     @Override
-    public boolean onMenuItemActionCollapse(MenuItem item)
+    public boolean onMenuItemActionCollapse(@NonNull MenuItem item)
     {
         invalidateOptionsMenu();
         return true;
