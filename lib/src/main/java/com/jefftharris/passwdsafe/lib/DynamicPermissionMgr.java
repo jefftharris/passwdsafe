@@ -182,11 +182,11 @@ public class DynamicPermissionMgr implements View.OnClickListener
      */
     private static class Permission
     {
-        public final boolean itsIsRequired;
-        public boolean itsIsGranted;
-        public boolean itsIsChecked;
+        private final boolean itsIsRequired;
+        private boolean itsIsGranted;
+        private boolean itsIsChecked;
 
-        public Permission(String permission, boolean required, Context ctx)
+        protected Permission(String permission, boolean required, Context ctx)
         {
             itsIsRequired = required;
 
@@ -210,7 +210,7 @@ public class DynamicPermissionMgr implements View.OnClickListener
          * Set whether the permission is granted after being checked
          * @return Whether the granted state changed
          */
-        public boolean updateGranted(boolean granted) {
+        protected boolean updateGranted(boolean granted) {
             itsIsChecked = true;
             if (granted != itsIsGranted) {
                 itsIsGranted = granted;

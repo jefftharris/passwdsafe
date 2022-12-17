@@ -168,15 +168,15 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
      */
     private static class RecordError
     {
-        public final String itsError;
+        private final String itsError;
 
-        public RecordError(RecordLoadException rle, Context ctx)
+        protected RecordError(RecordLoadException rle, Context ctx)
         {
             itsError = errorToString(rle, ctx);
         }
 
-        public static String errorToString(RecordLoadException rle,
-                                           Context ctx)
+        protected static String errorToString(RecordLoadException rle,
+                                              Context ctx)
         {
             StringWriter sb = new StringWriter();
             PrintWriter printer = new PrintWriter(sb);
@@ -202,8 +202,8 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
      */
     private static class RecordErrorAdapter extends ArrayAdapter<RecordError>
     {
-        public RecordErrorAdapter(@NonNull ArrayList<RecordError> errors,
-                                  @NonNull Context ctx)
+        protected RecordErrorAdapter(@NonNull ArrayList<RecordError> errors,
+                                     @NonNull Context ctx)
         {
             super(ctx, android.R.layout.simple_list_item_1, errors);
         }
