@@ -289,8 +289,11 @@ public class FileListNavDrawerFragment
      */
     private static void updateMenuIcon(MenuItem item)
     {
-        Drawable d = item.getIcon().mutate();
-        d.setAlpha(138 /*54%*/);
-        item.setIcon(d);
+        var icon = item.getIcon();
+        if (icon != null) {
+            Drawable d = icon.mutate();
+            d.setAlpha(138 /*54%*/);
+            item.setIcon(d);
+        }
     }
 }

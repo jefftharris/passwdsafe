@@ -420,6 +420,9 @@ public class PasswdSafeEditRecordFragment
     {
         AdapterView.AdapterContextMenuInfo info =
                 (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        if (info == null) {
+            return super.onContextItemSelected(item);
+        }
 
         int itemId = item.getItemId();
         if (itemId == R.id.menu_history_remove) {

@@ -263,7 +263,7 @@ public class PasswdSafeListFragment extends ListFragment
             AdapterView.AdapterContextMenuInfo info =
                     (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
             final PasswdRecordListData listItem =
-                    itsAdapter.getItem(info.position);
+                    (info != null) ? itsAdapter.getItem(info.position) : null;
             if ((listItem != null) && listItem.itsIsRecord) {
                 itsSelectedRecord = listItem.itsUuid;
                 itsListener.copyField(

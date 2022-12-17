@@ -467,9 +467,13 @@ public class PasswdSafe extends AppCompatActivity
         collapseSearch();
         if (searchManager != null) {
             SearchView searchView = (SearchView)itsSearchItem.getActionView();
-            searchView.setSearchableInfo(
-                    searchManager.getSearchableInfo(getComponentName()));
-            searchView.setIconifiedByDefault(true);
+            if (searchView != null) {
+                var info = searchManager.getSearchableInfo(getComponentName());
+                if (info != null) {
+                    searchView.setSearchableInfo(info);
+                }
+                searchView.setIconifiedByDefault(true);
+            }
         }
         return true;
     }

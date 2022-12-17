@@ -146,9 +146,12 @@ public final class GuiUtils
     public static void setMenuEnabled(MenuItem item, boolean enabled)
     {
         item.setEnabled(enabled);
-        Drawable d = item.getIcon().mutate();
-        d.setAlpha(enabled ? 255 : 138);
-        item.setIcon(d);
+        var icon = item.getIcon();
+        if (icon != null) {
+            Drawable d = icon.mutate();
+            d.setAlpha(enabled ? 255 : 138);
+            item.setIcon(d);
+        }
     }
 
     /**

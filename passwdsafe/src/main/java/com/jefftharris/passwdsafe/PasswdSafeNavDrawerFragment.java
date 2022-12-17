@@ -22,6 +22,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
+import java.util.Objects;
+
 /**
  * Fragment for the navigation drawer of the PasswdSafe activity
  */
@@ -108,7 +110,8 @@ public class PasswdSafeNavDrawerFragment
         MenuItem writableItem =
                 getNavView().getMenu().findItem(R.id.menu_drawer_writable);
         itsWritableSw =
-                writableItem.getActionView().findViewById(R.id.switch_item);
+                Objects.requireNonNull(writableItem.getActionView())
+                       .findViewById(R.id.switch_item);
         itsWritableSw.setOnCheckedChangeListener(this);
 
         return fragView;
