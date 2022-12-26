@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.R;
@@ -253,6 +254,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Get the policy flags */
+    @Keep
     public int getFlags()
     {
         return itsFlags;

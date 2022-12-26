@@ -19,6 +19,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.annotation.Keep;
 import androidx.appcompat.app.AlertDialog;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
@@ -266,6 +267,7 @@ public class PasswdSafeUtil
     /**
      * Set whether the app is running while testing
      */
+    @Keep
     public static void setIsTesting(boolean testing)
     {
         TESTING = DEBUG && testing;
