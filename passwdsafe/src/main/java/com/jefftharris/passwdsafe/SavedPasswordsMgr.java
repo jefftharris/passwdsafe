@@ -70,6 +70,7 @@ public final class SavedPasswordsMgr
     private boolean itsHasBioHw;
     private boolean itsHasEnrolledBio;
     private User itsActiveUser;
+    private boolean itsHasAuthenticated = false;
 
     private static final MessageDigest MD_SHA256;
     static {
@@ -144,7 +145,7 @@ public final class SavedPasswordsMgr
     public void detach()
     {
         itsActiveUser = null;
-        if (itsBioPrompt != null) {
+        if ((itsBioPrompt != null) && itsHasAuthenticated) {
             itsBioPrompt.cancelAuthentication();
         }
     }
@@ -238,6 +239,7 @@ public final class SavedPasswordsMgr
                             .setConfirmationRequired(false)
                             .build();
             itsActiveUser = user;
+            itsHasAuthenticated = true;
             itsBioPrompt.authenticate(prompt,
                                       new BiometricPrompt.CryptoObject(cipher));
             return true;
