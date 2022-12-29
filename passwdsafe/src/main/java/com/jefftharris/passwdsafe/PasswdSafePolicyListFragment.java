@@ -193,7 +193,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
                 getString(R.string.delete_policy_msg, policy.getName()), null,
                 getString(R.string.delete), confirmArgs);
         dialog.setTargetFragment(this, 0);
-        dialog.show(requireFragmentManager(), "Delete policy");
+        dialog.show(getParentFragmentManager(), "Delete policy");
     }
 
     /**
@@ -204,7 +204,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
         PasswdSafeUtil.dbginfo(TAG, "Edit policy: %s", policy);
         PasswdPolicyEditDialog dlg = PasswdPolicyEditDialog.newInstance(policy);
         dlg.setTargetFragment(this, 0);
-        dlg.show(requireFragmentManager(), "PasswdPolicyEditDialog");
+        dlg.show(getParentFragmentManager(), "PasswdPolicyEditDialog");
     }
 
     /**

@@ -465,14 +465,14 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.MONTH),
                             itsExpiryDate.get(Calendar.DAY_OF_MONTH));
             picker.setTargetFragment(this, 0);
-            picker.show(requireFragmentManager(), "datePicker");
+            picker.show(getParentFragmentManager(), "datePicker");
         } else if (id == R.id.expire_date_time) {
             TimePickerDialogFragment picker =
                     TimePickerDialogFragment.newInstance(
                             itsExpiryDate.get(Calendar.HOUR_OF_DAY),
                             itsExpiryDate.get(Calendar.MINUTE));
             picker.setTargetFragment(this, 0);
-            picker.show(requireFragmentManager(), "timePicker");
+            picker.show(getParentFragmentManager(), "timePicker");
         } else if (id == R.id.history_addremove) {
             if (itsHistory == null) {
                 itsHistory = new PasswdHistory();
@@ -521,7 +521,7 @@ public class PasswdSafeEditRecordFragment
             PasswdPolicyEditDialog dlg =
                     PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
             dlg.setTargetFragment(this, 0);
-            dlg.show(requireFragmentManager(), "PasswdPolicyEditDialog");
+            dlg.show(getParentFragmentManager(), "PasswdPolicyEditDialog");
         }
     }
 
@@ -1088,7 +1088,7 @@ public class PasswdSafeEditRecordFragment
             itsGroup.setSelection(itsPrevGroupPos);
             NewGroupDialog groupDlg = NewGroupDialog.newInstance();
             groupDlg.setTargetFragment(this, 0);
-            groupDlg.show(requireFragmentManager(), "NewGroupDialog");
+            groupDlg.show(getParentFragmentManager(), "NewGroupDialog");
         } else {
             itsPrevGroupPos = position;
             itsValidator.validate();

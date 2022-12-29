@@ -114,7 +114,7 @@ public class PasswdSafeExpirationsFragment
                             now.get(Calendar.MONTH),
                             now.get(Calendar.DAY_OF_MONTH));
             picker.setTargetFragment(this, 0);
-            picker.show(requireFragmentManager(), "datePicker");
+            picker.show(getParentFragmentManager(), "datePicker");
             break;
         }
         }
@@ -131,7 +131,7 @@ public class PasswdSafeExpirationsFragment
                         getString(R.string.expiration_notifications_warning),
                         getString(R.string.enable), null);
                 dialog.setTargetFragment(this, 0);
-                dialog.show(requireFragmentManager(), "expiry");
+                dialog.show(getParentFragmentManager(), "expiry");
             } else {
                 setExpiryNotif(false);
             }

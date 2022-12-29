@@ -562,7 +562,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                         act, confirmArgs);
                 dlg.setTargetFragment(PreferencesFragment.this,
                                       REQUEST_CLEAR_ALL_NOTIFS);
-                dlg.show(requireFragmentManager(), "clearNotifsConfirm");
+                dlg.show(getParentFragmentManager(), "clearNotifsConfirm");
                 return true;
             }
             case Preferences.PREF_PASSWD_CLEAR_ALL_SAVED: {
@@ -575,7 +575,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                         getString(R.string.clear), confirmArgs);
                 dlg.setTargetFragment(PreferencesFragment.this,
                                       REQUEST_CLEAR_ALL_SAVED);
-                dlg.show(requireFragmentManager(), "clearSavedConfirm");
+                dlg.show(getParentFragmentManager(), "clearSavedConfirm");
                 return true;
             }
             }
