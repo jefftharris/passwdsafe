@@ -36,6 +36,7 @@ android {
             minifyEnabled true
             proguardFiles += 'proguard-rules.pro'
             proguardFiles += 'proguard-rules-debug.pro'
+            testProguardFiles += 'proguard-rules-test.pro'
             ndk {
                 debugSymbolLevel "FULL"
             }
