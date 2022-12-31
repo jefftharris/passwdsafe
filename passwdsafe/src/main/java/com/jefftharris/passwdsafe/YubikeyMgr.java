@@ -19,6 +19,7 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.CheckResult;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -66,7 +67,8 @@ public class YubikeyMgr
         Activity getActivity();
 
         /// Get the password to be sent to the key
-        @CheckResult Owner<PwsPassword> getUserPassword();
+        @CheckResult @Nullable
+        Owner<PwsPassword> getUserPassword();
 
         /// Get the slot number to use on the key
         int getSlotNum();
@@ -125,6 +127,10 @@ public class YubikeyMgr
                     if (itsUser != null) {
                         try (Owner<PwsPassword> password =
                                      itsUser.getUserPassword()) {
+                            if (password == null) {
+                                stopUser(null, null);
+                                return;
+                            }
                             String utf8 = "UTF-8";
                             byte[] bytes = password.get().getBytes(utf8);
                             String passwordStr =
@@ -230,6 +236,10 @@ public class YubikeyMgr
                     new ClearingByteArrayOutputStream();
             byte[] resp = null;
             try (Owner<PwsPassword> userPassword = itsUser.getUserPassword()) {
+                if (userPassword == null) {
+                    throw new Exception("No password");
+                }
+
                 resp = isotag.transceive(SELECT_CMD);
                 checkResponse(resp);
                 Util.clearArray(resp);
