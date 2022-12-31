@@ -82,6 +82,14 @@ public abstract class AbstractPasswdSafeOpenNewFileFragment extends Fragment
     }
 
     /**
+     * Set the password file URI
+     */
+    protected void setPasswdFileUri(PasswdFileUri uri)
+    {
+        itsPasswdFileUri = uri;
+    }
+
+    /**
      * Get the progress bar
      */
     protected final ProgressBar getProgress()
