@@ -6,8 +6,7 @@
   ~ distributed with this code, or available from
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
-<manifest package="com.jefftharris.passwdsafe.sync"
-          xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
 
     <permission

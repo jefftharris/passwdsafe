@@ -6,9 +6,7 @@
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
 
-<!--suppress XmlUnusedNamespaceDeclaration -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jefftharris.passwdsafe.lib">
+<manifest>
 
     <uses-sdk xmlns:tools="http://schemas.android.com/tools"
               tools:overrideLibrary="android.support.v14.preference" />
