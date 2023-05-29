@@ -396,14 +396,6 @@ public class PasswdSafe extends AppCompatActivity
             }
             break;
         }
-        default: {
-            FragmentManager fragMgr = getSupportFragmentManager();
-            Fragment frag = fragMgr.findFragmentById(R.id.content);
-            if (frag instanceof PasswdSafeOpenFileFragment) {
-                ((PasswdSafeOpenFileFragment)frag).onNewIntent(intent);
-            }
-            break;
-        }
         }
     }
 

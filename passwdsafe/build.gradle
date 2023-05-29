@@ -14,7 +14,7 @@ android {
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
-        minSdkVersion 14
+        minSdkVersion 19
         resConfigs 'de', 'fr', 'nb'
         targetSdkVersion 33
         // <major><minor><bugfix><beta/extra>
@@ -82,6 +82,9 @@ dependencies {
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
     implementation "androidx.room:room-runtime:$room_version"
+
+    implementation 'com.yubico.yubikit:yubiotp:2.2.0'
+    implementation 'com.yubico.yubikit:android:2.2.0'
 
     annotationProcessor "androidx.room:room-compiler:$room_version"
 

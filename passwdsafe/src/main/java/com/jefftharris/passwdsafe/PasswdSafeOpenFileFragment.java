@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -210,7 +209,7 @@ public class PasswdSafeOpenFileFragment
         GuiUtils.setVisible(itsSavePasswdCb, saveAvailable);
         GuiUtils.setVisible(itsSavedPasswordMsg, false);
 
-        itsYubiMgr = new YubikeyMgr();
+        itsYubiMgr = new YubikeyMgr(ctx, this);
         itsYubikeyCb = rootView.findViewById(R.id.yubikey);
         itsYubikeyCb.setOnCheckedChangeListener(this);
         setVisibility(R.id.file_open_help_text, false, rootView);
@@ -251,8 +250,28 @@ public class PasswdSafeOpenFileFragment
     @Override
     public void onResume()
     {
+        PasswdSafeUtil.dbginfo(TAG, "onResume");
         super.onResume();
         itsListener.updateViewFileOpen();
+
+        switch (itsPhase) {
+        case RESOLVING: {
+            var openData = itsOpenModel.getDataValue();
+            if (!openData.isResolved()) {
+                startResolve();
+            }
+            break;
+        }
+        case INITIAL:
+        case CHECKING_YUBIKEY:
+        case WAITING_PASSWORD:
+        case YUBIKEY:
+        case OPENING:
+        case SAVING_PASSWORD:
+        case FINISHED: {
+            break;
+        }
+        }
     }
 
     @Override
@@ -286,11 +305,14 @@ public class PasswdSafeOpenFileFragment
         }
     }
 
-    /** Handle a new intent */
-    public void onNewIntent(Intent intent)
+    @Override
+    public void onDestroy()
     {
+        PasswdSafeUtil.dbginfo(TAG, "onDestroy");
+        super.onDestroy();
         if (itsYubiMgr != null) {
-            itsYubiMgr.handleKeyIntent(intent);
+            itsYubiMgr.onDestroy();
+            itsYubiMgr = null;
         }
     }
 
