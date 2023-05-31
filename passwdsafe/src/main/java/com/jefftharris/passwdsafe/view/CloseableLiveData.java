@@ -37,8 +37,8 @@ public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
     public void close()
     {
         T value = getValue();
-        PasswdSafeUtil.dbginfo(TAG, "Closing: %s", value);
         if (value != null) {
+            PasswdSafeUtil.dbginfo(TAG, "Closing value");
             try {
                 value.close();
             } catch (IOException e) {
@@ -52,7 +52,6 @@ public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
     protected void onInactive()
     {
         super.onInactive();
-        PasswdSafeUtil.dbginfo(TAG, "onInactive");
         close();
     }
 
