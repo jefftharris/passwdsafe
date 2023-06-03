@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -52,9 +53,18 @@ public class YubikeyMgr
 
     private static final String TAG = "YubikeyMgr";
 
+    private enum NfcState
+    {
+        UNAVAILABLE,
+        DISABLED,
+        ENABLED
+    }
+
     private User itsUser = null;
     private CountDownTimer itsTimer = null;
     private final YubiKitManager itsYubiMgr;
+    private NfcState itsNfcState;
+    private final boolean itsHasUsb;
 
     private final MutableLiveData<YubiKeyDevice> itsYubiDevice =
             new MutableLiveData<>();
@@ -96,37 +106,55 @@ public class YubikeyMgr
         itsYubiDevice.observe(openFrag, this::onYubikeyDeviceChanged);
         itsResult.observe(openFrag, this::onYubikeyResultChanged);
 
-        itsYubiMgr.startUsbDiscovery(new UsbConfiguration(), device -> {
-            PasswdSafeUtil.dbginfo(TAG, "USB discovery, device: %s", device);
-            if (!device.hasPermission()) {
-                return;
-            }
+        itsNfcState = getNfcState(ctx);
+        var pkgmgr = ctx.getPackageManager();
+        itsHasUsb = pkgmgr.hasSystemFeature(PackageManager.FEATURE_USB_HOST);
 
-            device.setOnClosed(() -> {
-                PasswdSafeUtil.dbginfo(TAG, "USB device removed");
-                itsYubiDevice.postValue(null);
+        if (itsHasUsb) {
+            itsYubiMgr.startUsbDiscovery(new UsbConfiguration(), device -> {
+                PasswdSafeUtil.dbginfo(TAG, "USB discovery, device: %s",
+                                       device);
+                if (!device.hasPermission()) {
+                    return;
+                }
+
+                device.setOnClosed(() -> {
+                    PasswdSafeUtil.dbginfo(TAG, "USB device removed");
+                    itsYubiDevice.postValue(null);
+                });
+
+                itsYubiDevice.postValue(device);
             });
-
-            itsYubiDevice.postValue(device);
-        });
+        }
     }
 
     /**
      * Get the state of support for the YubiKey
      */
-    public YubiState getState(Activity act)
+    public YubiState getState(Context ctx)
     {
+        itsNfcState = getNfcState(ctx);
+
         if (TEST) {
             return YubiState.ENABLED;
         }
 
-        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(act);
-        if (adapter == null) {
-            return YubiState.UNAVAILABLE;
-        } else if (!adapter.isEnabled()) {
-            return YubiState.DISABLED;
+        switch (itsNfcState)
+        {
+        case UNAVAILABLE: {
+            return itsHasUsb ? YubiState.USB_ENABLED_NFC_UNAVAILABLE :
+                   YubiState.UNAVAILABLE;
         }
-        return YubiState.ENABLED;
+        case DISABLED: {
+            return itsHasUsb ? YubiState.USB_ENABLED_NFC_DISABLED :
+                   YubiState.USB_DISABLED_NFC_DISABLED;
+        }
+        case ENABLED: {
+            return itsHasUsb ? YubiState.ENABLED :
+                   YubiState.USB_DISABLED_NFC_ENABLED;
+        }
+        }
+        return YubiState.UNAVAILABLE;
     }
 
     /**
@@ -143,7 +171,7 @@ public class YubikeyMgr
             testYubikey();
         } else if (itsYubiDevice.getValue() != null) {
             useYubikey(itsYubiDevice.getValue());
-        } else {
+        } else if (isNfcEnabled()) {
             try {
                 itsYubiMgr.startNfcDiscovery(
                         new NfcConfiguration().timeout(KEY_TIMEOUT),
@@ -196,7 +224,7 @@ public class YubikeyMgr
      */
     public void onPause()
     {
-        if (itsUser != null) {
+        if (isNfcEnabled() && (itsUser != null)) {
             itsYubiMgr.stopNfcDiscovery(itsUser.getActivity());
         }
     }
@@ -207,7 +235,9 @@ public class YubikeyMgr
     public void onDestroy()
     {
         itsYubiDevice.setValue(null);
-        itsYubiMgr.stopUsbDiscovery();
+        if (itsHasUsb) {
+            itsYubiMgr.stopUsbDiscovery();
+        }
     }
 
     @UiThread
@@ -345,6 +375,36 @@ public class YubikeyMgr
         }
         if (itsUser != null) {
             itsUser.finish(password, e);
+        }
+    }
+
+    /**
+     * Is NFC enabled
+     */
+    private boolean isNfcEnabled()
+    {
+        switch (itsNfcState) {
+        case ENABLED: {
+            return true;
+        }
+        case UNAVAILABLE:
+        case DISABLED: {
+            break;
+        }
+        }
+        return false;
+    }
+
+    /**
+     * Get the NFC state
+     */
+    private static NfcState getNfcState(Context ctx)
+    {
+        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(ctx);
+        if (adapter != null) {
+            return adapter.isEnabled() ? NfcState.ENABLED : NfcState.DISABLED;
+        } else {
+            return NfcState.UNAVAILABLE;
         }
     }
 

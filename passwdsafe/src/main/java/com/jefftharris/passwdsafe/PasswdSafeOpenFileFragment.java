@@ -212,6 +212,7 @@ public class PasswdSafeOpenFileFragment
         itsYubiMgr = new YubikeyMgr(ctx, this);
         itsYubikeyCb = rootView.findViewById(R.id.yubikey);
         itsYubikeyCb.setOnCheckedChangeListener(this);
+        setVisibility(R.id.yubikey_nfc_disabled, false, rootView);
         setVisibility(R.id.file_open_help_text, false, rootView);
         setVisibility(R.id.yubi_progress_text, false, rootView);
 
@@ -334,17 +335,8 @@ public class PasswdSafeOpenFileFragment
             inflater.inflate(R.menu.fragment_passwdsafe_open_file, menu);
 
             var data = itsOpenModel.getDataValue();
-            switch (data.getYubiState()) {
-            case ENABLED:
-            case DISABLED: {
-                break;
-            }
-            case UNKNOWN:
-            case UNAVAILABLE: {
-                menu.setGroupVisible(R.id.menu_group_slots, false);
-                break;
-            }
-            }
+            menu.setGroupVisible(R.id.menu_group_slots,
+                                 data.getYubiState().isEnabled());
 
             MenuItem item;
             switch (data.getYubiSlot()) {
@@ -494,19 +486,8 @@ public class PasswdSafeOpenFileFragment
         itsPasswordEdit.setEnabled(enabled);
         itsOpenBtn.setEnabled(enabled);
         itsSavePasswdCb.setEnabled(enabled && openData.isSaveAllowed());
+        itsYubikeyCb.setEnabled(openData.getYubiState().isEnabled() && enabled);
 
-        switch (openData.getYubiState()) {
-        case ENABLED: {
-            itsYubikeyCb.setEnabled(enabled);
-            break;
-        }
-        case UNKNOWN:
-        case UNAVAILABLE:
-        case DISABLED: {
-            itsYubikeyCb.setEnabled(false);
-            break;
-        }
-        }
     }
 
     /**
@@ -618,36 +599,71 @@ public class PasswdSafeOpenFileFragment
     private void enterCheckingYubikeyPhase()
     {
         var openData = itsOpenModel.getDataValue();
+        var state = itsYubiMgr.getState(requireContext());
         if (!openData.hasYubiInfo()) {
-            var state = itsYubiMgr.getState(getActivity());
             var prefs = Preferences.getSharedPrefs(getContext());
             itsOpenModel.provideYubiInfo(state,
                                          Preferences.getFileOpenYubikeyPref(
                                                  prefs));
             openData = itsOpenModel.getDataValue();
+        } else if (state != openData.getYubiState()) {
+            itsOpenModel.provideYubiInfo(state, openData.isYubikeySelected());
+            openData = itsOpenModel.getDataValue();
         }
 
+        boolean yubikeyVisible = false;
+        boolean yubikeyEnabled = false;
+        String yubikeySfx = null;
+        boolean yubikeyNfcDisabledVisible = false;
         switch (openData.getYubiState()) {
         case UNKNOWN:
         case UNAVAILABLE: {
-            GuiUtils.setVisible(itsYubikeyCb, false);
             break;
         }
-        case DISABLED: {
-            GuiUtils.setVisible(itsYubikeyCb, true);
-            itsYubikeyCb.setEnabled(false);
-            itsYubikeyCb.setText(R.string.yubikey_disabled);
-            itsYubikeyCb.setChecked(false);
+        case USB_DISABLED_NFC_ENABLED: {
+            yubikeyVisible = true;
+            yubikeyEnabled = true;
+            yubikeySfx = "NFC";
+            break;
+        }
+        case USB_DISABLED_NFC_DISABLED: {
+            yubikeyVisible = true;
+            yubikeySfx = "NFC";
+            yubikeyNfcDisabledVisible = true;
+            break;
+        }
+        case USB_ENABLED_NFC_UNAVAILABLE: {
+            yubikeyVisible = true;
+            yubikeyEnabled = true;
+            yubikeySfx = "USB";
+            break;
+        }
+        case USB_ENABLED_NFC_DISABLED: {
+            yubikeyVisible = true;
+            yubikeyEnabled = true;
+            yubikeySfx = "USB";
+            yubikeyNfcDisabledVisible = true;
             break;
         }
         case ENABLED: {
-            GuiUtils.setVisible(itsYubikeyCb, true);
-            itsYubikeyCb.setEnabled(true);
-            itsYubikeyCb.setText(R.string.yubikey);
-            itsYubikeyCb.setChecked(openData.isYubikeySelected());
+            yubikeyVisible = true;
+            yubikeyEnabled = true;
+            yubikeySfx = "NFC\u00A0/\u00A0USB"; // Non-breaking spaces
             break;
         }
         }
+        GuiUtils.setVisible(itsYubikeyCb, yubikeyVisible);
+        itsYubikeyCb.setEnabled(yubikeyEnabled);
+        itsYubikeyCb.setChecked(yubikeyEnabled && openData.isYubikeySelected());
+        StringBuilder yubikeyText =
+                new StringBuilder(getString(R.string.yubikey));
+        if (yubikeySfx != null) {
+            yubikeyText.append(" (").append(yubikeySfx).append(")");
+        }
+        itsYubikeyCb.setText(yubikeyText);
+        var rootView = requireView();
+        setVisibility(R.id.yubikey_nfc_disabled, yubikeyNfcDisabledVisible,
+                      rootView);
 
         setPhase(Phase.RESOLVING);
     }

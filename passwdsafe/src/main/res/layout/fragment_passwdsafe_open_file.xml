@@ -68,25 +68,37 @@
             app:layout_constraintEnd_toStartOf="@+id/save_password"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/passwd_input"/>
+            app:layout_constraintTop_toBottomOf="@+id/passwd_input"
+            app:layout_constraintBottom_toTopOf="@+id/yubikey_nfc_disabled"/>
 
         <CheckBox
             android:id="@+id/save_password"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:checked="false"
             android:text="@string/save_password"
+            app:layout_constraintBottom_toBottomOf="@+id/yubikey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/yubikey"
-            app:layout_constraintTop_toBottomOf="@+id/passwd_input"/>
+            app:layout_constraintTop_toTopOf="@+id/yubikey"/>
+
+        <TextView
+            android:id="@+id/yubikey_nfc_disabled"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/yubikey_nfc_disabled"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/yubikey"/>
+
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/ro_save_options"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="yubikey,save_password"
+            app:constraint_referenced_ids="yubikey_nfc_disabled,save_password"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
