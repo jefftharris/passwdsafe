@@ -54,6 +54,7 @@ public class PasswdSafeOpenFileViewModel extends ViewModel
         private YubiState itsYubiState = YubiState.UNKNOWN;
         private int itsYubiSlot = 2;
         private boolean itsIsYubikeySelected = false;
+        private Throwable itsYubikeyError = null;
 
         private int itsRetries = 0;
         private static final int NUM_RETRIES = 5;
@@ -86,6 +87,7 @@ public class PasswdSafeOpenFileViewModel extends ViewModel
             itsYubiState = data.itsYubiState;
             itsYubiSlot = data.itsYubiSlot;
             itsIsYubikeySelected = data.itsIsYubikeySelected;
+            itsYubikeyError = data.itsYubikeyError;
 
             itsRetries = data.itsRetries;
 
@@ -144,6 +146,11 @@ public class PasswdSafeOpenFileViewModel extends ViewModel
             return itsIsYubikeySelected;
         }
 
+        Throwable getYubikeyError()
+        {
+            return itsYubikeyError;
+        }
+
         boolean hasPasswordRetry()
         {
             return itsRetries > 0;
@@ -185,11 +192,12 @@ public class PasswdSafeOpenFileViewModel extends ViewModel
         {
             return String.format(
                     "{\nuri: %s, save allowed: %b, retries: %d" +
-                    "\nyubi state: %s, slot: %d, selected: %b" +
+                    "\nyubi state: %s, slot: %d, selected: %b, error: %s" +
                     "\nsaved passwd: %s, loaded passwd: %b, loaded msg: %s"+
                     "\nopen passwd %b, open yubikey %b}",
                     itsPasswdFileUri, itsIsSaveAllowed, itsRetries,
                     itsYubiState, itsYubiSlot, itsIsYubikeySelected,
+                    itsYubikeyError,
                     itsSavedPasswordState, (itsLoadedPassword != null),
                     itsLoadedPasswordMsg,
                     (itsOpenPassword != null), itsIsOpenYubikey);
@@ -291,6 +299,19 @@ public class PasswdSafeOpenFileViewModel extends ViewModel
         OpenData newData = new OpenData(getDataValue());
         newData.itsYubiSlot = slot;
         setDataValue(newData);
+    }
+
+    /**
+     * Set an error using the YubiKey
+     */
+    public void setYubikeyError(Throwable error)
+    {
+        var currData = getDataValue();
+        if (!Objects.equals(error, currData.getYubikeyError())) {
+            OpenData newData = new OpenData(currData);
+            newData.itsYubikeyError = error;
+            setDataValue(newData);
+        }
     }
 
     /**

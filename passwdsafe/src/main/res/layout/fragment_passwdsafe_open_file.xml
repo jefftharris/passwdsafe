@@ -88,17 +88,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/yubikey_nfc_disabled"
+            app:layout_constraintBottom_toTopOf="@+id/yubikey_error"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/yubikey"/>
 
+        <TextView
+            android:id="@+id/yubikey_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/yubikey_error"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/yubikey_nfc_disabled"/>
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/ro_save_options"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="yubikey_nfc_disabled,save_password"
+            app:constraint_referenced_ids="yubikey_error,save_password"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 

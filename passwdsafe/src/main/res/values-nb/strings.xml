@@ -371,7 +371,7 @@
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_disabled">YubiKey deaktivert. Aktiver NFC for å bruke.</string>
-    <string name="yubikey_error">Klarte ikke kommuniserer med YubiKey-en</string>
+    <string name="yubikey_error">Klarte ikke kommuniserer med YubiKey-en: %1$s</string>
     <string name="yubikey_slot_1">YubiKey plass 1</string>
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 

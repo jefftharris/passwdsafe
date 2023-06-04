@@ -406,7 +406,7 @@
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_disabled">YubiKey deaktiviert. NFC einschalten, um es benutzen zu können.</string>
-    <string name="yubikey_error">Fehler bei der Kommunikation mit dem YubiKey</string>
+    <string name="yubikey_error">Fehler bei der Kommunikation mit dem YubiKey: %1$s</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 

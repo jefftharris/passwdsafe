@@ -129,6 +129,7 @@ public class PasswdSafeOpenFileFragment
     private TextView itsReadonlyMsg;
     private CheckBox itsSavePasswdCb;
     private CheckBox itsYubikeyCb;
+    private TextView itsYubikeyError;
     private Button itsOpenBtn;
     private SavedPasswordsMgr itsSavedPasswordsMgr;
     private SavePasswordChange itsSaveChange = SavePasswordChange.NONE;
@@ -212,6 +213,8 @@ public class PasswdSafeOpenFileFragment
         itsYubiMgr = new YubikeyMgr(ctx, this);
         itsYubikeyCb = rootView.findViewById(R.id.yubikey);
         itsYubikeyCb.setOnCheckedChangeListener(this);
+        itsYubikeyError = rootView.findViewById(R.id.yubikey_error);
+        GuiUtils.setVisible(itsYubikeyError, false);
         setVisibility(R.id.yubikey_nfc_disabled, false, rootView);
         setVisibility(R.id.file_open_help_text, false, rootView);
         setVisibility(R.id.yubi_progress_text, false, rootView);
@@ -263,10 +266,14 @@ public class PasswdSafeOpenFileFragment
             }
             break;
         }
+        case YUBIKEY: {
+            setProgressVisible(true, false);
+            setFieldsDisabled(true);
+            break;
+        }
         case INITIAL:
         case CHECKING_YUBIKEY:
         case WAITING_PASSWORD:
-        case YUBIKEY:
         case OPENING:
         case SAVING_PASSWORD:
         case FINISHED: {
@@ -321,10 +328,16 @@ public class PasswdSafeOpenFileFragment
     public void onChanged(
             @Nullable final PasswdSafeOpenFileViewModel.OpenData openData)
     {
+        Throwable yubikeyError = null;
         if (openData != null) {
             PasswdSafeUtil.dbginfo(TAG, "onChanged phase: %s, data: %s",
                                    itsPhase, openData);
+            yubikeyError = openData.getYubikeyError();
         }
+
+        itsYubikeyError.setText(getString(R.string.yubikey_error,
+                                          yubikeyError));
+        GuiUtils.setVisible(itsYubikeyError, yubikeyError != null);
     }
 
     @Override
@@ -487,7 +500,6 @@ public class PasswdSafeOpenFileFragment
         itsOpenBtn.setEnabled(enabled);
         itsSavePasswdCb.setEnabled(enabled && openData.isSaveAllowed());
         itsYubikeyCb.setEnabled(openData.getYubiState().isEnabled() && enabled);
-
     }
 
     /**
@@ -506,6 +518,7 @@ public class PasswdSafeOpenFileFragment
             break;
         }
         case WAITING_PASSWORD: {
+            itsOpenModel.setYubikeyError(null);
             try (Owner<PwsPassword> password =
                          PwsPassword.create(itsPasswordEdit)) {
                 setOpenPassword(password.pass(), false);
@@ -1150,15 +1163,17 @@ public class PasswdSafeOpenFileFragment
         {
             boolean haveUser = (itsYubiUser != null);
             itsYubiUser = null;
-            if (password != null) {
-                setOpenPassword(password, true);
-                setPhase(Phase.OPENING);
-            } else if (e != null) {
-                Activity act = getActivity();
-                PasswdSafeUtil.showFatalMsg(
-                        e, act.getString(R.string.yubikey_error), act);
-            } else if (haveUser) {
-                setPhase(Phase.WAITING_PASSWORD);
+            if (haveUser) {
+                Exception yubikeyError = null;
+                var nextPhase = Phase.WAITING_PASSWORD;
+                if (password != null) {
+                    setOpenPassword(password, true);
+                    nextPhase = Phase.OPENING;
+                } else if (e != null) {
+                    yubikeyError = e;
+                }
+                itsOpenModel.setYubikeyError(yubikeyError);
+                setPhase(nextPhase);
             }
         }
 

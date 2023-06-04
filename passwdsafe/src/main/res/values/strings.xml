@@ -398,7 +398,7 @@
     <string name="writable">Writable</string>
     <string name="yes">Yes</string>
     <string name="yubikey">YubiKey</string>
-    <string name="yubikey_error">Error communicating with the YubiKey</string>
+    <string name="yubikey_error">Error communicating with the YubiKey: %1$s</string>
     <string name="yubikey_nfc_disabled">YubiKey NFC disabled. Enable NFC in settings to use.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
