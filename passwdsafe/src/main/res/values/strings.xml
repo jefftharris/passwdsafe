@@ -216,6 +216,7 @@
     <string name="new_owncloud_file">New ownCloud File</string>
     <string name="new_policy">New Policy</string>
     <string name="next">Next</string>
+    <string name="nfc_settings">NFC Settings</string>
     <string name="no_alias_chosen">No alias chosen</string>
     <string name="no_backup_file">No backup file</string>
     <string name="no_biometrics_registered">No biometric credentials are registered</string>
@@ -399,7 +400,7 @@
     <string name="yes">Yes</string>
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_error">Error communicating with the YubiKey: %1$s</string>
-    <string name="yubikey_nfc_disabled">YubiKey NFC disabled. Enable NFC in settings to use.</string>
+    <string name="yubikey_nfc_disabled">YubiKey NFC disabled. To enable, use the menu to open the NFC settings.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 

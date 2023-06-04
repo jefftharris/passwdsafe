@@ -10,10 +10,12 @@ package com.jefftharris.passwdsafe;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -348,8 +350,31 @@ public class PasswdSafeOpenFileFragment
             inflater.inflate(R.menu.fragment_passwdsafe_open_file, menu);
 
             var data = itsOpenModel.getDataValue();
-            menu.setGroupVisible(R.id.menu_group_slots,
-                                 data.getYubiState().isEnabled());
+            boolean yubiEnabled = false;
+            boolean yubiNfcAvailable = false;
+            switch (data.getYubiState()) {
+            case USB_DISABLED_NFC_ENABLED:
+            case USB_ENABLED_NFC_DISABLED:
+            case ENABLED: {
+                yubiEnabled = true;
+                yubiNfcAvailable = true;
+                break;
+            }
+            case USB_ENABLED_NFC_UNAVAILABLE: {
+                yubiEnabled = true;
+                break;
+            }
+            case USB_DISABLED_NFC_DISABLED: {
+                yubiNfcAvailable = true;
+                break;
+            }
+            case UNKNOWN:
+            case UNAVAILABLE: {
+                break;
+            }
+            }
+
+            menu.setGroupVisible(R.id.menu_group_slots, yubiEnabled);
 
             MenuItem item;
             switch (data.getYubiSlot()) {
@@ -364,6 +389,9 @@ public class PasswdSafeOpenFileFragment
             }
             }
             item.setChecked(true);
+
+            item = menu.findItem(R.id.menu_nfc_settings);
+            item.setVisible(yubiNfcAvailable);
         }
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -390,6 +418,14 @@ public class PasswdSafeOpenFileFragment
         } else if (itemId == R.id.menu_slot_2) {
             item.setChecked(true);
             itsOpenModel.setYubiSlot(2);
+            return true;
+        } else if (itemId == R.id.menu_nfc_settings) {
+            try {
+                var intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                requireActivity().startActivity(intent);
+            } catch (Exception e) {
+                PasswdSafeUtil.dbginfo(TAG, e, "NFC activity not started");
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
