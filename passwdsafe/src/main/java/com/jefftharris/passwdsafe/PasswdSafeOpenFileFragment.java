@@ -42,7 +42,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
-import com.jefftharris.passwdsafe.PasswdSafeOpenFileViewModel.SavedPasswordState;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ActContext;
@@ -52,6 +51,7 @@ import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.Pair;
+import com.jefftharris.passwdsafe.util.SavedPasswordState;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 
 import org.pwsafe.lib.exception.InvalidPassphraseException;
@@ -74,7 +74,7 @@ import javax.crypto.IllegalBlockSizeException;
  */
 public class PasswdSafeOpenFileFragment
         extends AbstractPasswdSafeOpenNewFileFragment
-        implements Observer<PasswdSafeOpenFileViewModel.OpenData>,
+        implements Observer<PasswdSafeOpenFileViewModelData>,
                    ConfirmPromptDialog.Listener,
                    View.OnClickListener, CompoundButton.OnCheckedChangeListener
 {
@@ -328,7 +328,7 @@ public class PasswdSafeOpenFileFragment
 
     @Override
     public void onChanged(
-            @Nullable final PasswdSafeOpenFileViewModel.OpenData openData)
+            @Nullable final PasswdSafeOpenFileViewModelData openData)
     {
         Throwable yubikeyError = null;
         if (openData != null) {
