@@ -47,7 +47,7 @@ import java.io.UnsupportedEncodingException;
 public class YubikeyMgr
 {
     private static final int SHA1_MAX_BLOCK_SIZE = 64;
-    private static final int KEY_TIMEOUT = 30*1000;
+    private static final int KEY_TIMEOUT = 30 * 1000;
 
     private static final boolean TEST = false;//PasswdSafeUtil.DEBUG;
 
@@ -139,8 +139,7 @@ public class YubikeyMgr
             return YubiState.ENABLED;
         }
 
-        switch (itsNfcState)
-        {
+        switch (itsNfcState) {
         case UNAVAILABLE: {
             return itsHasUsb ? YubiState.USB_ENABLED_NFC_UNAVAILABLE :
                    YubiState.UNAVAILABLE;
@@ -175,8 +174,7 @@ public class YubikeyMgr
             try {
                 itsYubiMgr.startNfcDiscovery(
                         new NfcConfiguration().timeout(KEY_TIMEOUT),
-                        itsUser.getActivity(),
-                        device -> {
+                        itsUser.getActivity(), device -> {
                             PasswdSafeUtil.dbginfo(TAG, "NFC discover, " +
                                                         "device: %s", device);
 
@@ -245,10 +243,22 @@ public class YubikeyMgr
     {
         PasswdSafeUtil.dbginfo(TAG, "Use YubiKey %s", device);
         var userPassword = itsUser.getUserPassword();
-        YubiOtpSession.create(device, result -> {
-            try (userPassword;
+        doUseYubikey(device,
+                     (userPassword != null) ? userPassword.pass() : null,
+                     itsUser.getSlotNum(), itsResult);
+    }
+
+    @UiThread
+    private static void doUseYubikey(final YubiKeyDevice device,
+                                     @Nullable
+                                     final Owner<PwsPassword>.Param password,
+                                     final int slotNum,
+                                     final CloseableLiveData<KeyResult> result)
+    {
+        YubiOtpSession.create(device, sessionResult -> {
+            try (var userPassword = (password != null) ? password.use() : null;
                  var pwbytes = new ClearingByteArrayOutputStream()) {
-                YubiOtpSession otp = result.getValue();
+                YubiOtpSession otp = sessionResult.getValue();
 
                 if (userPassword == null) {
                     throw new Exception("No password");
@@ -280,14 +290,14 @@ public class YubikeyMgr
                 }
 
                 byte[] resp = otp.calculateHmacSha1(
-                        itsUser.getSlotNum() == 1 ? Slot.ONE : Slot.TWO,
+                        slotNum == 1 ? Slot.ONE : Slot.TWO,
                         pwbytes.toByteArray(), null);
                 try {
                     // Prune response bytes and convert
                     char[] pwstr = Util.bytesToHexChars(resp, 0, resp.length);
                     try (Owner<PwsPassword> newPassword = PwsPassword.create(
                             pwstr)) {
-                        itsResult.postValue(
+                        result.postValue(
                                 new KeyResult(newPassword.pass(), null));
                     }
                 } finally {
@@ -295,7 +305,7 @@ public class YubikeyMgr
                 }
             } catch (Exception e) {
                 PasswdSafeUtil.dbginfo(TAG, e, "Error creating OTP session");
-                itsResult.postValue(new KeyResult(null, e));
+                result.postValue(new KeyResult(null, e));
             }
         });
     }
