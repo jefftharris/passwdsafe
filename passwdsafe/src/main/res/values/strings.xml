@@ -134,19 +134,26 @@
         The saved password will be erased from the device.  All saved
         passwords can be removed from the password preferences.
         \n
-        \nTo use a YubiKey NEO, follow these steps:\n
-        - Enable NFC support in the device settings\n
+        \nTo use a YubiKey, follow these steps:\n
+        - If using a NFC-enabled YubiKey (e.g. a NEO), enable NFC support in the
+        device settings\n
         - Enter the user password to the file\n
         - Choose which slot on the YubiKey has the challenge-response key.
         Usually slot 2 is used for Password Safe.\n
         - Check the YubiKey option\n
         - Click OK\n
-        - Within 30 seconds, press the YubiKey to the back of the phone or
+        - Within 30 seconds, activate the YubiKey\n
+        - For NFC, press the YubiKey to the back of the phone or
         tablet.  There will be sounds as the key is being read.  If the device
         doesn\'t respond with a rising tone, try moving the key around.  A bit
         of trial-and-error is needed to find the correct location.  The button
         on the YubiKey itself does not need to be pressed.\n
-        - Once the key is found, it will be used to authenticate with your
+        - For USB, insert the YubiKey and allow PasswdSafe access to the key.  The key
+        can be inserted at any time while opening the file.  If set in the
+        configuration of the YubiKey, the button may need to be pressed after
+        clicking OK.  The indicator on the button should blink if a press is
+        required.\n
+        - Once the key is found and activated, it will be used to authenticate with your
         password.  The file will open automatically.
     </string>
     <string name="file_operations">File Operations…</string>
