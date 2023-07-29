@@ -8,9 +8,6 @@
 package com.jefftharris.passwdsafe;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.nfc.NfcAdapter;
 import android.os.CountDownTimer;
 import android.util.Log;
 import androidx.annotation.CheckResult;
@@ -18,17 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.ClearingByteArrayOutputStream;
-import com.jefftharris.passwdsafe.util.YubiState;
 import com.jefftharris.passwdsafe.view.CloseableLiveData;
-import com.yubico.yubikit.android.YubiKitManager;
-import com.yubico.yubikit.android.transport.nfc.NfcConfiguration;
-import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable;
-import com.yubico.yubikit.android.transport.usb.UsbConfiguration;
-import com.yubico.yubikit.core.Logger;
 import com.yubico.yubikit.core.YubiKeyDevice;
 import com.yubico.yubikit.yubiotp.Slot;
 import com.yubico.yubikit.yubiotp.YubiOtpSession;
@@ -47,38 +37,20 @@ import java.io.UnsupportedEncodingException;
 public class YubikeyMgr
 {
     private static final int SHA1_MAX_BLOCK_SIZE = 64;
-    private static final int KEY_TIMEOUT = 30 * 1000;
-
-    private static final boolean TEST = false;//PasswdSafeUtil.DEBUG;
 
     private static final String TAG = "YubikeyMgr";
 
-    private enum NfcState
-    {
-        UNAVAILABLE,
-        DISABLED,
-        ENABLED
-    }
-
+    private final YubikeyViewModel itsYubikeyModel;
     private User itsUser = null;
     private CountDownTimer itsTimer = null;
-    private final YubiKitManager itsYubiMgr;
-    private NfcState itsNfcState;
-    private final boolean itsHasUsb;
-
-    private final MutableLiveData<YubiKeyDevice> itsYubiDevice =
-            new MutableLiveData<>();
     private final CloseableLiveData<KeyResult> itsResult =
             new CloseableLiveData<>();
-
-    static {
-        Logger.setLogger(new YubiLogger());
-    }
 
     /// Interface for a user of the YubikeyMgr
     public interface User
     {
         /// Get the activity using the key
+        @NonNull
         Activity getActivity();
 
         /// Get the password to be sent to the key
@@ -100,95 +72,32 @@ public class YubikeyMgr
     /**
      * Constructor
      */
-    public YubikeyMgr(Context ctx, Fragment openFrag)
+    public YubikeyMgr(@NonNull YubikeyViewModel yubikeyModel,
+                      @NonNull Fragment openFrag)
     {
-        itsYubiMgr = new YubiKitManager(ctx);
-        itsYubiDevice.observe(openFrag, this::onYubikeyDeviceChanged);
+        itsYubikeyModel = yubikeyModel;
         itsResult.observe(openFrag, this::onYubikeyResultChanged);
-
-        itsNfcState = getNfcState(ctx);
-        var pkgmgr = ctx.getPackageManager();
-        itsHasUsb = pkgmgr.hasSystemFeature(PackageManager.FEATURE_USB_HOST);
-
-        if (itsHasUsb) {
-            itsYubiMgr.startUsbDiscovery(new UsbConfiguration(), device -> {
-                PasswdSafeUtil.dbginfo(TAG, "USB discovery, device: %s",
-                                       device);
-                if (!device.hasPermission()) {
-                    return;
-                }
-
-                device.setOnClosed(() -> {
-                    PasswdSafeUtil.dbginfo(TAG, "USB device removed");
-                    itsYubiDevice.postValue(null);
-                });
-
-                itsYubiDevice.postValue(device);
-            });
-        }
-    }
-
-    /**
-     * Get the state of support for the YubiKey
-     */
-    public YubiState getState(Context ctx)
-    {
-        itsNfcState = getNfcState(ctx);
-
-        if (TEST) {
-            return YubiState.ENABLED;
-        }
-
-        switch (itsNfcState) {
-        case UNAVAILABLE: {
-            return itsHasUsb ? YubiState.USB_ENABLED_NFC_UNAVAILABLE :
-                   YubiState.UNAVAILABLE;
-        }
-        case DISABLED: {
-            return itsHasUsb ? YubiState.USB_ENABLED_NFC_DISABLED :
-                   YubiState.USB_DISABLED_NFC_DISABLED;
-        }
-        case ENABLED: {
-            return itsHasUsb ? YubiState.ENABLED :
-                   YubiState.USB_DISABLED_NFC_ENABLED;
-        }
-        }
-        return YubiState.UNAVAILABLE;
+        itsYubikeyModel.getDeviceData()
+                       .observe(openFrag, this::onYubikeyDeviceChanged);
     }
 
     /**
      * Start the interaction with the YubiKey
      */
-    public void start(User user)
+    public void start(@NonNull User user)
     {
         if (itsUser != null) {
             stop();
         }
         itsUser = user;
 
-        if (TEST) {
+        if (YubikeyViewModel.TEST) {
             testYubikey();
-        } else if (itsYubiDevice.getValue() != null) {
-            useYubikey(itsYubiDevice.getValue());
-        } else if (isNfcEnabled()) {
-            try {
-                itsYubiMgr.startNfcDiscovery(
-                        new NfcConfiguration().timeout(KEY_TIMEOUT),
-                        itsUser.getActivity(), device -> {
-                            PasswdSafeUtil.dbginfo(TAG, "NFC discover, " +
-                                                        "device: %s", device);
-
-                            itsUser.getActivity().runOnUiThread(() -> {
-                                itsYubiDevice.setValue(device);
-                                itsYubiDevice.postValue(null);
-                            });
-                        });
-            } catch (NfcNotAvailable e) {
-                PasswdSafeUtil.dbginfo(TAG, e, "NFC discovery failed");
-            }
+        } else {
+            startYubikey();
         }
 
-        itsTimer = new CountDownTimer(KEY_TIMEOUT, 1 * 1000)
+        itsTimer = new CountDownTimer(YubikeyViewModel.KEY_TIMEOUT, 1 * 1000)
         {
             @Override
             public void onFinish()
@@ -199,7 +108,7 @@ public class YubikeyMgr
             @Override
             public void onTick(long millisUntilFinished)
             {
-                itsUser.timerTick(KEY_TIMEOUT / 1000,
+                itsUser.timerTick(YubikeyViewModel.KEY_TIMEOUT / 1000,
                                   (int)(millisUntilFinished / 1000));
             }
         };
@@ -213,6 +122,7 @@ public class YubikeyMgr
     {
         onPause();
         stopUser(null, null);
+        itsResult.close();
         itsTimer = null;
         itsUser = null;
     }
@@ -222,32 +132,33 @@ public class YubikeyMgr
      */
     public void onPause()
     {
-        if (isNfcEnabled() && (itsUser != null)) {
-            itsYubiMgr.stopNfcDiscovery(itsUser.getActivity());
+        if (itsUser != null) {
+            itsYubikeyModel.stopNfc(itsUser.getActivity());
         }
     }
 
     /**
-     * Handle a destroy of the using fragment
+     * Use a discovered YubiKey
      */
-    public void onDestroy()
-    {
-        itsYubiDevice.setValue(null);
-        if (itsHasUsb) {
-            itsYubiMgr.stopUsbDiscovery();
-        }
-    }
-
     @UiThread
     private void useYubikey(YubiKeyDevice device)
     {
-        PasswdSafeUtil.dbginfo(TAG, "Use YubiKey %s", device);
-        var userPassword = itsUser.getUserPassword();
-        doUseYubikey(device,
-                     (userPassword != null) ? userPassword.pass() : null,
-                     itsUser.getSlotNum(), itsResult);
+        PasswdSafeUtil.dbginfo(TAG, "Use YubiKey %s, has user: %b", device,
+                               (itsUser != null));
+        if (itsUser == null) {
+            return;
+        }
+
+        try (var userPassword = itsUser.getUserPassword()) {
+            doUseYubikey(device,
+                         (userPassword != null) ? userPassword.pass() : null,
+                         itsUser.getSlotNum(), itsResult);
+        }
     }
 
+    /**
+     * Implementation to use a discovered YubiKey
+     */
     @UiThread
     private static void doUseYubikey(final YubiKeyDevice device,
                                      @Nullable
@@ -311,6 +222,20 @@ public class YubikeyMgr
     }
 
     /**
+     * Start using the YubiKey
+     */
+    @UiThread
+    private void startYubikey()
+    {
+        var yubikeyDevice = itsYubikeyModel.getDeviceData().getValue();
+        if (yubikeyDevice != null) {
+            useYubikey(yubikeyDevice);
+        } else {
+            itsYubikeyModel.startNfc(itsUser.getActivity());
+        }
+    }
+
+    /**
      * Test using the YubiKey
      */
     @UiThread
@@ -329,7 +254,7 @@ public class YubikeyMgr
                 if (itsUser == null) {
                     return;
                 }
-                try (Owner<PwsPassword> password = itsUser.getUserPassword()) {
+                try (var password = itsUser.getUserPassword()) {
                     if (password == null) {
                         itsResult.postValue(new KeyResult(null, null));
                         return;
@@ -389,36 +314,6 @@ public class YubikeyMgr
     }
 
     /**
-     * Is NFC enabled
-     */
-    private boolean isNfcEnabled()
-    {
-        switch (itsNfcState) {
-        case ENABLED: {
-            return true;
-        }
-        case UNAVAILABLE:
-        case DISABLED: {
-            break;
-        }
-        }
-        return false;
-    }
-
-    /**
-     * Get the NFC state
-     */
-    private static NfcState getNfcState(Context ctx)
-    {
-        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(ctx);
-        if (adapter != null) {
-            return adapter.isEnabled() ? NfcState.ENABLED : NfcState.DISABLED;
-        } else {
-            return NfcState.UNAVAILABLE;
-        }
-    }
-
-    /**
      * Result of using the YubiKey to calculate the password
      */
     private static class KeyResult implements Closeable
@@ -441,27 +336,6 @@ public class YubikeyMgr
             if (itsPassword != null) {
                 itsPassword.close();
             }
-        }
-    }
-
-    /**
-     * Logger for YubiKey libraries
-     */
-    private static class YubiLogger extends Logger
-    {
-        @Override
-        protected void logDebug(@NonNull String message)
-        {
-            if (PasswdSafeUtil.DEBUG) {
-                Log.d(TAG, "YubiKey log: " + message);
-            }
-        }
-
-        @Override
-        protected void logError(@NonNull String message,
-                                @NonNull Throwable throwable)
-        {
-            Log.e(TAG, "YubiKey error: " + message, throwable);
         }
     }
 }

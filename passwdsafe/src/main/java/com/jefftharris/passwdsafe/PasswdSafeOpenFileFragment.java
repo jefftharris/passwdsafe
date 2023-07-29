@@ -143,6 +143,7 @@ public class PasswdSafeOpenFileFragment
     private TextWatcher itsErrorClearingWatcher;
 
     private PasswdSafeOpenFileViewModel itsOpenModel;
+    private YubikeyViewModel itsYubikeyModel;
 
     private static final String ARG_URI = "uri";
     private static final String ARG_REC_TO_OPEN = "recToOpen";
@@ -175,9 +176,11 @@ public class PasswdSafeOpenFileFragment
         }
 
         setDoResolveOnStart(false);
-        itsOpenModel = new ViewModelProvider(requireActivity()).get(
-                PasswdSafeOpenFileViewModel.class);
+
+        var viewModelProvider = new ViewModelProvider(requireActivity());
+        itsOpenModel = viewModelProvider.get(PasswdSafeOpenFileViewModel.class);
         itsOpenModel.getData().observe(this, this);
+        itsYubikeyModel = viewModelProvider.get(YubikeyViewModel.class);
     }
 
     @Override
@@ -212,7 +215,7 @@ public class PasswdSafeOpenFileFragment
         GuiUtils.setVisible(itsSavePasswdCb, saveAvailable);
         GuiUtils.setVisible(itsSavedPasswordMsg, false);
 
-        itsYubiMgr = new YubikeyMgr(ctx, this);
+        itsYubiMgr = new YubikeyMgr(itsYubikeyModel, this);
         itsYubikeyCb = rootView.findViewById(R.id.yubikey);
         itsYubikeyCb.setOnCheckedChangeListener(this);
         itsYubikeyError = rootView.findViewById(R.id.yubikey_error);
@@ -312,17 +315,6 @@ public class PasswdSafeOpenFileFragment
         if (itsSavedPasswordsMgr != null) {
             itsSavedPasswordsMgr.detach();
             itsSavedPasswordsMgr = null;
-        }
-    }
-
-    @Override
-    public void onDestroy()
-    {
-        PasswdSafeUtil.dbginfo(TAG, "onDestroy");
-        super.onDestroy();
-        if (itsYubiMgr != null) {
-            itsYubiMgr.onDestroy();
-            itsYubiMgr = null;
         }
     }
 
@@ -648,7 +640,7 @@ public class PasswdSafeOpenFileFragment
     private void enterCheckingYubikeyPhase()
     {
         var openData = itsOpenModel.getDataValue();
-        var state = itsYubiMgr.getState(requireContext());
+        var state = itsYubikeyModel.getState(requireContext());
         if (!openData.hasYubiInfo()) {
             var prefs = Preferences.getSharedPrefs(getContext());
             itsOpenModel.provideYubiInfo(state,
@@ -1183,9 +1175,10 @@ public class PasswdSafeOpenFileFragment
     private class YubikeyUser implements YubikeyMgr.User
     {
         @Override
+        @NonNull
         public Activity getActivity()
         {
-            return PasswdSafeOpenFileFragment.this.getActivity();
+            return PasswdSafeOpenFileFragment.this.requireActivity();
         }
 
         @Override @CheckResult @Nullable
