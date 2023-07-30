@@ -11,10 +11,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.jefftharris.passwdsafe.PasswdSafeOpenFileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,8 +41,10 @@
             android:layout_marginTop="8dp"
             android:hint="@string/password"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/file"
+            app:layout_constraintWidth_max="488dp"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -62,14 +64,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:drawableStart="@drawable/yubikey"
-            android:drawableLeft="@drawable/yubikey"
             android:drawablePadding="6dp"
             android:text="@string/yubikey"
+            app:layout_constraintBottom_toTopOf="@+id/yubikey_nfc_disabled"
             app:layout_constraintEnd_toStartOf="@+id/save_password"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintHeight_min="48dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/passwd_input"
-            app:layout_constraintBottom_toTopOf="@+id/yubikey_nfc_disabled"/>
+            app:layout_constraintWidth_max="320dp"/>
 
         <CheckBox
             android:id="@+id/save_password"
@@ -79,8 +83,10 @@
             android:text="@string/save_password"
             app:layout_constraintBottom_toBottomOf="@+id/yubikey"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_min="48dp"
             app:layout_constraintStart_toEndOf="@+id/yubikey"
-            app:layout_constraintTop_toTopOf="@+id/yubikey"/>
+            app:layout_constraintTop_toTopOf="@+id/yubikey"
+            app:layout_constraintWidth_max="320dp"/>
 
         <TextView
             android:id="@+id/yubikey_nfc_disabled"
@@ -117,6 +123,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@id/saved_password"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ro_save_options"/>
@@ -130,9 +137,50 @@
             android:gravity="center_vertical"
             app:drawableLeftCompat="@drawable/ic_fingerprint"
             app:drawableStartCompat="@drawable/ic_fingerprint"
+            app:layout_constraintBottom_toTopOf="@+id/yubi_progress_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/read_only_msg"/>
+
+        <TextView
+            android:id="@+id/yubi_progress_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/press_yubikey"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintBottom_toTopOf="@+id/open"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/saved_password"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/open"
+            app:layout_constraintEnd_toStartOf="@+id/open"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/open"/>
+
+        <Button
+            android:id="@+id/open"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:minWidth="112dp"
+            android:text="@string/open"
+            app:layout_constraintBottom_toTopOf="@+id/file_open_help_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/progress"
+            app:layout_constraintTop_toBottomOf="@+id/yubi_progress_text"/>
 
         <TextView
             android:id="@+id/file_open_help_text"
@@ -143,55 +191,10 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="?android:attr/textColorPrimaryNoDisable"
             android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/open"/>
-
-        <TextView
-            android:id="@+id/yubi_progress_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="@string/press_yubikey"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintBottom_toBottomOf="@+id/progress"
-            app:layout_constraintEnd_toStartOf="@+id/progress"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/progress"/>
-
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/open"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/yubi_progress_text"
-            app:layout_constraintTop_toBottomOf="@+id/saved_password"/>
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/progress_barrier"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="yubi_progress_text,progress"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <Button
-            android:id="@+id/open"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minWidth="112dp"
-            android:text="@string/open"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progress_barrier"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
