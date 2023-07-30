@@ -20,8 +20,7 @@ static def buildTime() {
 
 android {
     namespace 'com.jefftharris.passwdsafe.lib'
-    compileSdkVersion 33
-    buildToolsVersion '30.0.3'
+    compileSdk 33
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 33

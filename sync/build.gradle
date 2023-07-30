@@ -9,12 +9,11 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.jefftharris.passwdsafe.sync'
-    compileSdkVersion 33
-    buildToolsVersion '30.0.3'
+    compileSdk 33
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
         minSdkVersion 21
-        resConfigs 'de', 'fr', 'nb'
+        resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 33
         // <major><minor><bugfix><beta/extra>
         versionCode 3090001
