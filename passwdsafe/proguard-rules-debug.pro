@@ -18,3 +18,7 @@
 
 -keep,includedescriptorclasses class androidx.** { *; }
 -dontwarn androidx.window.**
+
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
