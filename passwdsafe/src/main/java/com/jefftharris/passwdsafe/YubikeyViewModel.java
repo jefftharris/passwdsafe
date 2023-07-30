@@ -27,6 +27,7 @@ import com.yubico.yubikit.android.YubiKitManager;
 import com.yubico.yubikit.android.transport.nfc.NfcConfiguration;
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable;
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration;
+import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice;
 import com.yubico.yubikit.core.Logger;
 import com.yubico.yubikit.core.YubiKeyDevice;
 
@@ -132,6 +133,14 @@ public class YubikeyViewModel extends AndroidViewModel
     }
 
     /**
+     * Is the current YubiKey device a USB device
+     */
+    public boolean isUsbYubikeyDevice()
+    {
+        return isUsbYubikey(itsYubiDevice.getValue());
+    }
+
+    /**
      * Start using NFC to discover a YubiKey
      */
     public void startNfc(@NonNull Activity act)
@@ -181,6 +190,14 @@ public class YubikeyViewModel extends AndroidViewModel
                 }
             }, NFC_STOP_DELAY);
         }
+    }
+
+    /**
+     * Is a YubiKey device a USB YubiKey device
+     */
+    public static boolean isUsbYubikey(YubiKeyDevice device)
+    {
+        return (device instanceof UsbYubiKeyDevice);
     }
 
     @Override

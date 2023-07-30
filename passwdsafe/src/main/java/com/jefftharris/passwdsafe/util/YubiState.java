@@ -50,4 +50,25 @@ public enum YubiState
         }
         return false;
     }
+
+    /**
+     * Is USB enabled
+     */
+    public boolean isUsbEnabled()
+    {
+        switch (this) {
+        case USB_ENABLED_NFC_UNAVAILABLE:
+        case USB_ENABLED_NFC_DISABLED:
+        case ENABLED: {
+            return true;
+        }
+        case UNKNOWN:
+        case UNAVAILABLE:
+        case USB_DISABLED_NFC_ENABLED:
+        case USB_DISABLED_NFC_DISABLED: {
+            return false;
+        }
+        }
+        return false;
+    }
 }

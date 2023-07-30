@@ -296,6 +296,7 @@
     <string name="policy_yes_sym_policy" tools:ignore="PluralsCandidate">Yes - At least %1$d from policy symbols: %2$s</string>
     <string name="policy_yes_sym_pronounce" tools:ignore="StringFormatCount">Yes - Symbols: %2$s</string>
     <string name="press_again_close_warning">Press again to close the file</string>
+    <string name="press_or_insert_yubikey">Press or insert YubiKey</string>
     <string name="press_password_warning">Press Password again to paste into visible field</string>
     <string name="press_yubikey">Press YubiKey</string>
     <string name="previous">Previous</string>
@@ -393,6 +394,8 @@
     <string name="unprotect_group">Unprotect Group Records</string>
     <string name="unprotect_to_modify">Unprotect to modify</string>
     <string name="username">User Name</string>
+    <string name="usb_yubikey_present">USB YubiKey present</string>
+    <string name="usb_yubikey_present_check_button">USB YubiKey present.  Check button press to activate.</string>
     <string name="use_count">Uses</string>
     <string name="use_digits">Digits</string>
     <string name="use_lowercase">Lowercase</string>

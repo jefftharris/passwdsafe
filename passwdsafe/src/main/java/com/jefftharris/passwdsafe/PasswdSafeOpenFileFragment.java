@@ -36,9 +36,9 @@ import android.widget.TextView;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -53,6 +53,7 @@ import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.util.SavedPasswordState;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
+import com.yubico.yubikit.core.YubiKeyDevice;
 
 import org.pwsafe.lib.exception.InvalidPassphraseException;
 import org.pwsafe.lib.file.Owner;
@@ -62,7 +63,6 @@ import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -74,8 +74,7 @@ import javax.crypto.IllegalBlockSizeException;
  */
 public class PasswdSafeOpenFileFragment
         extends AbstractPasswdSafeOpenNewFileFragment
-        implements Observer<PasswdSafeOpenFileViewModelData>,
-                   ConfirmPromptDialog.Listener,
+        implements ConfirmPromptDialog.Listener,
                    View.OnClickListener, CompoundButton.OnCheckedChangeListener
 {
     /**
@@ -108,7 +107,29 @@ public class PasswdSafeOpenFileFragment
         YUBIKEY,
         OPENING,
         SAVING_PASSWORD,
-        FINISHED
+        FINISHED;
+
+        /**
+         * Is the phase where the YubiKey is active
+         */
+        public boolean isYubikeyActive()
+        {
+            switch (this) {
+            case YUBIKEY: {
+                return true;
+            }
+            case INITIAL:
+            case CHECKING_YUBIKEY:
+            case RESOLVING:
+            case WAITING_PASSWORD:
+            case OPENING:
+            case SAVING_PASSWORD:
+            case FINISHED: {
+                break;
+            }
+            }
+            return false;
+        }
     }
 
     /**
@@ -132,6 +153,7 @@ public class PasswdSafeOpenFileFragment
     private CheckBox itsSavePasswdCb;
     private CheckBox itsYubikeyCb;
     private TextView itsYubikeyError;
+    private TextView itsYubikeyProgressMsg;
     private Button itsOpenBtn;
     private SavedPasswordsMgr itsSavedPasswordsMgr;
     private SavePasswordChange itsSaveChange = SavePasswordChange.NONE;
@@ -179,8 +201,10 @@ public class PasswdSafeOpenFileFragment
 
         var viewModelProvider = new ViewModelProvider(requireActivity());
         itsOpenModel = viewModelProvider.get(PasswdSafeOpenFileViewModel.class);
-        itsOpenModel.getData().observe(this, this);
+        itsOpenModel.getData().observe(this, this::onOpenViewModelDataChanged);
         itsYubikeyModel = viewModelProvider.get(YubikeyViewModel.class);
+        itsYubikeyModel.getDeviceData().observe(this,
+                                                this::onYubikeyDeviceChanged);
     }
 
     @Override
@@ -220,9 +244,10 @@ public class PasswdSafeOpenFileFragment
         itsYubikeyCb.setOnCheckedChangeListener(this);
         itsYubikeyError = rootView.findViewById(R.id.yubikey_error);
         GuiUtils.setVisible(itsYubikeyError, false);
+        itsYubikeyProgressMsg = rootView.findViewById(R.id.yubi_progress_text);
+        GuiUtils.setVisible(itsYubikeyProgressMsg, false);
         setVisibility(R.id.yubikey_nfc_disabled, false, rootView);
         setVisibility(R.id.file_open_help_text, false, rootView);
-        setVisibility(R.id.yubi_progress_text, false, rootView);
 
         return rootView;
     }
@@ -316,22 +341,6 @@ public class PasswdSafeOpenFileFragment
             itsSavedPasswordsMgr.detach();
             itsSavedPasswordsMgr = null;
         }
-    }
-
-    @Override
-    public void onChanged(
-            @Nullable final PasswdSafeOpenFileViewModelData openData)
-    {
-        Throwable yubikeyError = null;
-        if (openData != null) {
-            PasswdSafeUtil.dbginfo(TAG, "onChanged phase: %s, data: %s",
-                                   itsPhase, openData);
-            yubikeyError = openData.getYubikeyError();
-        }
-
-        itsYubikeyError.setText(getString(R.string.yubikey_error,
-                                          yubikeyError));
-        GuiUtils.setVisible(itsYubikeyError, yubikeyError != null);
     }
 
     @Override
@@ -554,12 +563,7 @@ public class PasswdSafeOpenFileFragment
             break;
         }
         case YUBIKEY: {
-            View root = getView();
-            setVisibility(R.id.yubi_progress_text, false,
-                          Objects.requireNonNull(root));
-            setProgressVisible(false, false);
-            setFieldsDisabled(false);
-            itsYubiMgr.stop();
+            exitYubikeyPhase();
             break;
         }
         case SAVING_PASSWORD: {
@@ -590,12 +594,7 @@ public class PasswdSafeOpenFileFragment
             break;
         }
         case YUBIKEY: {
-            itsYubiUser = new YubikeyUser();
-            itsYubiMgr.start(itsYubiUser);
-            View root = requireView();
-            setVisibility(R.id.yubi_progress_text, true, root);
-            setProgressVisible(true, false);
-            setFieldsDisabled(true);
+            enterYubikeyPhase();
             break;
         }
         case OPENING: {
@@ -820,6 +819,29 @@ public class PasswdSafeOpenFileFragment
     }
 
     /**
+     * Enter the Yubikey phase
+     */
+    private void enterYubikeyPhase()
+    {
+        itsYubiUser = new YubikeyUser();
+        itsYubiMgr.start(itsYubiUser);
+        updateYubikeyProgress(null, Boolean.TRUE);
+        setProgressVisible(true, false);
+        setFieldsDisabled(true);
+    }
+
+    /**
+     * Exit the Yubikey phase
+     */
+    private void exitYubikeyPhase()
+    {
+        updateYubikeyProgress(null, Boolean.FALSE);
+        setProgressVisible(false, false);
+        setFieldsDisabled(false);
+        itsYubiMgr.stop();
+    }
+
+    /**
      * Enter the opening phase
      */
     private void enterOpeningPhase()
@@ -1024,6 +1046,66 @@ public class PasswdSafeOpenFileFragment
     {
         setPhase(Phase.FINISHED);
         itsListener.handleFileOpen(fileData, itsRecToOpen);
+    }
+
+    /**
+     * Handle a change in the open file data model
+     */
+    private void onOpenViewModelDataChanged(
+            @Nullable PasswdSafeOpenFileViewModelData openData)
+    {
+        Throwable yubikeyError = null;
+        if (openData != null) {
+            PasswdSafeUtil.dbginfo(TAG, "onChanged phase: %s, data: %s",
+                                   itsPhase, openData);
+            yubikeyError = openData.getYubikeyError();
+        }
+
+        itsYubikeyError.setText(getString(R.string.yubikey_error,
+                                          yubikeyError));
+        GuiUtils.setVisible(itsYubikeyError, yubikeyError != null);
+    }
+
+    /**
+     * Handle a change in the YubiKey device model
+     */
+    private void onYubikeyDeviceChanged(YubiKeyDevice device)
+    {
+        PasswdSafeUtil.dbginfo(TAG, "YubiDevice changed: %s", device);
+        updateYubikeyProgress(YubikeyViewModel.isUsbYubikey(device), null);
+    }
+
+    /**
+     * Update the YubiKey progress message
+     *
+     * @param hasUsbDevice Non-null if the presence of a USB YubiKey is known
+     * @param isYubikeyPhase Non-null if the phase is known to be Yubikey or not
+     */
+    private void updateYubikeyProgress(@Nullable Boolean hasUsbDevice,
+                                       @Nullable Boolean isYubikeyPhase)
+    {
+        boolean hasUsbDeviceVal = (hasUsbDevice != null) ? hasUsbDevice :
+                                  itsYubikeyModel.isUsbYubikeyDevice();
+        boolean isYubikeyPhaseVal = (isYubikeyPhase != null) ? isYubikeyPhase :
+                                    itsPhase.isYubikeyActive();
+
+        @StringRes int text = R.string.press_yubikey;
+        if (hasUsbDeviceVal) {
+            if (isYubikeyPhaseVal) {
+                text = R.string.usb_yubikey_present_check_button;
+            } else {
+                text = R.string.usb_yubikey_present;
+            }
+        } else {
+            if (isYubikeyPhaseVal &&
+                itsOpenModel.getDataValue().getYubiState().isUsbEnabled()) {
+                text = R.string.press_or_insert_yubikey;
+            }
+        }
+
+        itsYubikeyProgressMsg.setText(text);
+        GuiUtils.setVisible(itsYubikeyProgressMsg,
+                            hasUsbDeviceVal | isYubikeyPhaseVal);
     }
 
     /**

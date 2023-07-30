@@ -206,6 +206,7 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
         return itsHasYubiState;
     }
 
+    @NonNull
     public YubiState getYubiState()
     {
         return itsYubiState;
