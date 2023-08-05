@@ -14,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -28,7 +27,6 @@ import com.yubico.yubikit.android.transport.nfc.NfcConfiguration;
 import com.yubico.yubikit.android.transport.nfc.NfcNotAvailable;
 import com.yubico.yubikit.android.transport.usb.UsbConfiguration;
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice;
-import com.yubico.yubikit.core.Logger;
 import com.yubico.yubikit.core.YubiKeyDevice;
 
 /**
@@ -38,6 +36,7 @@ public class YubikeyViewModel extends AndroidViewModel
 {
     public static final int KEY_TIMEOUT = 30 * 1000;
 
+    // Also decide proper log level in logback.xml
     public static final boolean TEST = false;//PasswdSafeUtil.DEBUG;
 
     private static final long NFC_STOP_DELAY = 5 * 1000;
@@ -62,10 +61,6 @@ public class YubikeyViewModel extends AndroidViewModel
     private final MutableLiveData<YubiKeyDevice> itsYubiDevice =
             new MutableLiveData<>();
 
-    static {
-        Logger.setLogger(new YubiLogger());
-    }
-
     /**
      * Constructor
      */
@@ -80,7 +75,7 @@ public class YubikeyViewModel extends AndroidViewModel
         if (itsHasUsb) {
             itsYubiMgr.startUsbDiscovery(new UsbConfiguration(), device -> {
                 PasswdSafeUtil.dbginfo(TAG, "USB discovery, device: %s",
-                                       device);
+                                       toString(device));
                 if (!device.hasPermission()) {
                     return;
                 }
@@ -152,7 +147,7 @@ public class YubikeyViewModel extends AndroidViewModel
                         device -> {
                             PasswdSafeUtil.dbginfo(TAG,
                                                    "NFC discover, device: %s",
-                                                   device);
+                                                   toString(device));
 
                             itsUiHandler.post(() -> {
                                 itsYubiDevice.setValue(device);
@@ -200,6 +195,25 @@ public class YubikeyViewModel extends AndroidViewModel
         return (device instanceof UsbYubiKeyDevice);
     }
 
+    /**
+     * Get a string identifier for a YubiKey device
+     */
+    public static String toString(YubiKeyDevice device)
+    {
+        if (device == null) {
+            return "(null)";
+        } else if (device instanceof UsbYubiKeyDevice) {
+            // The default USB device toString is too verbose
+            var usbdevice = (UsbYubiKeyDevice)device;
+            var dev = usbdevice.getUsbDevice();
+            var pid = usbdevice.getPid();
+            return "UsbYubiKeyDevice{" + "usbDevice=[UsbDevice[name=" +
+                   dev.getDeviceName() + ", vendor=" + dev.getVendorId() +
+                   ", product=" + dev.getProductId() + "], usbPid=" + pid + '}';
+        }
+        return device.toString();
+    }
+
     @Override
     protected void onCleared()
     {
@@ -240,27 +254,6 @@ public class YubikeyViewModel extends AndroidViewModel
             return adapter.isEnabled() ? NfcState.ENABLED : NfcState.DISABLED;
         } else {
             return NfcState.UNAVAILABLE;
-        }
-    }
-
-    /**
-     * Logger for YubiKey libraries
-     */
-    private static class YubiLogger extends Logger
-    {
-        @Override
-        protected void logDebug(@NonNull String message)
-        {
-            if (PasswdSafeUtil.DEBUG) {
-                Log.d(TAG, "YubiKey log: " + message);
-            }
-        }
-
-        @Override
-        protected void logError(@NonNull String message,
-                                @NonNull Throwable throwable)
-        {
-            Log.e(TAG, "YubiKey error: " + message, throwable);
         }
     }
 }

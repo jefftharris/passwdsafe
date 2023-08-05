@@ -1071,7 +1071,8 @@ public class PasswdSafeOpenFileFragment
      */
     private void onYubikeyDeviceChanged(YubiKeyDevice device)
     {
-        PasswdSafeUtil.dbginfo(TAG, "YubiDevice changed: %s", device);
+        PasswdSafeUtil.dbginfo(TAG, "YubiDevice changed: %s",
+                               YubikeyViewModel.toString(device));
         updateYubikeyProgress(YubikeyViewModel.isUsbYubikey(device), null);
     }
 

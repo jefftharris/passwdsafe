@@ -280,7 +280,8 @@ public class YubikeyMgr
      */
     private void onYubikeyDeviceChanged(YubiKeyDevice device)
     {
-        PasswdSafeUtil.dbginfo(TAG, "YubiDevice changed: %s", device);
+        PasswdSafeUtil.dbginfo(TAG, "YubiDevice changed: %s",
+                               YubikeyViewModel.toString(device));
         if ((itsUser != null) && (device != null)) {
             useYubikey(device);
         }

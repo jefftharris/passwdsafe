@@ -74,6 +74,7 @@ android {
 
 dependencies {
     def room_version = "2.4.3"
+    def yubikey_version = "2.3.0"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
@@ -82,8 +83,9 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
     implementation "androidx.room:room-runtime:$room_version"
 
-    implementation 'com.yubico.yubikit:yubiotp:2.2.0'
-    implementation 'com.yubico.yubikit:android:2.2.0'
+    implementation "com.yubico.yubikit:yubiotp:$yubikey_version"
+    implementation "com.yubico.yubikit:android:$yubikey_version"
+    implementation 'com.github.tony19:logback-android:3.0.0'
 
     annotationProcessor "androidx.room:room-compiler:$room_version"
 

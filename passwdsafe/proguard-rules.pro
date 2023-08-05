@@ -16,7 +16,26 @@
 #   public *;
 #}
 
+#
+# PasswdSafe
+#
 -keep,includedescriptorclasses class com.jefftharris.passwdsafe.lib.StartupReceiver
 
+#
+# logback-android.  From project wiki narrowed to just what is needed for logcat
+#
+-keep public class org.slf4j.impl.** { *; }
+-keep class ch.qos.logback.classic.android.LogcatAppender { *; }
+-keepclassmembers class ch.qos.logback.classic.encoder.PatternLayoutEncoder { <init>(); }
+-keepclassmembers class ch.qos.logback.classic.pattern.MessageConverter { <init>(); }
+-dontwarn ch.qos.logback.core.net.*
+
+#
+# Misc
+#
 -dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+-dontwarn javax.annotation.Nonnull
 -dontwarn javax.annotation.Nullable
+
+
+#-printconfiguration /tmp/full-r8-config.txt
