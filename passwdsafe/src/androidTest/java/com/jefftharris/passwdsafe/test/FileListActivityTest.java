@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.test;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.jefftharris.passwdsafe.BuildConfig;
 import com.jefftharris.passwdsafe.FileListActivity;
@@ -98,9 +100,13 @@ public class FileListActivityTest
                                                      FILE.getName());
 
     @Rule(order=1)
-    public TestModeRule itsTestMode = new TestModeRule();
+    public GrantPermissionRule itsRuntimePermsRule = GrantPermissionRule.grant(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Rule(order=2)
+    public TestModeRule itsTestMode = new TestModeRule();
+
+    @Rule(order=3)
     public IntentsTestRule<FileListActivity> itsActivityRule =
             new IntentsTestRule<>(FileListActivity.class);
 
