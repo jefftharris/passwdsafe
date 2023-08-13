@@ -79,14 +79,24 @@
             android:id="@+id/save_password"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:checked="false"
             android:text="@string/save_password"
-            app:layout_constraintBottom_toBottomOf="@+id/yubikey"
+            app:layout_constraintBottom_toTopOf="@+id/yubikey_nfc_disabled"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_min="48dp"
             app:layout_constraintStart_toEndOf="@+id/yubikey"
-            app:layout_constraintTop_toTopOf="@+id/yubikey"
+            app:layout_constraintTop_toBottomOf="@+id/passwd_input"
             app:layout_constraintWidth_max="320dp"/>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/options"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="save_password,yubikey"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/yubikey_nfc_disabled"
@@ -97,7 +107,7 @@
             app:layout_constraintBottom_toTopOf="@+id/yubikey_error"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/yubikey"/>
+            app:layout_constraintTop_toBottomOf="@+id/options"/>
 
         <TextView
             android:id="@+id/yubikey_error"
