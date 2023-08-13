@@ -34,6 +34,12 @@
 -dontwarn ch.qos.logback.core.net.*
 
 #
+# For stack traces
+#
+-keepattributes LineNumberTable,SourceFile
+-renamesourcefileattribute SourceFile
+
+#
 # Misc
 #
 -dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
