@@ -34,6 +34,8 @@ android {
         debug {
             debuggable true
             minifyEnabled true
+            proguardFiles += getDefaultProguardFile(
+                    'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             proguardFiles += 'proguard-rules-debug.pro'
             testProguardFiles += 'proguard-rules-test.pro'
@@ -43,6 +45,8 @@ android {
         }
         release {
             minifyEnabled true
+            proguardFiles += getDefaultProguardFile(
+                    'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             ndk {
                 debugSymbolLevel "FULL"
