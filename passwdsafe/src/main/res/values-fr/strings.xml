@@ -141,20 +141,29 @@
         de l\'appareil. Tous les mots de passe enregistrés peuvent être
         supprimés depuis les préférences mot de passe.
         \n
-        \nPour utiliser un YubiKey NEO, procédez comme suit:\n
-        - Activer le support NFC dans les paramètres de l\'appareil\n
+        \nPour utiliser une YubiKey, suivez ces étapes:\n
+        - Si vous utilisez une YubiKey compatible NFC (par exemple un NEO),
+        activez le support NFC dans les paramètres de l\'appareil\n
         - Entrez le mot de passe de l\'utilisateur dans le fichier\n
         - Choisissez quel emplacement sur ​​le YubiKey a la clé de défi-réponse.
         Habituellement fente 2 est utilisé pour Password Safe.\n
         - Appuyez sur le bouton YubiKey\n
-        - Dans les 30 secondes, appuyez la YubiKey à l\'arrière du téléphone ou
+        - Cliquez ok\n
+        - Dans les 30 secondes, activez la YubiKey\n
+        - Pour NFC, appuyez la YubiKey à l\'arrière du téléphone ou
         de la tablette. Il y aura des sons confirmant que la clé est lu. Si
         l\'appareil ne répond pas avec un ton montant, essayez de déplacer la
         clé autour. Quelques essais peuvent être nécessaire pour
         déterminer l\'emplacement exact. Le bouton de YubiKey lui-même n\'a pas
         besoin d\'être pressé.\n
-        - Une fois que la clé est trouvée, elle sera utilisée pour authentifier
-        avec votre mot de passe. Le fichier s\'ouvrira automatiquement.
+        - Pour USB, insérez la YubiKey et autorisez PasswdSafe à accéder à la
+        clé. La clé peut être insérée à tout moment lors de l\'ouverture du
+        fichier.  Si défini dans la configuration de la YubiKey, il peut être
+        nécessaire d\'appuyer sur le bouton après avoir cliqué sur OK.  Le
+        voyant du bouton doit clignoter si une pression est nécessaire.\n
+        - Une fois la clé trouvée et activée, elle sera utilisée pour
+        s\'authentifier avec votre mot de passe.  Le fichier s\'ouvrira
+        automatiquement.
     </string>
     <string name="file_operations">Réglage sauvegarde</string>
     <string name="file_password_encoding">Encodage fichier mots de passe</string>
@@ -223,6 +232,7 @@
     <string name="new_owncloud_file">Nouveau fichier ownCloud</string>
     <string name="new_policy">Nouvelle stratégie</string>
     <string name="next">Suivant</string>
+    <string name="nfc_settings">Paramètres NFC</string>
     <string name="no_alias_chosen">Aucun alias choisi</string>
     <string name="no_backup_file">Pas de fichier backup</string>
     <string name="no_biometrics_registered">Pas d\'identification biométrique enregistré</string>
@@ -299,6 +309,7 @@
     <string name="policy_yes_sym_policy">Oui - Au moins %1$d des symboles de stratégie: %2$s</string>
     <string name="policy_yes_sym_pronounce">Oui - Au moins %1$d des symboles prononçables: %2$s</string>
     <string name="press_again_close_warning">Appuyez à nouveau pour fermer le fichier</string>
+    <string name="press_or_insert_yubikey">Appuyez ou insérez votre YubiKey</string>
     <string name="press_password_warning">Appuyez de nouveau Mot de passe pour coller dans le champ visible</string>
     <string name="press_yubikey">Appyuez sur la YubiKey</string>
     <string name="previous">Précédent</string>
@@ -399,6 +410,8 @@
     <string name="unprotect_all">Déprotéger toutes les entrées</string>
     <string name="unprotect_group">Déprotéger les groupes</string>
     <string name="unprotect_to_modify">Déprotéger les modifications</string>
+    <string name="usb_yubikey_present">Clé usb YubiKey présente</string>
+    <string name="usb_yubikey_present_check_button">Clé usb YubiKey présente. Pressez le bouton pour l\'activer si besoin</string>
     <string name="username">Nom utilisateur</string>
     <string name="use_count">Utiliser compteur</string>
     <string name="use_digits">Chiffres</string>
@@ -413,12 +426,16 @@
     <string name="writable">Modifiable</string>
     <string name="yes">Oui</string>
     <string name="yubikey">YubiKey</string>
-    <string name="yubikey_disabled">YubiKey désactivée. Activer NFC pour utiliser.</string>
     <string name="yubikey_error">Erreur de communication avec le YubiKey: %1$s</string>
+    <string name="yubikey_nfc_disabled">YubiKey NFC disabled. To enable, use the menu to open the NFC settings.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.23.0&lt;/b&gt; Ajout de la prise en charge des clés usb
+        YubiKeys.  Remarque : Chromebooks l\'autorisant pas l\'accès aux
+        périphériques USB, les clés ne sont donc pas prises en charge.
+        \n\n
         &lt;b&gt;6.22.1, 6.22.2&lt;/b&gt; - Correction de bugs
         \n\n
         &lt;b&gt;6.22.0&lt;/b&gt; - Amélioration de la gestion des fichiers

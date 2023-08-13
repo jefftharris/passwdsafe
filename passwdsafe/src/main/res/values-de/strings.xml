@@ -140,17 +140,23 @@
         öffnen. Das Passwort wird auf dem Gerät gelöscht. In den Einstellungen
         können zusätzlich alle gespeicherten Passwörter auf einmal entfernt werden.
         \n
-        \nUm YubiKey mit PasswdSafe zu benutzen, befolgen bitte Sie
-        folgende Schritte:\n
-        - NFC-Unterstützung in den Einstellungen einschalten\n
+        \nUm einen YubiKey zu benutzen, folgen Sie diesem Ablauf:\n
+        - Wenn ein YubiKey via NFC benutzen, aktivieren Sie NFC in den
+        Geräte-Einstellungen\n
         - Passwort für die Passwortdatei eingeben\n
         - Schlüssel-Slot auf dem YubiKey auswählen (Dies ist meist Slot 2)\n
         - Die YubiKey-Taste einmal drücken\n
-        - Innerhalb von 30 Sekunden, den YubiKey an den Rücken dieses Geräts
+        - Aktivieren Sie den YubiKey innerhalb von 30 Sekunden.\n
+        - Für NFC, den YubiKey an den Rücken dieses Geräts
         halten. Dies ist erfolgreich abgeschlossen, wenn Sie eine akustische
         Rückmeldung erhalten.\n
-        - Jetzt kann der YubiKey zum automatischen öffnen der Passwortdatei
-        benutzt werden.
+        - Für USB, YubiKey einstecken und PasswdSafe den Zugriff auf den
+        Schlüssel erlauben. Der Schlüssel kann jederzeit eingesteckt werden
+        während die Datei geöffnet wird. Der Knopf vom YubiKey muss eventuell
+        nach dem Drücken von OK ebenfalls gedrückt werden. In diesem Fall
+        sollte eine Leuchte am Schlüssel blinken.\n
+        - Wenn der Schlüssel ist gefunden und aktiviert, wird er mit Ihrem
+        Passwort zu authentifizieren benutzt.
     </string>
     <string name="file_operations">Datei …</string>
     <string name="file_password_encoding">Passwortkodierung</string>
@@ -219,6 +225,7 @@
     <string name="new_owncloud_file">Neue ownCloud-Datei</string>
     <string name="new_policy">Neue Regel</string>
     <string name="next">Weiter</string>
+    <string name="nfc_settings">NFC-Einstellungen</string>
     <string name="no_alias_chosen">Kein Alias ausgewählt</string>
     <string name="no_backup_file">Keine Backupdatei</string>
     <string name="no_biometrics_registered">Es ist kein biometrisches Merkmal registriert</string>
@@ -292,6 +299,7 @@
     <string name="policy_yes_sym_policy">Ja - Mind. %1$d aus Regelsymbolen: %2$s</string>
     <string name="policy_yes_sym_pronounce" tools:ignore="StringFormatCount">Ja - Symbole: %2$s</string>
     <string name="press_again_close_warning">Erneut drücken, um die Datei zu schließen</string>
+    <string name="press_or_insert_yubikey">YubiKey einstecken oder drücken</string>
     <string name="press_password_warning">Passwort erneut berühren, um es in ein sichtbares Feld zu kopieren</string>
     <string name="press_yubikey">Drücken Sie die YubiKey</string>
     <string name="previous">Vorheriges</string>
@@ -391,6 +399,8 @@
     <string name="unprotect_all">Alle Einträge freigeben</string>
     <string name="unprotect_group">Gruppe freigeben</string>
     <string name="unprotect_to_modify">Freigeben um Eintrag zu bearbeiten</string>
+    <string name="usb_yubikey_present">USB YubiKey gefunden</string>
+    <string name="usb_yubikey_present_check_button">USB YubiKey gefunden. Zum aktivieren, Knopf drücken.</string>
     <string name="username">Benutzername</string>
     <string name="use_count">Verwendungen</string>
     <string name="use_digits">Ziffern</string>
@@ -405,12 +415,16 @@
     <string name="writable">Beschreibbar</string>
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
-    <string name="yubikey_disabled">YubiKey deaktiviert. NFC einschalten, um es benutzen zu können.</string>
     <string name="yubikey_error">Fehler bei der Kommunikation mit dem YubiKey: %1$s</string>
+    <string name="yubikey_nfc_disabled">YubiKey NFC abgeschaltet. Benutze das Menü um die NFC-Einstellungen zu öffnen, zum Einschalten.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.23.0&lt;/b&gt; - Unterstützung für YubiKeys via USB
+        hinzugefügt. Anmerkung: Chromebooks erlauben nicht den Zugriff auf
+        USB-Geräte, daher können YubiKeys hier nicht unterstützt werden.
+        \n\n
         &lt;b&gt;6.22.1, 6.22.2&lt;/b&gt; - Fehlerbehebungen
         \n\n
         &lt;b&gt;6.22.0&lt;/b&gt; - Behandlung von fehlerhaften Dateien

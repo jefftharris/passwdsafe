@@ -124,20 +124,27 @@
         åpne filen. Det lagrede passordet blir slettet fra enheten. Alle
         lagrede passord fjernes fra passordinnstillingene.
         \n
-        \nFor å bruke en YubiKey NEO, utfør følgende steg:\n
-        - Aktiver NFC-støtte i enhetens innstillinger\n
+        \nFor å bruke en YubiKey, følg disse stegene:\n
+        - Hvis du bruker en USB-basert YubiKey (f.eks. NEO), aktiver NFC støtte
+        på enheten.\n
         - Skriv inn passordet for filen\n
         - Velg hvilken plass på YubiKey som har challenge-response nøkkelen.
         Vanligvis brukes plass 2 for Password Safe.\n
         - Marker YubiKey-valget\n
         - Klikk OK\n
-        - Innen 30 sekunder, hold YubiKey mot baksiden av telefonen eller
+        - Innen 30 sekund, aktiver YubiKey-nøkkelen\n
+        - For NFC, hold YubiKey mot baksiden av telefonen eller
         tableten. En lyd høres når nøkkelen blir lest. Hvis enheten ikke svarer
         med en økende tone, prøv å flytte nøkkelen rundt. Litt prøving og
         feiling er nødvendig for å finne rett lokasjon. Det er ikke nødvendig
         å trykke på knappen på selve YubiKey-en.\n
-        - Når nøkkelen er funnet, vil den bli brukt til å autentisere med ditt
-        passord. Filen åpnes automatisk.
+        - For USB, sett inn YubiKey-nøkkelen og gi PasswdSafe tilgang til
+        nøkkelen. Nøkkelen kan settes inn når som helst mens filen åpnes. Hvis
+        YubiKey-innstillingene krever det, så må knappen trykkes etter at du
+        har klikket OK. Indikatoren på knappen skal blinke hvis et trykk er
+        nødvendig.\n
+        - Når nøkkelen er funnet og aktivert, så vil den bli brukt for å
+        autentisere med ditt passord. Filen åpnes automatisk.
     </string>
     <string name="file_operations">Filoperasjoner …</string>
     <string name="file_password_encoding">Filpassordkoding</string>
@@ -201,6 +208,7 @@
     <string name="new_owncloud_file">Ny ownCloud-fil</string>
     <string name="new_policy">Nye relger</string>
     <string name="next">Neste</string>
+    <string name="nfc_settings">NFC-innstillinger</string>
     <string name="no_alias_chosen">Ingen alias valgt</string>
     <string name="no_backup_file">Ingen sikkerhetskopifil</string>
     <string name="no_biometrics_registered">Ingen biometrisk legitimasjon er registrert</string>
@@ -265,6 +273,7 @@
     <string name="policy_yes_sym_policy">Ja - minst %1$d fra regelsymbolene: %2$s</string>
     <string name="policy_yes_sym_pronounce">Ja - symbolene: %2$s</string>
     <string name="press_again_close_warning">Trykk igjen for å lukke filen</string>
+    <string name="press_or_insert_yubikey">Trykk eller sett inn YubiKey</string>
     <string name="press_password_warning">Trykk Passord igjen for å lime inn i synlig felt</string>
     <string name="press_yubikey">Trykk YubiKey</string>
     <string name="previous">Forrige</string>
@@ -356,6 +365,8 @@
     <string name="unprotect_all">Fjern beskyttelse alle oppføringer</string>
     <string name="unprotect_group">Fjern beskyttelse av gruppeoppføringer</string>
     <string name="unprotect_to_modify">Fjern beskyttelse for å endre</string>
+    <string name="usb_yubikey_present">USB YubiKey funnet</string>
+    <string name="usb_yubikey_present_check_button">USB YubiKey funnet. Sjekk knappetrykk for å aktivere.</string>
     <string name="username">Brukernavn</string>
     <string name="use_count">Bruker</string>
     <string name="use_digits">Sifre</string>
@@ -370,13 +381,17 @@
     <string name="writable">Skrivbar</string>
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
-    <string name="yubikey_disabled">YubiKey deaktivert. Aktiver NFC for å bruke.</string>
     <string name="yubikey_error">Klarte ikke kommuniserer med YubiKey-en: %1$s</string>
+    <string name="yubikey_nfc_disabled">YubiKey NFC deaktivert: For å aktivere, bruk menyen for å åpne NFC-innstillingene.</string>
     <string name="yubikey_slot_1">YubiKey plass 1</string>
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
-        &lt;b&gt;6.22.1, 6.22.2&lt;/b&gt; - Feilrettinger
+        &lt;b&gt;6.23.0&lt;/b&gt; - La til støtte for USB-baserte
+        YubiKey-nøkler. Merk: Chromebook tillater ikke tilgang til USB-enheter,
+        så nøklene er ikke støttet.
+        \n\n
+       &lt;b&gt;6.22.1, 6.22.2&lt;/b&gt; - Feilrettinger
         \n\n
         &lt;b&gt;6.22.0&lt;/b&gt; - Forbedret behandling av filer med feil.
         Oppføringer med feil blir listet opp, og filen kan lagres uten dem.

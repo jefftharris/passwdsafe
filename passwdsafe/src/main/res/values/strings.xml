@@ -148,13 +148,13 @@
         doesn\'t respond with a rising tone, try moving the key around.  A bit
         of trial-and-error is needed to find the correct location.  The button
         on the YubiKey itself does not need to be pressed.\n
-        - For USB, insert the YubiKey and allow PasswdSafe access to the key.  The key
-        can be inserted at any time while opening the file.  If set in the
-        configuration of the YubiKey, the button may need to be pressed after
-        clicking OK.  The indicator on the button should blink if a press is
-        required.\n
-        - Once the key is found and activated, it will be used to authenticate with your
-        password.  The file will open automatically.
+        - For USB, insert the YubiKey and allow PasswdSafe access to the key.
+        The key can be inserted at any time while opening the file.  If set in
+        the configuration of the YubiKey, the button may need to be pressed
+        after clicking OK.  The indicator on the button should blink if a press
+        is required.\n
+        - Once the key is found and activated, it will be used to authenticate
+        with your password.  The file will open automatically.
     </string>
     <string name="file_operations">File Operations…</string>
     <string name="file_password_encoding">File password encoding</string>
@@ -393,9 +393,9 @@
     <string name="unprotect_all">Unprotect All Records</string>
     <string name="unprotect_group">Unprotect Group Records</string>
     <string name="unprotect_to_modify">Unprotect to modify</string>
-    <string name="username">User Name</string>
     <string name="usb_yubikey_present">USB YubiKey present</string>
     <string name="usb_yubikey_present_check_button">USB YubiKey present.  Check button press to activate.</string>
+    <string name="username">User Name</string>
     <string name="use_count">Uses</string>
     <string name="use_digits">Digits</string>
     <string name="use_lowercase">Lowercase</string>
@@ -415,6 +415,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.23.0&lt;/b&gt; - Add support for USB based YubiKeys.  Note: Chromebooks
+        do not allow access to USB devices, so the keys are not supported.
+        \n\n
         &lt;b&gt;6.22.2&lt;/b&gt; - Fix Dropbox and Google Files app
         integration.
         \n\n
