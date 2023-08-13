@@ -24,10 +24,13 @@
 #
 # logback-android.  From project wiki narrowed to just what is needed for logcat
 #
+
+# Issue #229
+-keepclassmembers class ch.qos.logback.classic.pattern.* { <init>(); }
+
 -keep public class org.slf4j.impl.** { *; }
--keep class ch.qos.logback.classic.android.LogcatAppender { *; }
--keepclassmembers class ch.qos.logback.classic.encoder.PatternLayoutEncoder { <init>(); }
--keepclassmembers class ch.qos.logback.classic.pattern.MessageConverter { <init>(); }
+-keep public class ch.qos.logback.classic.** { *; }
+-keepattributes *Annotation*
 -dontwarn ch.qos.logback.core.net.*
 
 #
