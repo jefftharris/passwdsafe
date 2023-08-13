@@ -19,6 +19,7 @@ import android.os.Vibrator;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -38,9 +39,11 @@ public final class ApiCompat
     public static final int SDK_OREO = 26;
     private static final int SDK_P = 28;
     public static final int SDK_Q = 29;
+    public static final int SDK_R = 30;
     private static final int SDK_S = 31;
-    private static final int SDK_TIRAMISU = 33;
+    public static final int SDK_TIRAMISU = 33;
 
+    @ChecksSdkIntAtLeast
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
 
     /** Set whether the window is visible in the recent apps list */

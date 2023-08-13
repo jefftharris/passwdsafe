@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.view.Gravity;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.DataInteraction;
@@ -30,6 +31,7 @@ import com.jefftharris.passwdsafe.FileListActivity;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
+import com.jefftharris.passwdsafe.lib.DynamicPermissionMgr;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.test.util.ChildCheckedViewAction;
 import com.jefftharris.passwdsafe.test.util.TestModeRule;
@@ -44,6 +46,7 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,9 +102,29 @@ public class FileListActivityTest
     private static final File LEGACY_FILE = new File(LEGACY_DIR,
                                                      FILE.getName());
 
+    /**
+     * Grant the dynamic permissions needed by the app.  Old permissions may
+     * no longer be granted for newer versions.
+     */
+    @Nullable
+    private static GrantPermissionRule grantPermissions()
+    {
+        var rules = new ArrayList<String>();
+        if (ApiCompat.SDK_VERSION < ApiCompat.SDK_R) {
+            rules.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (ApiCompat.SDK_VERSION >= ApiCompat.SDK_TIRAMISU) {
+            rules.add(DynamicPermissionMgr.PERM_POST_NOTIFICATIONS);
+        }
+        if (!rules.isEmpty()) {
+            return GrantPermissionRule.grant(rules.toArray(new String[0]));
+        } else {
+            return null;
+        }
+    }
+
     @Rule(order=1)
-    public GrantPermissionRule itsRuntimePermsRule = GrantPermissionRule.grant(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    public GrantPermissionRule itsRuntimePermsRule = grantPermissions();
 
     @Rule(order=2)
     public TestModeRule itsTestMode = new TestModeRule();
