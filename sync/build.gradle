@@ -61,16 +61,20 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:20.6.0'
     // Google Drive
-    implementation('com.google.api-client:google-api-client-android:1.30.8') {
+    implementation('com.google.api-client:google-api-client-android:2.2.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation('com.google.apis:google-api-services-drive:v3-rev99-1.23.0') {
+    implementation('com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0') {
         exclude group: 'org.apache.httpcomponents'
     }
     // Dropbox
-    implementation 'com.dropbox.core:dropbox-core-sdk:4.0.0'
+    implementation('com.dropbox.core:dropbox-core-sdk:4.0.0') {
+        exclude group: 'com.google.guava'
+    }
     // Box
-    implementation 'com.box:box-android-sdk:5.0.0'
+    implementation('com.box:box-android-sdk:5.0.0') {
+        exclude group: 'com.google.guava'
+    }
     // OneDrive
     implementation 'com.microsoft.graph:msgraph-sdk-android:1.7.0'
     implementation('com.microsoft.identity.client:msal:0.2.2') {
@@ -78,5 +82,5 @@ dependencies {
         exclude group: 'com.google.com.gson'
     }
     // Misc dependencies
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }

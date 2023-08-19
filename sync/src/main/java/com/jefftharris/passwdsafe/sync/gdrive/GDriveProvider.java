@@ -43,7 +43,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
@@ -67,6 +67,7 @@ import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * The GDriveProvider class encapsulates Google Drive
@@ -88,7 +89,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
 
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY =
-            JacksonFactory.getDefaultInstance();
+            GsonFactory.getDefaultInstance();
 
     private static final String TAG = "GDriveProvider";
 
@@ -127,10 +128,13 @@ public class GDriveProvider extends AbstractSyncTimerProvider
         }
 
         itsPendingAccountName = null;
-        Intent intent = AccountPicker.newChooseAccountIntent(
-                selAccount, null,
-                new String[] { GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE },
-                alwaysPrompt, null, null, null, null);
+        var accountOptions = new AccountPicker.AccountChooserOptions.Builder()
+                .setSelectedAccount(selAccount)
+                .setAllowableAccountsTypes(
+                        List.of(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE))
+                .setAlwaysShowAccountPicker(alwaysPrompt)
+                .build();
+        Intent intent = AccountPicker.newChooseAccountIntent(accountOptions);
         try {
             activity.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
@@ -214,11 +218,9 @@ public class GDriveProvider extends AbstractSyncTimerProvider
                 Context ctx = getContext();
                 GoogleAccountCredential credential = getAcctCredential(ctx);
                 String token = GoogleAuthUtil.getTokenWithNotification(
-                        ctx, acct, credential.getScope(), null);
+                        ctx, acct, credential.getScope(), new Bundle());
                 PasswdSafeUtil.dbginfo(TAG, "Remove token for %s", acct.name);
-                if (token != null) {
-                    GoogleAuthUtil.clearToken(ctx, token);
-                }
+                GoogleAuthUtil.clearToken(ctx, token);
 
                 GoogleSignInClient client = getSigninClient(acct.name, ctx);
                 Task<Void> task = client.revokeAccess();
@@ -515,19 +517,9 @@ public class GDriveProvider extends AbstractSyncTimerProvider
         } catch (UserRecoverableAuthException e) {
             PasswdSafeUtil.dbginfo(TAG, e, "Recoverable auth exception");
             NotifUtils.showNotif(NotifUtils.Type.DRIVE_REAUTH_REQUIRED, ctx);
-            try {
-                GoogleAuthUtil.clearToken(ctx, null);
-            } catch (Exception ioe) {
-                Log.e(TAG, "getDriveService clear failure", e);
-            }
         } catch (UserRecoverableNotifiedException e) {
             // User notified
             PasswdSafeUtil.dbginfo(TAG, e, "User notified auth exception");
-            try {
-                GoogleAuthUtil.clearToken(ctx, null);
-            } catch(Exception ioe) {
-                Log.e(TAG, "getDriveService clear failure", e);
-            }
         } catch (GoogleAuthException e) {
             // Unrecoverable
             Log.e(TAG, "Unrecoverable auth exception", e);
