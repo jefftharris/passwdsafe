@@ -7,7 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -99,7 +98,6 @@ public class MainActivity extends AppCompatActivity
         itsPermissionMgr = new DynamicPermissionMgr(
                 this, ActivityRequest.PERMISSIONS, ActivityRequest.APP_SETTINGS,
                 PasswdSafeUtil.SYNC_PACKAGE, R.id.reload, R.id.app_settings);
-        itsPermissionMgr.addPerm(Manifest.permission.GET_ACCOUNTS, true);
         itsPermissionMgr.addPerm(DynamicPermissionMgr.PERM_POST_NOTIFICATIONS,
                                  false);
         View noPermGroup = findViewById(R.id.no_permission_group);
