@@ -44,7 +44,10 @@ public class DropboxCoreRemoteToLocalOper
         OutputStream fos = null;
         try {
             fos = new BufferedOutputStream(new FileOutputStream(destFile));
-            providerClient.files().download(itsFile.itsRemoteId).download(fos);
+            try (var downloader =
+                         providerClient.files().download(itsFile.itsRemoteId)) {
+                downloader.download(fos);
+            }
         } finally {
             Utils.closeStreams(fos);
         }

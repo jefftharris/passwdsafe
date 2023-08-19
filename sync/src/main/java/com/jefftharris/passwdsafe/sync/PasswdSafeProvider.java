@@ -49,6 +49,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *  The PasswdSafeProvider class is a content provider for synced
@@ -299,8 +300,7 @@ public class PasswdSafeProvider extends ContentProvider
     public boolean onCreate()
     {
         PasswdSafeUtil.dbginfo(TAG, "onCreate");
-        Context ctx = getContext();
-        //noinspection ConstantConditions
+        Context ctx = Objects.requireNonNull(getContext());
         SyncDb.initializeDb(ctx.getApplicationContext());
         itsListener = accounts -> new AccountVerifier(this).execute();
         if (ActivityCompat.checkSelfPermission(
