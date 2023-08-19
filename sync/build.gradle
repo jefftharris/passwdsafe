@@ -24,15 +24,15 @@ android {
         debug {
             debuggable true
             minifyEnabled true
-            //noinspection GroovyAssignabilityCheck
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            proguardFiles += getDefaultProguardFile(
+                    'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             proguardFiles += 'proguard-google-api-client.pro'
         }
         release {
             minifyEnabled true
-            //noinspection GroovyAssignabilityCheck
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            proguardFiles += getDefaultProguardFile(
+                    'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             proguardFiles += 'proguard-google-api-client.pro'
         }
@@ -54,12 +54,12 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
     implementation project(':lib-owncloud')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.5.1'
-    implementation('androidx.work:work-runtime:2.7.1') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.1'
+    implementation('androidx.work:work-runtime:2.8.1') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
-    implementation 'com.google.android.gms:play-services-auth:20.4.0'
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
     // Google Drive
     implementation('com.google.api-client:google-api-client-android:1.30.8') {
         exclude group: 'org.apache.httpcomponents'
@@ -77,6 +77,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.google.com.gson'
     }
-    implementation 'com.google.code.gson:gson:2.8.6'
-    // Other
+    // Misc dependencies
+    implementation 'com.google.code.gson:gson:2.9.0'
 }
