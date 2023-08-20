@@ -32,8 +32,6 @@
     <string name="release_notes_title">Utgavenotater</string>
     <string name="release_notes">(placeholder)</string>
     <string name="reload">Last på nytt</string>
-    <string name="send_log">Send logg</string>
-    <string name="send_log_to">Send logg til …</string>
     <string name="type">Type</string>
     <string name="url">Nettadresse</string>
     <string name="version">Versjon</string>

@@ -38,8 +38,6 @@
     <string name="release_notes_title">Versionshinweise</string>
     <string name="release_notes">(Platzhalter)</string>
     <string name="reload">Neu laden</string>
-    <string name="send_log">Log senden</string>
-    <string name="send_log_to">Log senden an…</string>
     <string name="type">Typ</string>
     <string name="url">URL</string>
     <string name="version">Version</string>

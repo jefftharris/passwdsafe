@@ -20,20 +20,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import androidx.preference.PreferenceManager;
 
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Writer;
-import java.util.regex.Pattern;
-
-import androidx.preference.PreferenceManager;
 
 /**
  * Utilities for about dialogs
@@ -85,11 +78,6 @@ public class AboutUtils
             GuiUtils.setVisible(licenseView, isChecked);
         });
         GuiUtils.setVisible(btn, !TextUtils.isEmpty(extraLicenseInfo));
-
-        View sendToBtn = detailsView.findViewById(R.id.send_log);
-        sendToBtn.setOnClickListener(
-                v -> sendLog(act, (pkgInfo != null) ?
-                                  pkgInfo.packageName : null));
 
         View privacyPolicyBtn = detailsView.findViewById(R.id.privacy_policy);
         privacyPolicyBtn.setOnClickListener(v -> {
@@ -154,64 +142,5 @@ public class AboutUtils
             return true;
         }
         return false;
-    }
-
-    /**
-     * Send a log file
-     */
-    private static void sendLog(Activity act, String pkgName)
-    {
-        try {
-            FileSharer sharer = new FileSharer("logcat.txt", act, pkgName);
-            File logFile = sharer.getFile();
-            if (!runLogcat(true, logFile)) {
-                runLogcat(false, logFile);
-            }
-
-            sharer.share(act.getString(R.string.send_log_to),
-                         "text/plain",
-                         new String[] { "jeffharris@users.sourceforge.net" },
-                         "PasswdSafe log", act);
-        } catch (Exception e) {
-            PasswdSafeUtil.showError("Error sharing", TAG, e,
-                                     new ActContext(act));
-        }
-    }
-
-    /**
-     * Run logcat and collect the output
-     */
-    private static boolean runLogcat(boolean useUid, File logFile)
-            throws IOException, InterruptedException
-    {
-        Process proc = new ProcessBuilder("logcat", "-d", "-v",
-                                          useUid ? "uid" : "threadtime", "*:D")
-                .redirectErrorStream(true)
-                .start();
-
-        BufferedReader procReader = null;
-        Writer fileWriter = null;
-        try {
-            procReader = new BufferedReader(
-                    new InputStreamReader(proc.getInputStream()));
-            fileWriter = new BufferedWriter(new FileWriter(logFile));
-
-            Pattern p = null;
-            if (!useUid) {
-                p = Pattern.compile(
-                        "^\\S+\\s+\\S+\\s+" + android.os.Process.myPid() +
-                        "\\s.*");
-            }
-
-            String line;
-            while ((line = procReader.readLine()) != null) {
-                if (useUid || p.matcher(line).matches()) {
-                    fileWriter.append(line).append("\n");
-                }
-            }
-        } finally {
-            Utils.closeStreams(procReader, fileWriter);
-        }
-        return (proc.waitFor() == 0);
     }
 }
