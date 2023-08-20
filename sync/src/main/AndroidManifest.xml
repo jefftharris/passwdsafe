@@ -113,23 +113,6 @@
                 android:value="com.jefftharris.passwdsafe.sync.MainActivity"/>
         </activity>
 
-        <!-- Handle Google Drive file open events from the Drive app -->
-        <activity
-            android:name=".GDriveLaunchActivity"
-            android:exported="true"
-            android:label="@string/passwdsafe_synced_file">
-            <meta-data
-                android:name="com.google.android.apps.drive.APP_ID"
-                android:value="id=XXX"/>
-
-            <intent-filter>
-                <action android:name="com.google.android.apps.drive.DRIVE_OPEN"/>
-
-                <data android:mimeType="application/vnd.google-apps.drive-sdk.XXX"/>
-                <data android:mimeType="*/*"/>
-            </intent-filter>
-        </activity>
-
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"

@@ -8,7 +8,6 @@
     <string name="automatic">Automatisk</string>
     <string name="box_acct_unlinked">Appen er ikke lenger lenket til Box-kontoen. Synkroniser igjen for å gi PasswdSafe Sync tilgang til Box.</string>
     <string name="box_service_updated">Box-tjeneste oppdatert</string>
-    <string name="cant_launch_drive_file">Kan ikke åpne Google Disk-fil. Vanligvis fordi filen ikke er synkronisert lokalt.</string>
     <string name="choose_account">Velg konto</string>
     <string name="choose_sync_files_from_dir">Velg filer fra %1$s</string>
     <string name="clear">Tøm</string>
@@ -54,7 +53,6 @@
     <string name="owncloud_synced_files">ownCloud-synkroniserte filer</string>
     <string name="owncloud_users_survey">ownCloud-brukerundersøkelse</string>
     <string name="passwdsafe">PasswdSafe</string>
-    <string name="passwdsafe_synced_file">PasswdSafe-synkroniserte filer</string>
     <string name="recreated_local_copy">Gjenopprettet lokal kopi</string>
     <string name="remove_account">Fjern konto?</string>
     <string name="removing_account">Fjerner konto …</string>

@@ -16,7 +16,6 @@
     <string name="automatic">Automatique</string>
     <string name="box_acct_unlinked">App dissociée de compte Box. Synchronisez à nouveau pour permettre l\'accès Box pour PasswdSafe Sync.</string>
     <string name="box_service_updated">Service de Box est mis à jour</string>
-    <string name="cant_launch_drive_file">Impossible de lancer le fichier de Google Drive. Typiquement, le fichier n\'a pas été synchronisés localement</string>
     <string name="choose_account">Choisir compte</string>
     <string name="choose_sync_files_from_dir">Choisir les fichiers à partir de %1$s</string>
     <string name="clear">Effacer</string>
@@ -76,7 +75,6 @@
     <string name="owncloud_synced_files">ownCloud Fichiers Synchronisé</string>
     <string name="owncloud_users_survey">Sondage utilisateurs d\'owncloud</string>
     <string name="passwdsafe">PasswdSafe</string>
-    <string name="passwdsafe_synced_file">PasswdSafe fichier synchronisé</string>
     <string name="recreated_local_copy">Copie locale recréé</string>
     <string name="remove_account">Supprimer un compte?</string>
     <string name="removing_account">Retrait de compte&#8230;</string>

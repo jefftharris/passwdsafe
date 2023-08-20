@@ -16,7 +16,6 @@
     <string name="automatic">Automatisch</string>
     <string name="box_acct_unlinked">App unverknüpft von Box-Konto. Synchronisieren Sie erneut, um Box-Zugang für PasswdSafe Sync ermöglichen.</string>
     <string name="box_service_updated">Box-Dienstes aktualisiert</string>
-    <string name="cant_launch_drive_file">Kann Google-Drive-Datei nicht öffnen. Die Datei wurde möglichweise nicht synchronisiert.</string>
     <string name="choose_account">Konto wählen</string>
     <string name="choose_sync_files_from_dir">Wählen Sie Dateien von %1$s</string>
     <string name="clear">Leeren</string>
@@ -74,7 +73,6 @@
     <string name="owncloud_synced_files">ownCloud Synchronisiert Dateien</string>
     <string name="owncloud_users_survey">ownCloud-Nutzer-Umfrage</string>
     <string name="passwdsafe">PasswdSafe</string>
-    <string name="passwdsafe_synced_file">PasswdSafe Synced Datei</string>
     <string name="recreated_local_copy">Erstellt lokale Kopie</string>
     <string name="remove_account">Konto löschen?</string>
     <string name="removing_account">Lösche Konto &#8230;</string>
