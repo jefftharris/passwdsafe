@@ -151,6 +151,7 @@
             android:exported="true"
             android:permission="com.jefftharris.passwdsafe.sync.provider.permission.ACCESS"
             android:syncable="true">
+            <!--suppress AndroidElementNotAllowed -->
             <grant-uri-permission android:pathPattern=".*"/>
         </provider>
 
