@@ -38,6 +38,8 @@ android {
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             proguardFiles += 'proguard-rules-debug.pro'
+            testProguardFiles += getDefaultProguardFile(
+                    'proguard-android-optimize.txt')
             testProguardFiles += 'proguard-rules-test.pro'
             ndk {
                 debugSymbolLevel "FULL"
