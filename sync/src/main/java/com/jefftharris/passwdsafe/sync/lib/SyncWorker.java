@@ -125,7 +125,7 @@ public class SyncWorker extends Worker
                     .build();
 
             workMgr.enqueueUniquePeriodicWork(
-                    uniqueId, ExistingPeriodicWorkPolicy.REPLACE, workReq);
+                    uniqueId, ExistingPeriodicWorkPolicy.UPDATE, workReq);
         } else {
             workMgr.cancelUniqueWork(uniqueId);
         }
