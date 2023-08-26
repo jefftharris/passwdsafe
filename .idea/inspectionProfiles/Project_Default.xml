@@ -3,9 +3,12 @@
     <option name="myName" value="Project Default" />
     <inspection_tool class="AndroidLintIconExpectedSize" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintNegativeMargin" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="AndroidLintPermissionImpliesUnsupportedChromeOsHardware" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AndroidLintUnsupportedChromeOsHardware" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AndroidLintUnusedIds" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ClangTidy" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="clangTidyChecks" value="-*,android-*,bugprone-*,cert-err52-cpp,cert-err60-cpp,cert-err34-c,cert-str34-c,cert-dcl21-cpp,cert-msc50-cpp,cert-msc51-cpp,cert-dcl58-cpp,cert-flp30-c,cppcoreguidelines-pro-type-member-init,cppcoreguidelines-slicing,cppcoreguidelines-interfaces-global-init,cppcoreguidelines-pro-type-static-cast-downcast,cppcoreguidelines-narrowing-conversions,misc-unconventional-assign-operator,misc-misplaced-const,misc-new-delete-overloads,misc-non-copyable-objects,misc-no-recursion,misc-throw-by-value-catch-by-reference,misc-uniqueptr-reset-release,modernize-*,-modernize-use-trailing-return-type,-modernize-avoid-c-arrays,-modernize-use-using,-modernize-use-default-member-init,-modernize-macro-to-enum,performance-*,-performance-no-int-to-ptr,portability-simd-intrinsics,readability-*,-readability-redundant-preprocessor,-readability-named-parameter,-readability-function-size,-readability-simplify-boolean-expr,-readability-identifier-length,-readability-duplicate-include,-readability-magic-numbers,-readability-braces-around-statements,-readability-redundant-member-init,-readability-suspicious-call-argument,-readability-qualified-auto,-readability-isolate-declaration,-readability-uppercase-literal-suffix,-readability-container-data-pointer,-readability-else-after-return,-readability-redundant-access-specifiers,-readability-function-cognitive-complexity,-readability-implicit-bool-conversion,-readability-container-contains,-readability-identifier-naming" />
+    </inspection_tool>
+    <inspection_tool class="Clazy" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ConstantAssertCondition" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EnumSwitchStatementWhichMissesCases" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="ignoreSwitchStatementsWithDefault" value="false" />
