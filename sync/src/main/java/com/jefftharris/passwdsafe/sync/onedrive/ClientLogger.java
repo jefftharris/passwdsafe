@@ -9,6 +9,8 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.microsoft.graph.logger.DefaultLogger;
 
 /**
@@ -39,8 +41,10 @@ public class ClientLogger extends DefaultLogger
     /**
      * Creates the tag automatically.
      * @return The tag for the current method.
-     * Sourced from https://gist.github.com/eefret/a9c7ac052854a10a8936
+     * Sourced from
+     * <a href="https://gist.github.com/eefret/a9c7ac052854a10a8936">Github gist</a>
      */
+    @Nullable
     private String getTag() {
         try {
             final StringBuilder sb = new StringBuilder();
