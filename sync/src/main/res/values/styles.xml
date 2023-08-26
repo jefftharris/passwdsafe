@@ -12,7 +12,7 @@
         by PwsAppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="PwsAppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <!-- Application theme. -->
