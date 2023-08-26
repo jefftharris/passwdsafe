@@ -40,7 +40,6 @@ public final class ApiCompat
     private static final int SDK_P = 28;
     public static final int SDK_Q = 29;
     public static final int SDK_R = 30;
-    private static final int SDK_S = 31;
     public static final int SDK_TIRAMISU = 33;
 
     @ChecksSdkIntAtLeast
@@ -246,15 +245,6 @@ public final class ApiCompat
     {
         return (SDK_VERSION < SDK_M) ?
                0 : ApiCompatM.PENDING_INTENT_FLAG_IMMUTABLE;
-    }
-
-    /**
-     * Get the immutable flag for a pending intent
-     */
-    public static int getPendingIntentMutableFlag()
-    {
-        return (SDK_VERSION < SDK_S) ?
-               0 : ApiCompatS.PENDING_INTENT_FLAG_MUTABLE;
     }
 
     /**
