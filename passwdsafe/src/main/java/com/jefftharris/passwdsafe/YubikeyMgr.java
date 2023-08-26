@@ -76,9 +76,10 @@ public class YubikeyMgr
                       @NonNull Fragment openFrag)
     {
         itsYubikeyModel = yubikeyModel;
-        itsResult.observe(openFrag, this::onYubikeyResultChanged);
-        itsYubikeyModel.getDeviceData()
-                       .observe(openFrag, this::onYubikeyDeviceChanged);
+        var fragLifecycleOwner = openFrag.getViewLifecycleOwner();
+        itsResult.observe(fragLifecycleOwner, this::onYubikeyResultChanged);
+        itsYubikeyModel.getDeviceData().observe(fragLifecycleOwner,
+                                                this::onYubikeyDeviceChanged);
     }
 
     /**
