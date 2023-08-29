@@ -421,6 +421,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.23.1&lt;/b&gt; - Update für Android 13-Kompatibilität
+        \n\n
         &lt;b&gt;6.23.0&lt;/b&gt; - Unterstützung für YubiKeys via USB
         hinzugefügt. Anmerkung: Chromebooks erlauben nicht den Zugriff auf
         USB-Geräte, daher können YubiKeys hier nicht unterstützt werden.
