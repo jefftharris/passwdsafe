@@ -16,8 +16,8 @@ android {
         resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 33
         // <major><minor><bugfix><beta/extra>
-        versionCode 3090001
-        versionName "3.9.0"
+        versionCode 3100000
+        versionName "3.10.0"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {

@@ -97,6 +97,10 @@
     <string name="updating_account">Mise à jour compte&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.10.0&lt;/b&gt; - Mise à jour pour la compatibilité
+        Android 13.  Mise à jour des librairies des fournisseurs de
+        synchronisation.
+        \n
         &lt;b&gt;3.9.0&lt;/b&gt; - Support de permissions plus restrictives avec Google
         Drive
         \n

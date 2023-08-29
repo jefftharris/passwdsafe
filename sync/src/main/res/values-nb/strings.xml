@@ -75,6 +75,9 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.10.0&lt;/b&gt; - Forbedret Android 13 kompatibilitet.
+        Oppdaterte bibliotek for synkroniseringstilbydere.
+        \n
         &lt;b&gt;3.9.0&lt;/b&gt; - Støtte for mer restriktive rettigheter for Google
         Disk.
         \n
