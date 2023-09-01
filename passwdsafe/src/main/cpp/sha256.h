@@ -31,7 +31,7 @@ public:
     ~SHA256();
 
     /// Process a block of memory though the hash
-    void update(const unsigned char* in, size_t inlen);
+    void update(const unsigned char* inbuf, size_t inlen);
 
     /// Terminate the hash to get the digest
     void final(std::array<unsigned char, HASHLEN>& digest);
@@ -44,7 +44,7 @@ private:
     void compress(const unsigned char* buf);
 
     /// Total number of bits hashed
-    uint64_t itsLength;
+    size_t itsLength;
 
     /// Hash state
     State itsState;

@@ -1,6 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "readability-magic-numbers"
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 /*
  * Copyright (©) 2009-2013 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
@@ -15,46 +12,52 @@
 #include "sha256.h"
 #include "Util.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "readability-magic-numbers"
+#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-type-reinterpret-cast"
+
 /**
  * Implementation of digestNNative so stack can be cleaned by caller
  * @param env JNI environment
- * @param p Input byte array
+ * @param inbuf Input byte array
  * @param iter Number of iterations
  * @return The digested bytes
  */
 [[gnu::noinline]] static jbyteArray digestNNativeImpl(JNIEnv* env,
-                                                      jbyteArray p,
+                                                      jbyteArray inbuf,
                                                       jint iter)
 {
-    jsize plen = env->GetArrayLength(p);
-    jbyte *pdata = env->GetByteArrayElements(p, nullptr);
+    const jsize plen = env->GetArrayLength(inbuf);
+    jbyte *pdata = env->GetByteArrayElements(inbuf, nullptr);
     std::array<unsigned char, SHA256::HASHLEN> output{};
 
-    SHA256 H0;
-    H0.update(reinterpret_cast<unsigned char *>(pdata), (size_t)plen);
-    H0.final(output);
+    SHA256 hash0;
+    hash0.update(reinterpret_cast<unsigned char *>(pdata), (size_t)plen);
+    hash0.final(output);
 
     for (jint i = 0; i < iter; ++i) {
-        SHA256 H;
-        H.update(output.data(), output.size());
-        H.final(output);
+        SHA256 loopHash;
+        loopHash.update(output.data(), output.size());
+        loopHash.final(output);
     }
 
     jbyteArray outputArray = env->NewByteArray(output.size());
     env->SetByteArrayRegion(outputArray, 0, output.size(),
                             reinterpret_cast<jbyte *>(output.data()));
 
-    env->ReleaseByteArrayElements(p, pdata, 0);
+    env->ReleaseByteArrayElements(inbuf, pdata, 0);
     return outputArray;
 }
 
 extern "C" JNIEXPORT jbyteArray JNICALL
-Java_org_pwsafe_lib_crypto_SHA256Pws_digestNNative(JNIEnv* env,
-                                                   jclass,
-                                                   jbyteArray p,
-                                                   jint iter)
+Java_org_pwsafe_lib_crypto_SHA256Pws_digestNNative(
+        JNIEnv *env,
+        [[maybe_unused]] jclass clazz,
+        jbyteArray inbuf,
+        jint iter)
 {
-    jbyteArray outputArray = digestNNativeImpl(env, p, iter);
+    jbyteArray outputArray = digestNNativeImpl(env, inbuf, iter);
     burnStack(sizeof(unsigned long) * 74);
     return outputArray;
 }

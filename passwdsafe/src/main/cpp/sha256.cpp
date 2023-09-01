@@ -1,6 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "readability-magic-numbers"
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 /*
  * Copyright (c) 2003-2014 Rony Shapiro <ronys@users.sourceforge.net>.
  * Copyright (c) 2019 Jeff Harris <jefftharris@gmail.com>
@@ -19,92 +16,96 @@
 #include "sha256.h"
 
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCDFAInspection"
-inline static uint32_t load32H(unsigned const char* y)
-{
-    return (static_cast<uint32_t>(y[0] & 0xffU)<<24U) |
-           (static_cast<uint32_t>(y[1] & 0xffU)<<16U) |
-           (static_cast<uint32_t>(y[2] & 0xffU)<<8U)  |
-           (static_cast<uint32_t>(y[3] & 0xffU));
-}
-#pragma clang diagnostic pop
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-bounds-constant-array-index"
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-bounds-pointer-arithmetic"
+#pragma ide diagnostic ignored "readability-magic-numbers"
+#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
-inline static void store32H(uint32_t x, unsigned char* y)
+inline static uint32_t load32H(unsigned const char* buf)
 {
-    y[0] = static_cast<unsigned char>((x>>24U) & 0xffU);
-    y[1] = static_cast<unsigned char>((x>>16U) & 0xffU);
-    y[2] = static_cast<unsigned char>((x>>8U) & 0xffU);
-    y[3] = static_cast<unsigned char>(x & 0xffU);
+    return (static_cast<uint32_t>(buf[0] & 0xffU) << 24U) |
+           (static_cast<uint32_t>(buf[1] & 0xffU) << 16U) |
+           (static_cast<uint32_t>(buf[2] & 0xffU) << 8U) |
+           (static_cast<uint32_t>(buf[3] & 0xffU));
 }
 
-inline static void store64H(uint64_t x, unsigned char* y)
+inline static void store32H(uint32_t val, unsigned char* buf)
 {
-    y[0] = static_cast<unsigned char>((x>>56U) & 0xffU);
-    y[1] = static_cast<unsigned char>((x>>48U) & 0xffU);
-    y[2] = static_cast<unsigned char>((x>>40U) & 0xffU);
-    y[3] = static_cast<unsigned char>((x>>32U) & 0xffU);
-    y[4] = static_cast<unsigned char>((x>>24U) & 0xffU);
-    y[5] = static_cast<unsigned char>((x>>16U) & 0xffU);
-    y[6] = static_cast<unsigned char>((x>>8U) & 0xffU);
-    y[7] = static_cast<unsigned char>(x & 0xffU);
+    buf[0] = static_cast<unsigned char>((val >> 24U) & 0xffU);
+    buf[1] = static_cast<unsigned char>((val >> 16U) & 0xffU);
+    buf[2] = static_cast<unsigned char>((val >> 8U) & 0xffU);
+    buf[3] = static_cast<unsigned char>(val & 0xffU);
 }
 
-inline static uint32_t RORc(uint32_t x, unsigned int y)
+inline static void store64H(uint64_t val, unsigned char* buf)
 {
-    return ((x & 0xFFFFFFFFU) >> (y & 31U)) |
-           ((x << (32-(y & 31U))) & 0xFFFFFFFFU);
+    buf[0] = static_cast<unsigned char>((val >> 56U) & 0xffU);
+    buf[1] = static_cast<unsigned char>((val >> 48U) & 0xffU);
+    buf[2] = static_cast<unsigned char>((val >> 40U) & 0xffU);
+    buf[3] = static_cast<unsigned char>((val >> 32U) & 0xffU);
+    buf[4] = static_cast<unsigned char>((val >> 24U) & 0xffU);
+    buf[5] = static_cast<unsigned char>((val >> 16U) & 0xffU);
+    buf[6] = static_cast<unsigned char>((val >> 8U) & 0xffU);
+    buf[7] = static_cast<unsigned char>(val & 0xffU);
+}
+
+inline static uint32_t RORc(uint32_t val, unsigned int num)
+{
+    return ((val & 0xFFFFFFFFU) >> (num & 31U)) |
+           ((val << (32 - (num & 31U))) & 0xFFFFFFFFU);
 }
 
 /* Various logical functions */
-inline static uint32_t Ch(uint32_t x, uint32_t y, uint32_t z)
+inline static uint32_t Ch(uint32_t valx, uint32_t valy, uint32_t valz)
 {
-    return z ^ (x & (y ^ z));
+    return valz ^ (valx & (valy ^ valz));
 }
 
-inline static uint32_t Maj(uint32_t x, uint32_t y, uint32_t z)
+inline static uint32_t Maj(uint32_t valx, uint32_t valy, uint32_t valz)
 {
-    return (((x | y) & z) | (x & y));
+    return (((valx | valy) & valz) | (valx & valy));
 }
 
-inline static uint32_t S(uint32_t x, unsigned int n)
+inline static uint32_t S(uint32_t val, unsigned int n)
 {
-    return RORc(x, n);
+    return RORc(val, n);
 }
 
-inline static uint32_t R(uint32_t x, unsigned int n)
+inline static uint32_t R(uint32_t val, unsigned int n)
 {
-    return (x & 0xFFFFFFFFU) >> n;
+    return (val & 0xFFFFFFFFU) >> n;
 }
 
-inline static uint32_t Sigma0(uint32_t x)
+inline static uint32_t Sigma0(uint32_t val)
 {
-    return S(x, 2) ^ S(x, 13) ^ S(x, 22);
+    return S(val, 2) ^ S(val, 13) ^ S(val, 22);
 }
 
-inline static uint32_t Sigma1(uint32_t x)
+inline static uint32_t Sigma1(uint32_t val)
 {
-    return S(x, 6) ^ S(x, 11) ^ S(x, 25);
+    return S(val, 6) ^ S(val, 11) ^ S(val, 25);
 }
 
-inline static uint32_t Gamma0(uint32_t x)
+inline static uint32_t Gamma0(uint32_t val)
 {
-    return S(x, 7) ^ S(x, 18) ^ R(x, 3);
+    return S(val, 7) ^ S(val, 18) ^ R(val, 3);
 }
 
-inline static uint32_t Gamma1(uint32_t x)
+inline static uint32_t Gamma1(uint32_t valx)
 {
-    return S(x, 17) ^ S(x, 19) ^ R(x, 10);
+    return S(valx, 17) ^ S(valx, 19) ^ R(valx, 10);
 }
 
 inline static void RND(
-        uint32_t a, uint32_t b, uint32_t c, uint32_t& d,
-        uint32_t e, uint32_t f, uint32_t g, uint32_t& h,
-        uint32_t w, uint32_t ki)
+        uint32_t vala, uint32_t valb, uint32_t valc, uint32_t& vald,
+        uint32_t vale, uint32_t valf, uint32_t valg, uint32_t& valh,
+        uint32_t valw, uint32_t valki)
 {
-    uint32_t t0 = h + Sigma1(e) + Ch(e, f, g) + ki + w;
-    uint32_t t1 = Sigma0(a) + Maj(a, b, c);
-    d += t0;
-    h = t0 + t1;
+    const uint32_t valt0 =
+            valh + Sigma1(vale) + Ch(vale, valf, valg) + valki + valw;
+    const uint32_t valt1 = Sigma0(vala) + Maj(vala, valb, valc);
+    vald += valt0;
+    valh = valt0 + valt1;
 }
 
 
@@ -115,110 +116,110 @@ inline static void RND(
 inline void SHA256::compress(const unsigned char* buf)
 {
     /* copy state into S */
-    State S = itsState;
+    State valS = itsState;
 
-    std::array<uint32_t, 64> W; // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
+    std::array<uint32_t, 64> valW; // NOLINT(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
 
     // copy the state into 512-bits into W[0..15]
     for (size_t i = 0; i < 16; i++) {
-        W[i] = load32H(buf + (4 * i));
+        valW[i] = load32H(buf + (4 * i));
     }
 
     // fill W[16..63]
     for (size_t i = 16; i < 64; i++) {
-        W[i] = Gamma1(W[i - 2]) + W[i - 7] + Gamma0(W[i - 15]) + W[i - 16];
+        valW[i] = Gamma1(valW[i - 2]) + valW[i - 7] + Gamma0(valW[i - 15]) + valW[i - 16];
     }
 
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[0],0x428a2f98U);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[1],0x71374491U);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[2],0xb5c0fbcfU);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[3],0xe9b5dba5U);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[4],0x3956c25bU);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[5],0x59f111f1U);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[6],0x923f82a4U);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[7],0xab1c5ed5U);
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[8],0xd807aa98U);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[9],0x12835b01U);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[10],0x243185beU);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[11],0x550c7dc3U);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[12],0x72be5d74U);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[13],0x80deb1feU);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[14],0x9bdc06a7U);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[15],0xc19bf174U);
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[16],0xe49b69c1U);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[17],0xefbe4786U);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[18],0x0fc19dc6U);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[19],0x240ca1ccU);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[20],0x2de92c6fU);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[21],0x4a7484aaU);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[22],0x5cb0a9dcU);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[23],0x76f988daU);
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[24],0x983e5152U);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[25],0xa831c66dU);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[26],0xb00327c8U);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[27],0xbf597fc7U);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[28],0xc6e00bf3U);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[29],0xd5a79147U);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[30],0x06ca6351U);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[31],0x14292967U);
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[32],0x27b70a85U);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[33],0x2e1b2138U);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[34],0x4d2c6dfcU);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[35],0x53380d13U);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[36],0x650a7354U);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[37],0x766a0abbU);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[38],0x81c2c92eU);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[39],0x92722c85U);
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[40],0xa2bfe8a1U);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[41],0xa81a664bU);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[42],0xc24b8b70U);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[43],0xc76c51a3U);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[44],0xd192e819U);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[45],0xd6990624U);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[46],0xf40e3585U);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[47],0x106aa070U);
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[48],0x19a4c116U);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[49],0x1e376c08U);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[50],0x2748774cU);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[51],0x34b0bcb5U);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[52],0x391c0cb3U);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[53],0x4ed8aa4aU);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[54],0x5b9cca4fU);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[55],0x682e6ff3U);
-    RND(S[0],S[1],S[2],S[3],S[4],S[5],S[6],S[7],W[56],0x748f82eeU);
-    RND(S[7],S[0],S[1],S[2],S[3],S[4],S[5],S[6],W[57],0x78a5636fU);
-    RND(S[6],S[7],S[0],S[1],S[2],S[3],S[4],S[5],W[58],0x84c87814U);
-    RND(S[5],S[6],S[7],S[0],S[1],S[2],S[3],S[4],W[59],0x8cc70208U);
-    RND(S[4],S[5],S[6],S[7],S[0],S[1],S[2],S[3],W[60],0x90befffaU);
-    RND(S[3],S[4],S[5],S[6],S[7],S[0],S[1],S[2],W[61],0xa4506cebU);
-    RND(S[2],S[3],S[4],S[5],S[6],S[7],S[0],S[1],W[62],0xbef9a3f7U);
-    RND(S[1],S[2],S[3],S[4],S[5],S[6],S[7],S[0],W[63],0xc67178f2U);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[0], 0x428a2f98U);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[1], 0x71374491U);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[2], 0xb5c0fbcfU);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[3], 0xe9b5dba5U);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[4], 0x3956c25bU);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[5], 0x59f111f1U);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[6], 0x923f82a4U);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[7], 0xab1c5ed5U);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[8], 0xd807aa98U);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[9], 0x12835b01U);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[10], 0x243185beU);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[11], 0x550c7dc3U);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[12], 0x72be5d74U);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[13], 0x80deb1feU);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[14], 0x9bdc06a7U);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[15], 0xc19bf174U);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[16], 0xe49b69c1U);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[17], 0xefbe4786U);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[18], 0x0fc19dc6U);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[19], 0x240ca1ccU);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[20], 0x2de92c6fU);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[21], 0x4a7484aaU);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[22], 0x5cb0a9dcU);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[23], 0x76f988daU);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[24], 0x983e5152U);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[25], 0xa831c66dU);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[26], 0xb00327c8U);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[27], 0xbf597fc7U);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[28], 0xc6e00bf3U);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[29], 0xd5a79147U);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[30], 0x06ca6351U);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[31], 0x14292967U);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[32], 0x27b70a85U);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[33], 0x2e1b2138U);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[34], 0x4d2c6dfcU);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[35], 0x53380d13U);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[36], 0x650a7354U);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[37], 0x766a0abbU);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[38], 0x81c2c92eU);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[39], 0x92722c85U);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[40], 0xa2bfe8a1U);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[41], 0xa81a664bU);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[42], 0xc24b8b70U);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[43], 0xc76c51a3U);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[44], 0xd192e819U);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[45], 0xd6990624U);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[46], 0xf40e3585U);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[47], 0x106aa070U);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[48], 0x19a4c116U);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[49], 0x1e376c08U);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[50], 0x2748774cU);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[51], 0x34b0bcb5U);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[52], 0x391c0cb3U);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[53], 0x4ed8aa4aU);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[54], 0x5b9cca4fU);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[55], 0x682e6ff3U);
+    RND(valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valW[56], 0x748f82eeU);
+    RND(valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valW[57], 0x78a5636fU);
+    RND(valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valS[5], valW[58], 0x84c87814U);
+    RND(valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valS[4], valW[59], 0x8cc70208U);
+    RND(valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valS[3], valW[60], 0x90befffaU);
+    RND(valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valS[2], valW[61], 0xa4506cebU);
+    RND(valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valS[1], valW[62], 0xbef9a3f7U);
+    RND(valS[1], valS[2], valS[3], valS[4], valS[5], valS[6], valS[7], valS[0], valW[63], 0xc67178f2U);
 
     // feedback
     for (size_t i = 0; i < itsState.size(); i++) {
-        itsState[i] += S[i];
+        itsState[i] += valS[i];
     }
 }
 
 /**
  * Process a block of memory though the hash
- * @param in The data to hash
+ * @param inbuf The data to hash
  * @param inlen The length of the data (octets)
  */
-void SHA256::update(const unsigned char* in, size_t inlen)
+void SHA256::update(const unsigned char* inbuf, size_t inlen)
 {
     while (inlen > 0) {
         if (itsCurlen == 0 && inlen >= BLOCKSIZE) {
-            compress(in);
+            compress(inbuf);
             itsLength += BLOCKSIZE * 8;
-            in += BLOCKSIZE;
+            inbuf += BLOCKSIZE;
             inlen -= BLOCKSIZE;
         } else {
-            size_t n = std::min(inlen, (BLOCKSIZE - itsCurlen));
-            memcpy(itsBuf.data() + itsCurlen, in, n);
-            itsCurlen += n;
-            in += n;
-            inlen -= n;
+            const size_t len = std::min(inlen, (BLOCKSIZE - itsCurlen));
+            memcpy(itsBuf.data() + itsCurlen, inbuf, len);
+            itsCurlen += len;
+            inbuf += len;
+            inlen -= len;
             if (itsCurlen == BLOCKSIZE) {
                 compress(itsBuf.data());
                 itsLength += BLOCKSIZE * 8;

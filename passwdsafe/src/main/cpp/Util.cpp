@@ -1,6 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "readability-magic-numbers"
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 /*
 * Copyright (c) 2003-2014 Rony Shapiro <ronys@users.sourceforge.net>.
 * All rights reserved. Use of the code is allowed under the
@@ -11,10 +8,15 @@
 /// \file Util.cpp
 //-----------------------------------------------------------------------------
 
+
 #include <array>
 #include <cstring>
 
 #include "Util.h"
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "readability-magic-numbers"
+#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
 //-----------------------------------------------------------------------------
 //Overwrite the memory
@@ -36,7 +38,7 @@
 Burn some stack memory
 @param len amount of stack to burn in bytes
 */
-[[gnu::noinline]] void burnStack(size_t len)
+[[gnu::noinline]] void burnStack(size_t len) // NOLINT(misc-no-recursion)
 {
     std::array<unsigned char, 32> buf{};
     trashMemory(buf.data(), buf.size());
