@@ -553,6 +553,9 @@ public class NotificationMgr implements PasswdFileDataObserver
     private static Long getDbUriId(PasswdFileUri uri, SQLiteDatabase db)
         throws SQLException
     {
+        if ((uri == null) || (uri.getUri() == null)) {
+            return null;
+        }
         Cursor cursor = db.query(DB_TABLE_URIS, new String[] { DB_COL_URIS_ID },
                                  DB_MATCH_URIS_URI,
                                  new String[] { uri.getUri().toString() },

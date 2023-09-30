@@ -16,6 +16,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.jefftharris.passwdsafe.PasswdSafeApp;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -110,7 +111,8 @@ public class PasswdFileData
                    UnsupportedFileVersionException
     {
         itsPwsFile = itsUri.load(passwd, context);
-        itsPwsFile.setReadOnly(true);
+        //noinspection ConstantConditions
+        itsPwsFile.setReadOnly(PasswdSafeApp.DEBUG_AUTO_FILE == null);
         itsIsUriWritable = itsUri.isWritable().first;
         finishOpenFile();
     }
