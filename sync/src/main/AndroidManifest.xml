@@ -70,7 +70,7 @@
 
             <meta-data
                 android:name="com.google.android.apps.drive.APP_ID"
-                android:value="id=XXX"/>
+                android:value="id=${GDRIVE_APP_ID}"/>
         </activity>
 
         <activity
@@ -119,7 +119,8 @@
             android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>
-                <data android:scheme="db-XXX"/>
+                <!--suppress AndroidDomInspection -->
+                <data android:scheme="db-${DROPBOX_SYNC_APP_KEY}"/>
 
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -140,7 +141,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="msalXXX"
+                <!--suppress AndroidDomInspection -->
+                <data android:scheme="msal${ONEDRIVE_CLIENT_ID}"
                       android:host="auth" />
             </intent-filter>
         </activity>

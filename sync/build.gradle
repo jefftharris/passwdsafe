@@ -6,6 +6,7 @@
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 
 android {
     namespace 'com.jefftharris.passwdsafe.sync'
@@ -83,4 +84,8 @@ dependencies {
     }
     // Misc dependencies
     implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+secrets {
+    propertiesFileName = "secrets.properties"
 }

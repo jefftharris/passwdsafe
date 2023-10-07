@@ -33,6 +33,7 @@ import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.BuildConfig;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
@@ -55,7 +56,8 @@ import java.util.List;
  */
 public class DropboxCoreProvider extends AbstractSyncTimerProvider
 {
-    private static final String DROPBOX_SYNC_APP_KEY = "XXX";
+    private static final String DROPBOX_SYNC_APP_KEY =
+            BuildConfig.DROPBOX_SYNC_APP_KEY;
     private static final String PREF_MIGRATE_TOKEN = "dropboxMigrateToken";
     private static final String PREF_OAUTH2_TOKEN = "dropboxOAuth2Token";
     private static final String PREF_OATH_KEY = "dropboxOAuthKey";

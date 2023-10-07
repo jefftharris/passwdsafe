@@ -30,6 +30,7 @@ import com.box.androidsdk.content.models.BoxSession;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.sync.BuildConfig;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
@@ -47,10 +48,9 @@ import java.util.List;
 public class BoxProvider extends AbstractSyncTimerProvider
         implements BoxAuthentication.AuthListener
 {
-    private static final String BOX_CLIENT_ID =
-            "XXX";
+    private static final String BOX_CLIENT_ID = BuildConfig.BOX_CLIENT_ID;
     private static final String BOX_CLIENT_SECRET =
-            "XXX";
+            BuildConfig.BOX_CLIENT_SECRET;
 
     private static final String PREF_AUTH_ACCESS_TOKEN = "boxAccessToken";
     private static final String PREF_AUTH_EXPIRES_IN = "boxExpiresIn";
