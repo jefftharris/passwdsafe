@@ -7,11 +7,14 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -157,6 +160,24 @@ public final class ApiCompat
     {
         return (SDK_VERSION >= SDK_KITKAT) &&
                 ApiCompatKitkat.documentsContractDeleteDocument(cr, uri);
+    }
+
+    /**
+     * API compatible call to register a broadcast receiver
+     */
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    public static void registerNotExportedBroadcastReceiver(
+            @NonNull Context ctx,
+            @Nullable BroadcastReceiver receiver,
+            IntentFilter filter)
+    {
+        if (SDK_VERSION >= SDK_TIRAMISU) {
+            ApiCompatTiramisu.registerNotExportedBroadcastReceiver(ctx,
+                                                                   receiver,
+                                                                   filter);
+        } else {
+            ctx.registerReceiver(receiver, filter);
+        }
     }
 
     /**
