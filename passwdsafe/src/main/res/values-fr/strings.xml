@@ -46,14 +46,12 @@
     <string name="clear_clipboard_on_close">Vider le presse-papiers en quittant</string>
     <string name="clear_password_notifications">Effacer les notifications de mot de passe</string>
     <string name="clear_recent">Effacer récente</string>
-    <string name="close_file">Fermer le fichier</string>
     <string name="close_file_screen_off">Fermer le fichier à l\'extinction de l\'écran</string>
     <string name="confirm">Confirmer</string>
     <string name="cannot_delete_record">Impossible de supprimer l\'entrée - %1$s"</string>
     <string name="content_file">Contenu du fichier</string>
     <string name="continue_str">Continuer</string>
     <string name="continue_p">Continuer?</string>
-    <string name="copy_clipboard">Copier dans le Presse-papiers</string>
     <string name="copy_email">Copier Email</string>
     <string name="copy_notes">Copier les notes</string>
     <string name="copy_password">Copier le mot de passe</string>
@@ -355,7 +353,6 @@
     <string name="regular_expression_summary">Utiliser une expression régulière pour la recherche au lieu d\'une sous-chaîne</string>
     <string name="remove">Supprimer</string>
     <string name="restore">Restaurer</string>
-    <string name="restore_failed_msg">Restauration a échouée: %1$s</string>
     <string name="restore_file_not_accessible">Fichier de restauration pas accessible</string>
     <string name="restore_file_not_found">Fichier de restauration pas trouvé</string>
     <string name="restore_file_not_writable">Fichier de restauration n\'est pas inscriptible</string>

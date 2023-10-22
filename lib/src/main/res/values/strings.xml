@@ -16,7 +16,10 @@
     <string name="cancel">Cancel</string>
     <string name="choose_files">Choose Files</string>
     <string name="close">Close</string>
+    <string name="close_file">Close File</string>
+    <string name="copy_clipboard">Copy to Clipboard</string>
     <string name="copy_clipboard_error">%1$s - Error copying to the clipboard.  The error may be due to a known error in Samsung devices.</string>
+    <string name="copy_trace">Copy Trace</string>
     <string name="copy_trace_and_close">Copy Trace and Close</string>
     <string name="dropbox">Dropbox</string>
     <string name="edit">Edit</string>

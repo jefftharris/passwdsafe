@@ -53,7 +53,7 @@ import com.jefftharris.passwdsafe.lib.ManagedTasks;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
-import com.jefftharris.passwdsafe.lib.view.ProgressFragment;
+import com.jefftharris.passwdsafe.lib.view.ProgressBottomSheet;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.EditRecordResult;
@@ -2057,16 +2057,16 @@ public class PasswdSafe extends AppCompatActivity
         protected void onTaskFinished(Boolean result, Throwable error,
                                       @NonNull PasswdSafe act)
         {
+            if ((error instanceof IOException) &&
+                (ApiCompat.SDK_VERSION >= ApiCompat.SDK_KITKAT)) {
+                String msg = act.getString(R.string.kitkat_sdcard_warning,
+                                           error.toString());
+                error = new Exception(msg, error);
+            }
+
             super.onTaskFinished(result, error, act);
             if (result != null) {
                 act.editFinished(itsSaveInfo);
-            } else if (error != null) {
-                String msg = error.toString();
-                if ((error instanceof IOException) &&
-                    (ApiCompat.SDK_VERSION >= ApiCompat.SDK_KITKAT)) {
-                    msg = act.getString(R.string.kitkat_sdcard_warning, msg);
-                }
-                PasswdSafeUtil.showFatalMsg(error, msg, act);
             }
         }
     }
@@ -2115,7 +2115,6 @@ public class PasswdSafe extends AppCompatActivity
         protected void onTaskFinished(Boolean result, Throwable error,
                                       @NonNull PasswdSafe act)
         {
-            super.onTaskFinished(result, error, act);
             if (result != null) {
                 try {
                     itsSharer.share(
@@ -2126,10 +2125,7 @@ public class PasswdSafe extends AppCompatActivity
                     error = e;
                 }
             }
-            if (error != null) {
-                PasswdSafeUtil.showError("Error sharing: " + error.getMessage(),
-                                         TAG, error, new ActContext(act));
-            }
+            super.onTaskFinished(result, error, act);
         }
     }
 
@@ -2176,8 +2172,6 @@ public class PasswdSafe extends AppCompatActivity
             super.onTaskFinished(result, error, act);
             if (result != null) {
                 act.finish();
-            } else if (error != null) {
-                PasswdSafeUtil.showFatalMsg(error, "Error deleting file", act);
             }
         }
     }
@@ -2256,20 +2250,6 @@ public class PasswdSafe extends AppCompatActivity
             }
             return true;
         }
-
-        @Override
-        protected void onTaskFinished(Boolean result,
-                                      Throwable error,
-                                      @NonNull PasswdSafe act)
-        {
-            super.onTaskFinished(result, error, act);
-            if (error != null) {
-                PasswdSafeUtil.showError(
-                        act.getString(R.string.restore_failed_msg,
-                                      error.getMessage()), TAG, error,
-                        new ActContext(act));
-            }
-        }
     }
 
     /**
@@ -2278,7 +2258,7 @@ public class PasswdSafe extends AppCompatActivity
     private static abstract class AbstractTask
             extends ManagedTask<Boolean, PasswdSafe>
     {
-        private final ProgressFragment itsProgressFrag;
+        private final ProgressBottomSheet itsProgressFrag;
 
         /**
          * Constructor
@@ -2286,7 +2266,7 @@ public class PasswdSafe extends AppCompatActivity
         protected AbstractTask(String msg, PasswdSafe act)
         {
             super(act, act);
-            itsProgressFrag = ProgressFragment.newInstance(msg);
+            itsProgressFrag = ProgressBottomSheet.newInstance(msg);
         }
 
         @Override @CallSuper
@@ -2300,8 +2280,11 @@ public class PasswdSafe extends AppCompatActivity
                                       Throwable error,
                                       @NonNull PasswdSafe act)
         {
-            act.itsTasks.taskFinished(this);
-            itsProgressFrag.dismiss();
+            if (error != null) {
+                itsProgressFrag.showError(error);
+            } else {
+                itsProgressFrag.dismiss();
+            }
         }
     }
 }

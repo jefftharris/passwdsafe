@@ -43,14 +43,12 @@
     <string name="clear_clipboard_on_close">Clear clipboard on close</string>
     <string name="clear_password_notifications">Clear password notifications</string>
     <string name="clear_recent">Clear Recent</string>
-    <string name="close_file">Close File</string>
     <string name="close_file_screen_off">Close file on screen off</string>
     <string name="confirm">Confirm</string>
     <string name="cannot_delete_record">Cannot delete record - %1$s</string>
     <string name="content_file">Content File</string>
     <string name="continue_str">Continue</string>
     <string name="continue_p">Continue?</string>
-    <string name="copy_clipboard">Copy to Clipboard</string>
     <string name="copy_email">Copy Email</string>
     <string name="copy_notes">Copy Notes</string>
     <string name="copy_password">Copy Password</string>
@@ -341,7 +339,6 @@
     <string name="regular_expression_summary">Use a regular expression to search instead of a sub-string</string>
     <string name="remove">Remove</string>
     <string name="restore">Restore</string>
-    <string name="restore_failed_msg">Restore failed: %1$s</string>
     <string name="restore_file_not_accessible">Restore file not accessible</string>
     <string name="restore_file_not_found">Restore file not found</string>
     <string name="restore_file_not_writable">Restore file not writable</string>

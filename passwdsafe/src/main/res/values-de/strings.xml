@@ -45,14 +45,12 @@
     <string name="clear_clipboard_on_close">Leere Zwischenablage beim Schließen</string>
     <string name="clear_password_notifications">Mitteilung beim Leeren der Zwischenablage</string>
     <string name="clear_recent">Letzte leeren</string>
-    <string name="close_file">Datei schließen</string>
     <string name="close_file_screen_off">Schließe Datei, wenn Bildschirm abschaltet</string>
     <string name="confirm">Bestätigen</string>
     <string name="cannot_delete_record">Eintrag kann nicht gelöscht werden - %1$s</string>
     <string name="content_file">Inhaltsdatei</string>
     <string name="continue_str">Weiter</string>
     <string name="continue_p">Fortsetzen?</string>
-    <string name="copy_clipboard">In die Zwischenablage kopieren</string>
     <string name="copy_email">E-Mail kopieren</string>
     <string name="copy_notes">Notizen kopieren</string>
     <string name="copy_password">Passwort kopieren</string>
@@ -346,7 +344,6 @@
     <string name="regular_expression_summary">Suche mit regulären Ausdrücken statt Wortteilen.</string>
     <string name="remove">Entfernen</string>
     <string name="restore">Wiederherstellen</string>
-    <string name="restore_failed_msg">Wiederherstellen fehlgeschlagen: %1$s</string>
     <string name="restore_file_not_accessible">Wiederherstellungs-Datei ist nicht erreichbar</string>
     <string name="restore_file_not_found">Wiederherstellungs-Datei nicht gefunden</string>
     <string name="restore_file_not_writable">Wiederherstellungs-Datei schreibgeschützt</string>

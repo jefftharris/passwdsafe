@@ -2,6 +2,29 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
            xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="BottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetTheme</item>
+        <item name="bottomSheetDragHandleStyle">@style/BottomSheetDragHandle</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme.Dark"
+        parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetTheme</item>
+        <item name="bottomSheetDragHandleStyle">@style/BottomSheetDragHandle</item>
+    </style>
+
+    <style name="BottomSheetTheme"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_bottom_sheet</item>
+    </style>
+
+    <style name="BottomSheetDragHandle"
+        parent="Widget.Material3.BottomSheet.DragHandle">
+        <item name="tint">?colorAccent</item>
+        <item name="android:alpha">0.3</item>
+    </style>
+
     <style name="GridLabel">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>

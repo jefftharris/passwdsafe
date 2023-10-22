@@ -9,7 +9,10 @@
     <string name="cancel">Avbryt</string>
     <string name="choose_files">Velg filer</string>
     <string name="close">Lukk</string>
+    <string name="close_file">Lukk fil</string>
+    <string name="copy_clipboard">Kopier til utklippstavlen</string>
     <string name="copy_clipboard_error">%1$s - feil ved kopiering til utklippstavlen. Feilen kan skyldes en kjent feil på Samsung-enheter.</string>
+    <string name="copy_trace">Kopier Trace</string>
     <string name="copy_trace_and_close">Kopier Trace og lukk</string>
     <string name="dropbox">Dropbox</string>
     <string name="edit">Rediger</string>

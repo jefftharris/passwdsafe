@@ -18,6 +18,7 @@
     <!-- Application theme. -->
     <style name="PwsAppTheme" parent="PwsAppBaseTheme">
         <item name="android:listSeparatorTextViewStyle">@style/PwsAppTheme.ListSeparatorTextView</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
     </style>
 
     <!-- Other styles -->

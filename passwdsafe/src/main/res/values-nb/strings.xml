@@ -37,14 +37,12 @@
     <string name="clear_clipboard_on_close">Tøm utklippstavlen ved lukking</string>
     <string name="clear_password_notifications">Tøm passordvarslinger</string>
     <string name="clear_recent">Tøm nylige</string>
-    <string name="close_file">Lukk fil</string>
     <string name="close_file_screen_off">Lukk fil når skjermen slås av</string>
     <string name="confirm">Bekreft</string>
     <string name="cannot_delete_record">Klarte ikke slette oppføring - %1$s</string>
     <string name="content_file">Innholdsfil</string>
     <string name="continue_str">Fortsett</string>
     <string name="continue_p">Fortsett?</string>
-    <string name="copy_clipboard">Kopier til utklippstavlen</string>
     <string name="copy_email">Kopier e-post</string>
     <string name="copy_notes">Kopier notater</string>
     <string name="copy_password">Kopier passord</string>
@@ -312,7 +310,6 @@
     <string name="regular_expression_summary">Bruk et regulært uttrykk for å søke istedenfor en delstreng</string>
     <string name="remove">Fjern</string>
     <string name="restore">Gjenopprett</string>
-    <string name="restore_failed_msg">Klarte ikke gjenopprette: %1$s</string>
     <string name="restore_file_not_accessible">Gjenopprettingsfil ikke tilgjengelig</string>
     <string name="restore_file_not_found">Gjenopprettingsfil ikke funnet</string>
     <string name="restore_file_not_writable">Gjenopprettingsfil ikke skrivbar</string>

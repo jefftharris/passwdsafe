@@ -45,6 +45,7 @@
         <item name="textColorGreen">@color/text_color_green_dark</item>
         <item name="textAppearanceSearchResultTitle">@style/PwsAppTheme.SearchResultTitle</item>
         <item name="textAppearanceSearchResultSubtitle">@style/PwsAppTheme.SearchResultSubtitle</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
     </style>
 
     <style name="PwsAppTheme_Dialog" parent="PwsAppBaseTheme_Dialog">
@@ -84,6 +85,7 @@
         <item name="textColorGreen">@color/text_color_green_light</item>
         <item name="textAppearanceSearchResultTitle">@style/PwsAppTheme.SearchResultTitle.Dark</item>
         <item name="textAppearanceSearchResultSubtitle">@style/PwsAppTheme.SearchResultSubtitle.Dark</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme.Dark</item>
     </style>
 
     <style name="PwsAppThemeDark_Dialog" parent="PwsAppBaseThemeDark_Dialog">

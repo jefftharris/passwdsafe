@@ -15,7 +15,10 @@
     <string name="cancel">Abbrechen</string>
     <string name="choose_files">Dateien auswählen</string>
     <string name="close">Schließen</string>
+    <string name="close_file">Datei schließen</string>
+    <string name="copy_clipboard">In die Zwischenablage kopieren</string>
     <string name="copy_clipboard_error">%1$s - Fehler beim Kopieren in die Zwischenablage. Grund ist wohl ein Fehler in manchen Samsung-Geräten.</string>
+    <string name="copy_trace">Trace kopieren</string>
     <string name="copy_trace_and_close">Trace kopieren und schließen</string>
     <string name="dropbox">Dropbox</string>
     <string name="edit">Bearbeiten</string>
