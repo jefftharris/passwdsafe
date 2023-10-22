@@ -1137,7 +1137,8 @@ public class PasswdSafeOpenFileFragment
     {
         //noinspection ConstantConditions
         if ((PasswdSafeApp.DEBUG_AUTO_FILE != null) &&
-            (getFileUri().getPath().equals(PasswdSafeApp.DEBUG_AUTO_FILE))) {
+            TextUtils.equals(getFileUri().getPath(),
+                             PasswdSafeApp.DEBUG_AUTO_FILE)) {
             itsYubikeyCb.setChecked(false);
             itsPasswordEdit.setText("test123");
             itsOpenBtn.performClick();
