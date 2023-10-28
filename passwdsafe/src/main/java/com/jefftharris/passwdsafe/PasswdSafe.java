@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +54,7 @@ import com.jefftharris.passwdsafe.lib.ManagedTask;
 import com.jefftharris.passwdsafe.lib.ManagedTasks;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
+import com.jefftharris.passwdsafe.lib.view.CustomOnBackCallback;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.ProgressBottomSheet;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
@@ -312,6 +315,7 @@ public class PasswdSafe extends AppCompatActivity
         boolean newFileDataFrag = itsFileDataFrag.checkNew();
 
         itsTimeoutReceiver = new FileTimeoutReceiver(this);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackCallback());
 
         if (newFileDataFrag || (savedInstanceState == null)) {
             itsTitle = getTitle();
@@ -677,40 +681,6 @@ public class PasswdSafe extends AppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        FragmentManager fragMgr = getSupportFragmentManager();
-        if (fragMgr.getBackStackEntryCount() == 0) {
-            switch (itsCurrViewMode) {
-            case VIEW_LIST: {
-                if (itsIsConfirmBackClosed) {
-                    Toast.makeText(this, R.string.press_again_close_warning,
-                                   Toast.LENGTH_SHORT).show();
-                    itsIsConfirmBackClosed = false;
-                    return;
-                }
-                break;
-            }
-            case INIT:
-            case CHANGING_PASSWORD:
-            case EDIT_RECORD:
-            case FILE_OPEN:
-            case FILE_NEW:
-            case VIEW_RECORD:
-            case VIEW_ABOUT:
-            case VIEW_EXPIRATION:
-            case VIEW_POLICY_LIST:
-            case VIEW_RECORD_ERRORS:
-            case VIEW_PREFERENCES: {
-                break;
-            }
-            }
-        }
-
-        checkNavigation(false, PasswdSafe.super::onBackPressed);
     }
 
     /**
@@ -2285,6 +2255,55 @@ public class PasswdSafe extends AppCompatActivity
             } else {
                 itsProgressFrag.dismiss();
             }
+        }
+    }
+
+    /**
+     * Custom on-back handler
+     */
+    private final class OnBackCallback extends CustomOnBackCallback
+    {
+        @Override
+        @Nullable
+        protected Activity performCustomOnBack()
+        {
+            PasswdSafeUtil.dbginfo(TAG, "performCustomOnBack");
+
+            boolean checkNav = true;
+            FragmentManager fragMgr = getSupportFragmentManager();
+            if (fragMgr.getBackStackEntryCount() == 0) {
+                switch (itsCurrViewMode) {
+                case VIEW_LIST: {
+                    if (itsIsConfirmBackClosed) {
+                        Toast.makeText(PasswdSafe.this,
+                                       R.string.press_again_close_warning,
+                                       Toast.LENGTH_SHORT).show();
+                        itsIsConfirmBackClosed = false;
+                        checkNav = false;
+                    }
+                    break;
+                }
+                case INIT:
+                case CHANGING_PASSWORD:
+                case EDIT_RECORD:
+                case FILE_OPEN:
+                case FILE_NEW:
+                case VIEW_RECORD:
+                case VIEW_ABOUT:
+                case VIEW_EXPIRATION:
+                case VIEW_POLICY_LIST:
+                case VIEW_RECORD_ERRORS:
+                case VIEW_PREFERENCES: {
+                    break;
+                }
+                }
+            }
+
+            if (checkNav) {
+                checkNavigation(false,
+                                () -> performDefaultOnBack(PasswdSafe.this));
+            }
+            return null;
         }
     }
 }

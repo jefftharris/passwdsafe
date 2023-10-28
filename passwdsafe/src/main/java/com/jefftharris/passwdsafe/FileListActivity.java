@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +33,7 @@ import com.jefftharris.passwdsafe.lib.AboutUtils;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DynamicPermissionMgr;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.view.CustomOnBackCallback;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
 import java.util.Objects;
@@ -135,6 +137,9 @@ public class FileListActivity extends AppCompatActivity
                                  true);
         itsPermissionMgr.addPerm(DynamicPermissionMgr.PERM_POST_NOTIFICATIONS,
                                  false);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackCallback());
+
         showFiles(true, savedInstanceState);
         if (itsTitle == null) {
             itsTitle = getTitle();
@@ -248,24 +253,6 @@ public class FileListActivity extends AppCompatActivity
             if (legacy != itsIsLegacyChooser) {
                 itsIsLegacyChooser = legacy;
                 itsIsLegacyChooserChanged = true;
-            }
-        }
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        FragmentManager mgr = getSupportFragmentManager();
-        Fragment frag = mgr.findFragmentById(R.id.files);
-        boolean handled = (frag instanceof FileListFragment) &&
-                          frag.isVisible() &&
-                          ((FileListFragment) frag).doBackPressed();
-
-        if (!handled) {
-            if (itsIsLegacyChooserChanged) {
-                showFiles(true, null);
-            } else {
-                super.onBackPressed();
             }
         }
     }
@@ -547,6 +534,35 @@ public class FileListActivity extends AppCompatActivity
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setTitle(itsTitle);
+        }
+    }
+
+    /**
+     * Custom on-back handler
+     */
+    private final class OnBackCallback extends CustomOnBackCallback
+    {
+        @Override
+        @Nullable
+        protected Activity performCustomOnBack()
+        {
+            PasswdSafeUtil.dbginfo(TAG, "performCustomOnBack");
+
+            FragmentManager mgr = getSupportFragmentManager();
+            Fragment frag = mgr.findFragmentById(R.id.files);
+            boolean handled = (frag instanceof FileListFragment) &&
+                              frag.isVisible() &&
+                              ((FileListFragment) frag).doBackPressed();
+
+            if (!handled) {
+                if (itsIsLegacyChooserChanged) {
+                    showFiles(true, null);
+                } else {
+                    return FileListActivity.this;
+                }
+            }
+
+            return null;
         }
     }
 }

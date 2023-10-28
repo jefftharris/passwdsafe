@@ -7,10 +7,12 @@
  */
 package com.jefftharris.passwdsafe;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -18,6 +20,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.view.CustomOnBackCallback;
 
 public class LauncherFileShortcuts extends AppCompatActivity
         implements FileListFragment.Listener,
@@ -54,7 +57,9 @@ public class LauncherFileShortcuts extends AppCompatActivity
             return;
         }
 
-        itsIsDefaultFile = intent.getBooleanExtra(EXTRA_IS_DEFAULT_FILE, false);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackCallback());
+
+       itsIsDefaultFile = intent.getBooleanExtra(EXTRA_IS_DEFAULT_FILE, false);
         if (itsIsDefaultFile) {
             setTitle(R.string.default_file_to_open);
         } else {
@@ -67,20 +72,6 @@ public class LauncherFileShortcuts extends AppCompatActivity
     {
         super.onResume();
         setFileChooseFrag();
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        FragmentManager mgr = getSupportFragmentManager();
-        Fragment frag = mgr.findFragmentById(R.id.files);
-        boolean handled = (frag instanceof FileListFragment) &&
-                          frag.isVisible() &&
-                          ((FileListFragment) frag).doBackPressed();
-
-        if (!handled) {
-            super.onBackPressed();
-        }
     }
 
     @Override
@@ -178,6 +169,27 @@ public class LauncherFileShortcuts extends AppCompatActivity
             txn.replace(R.id.files, frag);
             txn.commit();
             itsIsStorageFrag = storageFrag;
+        }
+    }
+
+    /**
+     * Custom on-back handler
+     */
+    private final class OnBackCallback extends CustomOnBackCallback
+    {
+        @Override
+        @Nullable
+        protected Activity performCustomOnBack()
+        {
+            PasswdSafeUtil.dbginfo(TAG, "performCustomOnBack");
+
+            FragmentManager mgr = getSupportFragmentManager();
+            Fragment frag = mgr.findFragmentById(R.id.files);
+            boolean handled = (frag instanceof FileListFragment) &&
+                              frag.isVisible() &&
+                              ((FileListFragment) frag).doBackPressed();
+
+            return handled ? null : LauncherFileShortcuts.this;
         }
     }
 }
