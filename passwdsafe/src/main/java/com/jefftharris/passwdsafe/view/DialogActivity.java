@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.view;
 
 import android.os.Bundle;
+import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,6 +25,8 @@ public abstract class DialogActivity extends AppCompatActivity
         PasswdSafeApp.setupDialogTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(getViewLayoutId());
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                              ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     /**
