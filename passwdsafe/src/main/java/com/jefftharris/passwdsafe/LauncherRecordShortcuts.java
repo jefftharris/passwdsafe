@@ -12,8 +12,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.TextView;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -24,6 +24,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.CopyField;
+import com.jefftharris.passwdsafe.view.DialogActivity;
 import com.jefftharris.passwdsafe.view.PasswdFileDataView;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 import com.jefftharris.passwdsafe.view.PasswdRecordListData;
@@ -32,7 +33,7 @@ import org.pwsafe.lib.file.PwsRecord;
 
 import java.util.List;
 
-public class LauncherRecordShortcuts extends AppCompatActivity
+public class LauncherRecordShortcuts extends DialogActivity
         implements PasswdSafeListFragment.Listener,
                    SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -64,9 +65,8 @@ public class LauncherRecordShortcuts extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        PasswdSafeApp.setupDialogTheme(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher_record_shortcuts);
+
         SharedPreferences prefs = Preferences.getSharedPrefs(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
 
@@ -111,6 +111,12 @@ public class LauncherRecordShortcuts extends AppCompatActivity
                         PasswdSafeListFragment.newInstance(itsLocation, true));
             txn.commit();
         }
+    }
+
+    @Override
+    protected @LayoutRes int getViewLayoutId()
+    {
+        return R.layout.activity_launcher_record_shortcuts;
     }
 
     @Override

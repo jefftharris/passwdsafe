@@ -13,9 +13,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
@@ -26,8 +26,9 @@ import androidx.fragment.app.FragmentTransaction;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.CustomOnBackCallback;
+import com.jefftharris.passwdsafe.view.DialogActivity;
 
-public class LauncherFileShortcuts extends AppCompatActivity
+public class LauncherFileShortcuts extends DialogActivity
         implements FileListFragment.Listener,
                    StorageFileListFragment.Listener,
                    SyncProviderFragment.Listener,
@@ -43,9 +44,7 @@ public class LauncherFileShortcuts extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        PasswdSafeApp.setupDialogTheme(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher_file_shortcuts);
 
         FragmentManager fragMgr = getSupportFragmentManager();
         FragmentTransaction txn = fragMgr.beginTransaction();
@@ -70,6 +69,12 @@ public class LauncherFileShortcuts extends AppCompatActivity
         } else {
             setTitle(R.string.shortcut_file);
         }
+    }
+
+    @Override
+    protected @LayoutRes int getViewLayoutId()
+    {
+        return R.layout.activity_launcher_file_shortcuts;
     }
 
     @Override
