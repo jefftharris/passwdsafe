@@ -8,12 +8,17 @@
 package com.jefftharris.passwdsafe;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -78,17 +83,14 @@ public class LauncherFileShortcuts extends AppCompatActivity
     public void openFile(Uri uri, String fileName)
     {
         if (itsIsDefaultFile || (uri != null)) {
-            Intent openIntent = null;
+            Intent intent;
             if (uri != null) {
-                openIntent = PasswdSafeUtil.createOpenIntent(uri, null);
+                intent = createShortcutIntent("launcher-file", fileName, uri,
+                                              null, this);
+            } else {
+                intent = new Intent();
             }
 
-            Intent intent = new Intent();
-            intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, openIntent);
-            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, fileName);
-            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-                            Intent.ShortcutIconResource.fromContext(
-                                this, R.mipmap.ic_launcher_passwdsafe));
             setResult(RESULT_OK, intent);
         }
 
@@ -144,6 +146,28 @@ public class LauncherFileShortcuts extends AppCompatActivity
     @Override
     public void updateViewSyncFiles(Uri syncFilesUri)
     {
+    }
+
+    /**
+     * Create a intent for a launcher shortcut to open a file and optionally
+     * a record
+     */
+    @NonNull
+    public static Intent createShortcutIntent(@NonNull String id,
+                                              @NonNull String label,
+                                              @NonNull Uri uri,
+                                              @Nullable String uuid,
+                                              @NonNull Context ctx)
+    {
+        ShortcutInfoCompat info =
+                new ShortcutInfoCompat.Builder(ctx, id)
+                        .setShortLabel(label)
+                        .setIcon(IconCompat.createWithResource(
+                                ctx,
+                                R.mipmap.ic_launcher_passwdsafe))
+                        .setIntent(PasswdSafeUtil.createOpenIntent(uri, uuid))
+                        .build();
+        return ShortcutManagerCompat.createShortcutResultIntent(ctx, info);
     }
 
     /**

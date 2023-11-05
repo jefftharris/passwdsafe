@@ -244,15 +244,8 @@ public class LauncherRecordShortcuts extends AppCompatActivity
                         return new Pair<>(fileData.getUri().getUri(), title);
                     });
             if (rc != null) {
-                Intent shortcutIntent = PasswdSafeUtil.createOpenIntent(
-                        rc.first, uuid);
-
-                Intent intent = new Intent();
-                intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-                intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, rc.second);
-                intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-                                Intent.ShortcutIconResource.fromContext(
-                                        this, R.mipmap.ic_launcher_passwdsafe));
+                Intent intent = LauncherFileShortcuts.createShortcutIntent(
+                        "launcher-record", rc.second, rc.first, uuid, this);
                 setResult(RESULT_OK, intent);
             }
             break;
