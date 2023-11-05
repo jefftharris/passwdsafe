@@ -429,6 +429,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.23.2&lt;/b&gt; - Mise à jour pour la compatibilité Android 14
+        \n\n
         &lt;b&gt;6.23.1&lt;/b&gt; - Mise à jour pour la compatibilité Android 13
         \n\n
         &lt;b&gt;6.23.0&lt;/b&gt; - Ajout de la prise en charge des clés usb
