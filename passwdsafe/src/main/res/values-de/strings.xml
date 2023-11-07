@@ -418,6 +418,8 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.23.3&lt;/b&gt; - Update für Android 12+-Kompatibilität. Fehlerbehebungen.
+        \n\n
         &lt;b&gt;6.23.2&lt;/b&gt; - Update für Android 14-Kompatibilität
         \n\n
         &lt;b&gt;6.23.1&lt;/b&gt; - Update für Android 13-Kompatibilität
