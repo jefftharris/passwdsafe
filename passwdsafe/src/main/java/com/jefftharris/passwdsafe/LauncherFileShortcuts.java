@@ -138,6 +138,12 @@ public class LauncherFileShortcuts extends DialogActivity
     }
 
     @Override
+    public boolean canOpenDefaultFile()
+    {
+        return false;
+    }
+
+    @Override
     public boolean appHasFilePermission()
     {
         return false;

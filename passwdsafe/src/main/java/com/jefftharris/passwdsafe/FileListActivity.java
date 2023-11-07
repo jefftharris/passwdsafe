@@ -307,6 +307,12 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean canOpenDefaultFile()
+    {
+        return true;
+    }
+
+    @Override
     public boolean appHasFilePermission()
     {
         return itsPermissionMgr.hasRequiredPerms();

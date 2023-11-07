@@ -72,6 +72,9 @@ public final class FileListFragment extends ListFragment
 
         /** Update the view for a list of files */
         void updateViewFiles();
+
+        /** Can the default file be opened */
+        boolean canOpenDefaultFile();
     }
 
     /** File data information for the list */
@@ -405,7 +408,7 @@ public final class FileListFragment extends ListFragment
         setListAdapter(adapter);
 
         // Open the default file
-        if (getListAdapter() != null) {
+        if (itsListener.canOpenDefaultFile() && getListAdapter() != null) {
             Activity act = requireActivity();
             PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
             if (app.checkOpenDefault()) {

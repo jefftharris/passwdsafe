@@ -71,6 +71,9 @@ public final class StorageFileListFragment extends Fragment
 
         /** Update the view for a list of files */
         void updateViewFiles();
+
+        /** Can the default file be opened */
+        boolean canOpenDefaultFile();
     }
 
     private static final String TAG = "StorageFileListFragment";
@@ -319,33 +322,36 @@ public final class StorageFileListFragment extends Fragment
         }
         itsFilesAdapter.changeCursor(cursor);
 
-        //noinspection ConstantConditions
-        if ((PasswdSafeApp.DEBUG_AUTO_FILE != null) &&
-            !empty && !itsIsDebugOpened && !PasswdSafeUtil.isTesting()) {
-            itsIsDebugOpened = true;
-            Uri rootUri = ApiCompat.getPrimaryStorageRootUri(
-                    requireContext());
-            if (rootUri != null) {
-                rootUri = rootUri.buildUpon().path(
-                        PasswdSafeApp.DEBUG_AUTO_FILE).build();
-                openUri(rootUri, PasswdSafeApp.DEBUG_AUTO_FILE);
-                return;
-            }
-        }
-
-        // Open the default file
-        Activity act = requireActivity();
-        PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
-        if (app.checkOpenDefault()) {
-            SharedPreferences prefs = Preferences.getSharedPrefs(act);
-            Uri defFile = Preferences.getDefFilePref(prefs);
-            if (defFile != null) {
-                try {
-                    itsRecentFilesDao.touchFile(defFile);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error touching file", e);
+        if (itsListener.canOpenDefaultFile()) {
+            //noinspection ConstantConditions
+            if ((PasswdSafeApp.DEBUG_AUTO_FILE != null) && !empty &&
+                !itsIsDebugOpened && !PasswdSafeUtil.isTesting()) {
+                itsIsDebugOpened = true;
+                Uri rootUri = ApiCompat.getPrimaryStorageRootUri(requireContext());
+                if (rootUri != null) {
+                    rootUri = rootUri
+                            .buildUpon()
+                            .path(PasswdSafeApp.DEBUG_AUTO_FILE)
+                            .build();
+                    openUri(rootUri, PasswdSafeApp.DEBUG_AUTO_FILE);
+                    return;
                 }
-                itsListener.openFile(defFile, null);
+            }
+
+            // Open the default file
+            Activity act = requireActivity();
+            PasswdSafeApp app = (PasswdSafeApp)act.getApplication();
+            if (app.checkOpenDefault()) {
+                SharedPreferences prefs = Preferences.getSharedPrefs(act);
+                Uri defFile = Preferences.getDefFilePref(prefs);
+                if (defFile != null) {
+                    try {
+                        itsRecentFilesDao.touchFile(defFile);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error touching file", e);
+                    }
+                    itsListener.openFile(defFile, null);
+                }
             }
         }
     }
