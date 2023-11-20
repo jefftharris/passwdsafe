@@ -24,6 +24,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 
+import org.intellij.lang.annotations.PrintFormat;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -250,7 +252,7 @@ public class PasswdSafeUtil
     }
 
     /** Log a formatted message at info level */
-    public static void info(String tag, String fmt, Object... args)
+    public static void info(String tag, @PrintFormat String fmt, Object... args)
     {
         Log.i(tag, String.format(fmt, args));
     }
@@ -288,7 +290,9 @@ public class PasswdSafeUtil
     }
 
     /** Log a formatted debug message at info level */
-    public static void dbginfo(String tag, String fmt, Object... args)
+    public static void dbginfo(String tag,
+                               @PrintFormat String fmt,
+                               Object... args)
     {
         if (DEBUG) {
             Log.i(tag, String.format(fmt, args));
@@ -299,7 +303,7 @@ public class PasswdSafeUtil
     public static void dbginfo(
             @SuppressWarnings("SameParameterValue") String tag,
             Throwable t,
-            @SuppressWarnings("SameParameterValue") String fmt,
+            @SuppressWarnings("SameParameterValue") @PrintFormat String fmt,
             Object... args)
     {
         if (DEBUG) {
