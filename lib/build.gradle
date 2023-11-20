@@ -52,4 +52,7 @@ dependencies {
 
     // Fix Duplicate classes with kotlin-stdlib jdk-7 and jdk-8
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+
+    // Extra IDE annotations from Jetbrains, e.g @PrintFormat
+    implementation 'org.jetbrains:annotations:15.0'
 }

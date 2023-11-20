@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 /**
@@ -22,6 +23,9 @@ public class Preferences
     private static final boolean PREF_SHOW_HELP_GDRIVE_DEF = true;
     private static final String PREF_SHOW_GDRIVE_FILE_MIGRATION =
             "showGdriveFileMigrationPref";
+
+    public static final String PREF_DEBUG_TAGS = "debugTagsPref";
+    public static final String PREF_DEBUG_TAGS_DEF = "";
 
     public static final String PREF_OWNCLOUD_SURVEY = "owncloudSurvey";
 
@@ -78,5 +82,13 @@ public class Preferences
             prefs.edit().putBoolean(PREF_SHOW_GDRIVE_FILE_MIGRATION, false)
                  .apply();
         }
+    }
+
+    /**
+     * Get the debugging tags
+     */
+    public static String getDebugTagsPref(@NonNull SharedPreferences prefs)
+    {
+        return prefs.getString(PREF_DEBUG_TAGS, PREF_DEBUG_TAGS_DEF);
     }
 }

@@ -8,16 +8,20 @@ package com.jefftharris.passwdsafe.sync;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
+import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 
 import java.util.HashMap;
@@ -29,6 +33,7 @@ import java.util.Objects;
  *  Application class for PasswdSafe Sync
  */
 public class SyncApp extends Application
+    implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     public static final String WORK_TAG = "PasswdSafe Sync";
 
@@ -46,6 +51,10 @@ public class SyncApp extends Application
     {
         PasswdSafeUtil.dbginfo(TAG, "onCreate");
         super.onCreate();
+
+        SharedPreferences prefs = Preferences.getSharedPrefs(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+        initPrefs(prefs);
 
         Context appCtx = getApplicationContext();
         SyncDb.initializeDb(appCtx);
@@ -77,6 +86,26 @@ public class SyncApp extends Application
         }
         for (ProviderType type: ProviderType.values()) {
             ProviderFactory.getProvider(type, this).init(providerMap.get(type));
+        }
+    }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs,
+                                          @Nullable String key)
+    {
+        if (key == null) {
+            initPrefs(prefs);
+        } else {
+            PasswdSafeUtil.dbginfo(TAG, "Preference change: %s, value: %s", key,
+                                   prefs.getAll().get(key));
+
+            switch (key) {
+            case Preferences.PREF_DEBUG_TAGS: {
+                setDebugTags(prefs);
+                break;
+            }
+            }
         }
     }
 
@@ -158,5 +187,21 @@ public class SyncApp extends Application
     public static void runOnUiThread(Runnable run)
     {
         itsUIHandler.post(run);
+    }
+
+    /**
+     * Set the debugging tags from its preference
+     */
+    private static void setDebugTags(SharedPreferences prefs)
+    {
+        PasswdSafeLog.setDebugTags(Preferences.getDebugTagsPref(prefs));
+    }
+
+    /**
+     * Initialize settings from preferences
+     */
+    private void initPrefs(SharedPreferences prefs)
+    {
+        setDebugTags(prefs);
     }
 }

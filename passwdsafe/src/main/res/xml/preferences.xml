@@ -13,7 +13,7 @@
                       android:title="@string/files">
         <PreferenceCategory android:title="@string/files">
             <!--suppress AndroidElementNotAllowed -->
-            <com.jefftharris.passwdsafe.view.LongEditTextPreference
+            <com.jefftharris.passwdsafe.lib.view.LongEditTextPreference
                 android:name="FileDir Pref"
                 android:key="fileDirPref"
                 android:title="@string/directory_for_files"/>
@@ -90,7 +90,7 @@
                 android:title="@string/expired_password_notification"/>
 
             <!--suppress AndroidElementNotAllowed -->
-            <com.jefftharris.passwdsafe.view.LongEditTextPreference
+            <com.jefftharris.passwdsafe.lib.view.LongEditTextPreference
                 android:key="passwordDefaultSymbolsPref"
                 android:title="@string/default_symbols"/>
 
@@ -182,6 +182,16 @@
             android:defaultValue="false"
             android:key="displayVibrateKeyboard"
             android:title="@string/vibrate_keyboard_on_press"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:key="debugOptions"
+        android:title="@string/debugging">
+
+        <!--suppress AndroidElementNotAllowed -->
+        <com.jefftharris.passwdsafe.lib.view.LongEditTextPreference
+            android:key="debugTagsPref"
+            android:title="@string/logging_tags"/>
 
     </PreferenceCategory>
 

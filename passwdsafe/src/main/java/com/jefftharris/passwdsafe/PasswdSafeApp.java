@@ -23,6 +23,7 @@ import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.file.PasswdRecordFilter;
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
 import org.pwsafe.lib.file.PwsFile;
@@ -120,6 +121,10 @@ public final class PasswdSafeApp extends Application
             case Preferences.PREF_PASSWD_EXPIRY_NOTIF: {
                 itsNotifyMgr.setPasswdExpiryFilter(
                         getPasswdExpiryNotifPref(prefs));
+                break;
+            }
+            case Preferences.PREF_DEBUG_TAGS: {
+                setDebugTags(prefs);
                 break;
             }
             }
@@ -246,6 +251,14 @@ public final class PasswdSafeApp extends Application
     }
 
     /**
+     * Set the debugging tags from its preference
+     */
+    private static void setDebugTags(SharedPreferences prefs)
+    {
+        PasswdSafeLog.setDebugTags(Preferences.getDebugTagsPref(prefs));
+    }
+
+    /**
      * Setup the theme on a normal or dialog activity
      */
     private static void setupActTheme(Activity act, boolean isDialog)
@@ -292,6 +305,7 @@ public final class PasswdSafeApp extends Application
     {
         setPasswordEncodingPref(prefs);
         setPasswordDefaultSymsPref(prefs);
+        setDebugTags(prefs);
         itsDefaultPasswdPolicy = Preferences.getDefPasswdPolicyPref(prefs,
                                                                     this);
     }

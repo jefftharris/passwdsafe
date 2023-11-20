@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
@@ -118,6 +119,9 @@ public class Preferences
     public static final String PREF_SORT_CASE_SENSITIVE =
         "sortCaseSensitivePref";
     public static final boolean PREF_SORT_CASE_SENSITIVE_DEF = true;
+
+    public static final String PREF_DEBUG_TAGS = "debugTagsPref";
+    public static final String PREF_DEBUG_TAGS_DEF = "";
 
     public static final String PREF_DISPLAY_THEME = "displayThemePref";
     private static final ThemePref PREF_DISPLAY_THEME_DEF =
@@ -414,6 +418,14 @@ public class Preferences
     {
         return prefs.getBoolean(PREF_SORT_CASE_SENSITIVE,
                                 PREF_SORT_CASE_SENSITIVE_DEF);
+    }
+
+    /**
+     * Get the debugging tags
+     */
+    public static String getDebugTagsPref(@NonNull SharedPreferences prefs)
+    {
+        return prefs.getString(PREF_DEBUG_TAGS, PREF_DEBUG_TAGS_DEF);
     }
 
     /**

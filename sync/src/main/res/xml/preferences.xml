@@ -19,4 +19,14 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:key="debugOptions"
+        android:title="@string/debugging">
+
+        <!--suppress AndroidElementNotAllowed -->
+        <com.jefftharris.passwdsafe.lib.view.LongEditTextPreference
+            android:key="debugTagsPref"
+            android:title="@string/logging_tags"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

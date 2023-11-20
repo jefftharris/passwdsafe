@@ -231,6 +231,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     private final class RootScreen extends Screen
     {
         private final ListPreference itsThemePref;
+        private final EditTextPreference itsDebugTagsPref;
 
         /**
          * Constructor
@@ -247,6 +248,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             if (pref != null) {
                 pref.setVisible(ApiCompat.hasVibrator(requireContext()));
             }
+
+            itsDebugTagsPref = requirePreference(Preferences.PREF_DEBUG_TAGS);
+            itsDebugTagsPref.setDialogMessage(R.string.logging_tags_desc);
+            itsDebugTagsPref.setDefaultValue(Preferences.PREF_DEBUG_TAGS_DEF);
+            onSharedPreferenceChanged(prefs, Preferences.PREF_DEBUG_TAGS);
         }
 
         @Override
@@ -254,10 +260,16 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                                               @Nullable String key)
         {
             boolean updateTheme = false;
+            boolean updateDebugTags = false;
             if (key == null) {
                 updateTheme = true;
+                updateDebugTags = true;
             } else {
                 switch (key) {
+                case Preferences.PREF_DEBUG_TAGS: {
+                    updateDebugTags = true;
+                    break;
+                }
                 case Preferences.PREF_DISPLAY_THEME: {
                     updateTheme = true;
                     break;
@@ -267,6 +279,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             if (updateTheme) {
                 updateThemePrefSummary(prefs);
                 requireActivity().recreate();
+            }
+            if (updateDebugTags) {
+                String val = Preferences.getDebugTagsPref(prefs);
+                itsDebugTagsPref.setSummary(val);
             }
         }
 

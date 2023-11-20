@@ -21,6 +21,7 @@
     <string name="copy_clipboard_error">%1$s - Error copying to the clipboard.  The error may be due to a known error in Samsung devices.</string>
     <string name="copy_trace">Copy Trace</string>
     <string name="copy_trace_and_close">Copy Trace and Close</string>
+    <string name="debugging">Debugging</string>
     <string name="dropbox">Dropbox</string>
     <string name="edit">Edit</string>
     <string name="error">Error</string>
@@ -30,6 +31,8 @@
     <string name="google_drive">Google Drive</string>
     <string name="help">Help</string>
     <string name="licenses">Licenses</string>
+    <string name="logging_tags">Logging tags</string>
+    <string name="logging_tags_desc">A space-separated list of logging tags, * for all tags, or an empty string to disable</string>
     <string name="new_drive_file">New Drive File</string>
     <string name="no_files">No Files</string>
     <string name="none">None</string>
