@@ -27,6 +27,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationView;
+import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
 /**
  * Abstract fragment for the navigation drawer of an activity
@@ -180,11 +181,20 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
         itsDrawerLayout.addDrawerListener(itsDrawerToggle);
 
         SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
-        int shown = prefs.getInt(drawerOpenPref, 0);
-        if (shown != NUM_EXPECTED_SHOWN_DRAWER) {
-            prefs.edit().putInt(drawerOpenPref, NUM_EXPECTED_SHOWN_DRAWER)
+        if (PasswdSafeUtil.isTesting()) {
+            prefs.edit()
+                 .putInt(drawerOpenPref, NUM_EXPECTED_SHOWN_DRAWER)
+                 .putBoolean(PREF_USER_LEARNED_DRAWER, true)
                  .apply();
-            itsInitShowDrawer = true;
+            itsUserLearnedDrawer = true;
+            itsInitShowDrawer = false;
+        } else {
+            int shown = prefs.getInt(drawerOpenPref, 0);
+            if (shown != NUM_EXPECTED_SHOWN_DRAWER) {
+                prefs.edit().putInt(drawerOpenPref, NUM_EXPECTED_SHOWN_DRAWER)
+                     .apply();
+                itsInitShowDrawer = true;
+            }
         }
     }
 
