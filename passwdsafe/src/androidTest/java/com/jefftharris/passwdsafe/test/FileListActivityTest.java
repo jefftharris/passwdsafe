@@ -59,6 +59,7 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.DrawerActions.close;
 import static androidx.test.espresso.contrib.DrawerActions.open;
 import static androidx.test.espresso.contrib.DrawerMatchers.isClosed;
 import static androidx.test.espresso.contrib.NavigationViewActions.navigateTo;
@@ -152,7 +153,7 @@ public class FileListActivityTest
         }
         Assert.assertTrue(LEGACY_FILE.createNewFile());
 
-        verifyDrawerClosed();
+        ensureDrawerClosed();
         setLegacyFileChooser(true);
 
         onView(withId(android.R.id.list));
@@ -171,7 +172,7 @@ public class FileListActivityTest
         if (!ApiCompat.supportsExternalFilesDirs()) {
             return;
         }
-        verifyDrawerClosed();
+        ensureDrawerClosed();
         setLegacyFileChooser(true);
 
         Assert.assertTrue(
@@ -197,7 +198,7 @@ public class FileListActivityTest
         if (!ApiCompat.supportsExternalFilesDirs()) {
             return;
         }
-        verifyDrawerClosed();
+        ensureDrawerClosed();
         setLegacyFileChooser(true);
 
         onView(withId(R.id.menu_file_new))
@@ -212,7 +213,7 @@ public class FileListActivityTest
     @Test
     public void testNewLaunchFileNew()
     {
-        verifyDrawerClosed();
+        ensureDrawerClosed();
         setLegacyFileChooser(false);
 
         onView(withId(R.id.menu_file_new))
@@ -227,7 +228,7 @@ public class FileListActivityTest
     @Test
     public void testNewFileOpen() throws IOException
     {
-        verifyDrawerClosed();
+        ensureDrawerClosed();
         setLegacyFileChooser(false);
         clearRecents();
 
@@ -274,7 +275,7 @@ public class FileListActivityTest
      @Test
      public void testNewClearRecents()
      {
-         verifyDrawerClosed();
+         ensureDrawerClosed();
          setLegacyFileChooser(false);
          clearRecents();
      }
@@ -315,7 +316,7 @@ public class FileListActivityTest
      */
     private static void setLegacyFileChooser(boolean showLegacy)
     {
-        verifyDrawerClosed();
+        ensureDrawerClosed();
 
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.START)))
@@ -418,11 +419,12 @@ public class FileListActivityTest
     }
 
     /**
-     * Verify the nav drawer is closed
+     * Ensure the nav drawer is closed
      */
-    private static void verifyDrawerClosed()
+    private static void ensureDrawerClosed()
     {
         onView(withId(R.id.drawer_layout))
+                .perform(close())
                 .check(matches(isClosed(Gravity.START)));
     }
 }
