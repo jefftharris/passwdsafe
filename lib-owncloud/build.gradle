@@ -9,11 +9,11 @@ apply plugin: 'com.android.library'
 
 android {
     namespace 'com.owncloud.android.lib'
-    compileSdk 33
+    compileSdk 34
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 33
+        targetSdkVersion 34
     }
     buildTypes {
         release {

@@ -10,12 +10,12 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.jefftharris.passwdsafe'
-    compileSdk 33
+    compileSdk 34
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
         minSdkVersion 19
         resourceConfigurations += ['de', 'fr', 'nb']
-        targetSdkVersion 33
+        targetSdkVersion 34
         // <major><minor><bugfix><beta/extra>
         versionCode 6230300
         versionName "6.23.3"
@@ -66,7 +66,7 @@ android {
             path 'src/main/cpp/CMakeLists.txt'
         }
     }
-    ndkVersion = '21.3.6528147'
+    ndkVersion = '26.1.10909125'
     packagingOptions {
         jniLibs {
             useLegacyPackaging false

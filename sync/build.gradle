@@ -10,12 +10,12 @@ apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 
 android {
     namespace 'com.jefftharris.passwdsafe.sync'
-    compileSdk 33
+    compileSdk 34
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
         minSdkVersion 21
         resourceConfigurations += ['de', 'fr', 'nb']
-        targetSdkVersion 33
+        targetSdkVersion 34
         // <major><minor><bugfix><beta/extra>
         versionCode 3100000
         versionName "3.10.0"
