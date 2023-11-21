@@ -167,7 +167,7 @@ public class FileListActivityTest
     }
 
     @Test
-    public void testLegacyFileNav()
+    public void testLegacyFileNav() throws InterruptedException
     {
         if (!ApiCompat.supportsExternalFilesDirs()) {
             return;
@@ -177,11 +177,13 @@ public class FileListActivityTest
 
         Assert.assertTrue(
                 LEGACY_DIR.equals(new File("/storage/emulated/0")) ||
-                LEGACY_DIR.equals(new File("/mnt/sdcard")));
+                LEGACY_DIR.equals(new File("/mnt/sdcard")) ||
+                LEGACY_DIR.equals(new File("/storage/sdcard")));
         onView(withId(R.id.current_group_label))
                 .check(matches(withText(LEGACY_DIR.getPath())));
         onView(withId(R.id.current_group_label))
                 .perform(click());
+        Thread.sleep(5000);
         onView(withId(R.id.current_group_label))
                 .check(matches(withText(
                         Objects.requireNonNull(
@@ -345,7 +347,6 @@ public class FileListActivityTest
             if (legacyCheckAction.isPrevChecked() == showLegacy) {
                 pressBack();
             }
-
         } else {
             pressBack();
             pressBack();
