@@ -39,6 +39,10 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     private static final String PREF_USER_LEARNED_DRAWER =
             "passwdsafe_navigation_drawer_learned";
 
+    /** Counter for how often the drawer is forced open for user to see
+     *  changes */
+    private static final int NUM_EXPECTED_SHOWN_DRAWER = 1;
+
     private ActionBarDrawerToggle itsDrawerToggle;
     private DrawerLayout itsDrawerLayout;
     private NavigationView itsNavView;
@@ -117,8 +121,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
      * drawer interactions.
      */
     protected void doSetUp(DrawerLayout drawerLayout,
-                           String drawerOpenPref,
-                           int expectedDrawerOpenVal)
+                           String drawerOpenPref)
     {
         itsFragmentContainerView =
                 requireActivity().findViewById(R.id.navigation_drawer);
@@ -178,8 +181,9 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
 
         SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
         int shown = prefs.getInt(drawerOpenPref, 0);
-        if (shown != expectedDrawerOpenVal) {
-            prefs.edit().putInt(drawerOpenPref, expectedDrawerOpenVal).apply();
+        if (shown != NUM_EXPECTED_SHOWN_DRAWER) {
+            prefs.edit().putInt(drawerOpenPref, NUM_EXPECTED_SHOWN_DRAWER)
+                 .apply();
             itsInitShowDrawer = true;
         }
     }
@@ -206,7 +210,8 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     /**
      * Common implementation for onCreateView
      */
-    protected View doCreateView(LayoutInflater inflater, ViewGroup container,
+    protected View doCreateView(@NonNull LayoutInflater inflater,
+                                ViewGroup container,
                                 int layoutId)
     {
         View fragView = inflater.inflate(layoutId, container, false);

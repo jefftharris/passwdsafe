@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -34,10 +35,6 @@ public class PasswdSafeNavDrawerFragment
     /** Preference for initial forced open count */
     private static final String PREF_SHOWN_DRAWER =
             "passwdsafe_navigation_drawer_shown_passwdsafe";
-
-    /** Counter for how often the drawer is forced open for user to see
-     *  changes */
-    private static final int SHOW_DRAWER_COUNT = 1;
 
     /** Listener interface for the owning activity */
     public interface Listener
@@ -132,7 +129,7 @@ public class PasswdSafeNavDrawerFragment
      */
     public void setUp(DrawerLayout drawerLayout)
     {
-        doSetUp(drawerLayout, PREF_SHOWN_DRAWER, SHOW_DRAWER_COUNT);
+        doSetUp(drawerLayout, PREF_SHOWN_DRAWER);
         updateView(Mode.INIT, "", false);
     }
 
@@ -140,7 +137,9 @@ public class PasswdSafeNavDrawerFragment
      * Update drawer for the fragments displayed in the activity
      * @param fileNameUpdate If non-null, the file name to set in the view
      */
-    public void updateView(Mode mode, String fileNameUpdate, boolean fileOpen)
+    public void updateView(@NonNull Mode mode,
+                           String fileNameUpdate,
+                           boolean fileOpen)
     {
         boolean drawerEnabled = false;
         boolean openDrawer = false;
@@ -311,6 +310,7 @@ public class PasswdSafeNavDrawerFragment
         /**
          * Get the enum from a menu id
          */
+        @Nullable
         private static NavMenuItem fromMenuId(int menuId)
         {
             for (NavMenuItem item: NavMenuItem.values()) {

@@ -73,7 +73,6 @@ public class FileListNavDrawerFragment
 
     private static final String PREF_SHOWN_DRAWER =
             "passwdsafe_navigation_drawer_shown";
-    private static final int SHOWN_DRAWER_PROVIDERS = 1;
 
     private int itsSelNavItem = -1;
     private Uri itsSelSyncFilesUri = null;
@@ -105,14 +104,14 @@ public class FileListNavDrawerFragment
      */
     public void setUp(DrawerLayout drawerLayout)
     {
-        doSetUp(drawerLayout, PREF_SHOWN_DRAWER, SHOWN_DRAWER_PROVIDERS);
+        doSetUp(drawerLayout, PREF_SHOWN_DRAWER);
         updateView(Mode.INIT, null);
     }
 
     /**
      * Update drawer for the fragments displayed in the activity
      */
-    public void updateView(Mode mode, Uri syncFilesUri)
+    public void updateView(@NonNull Mode mode, Uri syncFilesUri)
     {
         Menu menu = getNavView().getMenu();
         boolean openDrawer = false;
@@ -287,7 +286,7 @@ public class FileListNavDrawerFragment
     /**
      * Update the look of a menu item icon to match static items
      */
-    private static void updateMenuIcon(MenuItem item)
+    private static void updateMenuIcon(@NonNull MenuItem item)
     {
         var icon = item.getIcon();
         if (icon != null) {
