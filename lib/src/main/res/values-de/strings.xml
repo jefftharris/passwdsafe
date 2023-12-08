@@ -20,6 +20,7 @@
     <string name="copy_clipboard_error">%1$s - Fehler beim Kopieren in die Zwischenablage. Grund ist wohl ein Fehler in manchen Samsung-Geräten.</string>
     <string name="copy_trace">Trace kopieren</string>
     <string name="copy_trace_and_close">Trace kopieren und schließen</string>
+    <string name="debugging">Fehlersuche</string>
     <string name="dropbox">Dropbox</string>
     <string name="edit">Bearbeiten</string>
     <string name="error">Fehler</string>
@@ -29,6 +30,8 @@
     <string name="google_drive">Google Drive</string>
     <string name="help">Hilfe</string>
     <string name="licenses">Lizenzen</string>
+    <string name="logging_tags">Erfassungstags</string>
+    <string name="logging_tags_desc">Liste mit Erfassungstags getrennt durch Leerzeichen, * für alle Tags, oder zum Abschalten leer lassen</string>
     <string name="new_drive_file">Neue Drive-Datei</string>
     <string name="no_files">Keine Datei</string>
     <string name="none">Keine</string>

@@ -7,7 +7,6 @@
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
 <resources>
-
     <string name="about">A propos</string>
     <string name="app_name">PasswdSafe LIBRARY</string>
     <string name="app_settings">Préférences</string>
@@ -22,6 +21,7 @@
     <string name="copy_clipboard_error">%1$s - Erreur de copie dans le presse papier. Elle peut être due à une erreur propre aux appareils Samsung.</string>
     <string name="copy_trace">Copier</string>
     <string name="copy_trace_and_close">Copier et fermer</string>
+    <string name="debugging">Débogage</string>
     <string name="dropbox">Dropbox</string>
     <string name="edit">Modifier</string>
     <string name="error">Erreur</string>
@@ -31,6 +31,8 @@
     <string name="google_drive">Google Drive</string>
     <string name="help">Assistance</string>
     <string name="licenses">Licenses</string>
+    <string name="logging_tags">Balises de journalisation</string>
+    <string name="logging_tags_desc">Une liste de balises de journalisation séparées par des espaces, * pour toutes les balises, ou une chaîne de caractères vide pour désactiver</string>
     <string name="new_drive_file">Nouveau fichier de Drive</string>
     <string name="no_files">Aucun fichier</string>
     <string name="none">"Aucun"</string>
@@ -46,5 +48,4 @@
     <string name="type">Type</string>
     <string name="url">URL</string>
     <string name="version">Version</string>
-
 </resources>

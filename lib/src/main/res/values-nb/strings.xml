@@ -1,4 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!--
+  ~ Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+  ~ All rights reserved. Use of the code is allowed under the
+  ~ Artistic License 2.0 terms, as specified in the LICENSE file
+  ~ distributed with this code, or available from
+  ~ http://www.opensource.org/licenses/artistic-license-2.0.php
+  -->
 <resources>
     <string name="about">Om</string>
     <string name="app_name">PasswdSafe-BIBLIOTEK</string>
@@ -14,6 +21,7 @@
     <string name="copy_clipboard_error">%1$s - feil ved kopiering til utklippstavlen. Feilen kan skyldes en kjent feil på Samsung-enheter.</string>
     <string name="copy_trace">Kopier Trace</string>
     <string name="copy_trace_and_close">Kopier Trace og lukk</string>
+    <string name="debugging">Feilsøking</string>
     <string name="dropbox">Dropbox</string>
     <string name="edit">Rediger</string>
     <string name="error">Feil</string>
@@ -23,6 +31,9 @@
     <string name="google_drive">Google Disk</string>
     <string name="help">Hjelp</string>
     <string name="licenses">Lisenser</string>
+    <string name="logging_tags">Merkelapper for logging</string>
+    <string name="logging_tags_desc">En liste med merkelapper skilt med mellomrom, * for alle merkelapper,
+eller ingenting for å deaktivere</string>
     <string name="new_drive_file">Ny Google Disk-fil</string>
     <string name="no_files">Ingen filer</string>
     <string name="none">Ingen</string>
