@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.lib.view;
 
 import android.app.Activity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -47,7 +48,7 @@ public abstract class CustomOnBackCallback extends OnBackPressedCallback
     /**
      * Perform the default on-back behavior
      */
-    protected final void performDefaultOnBack(Activity backAct)
+    protected final void performDefaultOnBack(@NonNull Activity backAct)
     {
         setEnabled(false);
         backAct.onBackPressed();
