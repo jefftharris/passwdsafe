@@ -619,7 +619,7 @@ public class PasswdSafe extends AppCompatActivity
             if (itsNavDrawerFrag.isDrawerEnabled()) {
                 return super.onOptionsItemSelected(item);
             }
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
             return true;
         } else if (itemId == R.id.menu_add) {
             editRecord(itsLocation.selectRecord(null));

@@ -201,7 +201,7 @@ public class FileListActivity extends AppCompatActivity
             if (itsNavDrawerFrag.isDrawerEnabled()) {
                 return super.onOptionsItemSelected(item);
             }
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
             return true;
         }
         default: {
