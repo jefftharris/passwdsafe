@@ -20,6 +20,8 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
@@ -52,7 +54,8 @@ public class PasswdSafeUtil
     private static boolean TESTING = false;
 
     /** Create an intent to open a URI */
-    public static Intent createOpenIntent(Uri uri, String recToOpen)
+    @NonNull
+    public static Intent createOpenIntent(@NonNull Uri uri, String recToOpen)
     {
         Uri.Builder builder = uri.buildUpon();
         if (recToOpen != null) {
@@ -64,6 +67,7 @@ public class PasswdSafeUtil
     }
 
     /** Create an intent to create a new file */
+    @NonNull
     public static Intent createNewFileIntent(Uri dirUri)
     {
         Intent intent = new Intent(NEW_INTENT, dirUri);
@@ -81,7 +85,9 @@ public class PasswdSafeUtil
     }
 
     /** Get the intent to start the main activity for a package */
-    public static Intent getMainActivityIntent(String pkgName, Context ctx)
+    @Nullable
+    public static Intent getMainActivityIntent(String pkgName,
+                                               @NonNull Context ctx)
     {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -103,7 +109,8 @@ public class PasswdSafeUtil
     }
 
     /** Get the app title */
-    public static String getAppTitle(Context ctx)
+    @NonNull
+    public static String getAppTitle(@NonNull Context ctx)
     {
         return ctx.getString(R.string.app_name);
     }
@@ -119,7 +126,8 @@ public class PasswdSafeUtil
     }
 
     /** Get the package info for the app */
-    public static PackageInfo getAppPackageInfo(Context ctx)
+    @Nullable
+    public static PackageInfo getAppPackageInfo(@NonNull Context ctx)
     {
         try {
             PackageManager pkgMgr = ctx.getPackageManager();
@@ -224,7 +232,7 @@ public class PasswdSafeUtil
     /**
      * Show an error message
      */
-    public static void showErrorMsg(String msg, ActContext context)
+    public static void showErrorMsg(String msg, @NonNull ActContext context)
     {
         Context ctx = context.getContext();
         if (ctx == null) {
@@ -314,11 +322,12 @@ public class PasswdSafeUtil
     /**
      * Show an error from updating the clipboard
      */
-    private static void showClipboardError(Throwable e, Context ctx)
+    private static void showClipboardError(@NonNull Throwable e,
+                                           @NonNull Context ctx)
     {
         String err = ctx.getString(R.string.copy_clipboard_error,
                                    getAppTitle(ctx));
         Toast.makeText(ctx, err, Toast.LENGTH_LONG).show();
-        Log.e(TAG, err + ": " + e.toString());
+        Log.e(TAG, err + ": " + e);
     }
 }
