@@ -714,8 +714,9 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller,
-                                           PreferenceScreen pref)
+    public boolean onPreferenceStartScreen(
+            @NonNull PreferenceFragmentCompat caller,
+            PreferenceScreen pref)
     {
         doChangeView(ChangeMode.VIEW_PREFERENCES,
                      PreferencesFragment.newInstance(pref.getKey()));
