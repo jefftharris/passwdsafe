@@ -436,13 +436,6 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy()
-    {
-        itsTimeoutReceiver.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         if (itsNavDrawerFrag.isDrawerOpen()) {

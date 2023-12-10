@@ -16,18 +16,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
-import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
-import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 
 /**
  * The FileTimeoutReceiver class manages a timeout for file activity
  */
 public class FileTimeoutReceiver extends BroadcastReceiver
-    implements SharedPreferences.OnSharedPreferenceChangeListener
+    implements SharedPreferences.OnSharedPreferenceChangeListener,
+               DefaultLifecycleObserver
 {
     private final Activity itsActivity;
     private final AlarmManager itsAlarmMgr;
@@ -36,13 +40,14 @@ public class FileTimeoutReceiver extends BroadcastReceiver
     private boolean itsIsCloseScreenOff =
             Preferences.PREF_FILE_CLOSE_SCREEN_OFF_DEF;
     private boolean itsIsPaused = true;
+    private boolean itsIsResumed = false;
 
     private static final String TAG = "FileTimeoutReceiver";
 
     /**
      * Constructor
      */
-    public FileTimeoutReceiver(Activity act)
+    public FileTimeoutReceiver(@NonNull AppCompatActivity act)
     {
         itsActivity = act;
         itsAlarmMgr = (AlarmManager)
@@ -61,13 +66,26 @@ public class FileTimeoutReceiver extends BroadcastReceiver
         SharedPreferences prefs = Preferences.getSharedPrefs(itsActivity);
         prefs.registerOnSharedPreferenceChangeListener(this);
         updatePrefs(prefs);
+
+        act.getLifecycle().addObserver(this);
     }
 
-    /**
-     * Handle when the activity is destroyed
-     */
-    public void onDestroy()
+    @Override
+    public void onPause(@NonNull LifecycleOwner owner)
     {
+        setResumed(false);
+    }
+
+    @Override
+    public void onResume(@NonNull LifecycleOwner owner)
+    {
+        setResumed(true);
+    }
+
+    @Override
+    public void onDestroy(@NonNull LifecycleOwner owner)
+    {
+        PasswdSafeLog.debug(TAG, "onDestroy");
         cancel();
         SharedPreferences prefs = Preferences.getSharedPrefs(itsActivity);
         prefs.unregisterOnSharedPreferenceChangeListener(this);
@@ -80,6 +98,13 @@ public class FileTimeoutReceiver extends BroadcastReceiver
      */
     public void updateTimeout(boolean paused)
     {
+        PasswdSafeLog.debug(TAG, "updateTimeout paused %b -> %b, timeout" +
+                                 " %d, resumed %b", itsIsPaused, paused,
+                            itsFileCloseTimeout, itsIsResumed);
+        if (!itsIsResumed) {
+            return;
+        }
+
         if (paused) {
             if (!itsIsPaused) {
                 itsIsPaused = true;
@@ -97,18 +122,18 @@ public class FileTimeoutReceiver extends BroadcastReceiver
     }
 
     @Override
-    public void onReceive(Context ctx, Intent intent)
+    public void onReceive(Context ctx, @NonNull Intent intent)
     {
         boolean close = false;
         switch (String.valueOf(intent.getAction())) {
         case PasswdSafeApp.FILE_TIMEOUT_INTENT: {
-            Log.i(TAG, "File timeout");
+            PasswdSafeLog.info(TAG, "File timeout");
             close = true;
             break;
         }
         case Intent.ACTION_SCREEN_OFF: {
             if (itsIsCloseScreenOff) {
-                Log.i(TAG, "Screen off");
+                PasswdSafeLog.info(TAG, "Screen off");
                 close = true;
             }
             break;
@@ -143,8 +168,8 @@ public class FileTimeoutReceiver extends BroadcastReceiver
     {
         FileTimeoutPref pref = Preferences.getFileCloseTimeoutPref(prefs);
         itsIsCloseScreenOff = Preferences.getFileCloseScreenOffPref(prefs);
-        PasswdSafeUtil.dbginfo(TAG, "update prefs timeout: %s, screen: %b",
-                               pref, itsIsCloseScreenOff);
+        PasswdSafeLog.debug(TAG, "update prefs timeout: %s, screen: %b",
+                            pref, itsIsCloseScreenOff);
 
         itsFileCloseTimeout = pref.getTimeout();
         if (itsFileCloseTimeout == 0) {
@@ -155,10 +180,23 @@ public class FileTimeoutReceiver extends BroadcastReceiver
     }
 
     /**
+     * Set whether the activity has fully resumed
+     */
+    private void setResumed(boolean resumed)
+    {
+        if (resumed != itsIsResumed) {
+            PasswdSafeLog.debug(TAG, "setResumed %b -> %b", itsIsResumed,
+                                resumed);
+            itsIsResumed = resumed;
+        }
+    }
+
+    /**
      * Cancel the file timeout timer
      */
     private void cancel()
     {
+        PasswdSafeLog.debug(TAG, "cancel");
         itsAlarmMgr.cancel(itsCloseIntent);
     }
 }
