@@ -21,6 +21,9 @@ android {
         versionName "3.10.0"
         vectorDrawables.useSupportLibrary = true
     }
+    buildFeatures {
+        buildConfig true
+    }
     buildTypes {
         debug {
             debuggable true
