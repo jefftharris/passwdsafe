@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe.lib;
 
 import android.text.TextUtils;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import org.intellij.lang.annotations.PrintFormat;
@@ -42,6 +41,18 @@ public final class PasswdSafeLog
     {
         if (isDebugEnabled(tag)) {
             Log.d(tag, String.format(fmt, args));
+        }
+    }
+
+    /**
+     * Log a formatted message and stack trace at debug level if enabled
+     */
+    public static void debugTrace(@NonNull String tag,
+                                  @PrintFormat String fmt,
+                                  Object... args)
+    {
+        if (isDebugEnabled(tag)) {
+            Log.d(tag, String.format(fmt, args), new Exception());
         }
     }
 
