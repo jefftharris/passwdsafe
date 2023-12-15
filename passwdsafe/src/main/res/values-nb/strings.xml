@@ -384,6 +384,8 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.23.4&lt;/b&gt; - Feilrettinger
+        \n\n
         &lt;b&gt;6.23.3&lt;/b&gt; - Forbedret Android 12+ kompatibilitet.  Feilrettinger.
         \n\n
         &lt;b&gt;6.23.2&lt;/b&gt; - Forbedret Android 14 kompatibilitet
