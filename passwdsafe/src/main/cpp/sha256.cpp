@@ -21,7 +21,9 @@
 #pragma ide diagnostic ignored "readability-magic-numbers"
 #pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
-inline static uint32_t load32H(unsigned const char* buf)
+namespace {
+
+inline uint32_t load32H(unsigned const char* buf)
 {
     return (static_cast<uint32_t>(buf[0] & 0xffU) << 24U) |
            (static_cast<uint32_t>(buf[1] & 0xffU) << 16U) |
@@ -29,7 +31,7 @@ inline static uint32_t load32H(unsigned const char* buf)
            (static_cast<uint32_t>(buf[3] & 0xffU));
 }
 
-inline static void store32H(uint32_t val, unsigned char* buf)
+inline void store32H(uint32_t val, unsigned char* buf)
 {
     buf[0] = static_cast<unsigned char>((val >> 24U) & 0xffU);
     buf[1] = static_cast<unsigned char>((val >> 16U) & 0xffU);
@@ -37,7 +39,7 @@ inline static void store32H(uint32_t val, unsigned char* buf)
     buf[3] = static_cast<unsigned char>(val & 0xffU);
 }
 
-inline static void store64H(uint64_t val, unsigned char* buf)
+inline void store64H(uint64_t val, unsigned char* buf)
 {
     buf[0] = static_cast<unsigned char>((val >> 56U) & 0xffU);
     buf[1] = static_cast<unsigned char>((val >> 48U) & 0xffU);
@@ -49,54 +51,54 @@ inline static void store64H(uint64_t val, unsigned char* buf)
     buf[7] = static_cast<unsigned char>(val & 0xffU);
 }
 
-inline static uint32_t RORc(uint32_t val, unsigned int num)
+inline uint32_t RORc(uint32_t val, unsigned int num)
 {
     return ((val & 0xFFFFFFFFU) >> (num & 31U)) |
            ((val << (32 - (num & 31U))) & 0xFFFFFFFFU);
 }
 
 /* Various logical functions */
-inline static uint32_t Ch(uint32_t valx, uint32_t valy, uint32_t valz)
+inline uint32_t Ch(uint32_t valx, uint32_t valy, uint32_t valz)
 {
     return valz ^ (valx & (valy ^ valz));
 }
 
-inline static uint32_t Maj(uint32_t valx, uint32_t valy, uint32_t valz)
+inline uint32_t Maj(uint32_t valx, uint32_t valy, uint32_t valz)
 {
     return (((valx | valy) & valz) | (valx & valy));
 }
 
-inline static uint32_t S(uint32_t val, unsigned int n)
+inline uint32_t S(uint32_t val, unsigned int n)
 {
     return RORc(val, n);
 }
 
-inline static uint32_t R(uint32_t val, unsigned int n)
+inline uint32_t R(uint32_t val, unsigned int n)
 {
     return (val & 0xFFFFFFFFU) >> n;
 }
 
-inline static uint32_t Sigma0(uint32_t val)
+inline uint32_t Sigma0(uint32_t val)
 {
     return S(val, 2) ^ S(val, 13) ^ S(val, 22);
 }
 
-inline static uint32_t Sigma1(uint32_t val)
+inline uint32_t Sigma1(uint32_t val)
 {
     return S(val, 6) ^ S(val, 11) ^ S(val, 25);
 }
 
-inline static uint32_t Gamma0(uint32_t val)
+inline uint32_t Gamma0(uint32_t val)
 {
     return S(val, 7) ^ S(val, 18) ^ R(val, 3);
 }
 
-inline static uint32_t Gamma1(uint32_t valx)
+inline uint32_t Gamma1(uint32_t valx)
 {
     return S(valx, 17) ^ S(valx, 19) ^ R(valx, 10);
 }
 
-inline static void RND(
+inline void RND(
         uint32_t vala, uint32_t valb, uint32_t valc, uint32_t& vald,
         uint32_t vale, uint32_t valf, uint32_t valg, uint32_t& valh,
         uint32_t valw, uint32_t valki)
@@ -108,6 +110,7 @@ inline static void RND(
     valh = valt0 + valt1;
 }
 
+}
 
 /**
  * Compress 512 bits from the buffer

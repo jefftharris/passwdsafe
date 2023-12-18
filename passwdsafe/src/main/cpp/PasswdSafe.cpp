@@ -17,6 +17,8 @@
 #pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 #pragma ide diagnostic ignored "cppcoreguidelines-pro-type-reinterpret-cast"
 
+namespace {
+
 /**
  * Implementation of digestNNative so stack can be cleaned by caller
  * @param env JNI environment
@@ -24,9 +26,9 @@
  * @param iter Number of iterations
  * @return The digested bytes
  */
-[[gnu::noinline]] static jbyteArray digestNNativeImpl(JNIEnv* env,
-                                                      jbyteArray inbuf,
-                                                      jint iter)
+[[gnu::noinline]] jbyteArray digestNNativeImpl(JNIEnv* env,
+                                               jbyteArray inbuf,
+                                               jint iter)
 {
     const jsize plen = env->GetArrayLength(inbuf);
     jbyte *pdata = env->GetByteArrayElements(inbuf, nullptr);
@@ -48,6 +50,8 @@
 
     env->ReleaseByteArrayElements(inbuf, pdata, 0);
     return outputArray;
+}
+
 }
 
 extern "C" JNIEXPORT jbyteArray JNICALL
