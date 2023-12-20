@@ -112,7 +112,7 @@ public class PasswdSafeOpenFileFragment
         /**
          * Is the phase where the YubiKey is active
          */
-        public boolean isYubikeyActive()
+        private boolean isYubikeyActive()
         {
             switch (this) {
             case YUBIKEY: {
@@ -175,6 +175,7 @@ public class PasswdSafeOpenFileFragment
     /**
      * Create a new instance
      */
+    @NonNull
     public static PasswdSafeOpenFileFragment newInstance(Uri fileUri,
                                                          String recToOpen)
     {
@@ -403,7 +404,7 @@ public class PasswdSafeOpenFileFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_file_open_help) {
@@ -437,7 +438,7 @@ public class PasswdSafeOpenFileFragment
     }
 
     @Override
-    public void onClick(View view)
+    public void onClick(@NonNull View view)
     {
         int id = view.getId();
         if (id == R.id.open) {
@@ -450,7 +451,8 @@ public class PasswdSafeOpenFileFragment
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton button, boolean isChecked)
+    public void onCheckedChanged(@NonNull CompoundButton button,
+                                 boolean isChecked)
     {
         int id = button.getId();
         if (id == R.id.save_password) {
@@ -458,10 +460,7 @@ public class PasswdSafeOpenFileFragment
                 Context ctx = getContext();
                 SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
                 if (!Preferences.isFileSavedPasswordConfirm(prefs)) {
-                    FragmentManager fragMgr = getFragmentManager();
-                    if (fragMgr == null) {
-                        return;
-                    }
+                    FragmentManager fragMgr = getParentFragmentManager();
                     ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
                             getString(R.string.save_password_p),
                             getString(R.string.save_password_warning),
@@ -1172,7 +1171,9 @@ public class PasswdSafeOpenFileFragment
     /**
      * Set visibility of a field
      */
-    private static void setVisibility(int id, boolean visible, View parent)
+    private static void setVisibility(int id,
+                                      boolean visible,
+                                      @NonNull View parent)
     {
         View v = parent.findViewById(id);
         v.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -1211,7 +1212,7 @@ public class PasswdSafeOpenFileFragment
         /**
          * Constructor
          */
-        private OpenTask(Owner<PwsPassword>.Param passwd,
+        private OpenTask(@NonNull Owner<PwsPassword>.Param passwd,
                          boolean fromYubikey,
                          PasswdSafeOpenFileFragment frag)
         {
@@ -1223,6 +1224,7 @@ public class PasswdSafeOpenFileFragment
             itsSavedPasswordsMgr = frag.itsSavedPasswordsMgr;
         }
 
+        @NonNull
         @Override
         protected OpenResult doInBackground() throws Exception
         {
