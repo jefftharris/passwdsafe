@@ -83,6 +83,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     /**
      * Create a new instance
      */
+    @NonNull
     public static PreferencesFragment newInstance(String key)
     {
         Bundle args = new Bundle();
@@ -219,7 +220,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         }
 
         @Override
-        public boolean onPreferenceClick(Preference preference)
+        public boolean onPreferenceClick(@NonNull Preference preference)
         {
             return false;
         }
@@ -399,7 +400,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         }
 
         @Override
-        public boolean onPreferenceClick(Preference preference)
+        public boolean onPreferenceClick(@NonNull Preference preference)
         {
             switch (preference.getKey()) {
             case Preferences.PREF_DEF_FILE: {
@@ -567,7 +568,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         }
 
         @Override
-        public boolean onPreferenceClick(Preference preference)
+        public boolean onPreferenceClick(@NonNull Preference preference)
         {
             switch (preference.getKey()) {
             case Preferences.PREF_PASSWD_CLEAR_ALL_NOTIFS: {
@@ -601,7 +602,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         }
 
         @Override
-        public void promptConfirmed(ConfirmAction action)
+        public void promptConfirmed(@NonNull ConfirmAction action)
         {
             switch (action) {
             case CLEAR_ALL_NOTIFS: {
@@ -723,6 +724,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             }
         }
 
+        @Nullable
         @Override
         protected PasswdFileUri doInBackground(Void... params)
         {

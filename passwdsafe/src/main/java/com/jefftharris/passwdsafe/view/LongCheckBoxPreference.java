@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -28,7 +29,7 @@ public class LongCheckBoxPreference extends CheckBoxPreference
     }
 
     @Override
-    public void onBindViewHolder(PreferenceViewHolder holder)
+    public void onBindViewHolder(@NonNull PreferenceViewHolder holder)
     {
         super.onBindViewHolder(holder);
         TextView title = (TextView)holder.findViewById(android.R.id.title);

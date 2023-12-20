@@ -194,7 +194,7 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         switch (item.getItemId()) {
         case android.R.id.home: {
@@ -258,8 +258,9 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onPreferenceStartScreen(PreferenceFragmentCompat caller,
-                                           PreferenceScreen pref)
+    public boolean onPreferenceStartScreen(
+            @NonNull PreferenceFragmentCompat caller,
+            @NonNull PreferenceScreen pref)
     {
         doChangeView(ViewChange.PREFERENCES,
                      PreferencesFragment.newInstance(pref.getKey()));
@@ -383,7 +384,7 @@ public class FileListActivity extends AppCompatActivity
     }
 
     @Override
-    public void showSyncProviderFiles(Uri uri)
+    public void showSyncProviderFiles(@NonNull Uri uri)
     {
         SharedPreferences prefs = Preferences.getSharedPrefs(this);
         prefs.edit().putString(PREF_LAST_PROVIDER, uri.toString()).apply();
@@ -436,7 +437,7 @@ public class FileListActivity extends AppCompatActivity
     /**
      * Change the view of the activity
      */
-    private void doChangeView(ViewChange mode, Fragment filesFrag)
+    private void doChangeView(@NonNull ViewChange mode, Fragment filesFrag)
     {
         boolean clearBackStack = false;
         boolean supportsBack = false;
