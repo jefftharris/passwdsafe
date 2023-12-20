@@ -60,7 +60,7 @@ public class PwsUnknownField extends PwsField
     {
         byte[] thisB = (byte[])this.getValue();
         byte[] thatB = (byte[])((PwsUnknownField)that).getValue();
-        return thisB[0] > thatB[0] ? 1 : 0;
+        return Byte.compare(thisB[0], thatB[0]);
     }
 
     /**
