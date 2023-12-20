@@ -260,7 +260,9 @@ public class PasswdSafeUtil
     }
 
     /** Log a formatted message at info level */
-    public static void info(String tag, @PrintFormat String fmt, Object... args)
+    public static void info(@NonNull String tag,
+                            @PrintFormat String fmt,
+                            Object... args)
     {
         Log.i(tag, String.format(fmt, args));
     }
