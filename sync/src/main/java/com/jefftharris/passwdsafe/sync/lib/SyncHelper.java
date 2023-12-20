@@ -54,7 +54,7 @@ public class SyncHelper
             break;
         }
         default: {
-            PasswdSafeUtil.dbginfo(TAG, "Unknown account type: ",
+            PasswdSafeUtil.dbginfo(TAG, "Unknown account type: %s",
                                    acct.type);
             return null;
         }

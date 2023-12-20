@@ -183,7 +183,7 @@ public class LauncherRecordShortcuts extends DialogActivity
     @Override
     public void changeLocation(PasswdLocation location)
     {
-        PasswdSafeUtil.dbginfo(TAG, "changeLocation: ", location);
+        PasswdSafeUtil.dbginfo(TAG, "changeLocation: %s", location);
         if (location.isRecord()) {
             selectRecord(location.getRecord());
         } else if (!itsLocation.equals(location)) {
@@ -207,7 +207,7 @@ public class LauncherRecordShortcuts extends DialogActivity
     @Override
     public void updateViewList(PasswdLocation location)
     {
-        PasswdSafeUtil.dbginfo(TAG, "updateViewList: ", location);
+        PasswdSafeUtil.dbginfo(TAG, "updateViewList: %s", location);
         itsLocation = location;
         itsFileDataView.setCurrGroups(itsLocation.getGroups());
 
