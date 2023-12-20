@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.util.Optional;
 import com.jefftharris.passwdsafe.util.SavedPasswordState;
 import com.jefftharris.passwdsafe.util.YubiState;
 
@@ -29,9 +30,7 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
 {
     public static final int NUM_RETRIES = 5;
 
-    private boolean itsIsResolved = false;
-    private PasswdFileUri itsPasswdFileUri;
-    private boolean itsIsSaveAllowed = false;
+    private @NonNull Optional<ResolveData> itsResolveData = Optional.empty();
 
     private boolean itsHasYubiState = false;
     private YubiState itsYubiState = YubiState.UNKNOWN;
@@ -52,6 +51,30 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
     private static final String TAG = "PasswdSafeOpenFileVMData";
 
     /**
+     * Resolved data for the file
+     */
+    public static class ResolveData
+    {
+        public final @Nullable PasswdFileUri itsUri;
+        public final boolean itsIsSaveAllowed;
+
+        private ResolveData(@Nullable PasswdFileUri passwdFileUri,
+                            boolean isSaveAllowed)
+        {
+            itsUri = passwdFileUri;
+            itsIsSaveAllowed = isSaveAllowed;
+        }
+
+        @Override
+        @NonNull
+        public String toString()
+        {
+            return String.format("{uri: %s, save allowed: %b}", itsUri,
+                                 itsIsSaveAllowed);
+        }
+    }
+
+    /**
      * Constructor
      */
     public PasswdSafeOpenFileViewModelData()
@@ -64,9 +87,7 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
     private PasswdSafeOpenFileViewModelData(
             @NonNull PasswdSafeOpenFileViewModelData data)
     {
-        itsIsResolved = data.itsIsResolved;
-        itsPasswdFileUri = data.itsPasswdFileUri;
-        itsIsSaveAllowed = data.itsIsSaveAllowed;
+        itsResolveData = data.itsResolveData;
 
         itsHasYubiState = data.itsHasYubiState;
         itsYubiState = data.itsYubiState;
@@ -91,7 +112,7 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
      * Clone with Yubikey state
      */
     public PasswdSafeOpenFileViewModelData cloneWithYubiInfo(
-            YubiState yubiState,
+            @NonNull YubiState yubiState,
             boolean yubikeySelected)
     {
         var newData = new PasswdSafeOpenFileViewModelData(this);
@@ -105,13 +126,11 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
      * Clone with file URI resolving info
      */
     public PasswdSafeOpenFileViewModelData cloneWithResolveResults(
-            PasswdFileUri uri,
+            @Nullable PasswdFileUri uri,
             boolean saveAllowed)
     {
         var newData = new PasswdSafeOpenFileViewModelData(this);
-        newData.itsIsResolved = true;
-        newData.itsPasswdFileUri = uri;
-        newData.itsIsSaveAllowed = saveAllowed;
+        newData.itsResolveData = Optional.of(new ResolveData(uri, saveAllowed));
         return newData;
     }
 
@@ -185,20 +204,10 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
         return newData;
     }
 
-    public boolean isResolved()
+    @NonNull
+    public Optional<ResolveData> getResolveData()
     {
-        return itsIsResolved;
-    }
-
-    @Nullable
-    public PasswdFileUri getUri()
-    {
-        return itsPasswdFileUri;
-    }
-
-    public boolean isSaveAllowed()
-    {
-        return itsIsSaveAllowed;
+        return itsResolveData;
     }
 
     public boolean hasYubiInfo()
@@ -272,13 +281,13 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
     @SuppressLint("DefaultLocale")
     public String toString()
     {
-        return String.format("{\nuri: %s, save allowed: %b, retries: %d" +
+        return String.format("{\nresolved: %s, retries: %d" +
                              "\nyubi state: %s, slot: %d, selected: %b, " +
                              "error: %s" +
                              "\nsaved passwd: %s, loaded passwd: %b, loaded " +
                              "msg: %s" +
                              "\nopen passwd %b, open yubikey %b}",
-                             itsPasswdFileUri, itsIsSaveAllowed, itsRetries,
+                             itsResolveData, itsRetries,
                              itsYubiState, itsYubiSlot, itsIsYubikeySelected,
                              itsYubikeyError, itsSavedPasswordState,
                              (itsLoadedPassword != null), itsLoadedPasswordMsg,

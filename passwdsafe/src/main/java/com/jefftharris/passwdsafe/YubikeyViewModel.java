@@ -105,6 +105,7 @@ public class YubikeyViewModel extends AndroidViewModel
     /**
      * Get the state of support for the YubiKey
      */
+    @NonNull
     public YubiState getState(Context ctx)
     {
         itsNfcState = getNfcState(ctx);

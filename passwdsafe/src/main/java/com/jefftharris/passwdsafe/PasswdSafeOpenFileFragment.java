@@ -296,7 +296,7 @@ public class PasswdSafeOpenFileFragment
         switch (itsPhase) {
         case RESOLVING: {
             var openData = itsOpenModel.getDataValue();
-            if (!openData.isResolved()) {
+            if (!openData.getResolveData().isPresent()) {
                 startResolve();
             }
             break;
@@ -535,10 +535,12 @@ public class PasswdSafeOpenFileFragment
     protected final void doSetFieldsEnabled(boolean enabled)
     {
         var openData = itsOpenModel.getDataValue();
+        var resolveData = openData.getResolveData().orElse(null);
 
         itsPasswordEdit.setEnabled(enabled);
         itsOpenBtn.setEnabled(enabled);
-        itsSavePasswdCb.setEnabled(enabled && openData.isSaveAllowed());
+        itsSavePasswdCb.setEnabled(enabled && (resolveData != null) &&
+                                   resolveData.itsIsSaveAllowed);
         itsYubikeyCb.setEnabled(openData.getYubiState().isEnabled() && enabled);
     }
 
@@ -717,8 +719,9 @@ public class PasswdSafeOpenFileFragment
     private void enterResolvingPhase()
     {
         var openData = itsOpenModel.getDataValue();
-        if (openData.isResolved()) {
-            setPasswdFileUri(openData.getUri());
+        var resolveData = openData.getResolveData().orElse(null);
+        if (resolveData != null) {
+            setPasswdFileUri(resolveData.itsUri);
             doSetFieldsEnabled(true);
             setPhase(Phase.WAITING_PASSWORD);
         } else {
