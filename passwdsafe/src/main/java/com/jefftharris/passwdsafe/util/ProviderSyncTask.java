@@ -100,11 +100,13 @@ public class ProviderSyncTask
         protected Void doInBackground(Void... params)
         {
             PasswdSafeUtil.dbginfo(TAG, "doInBackground");
-            try {
-                ContentResolverCompat.query(
-                        itsContentResolver,
-                        PasswdSafeContract.Methods.CONTENT_URI,
-                        null, null, itsProviderArgs, null, itsCancelSignal);
+            //noinspection EmptyTryBlock
+            try (var ignored = ContentResolverCompat.query(
+                    itsContentResolver,
+                    PasswdSafeContract.Methods.CONTENT_URI,
+                    null, null,
+                    itsProviderArgs, null,
+                    itsCancelSignal)) {
             } catch (Exception e) {
                 Log.e(TAG, "Error syncing", e);
             }

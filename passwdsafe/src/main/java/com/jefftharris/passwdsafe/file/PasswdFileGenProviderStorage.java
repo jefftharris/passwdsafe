@@ -69,6 +69,7 @@ public class PasswdFileGenProviderStorage extends PwsStreamStorage
                 }
                 fos = new FileOutputStream(pfd.getFileDescriptor());
                 try {
+                    //noinspection resource
                     fos.getChannel().truncate(0);
                 } catch (Exception e) {
                     Log.w(TAG, "Error truncating file", e);
