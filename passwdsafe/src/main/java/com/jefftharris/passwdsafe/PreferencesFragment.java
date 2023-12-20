@@ -442,10 +442,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         private void setDefFilePref(String prefVal)
         {
             SharedPreferences prefs = itsDefFilePref.getSharedPreferences();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(Preferences.PREF_DEF_FILE, prefVal);
-            editor.apply();
-            onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
+            if (prefs != null) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString(Preferences.PREF_DEF_FILE, prefVal);
+                editor.apply();
+                onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
+            }
         }
     }
 
