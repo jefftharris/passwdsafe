@@ -13,22 +13,60 @@ import androidx.annotation.NonNull;
 
 import org.intellij.lang.annotations.PrintFormat;
 
+import java.util.ArrayList;
+
 /**
  * Logging class for PasswdSafe
  */
 public final class PasswdSafeLog
 {
     private static String[] DEBUG_TAGS = null;
+    private static boolean DEBUG_ALL = false;
+    private static ArrayList<Listener> DEBUG_LISTENERS = null;
 
-    private static final String[] ALL_TAGS = new String[]{};
+    /**
+     * Listener for logging changes
+     */
+    public interface Listener
+    {
+        /// Notification when the debug tags have changed
+        void handleDebugTagsChanged();
+    }
+
+    /**
+     * Add a listener for logging changes
+     */
+    public static synchronized void addListener(Listener listener)
+    {
+        if (DEBUG_LISTENERS == null) {
+            DEBUG_LISTENERS = new ArrayList<>(1);
+        }
+        DEBUG_LISTENERS.add(listener);
+    }
+
+    /**
+     * Remove a listener for logging changes
+     */
+    public static synchronized void removeListener(Listener listener)
+    {
+        if (DEBUG_LISTENERS != null) {
+            DEBUG_LISTENERS.remove(listener);
+            if (DEBUG_LISTENERS.isEmpty()) {
+                DEBUG_LISTENERS = null;
+            }
+        }
+    }
 
     /**
      * Log a formatted message at info level
+     *
+     * @noinspection RedundantSuppression
      */
     public static void info(@NonNull String tag,
                             @PrintFormat String fmt,
                             Object... args)
     {
+        //noinspection PatternValidation
         PasswdSafeUtil.info(tag, fmt, args);
     }
 
@@ -46,6 +84,8 @@ public final class PasswdSafeLog
 
     /**
      * Log a formatted message and stack trace at debug level if enabled
+     *
+     * @noinspection unused
      */
     public static void debugTrace(@NonNull String tag,
                                   @PrintFormat String fmt,
@@ -64,13 +104,31 @@ public final class PasswdSafeLog
         if (tags != null) {
             tags = tags.trim();
         }
-        if (TextUtils.equals(tags, "*")) {
-            DEBUG_TAGS = ALL_TAGS;
-        } else if (!TextUtils.isEmpty(tags)) {
-            DEBUG_TAGS = TextUtils.split(tags, "\\s+");
-        } else {
+
+        DEBUG_ALL = false;
+        if (TextUtils.isEmpty(tags)) {
             DEBUG_TAGS = null;
+        } else {
+            DEBUG_TAGS = TextUtils.split(tags, "\\s+");
+            if (doIsInDebugTagsLocked("*")) {
+                DEBUG_ALL = true;
+            }
         }
+
+        if (DEBUG_LISTENERS != null) {
+            for (var listener: DEBUG_LISTENERS) {
+                listener.handleDebugTagsChanged();
+            }
+        }
+    }
+
+    /**
+     * Check whether a logging tag is explicitly (not all) enabled for
+     * debugging
+     */
+    public static synchronized boolean isExplicitlyEnabled(@NonNull String tag)
+    {
+        return doIsInDebugTagsLocked(tag);
     }
 
     /**
@@ -78,10 +136,17 @@ public final class PasswdSafeLog
      */
     private static synchronized boolean isDebugEnabled(@NonNull String tag)
     {
+        return DEBUG_ALL || doIsInDebugTagsLocked(tag);
+    }
+
+    /**
+     * Check whether a logging tag is enabled without checking for all while
+     * locked.
+     */
+    private static boolean doIsInDebugTagsLocked(@NonNull String tag)
+    {
         if (DEBUG_TAGS == null) {
             return false;
-        } else if (DEBUG_TAGS == ALL_TAGS) {
-            return true;
         }
 
         for (var debugTag: DEBUG_TAGS) {
