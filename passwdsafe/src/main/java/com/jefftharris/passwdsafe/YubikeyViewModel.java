@@ -20,6 +20,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.jefftharris.passwdsafe.lib.ManagedRef;
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.YubiState;
 import com.yubico.yubikit.android.YubiKitManager;
@@ -29,10 +30,15 @@ import com.yubico.yubikit.android.transport.usb.UsbConfiguration;
 import com.yubico.yubikit.android.transport.usb.UsbYubiKeyDevice;
 import com.yubico.yubikit.core.YubiKeyDevice;
 
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+
 /**
  * View model for a YubiKey
  */
 public class YubikeyViewModel extends AndroidViewModel
+        implements PasswdSafeLog.Listener
 {
     public static final int KEY_TIMEOUT = 30 * 1000;
 
@@ -42,6 +48,7 @@ public class YubikeyViewModel extends AndroidViewModel
     private static final long NFC_STOP_DELAY = 5 * 1000;
 
     private static final String TAG = "YubikeyViewModel";
+    private static final String YUBIKEY_TRACE_TAG = "Yubikey.TRACE";
 
     /**
      * NFC state
@@ -60,6 +67,8 @@ public class YubikeyViewModel extends AndroidViewModel
     private ManagedRef<Activity> itsStopAct;
     private final MutableLiveData<YubiKeyDevice> itsYubiDevice =
             new MutableLiveData<>();
+    private final MutableLiveData<Boolean> itsIsLogTracingEnabled =
+            new MutableLiveData<>(false);
 
     /**
      * Constructor
@@ -88,6 +97,9 @@ public class YubikeyViewModel extends AndroidViewModel
                 itsYubiDevice.postValue(device);
             });
         }
+
+        PasswdSafeLog.addListener(this);
+        handleDebugTagsChanged();
     }
 
     /**
@@ -125,6 +137,15 @@ public class YubikeyViewModel extends AndroidViewModel
     public LiveData<YubiKeyDevice> getDeviceData()
     {
         return itsYubiDevice;
+    }
+
+    /**
+     * Get the live trace logging enabled setting
+     */
+    @NonNull
+    public LiveData<Boolean> getLogTracingData()
+    {
+        return itsIsLogTracingEnabled;
     }
 
     /**
@@ -198,6 +219,7 @@ public class YubikeyViewModel extends AndroidViewModel
     /**
      * Get a string identifier for a YubiKey device
      */
+    @NonNull
     public static String toString(YubiKeyDevice device)
     {
         if (device == null) {
@@ -215,9 +237,19 @@ public class YubikeyViewModel extends AndroidViewModel
     }
 
     @Override
+    public void handleDebugTagsChanged()
+    {
+        boolean traceEnabled =
+                PasswdSafeLog.isExplicitlyEnabled(YUBIKEY_TRACE_TAG);
+        setDebugLogTracing(traceEnabled);
+    }
+
+    @Override
     protected void onCleared()
     {
         PasswdSafeUtil.dbginfo(TAG, "onCleared");
+        setDebugLogTracing(false);
+        PasswdSafeLog.removeListener(this);
         itsYubiDevice.setValue(null);
         if (itsHasUsb) {
             itsYubiMgr.stopUsbDiscovery();
@@ -255,5 +287,20 @@ public class YubikeyViewModel extends AndroidViewModel
         } else {
             return NfcState.UNAVAILABLE;
         }
+    }
+
+    /**
+     * Set whether log tracing is enabled
+     */
+    private void setDebugLogTracing(boolean traceEnabled)
+    {
+        PasswdSafeLog.debug(TAG, "Trace enabled: %b", traceEnabled);
+
+        // NOTE: TRACE level logs Yubikey passwords
+        var logger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(
+                "com.yubico.yubikit");
+        logger.setLevel(traceEnabled ? Level.TRACE : Level.DEBUG);
+
+        itsIsLogTracingEnabled.postValue(traceEnabled);
     }
 }

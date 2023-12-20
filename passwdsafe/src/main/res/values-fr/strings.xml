@@ -424,6 +424,7 @@
     <string name="yes">Oui</string>
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_error">Erreur de communication avec le YubiKey: %1$s</string>
+    <string name="yubikey_debugging">Débogage de YubiKey</string>
     <string name="yubikey_nfc_disabled">NFC YubiKey désactivé.  Pour activer, utilisez le menu pour ouvrir les paramètres NFC.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>
     <string name="yubikey_slot_2">YubiKey Slot 2</string>

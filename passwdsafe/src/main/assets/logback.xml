@@ -16,6 +16,10 @@
         </encoder>
     </appender>
 
+    <!-- Write Yubico DEBUG (and higher-level) messages to logcat. NOTE: TRACE
+    level logs Yubikey passwords -->
+    <logger name="com.yubico.yubikit" level="DEBUG"/>
+
     <!-- Write DEBUG (and higher-level) messages to logcat -->
     <root level="DEBUG">
         <appender-ref ref="logcat" />

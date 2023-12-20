@@ -406,6 +406,7 @@
     <string name="writable">Writable</string>
     <string name="yes">Yes</string>
     <string name="yubikey">YubiKey</string>
+    <string name="yubikey_debugging">YubiKey Debugging</string>
     <string name="yubikey_error">Error communicating with the YubiKey: %1$s</string>
     <string name="yubikey_nfc_disabled">YubiKey NFC disabled. To enable, use the menu to open the NFC settings.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>

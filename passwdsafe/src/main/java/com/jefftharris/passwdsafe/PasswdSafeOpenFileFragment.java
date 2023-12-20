@@ -205,6 +205,9 @@ public class PasswdSafeOpenFileFragment
         itsYubikeyModel = viewModelProvider.get(YubikeyViewModel.class);
         itsYubikeyModel.getDeviceData().observe(this,
                                                 this::onYubikeyDeviceChanged);
+        itsYubikeyModel
+                .getLogTracingData()
+                .observe(this, this::onYubikeyLogTracingChanged);
     }
 
     @Override
@@ -246,6 +249,7 @@ public class PasswdSafeOpenFileFragment
         GuiUtils.setVisible(itsYubikeyError, false);
         itsYubikeyProgressMsg = rootView.findViewById(R.id.yubi_progress_text);
         GuiUtils.setVisible(itsYubikeyProgressMsg, false);
+        setVisibility(R.id.yubikey_debugging, false, rootView);
         setVisibility(R.id.yubikey_nfc_disabled, false, rootView);
         setVisibility(R.id.file_open_help_text, false, rootView);
 
@@ -1077,6 +1081,17 @@ public class PasswdSafeOpenFileFragment
     }
 
     /**
+     * Handle a change in the YubiKey log tracing setting
+     */
+    private void onYubikeyLogTracingChanged(Boolean enabled)
+    {
+        PasswdSafeUtil.dbginfo(TAG, "Yubikey log tracing changed: %b",
+                               enabled);
+        setVisibility(R.id.yubikey_debugging, (enabled != null) && enabled,
+                      requireView());
+    }
+
+   /**
      * Update the YubiKey progress message
      *
      * @param hasUsbDevice Non-null if the presence of a USB YubiKey is known

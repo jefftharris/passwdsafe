@@ -412,6 +412,7 @@
     <string name="writable">Beschreibbar</string>
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
+    <string name="yubikey_debugging">YubiKey-Fehlersuche</string>
     <string name="yubikey_error">Fehler bei der Kommunikation mit dem YubiKey: %1$s</string>
     <string name="yubikey_nfc_disabled">YubiKey NFC abgeschaltet. Benutze das Menü um die NFC-Einstellungen zu öffnen, zum Einschalten.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>

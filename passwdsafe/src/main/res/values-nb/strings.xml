@@ -378,6 +378,7 @@
     <string name="writable">Skrivbar</string>
     <string name="yes">Ja</string>
     <string name="yubikey">YubiKey</string>
+    <string name="yubikey_debugging">YubiKey-feilsøking</string>
     <string name="yubikey_error">Klarte ikke kommuniserer med YubiKey-en: %1$s</string>
     <string name="yubikey_nfc_disabled">YubiKey NFC deaktivert: For å aktivere, bruk menyen for å åpne NFC-innstillingene.</string>
     <string name="yubikey_slot_1">YubiKey plass 1</string>
