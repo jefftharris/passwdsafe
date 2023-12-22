@@ -9,6 +9,8 @@
  */
 package org.pwsafe.lib;
 
+import androidx.annotation.NonNull;
+
 import org.pwsafe.lib.crypto.SHA256Pws;
 
 import java.security.SecureRandom;
@@ -56,7 +58,8 @@ public final class Util
      * @param b second array
      * @return first array appended with second array
      */
-    public static byte[] mergeBytes(byte[] a, byte[] b)
+    @NonNull
+    public static byte[] mergeBytes(@NonNull byte[] a, @NonNull byte[] b)
     {
         final byte[] p = new byte[a.length + b.length];
         System.arraycopy(a, 0, p, 0, a.length);
@@ -72,6 +75,7 @@ public final class Util
      * @param length the number of bytes to include
      * @return a byte array containing the specified subset
      */
+    @NonNull
     public static byte[] getBytes(byte[] src, int offset, int length)
     {
         final byte[] output = new byte[length];
@@ -98,6 +102,7 @@ public final class Util
      * @param b the byte array to be converted to a hex string.
      * @return The hexadecimal representation of the byte array contents.
      */
+    @NonNull
     public static String bytesToHex(byte[] b)
     {
         return bytesToHex(b, 0, b.length);
@@ -116,6 +121,7 @@ public final class Util
      * @throws ArrayIndexOutOfBoundsException if <code>(offset + length) &gt;
      *                                        b.length</code>.
      */
+    @NonNull
     public static String bytesToHex(byte[] b, int offset, int length)
     {
         return new String(bytesToHexChars(b, offset, length));
@@ -124,6 +130,7 @@ public final class Util
     /**
      * Converts a byte array to hexadecimal characters
      */
+    @NonNull
     public static char[] bytesToHexChars(byte[] b, int offset, int length)
     {
         if (length < 0) {
@@ -148,7 +155,7 @@ public final class Util
      * @throws IllegalArgumentException if the array length is zero or not a
      *                                  multiple of four bytes.
      */
-    public static void bytesToLittleEndian(byte[] src)
+    public static void bytesToLittleEndian(@NonNull byte[] src)
     {
         byte temp;
 
@@ -174,7 +181,8 @@ public final class Util
      * @return An array of bytes equal in length and content to
      * <code>src</code>.
      */
-    public static byte[] cloneByteArray(byte[] src)
+    @NonNull
+    public static byte[] cloneByteArray(@NonNull byte[] src)
     {
         final byte[] dst = new byte[src.length];
         System.arraycopy(src, 0, dst, 0, src.length);
@@ -192,7 +200,8 @@ public final class Util
      * @param length the size of the new array.
      * @return The new array.
      */
-    public static byte[] cloneByteArray(byte[] src, int length)
+    @NonNull
+    public static byte[] cloneByteArray(@NonNull byte[] src, int length)
     {
         int max = Math.min(length, src.length);
         final byte[] dst = new byte[length];
@@ -212,7 +221,7 @@ public final class Util
      * .length</code> &lt; <code>offset + 4</code>.
      */
     public static int getIntFromByteArray(
-            byte[] buff,
+            @NonNull byte[] buff,
             @SuppressWarnings("SameParameterValue") int offset)
     {
         int result;
@@ -236,7 +245,7 @@ public final class Util
      * .length</code> &lt; <code>offset + 2</code>.
      */
     public static short getShortFromByteArray(
-            byte[] buff,
+            @NonNull byte[] buff,
             @SuppressWarnings("SameParameterValue") int offset)
     {
         short result;
@@ -276,12 +285,14 @@ public final class Util
      * @param value  the integer value to store.
      * @param offset the offset at which to store the value.
      */
-    public static void putIntToByteArray(byte[] buff, int value, int offset)
+    public static void putIntToByteArray(@NonNull byte[] buff,
+                                         int value,
+                                         int offset)
     {
         buff[offset + 0] = (byte)(value & 0xff);
-        buff[offset + 1] = (byte)((value & 0xff00) >>> 8);
-        buff[offset + 2] = (byte)((value & 0xff0000) >>> 16);
-        buff[offset + 3] = (byte)((value & 0xff000000) >>> 24);
+        buff[offset + 1] = (byte)((value >>> 8) & 0xff);
+        buff[offset + 2] = (byte)((value >>> 16) & 0xff);
+        buff[offset + 3] = (byte)((value >>> 24) & 0xff);
     }
 
     /**
@@ -293,11 +304,11 @@ public final class Util
      * @param offset the offset at which to store the value.
      */
     public static void putShortToByteArray(
-            byte[] buff, short value,
+            @NonNull byte[] buff, short value,
             @SuppressWarnings("SameParameterValue") int offset)
     {
         buff[offset + 0] = (byte)(value & 0xff);
-        buff[offset + 1] = (byte)((value & 0xff00) >>> 8);
+        buff[offset + 1] = (byte)((value >>> 8) & 0xff);
     }
 
     /**
@@ -312,7 +323,7 @@ public final class Util
      * .length</code> &lt; <code>offset + 4</code>.
      */
     public static long getMillisFromByteArray(
-            byte[] buff,
+            @NonNull byte[] buff,
             @SuppressWarnings("SameParameterValue") int offset)
     {
 
@@ -337,22 +348,21 @@ public final class Util
      * @param offset the offset at which to store the value.
      */
     public static void putMillisToByteArray(
-            byte[] buff, long value,
+            @NonNull byte[] buff, long value,
             @SuppressWarnings("SameParameterValue") int offset)
     {
         value /= 1000L; // convert from millis to seconds
 
         buff[offset + 0] = (byte)(value & 0xff);
-        buff[offset + 1] = (byte)((value & 0xff00) >>> 8);
-        buff[offset + 2] = (byte)((value & 0xff0000) >>> 16);
-        buff[offset + 3] = (byte)((value & 0xff000000) >>> 24);
-
+        buff[offset + 1] = (byte)((value >>> 8) & 0xff);
+        buff[offset + 2] = (byte)((value >>> 16) & 0xff);
+        buff[offset + 3] = (byte)((value >>> 24) & 0xff);
     }
 
     /**
      * Calculate stretched key.
      * <p/>
-     * http://www.schneier.com/paper-low-entropy.pdf (Section 4.1),
+     * <a href="http://www.schneier.com/paper-low-entropy.pdf">paper-low-entropy.pdf</a> (Section 4.1),
      * with SHA-256 as the hash function, and ITER iterations
      * (at least 2048, i.e., t = 11).
      *
