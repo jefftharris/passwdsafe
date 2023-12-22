@@ -15,7 +15,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Tests for SHA hashing.  Test values from
- * http://csrc.nist.gov/groups/STM/cavp/secure-hashing.html#sha-1
+ * <a href="http://csrc.nist.gov/groups/STM/cavp/secure-hashing.html#sha-1">NIST secure hashing</a>
  */
 
 public final class SHATest

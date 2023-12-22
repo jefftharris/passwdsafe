@@ -28,7 +28,8 @@ public class ViewActions
 {
     /**
      * Perform action of waiting for a specific view id.
-     * From https://stackoverflow.com/questions/21417954/espresso-thread-sleep
+     * From
+     * <a href="https://stackoverflow.com/questions/21417954/espresso-thread-sleep">espresso-thread-sleep</a>
      */
     public static ViewAction waitId(final int viewId, final long millis)
     {
