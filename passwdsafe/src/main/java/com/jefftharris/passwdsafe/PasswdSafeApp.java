@@ -17,6 +17,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
@@ -145,7 +146,8 @@ public final class PasswdSafeApp extends Application
      * Sanitize an intent URI for a file to open. Removes fragments and query
      * params
      */
-    public static Uri getOpenUriFromIntent(Intent intent)
+    @Nullable
+    public static Uri getOpenUriFromIntent(@NonNull Intent intent)
     {
         Uri uri = intent.getData();
         if (uri == null) {
@@ -201,6 +203,7 @@ public final class PasswdSafeApp extends Application
     /**
      * Get a title for a URI
      */
+    @NonNull
     public static String getAppFileTitle(PasswdFileUri uri, Context ctx)
     {
         return getAppTitle((uri != null) ? uri.getIdentifier(ctx, true) : null,
@@ -210,6 +213,7 @@ public final class PasswdSafeApp extends Application
     /**
      * Get a title for the application
      */
+    @NonNull
     public static String getAppTitle(String title, Context ctx)
     {
         StringBuilder builder = new StringBuilder();
@@ -224,7 +228,7 @@ public final class PasswdSafeApp extends Application
     /**
      * Schedule a background task
      */
-    public static void scheduleTask(Runnable run, Context ctx)
+    public static void scheduleTask(Runnable run, @NonNull Context ctx)
     {
         PasswdSafeApp app = (PasswdSafeApp)ctx.getApplicationContext();
         app.itsThreadExecutor.submit(run);

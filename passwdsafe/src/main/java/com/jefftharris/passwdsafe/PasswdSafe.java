@@ -682,7 +682,7 @@ public class PasswdSafe extends AppCompatActivity
      * @param v The view that was clicked.
      */
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         int id = v.getId();
         if (id == R.id.query_clear_btn) {
@@ -716,7 +716,7 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public boolean onPreferenceStartScreen(
             @NonNull PreferenceFragmentCompat caller,
-            PreferenceScreen pref)
+            @NonNull PreferenceScreen pref)
     {
         doChangeView(ChangeMode.VIEW_PREFERENCES,
                      PreferencesFragment.newInstance(pref.getKey()));
@@ -881,7 +881,8 @@ public class PasswdSafe extends AppCompatActivity
      * Handle when the file was successfully opened
      */
     @Override
-    public void handleFileOpen(PasswdFileData fileData, String recToOpen)
+    public void handleFileOpen(@NonNull PasswdFileData fileData,
+                               String recToOpen)
     {
         PasswdSafeUtil.dbginfo(TAG, "handleFileOpen: %s, rec: %s",
                                fileData.getUri(), recToOpen);
@@ -920,7 +921,7 @@ public class PasswdSafe extends AppCompatActivity
      * Handle when the file was successfully created
      */
     @Override
-    public void handleFileNew(PasswdFileData fileData)
+    public void handleFileNew(@NonNull PasswdFileData fileData)
     {
         PasswdSafeUtil.dbginfo(TAG, "handleFileNew: %s", fileData.getUri());
         itsFileDataFrag.setFileData(fileData);
@@ -946,7 +947,7 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public void copyField(final CopyField field, final String recUuid)
+    public void copyField(@NonNull final CopyField field, final String recUuid)
     {
         boolean sensitive = true;
         switch (field) {
@@ -1140,7 +1141,7 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public void finishEditRecord(EditRecordResult result)
+    public void finishEditRecord(@NonNull EditRecordResult result)
     {
         finishEdit(result.itsIsNewRecord ?
                    EditFinish.ADD_RECORD :
@@ -1437,7 +1438,7 @@ public class PasswdSafe extends AppCompatActivity
     /**
      * Handle when an edit is finished
      */
-    private void editFinished(FinishSaveInfo saveState)
+    private void editFinished(@NonNull FinishSaveInfo saveState)
     {
         if (saveState.itsIsSave) {
             itsFileDataFrag.refreshFileData();
@@ -1512,7 +1513,8 @@ public class PasswdSafe extends AppCompatActivity
     /**
      * Change the view for an open file
      */
-    private void changeOpenView(PasswdLocation location, OpenViewChange change)
+    private void changeOpenView(@NonNull PasswdLocation location,
+                                OpenViewChange change)
     {
         Fragment viewFrag;
         ChangeMode viewMode = ChangeMode.OPEN_INIT;
@@ -1922,7 +1924,7 @@ public class PasswdSafe extends AppCompatActivity
         /**
          * Constructor
          */
-        private FinishSaveInfo(EditFinish task,
+        private FinishSaveInfo(@NonNull EditFinish task,
                                String popTag,
                                PasswdLocation newLocation,
                                Runnable postSaveRun)
@@ -1999,6 +2001,7 @@ public class PasswdSafe extends AppCompatActivity
             itsFileDataFrag = act.itsFileDataFrag;
         }
 
+        @NonNull
         @Override
         protected Boolean doInBackground() throws Throwable
         {
@@ -2057,6 +2060,7 @@ public class PasswdSafe extends AppCompatActivity
             itsFileDataFrag = act.itsFileDataFrag;
         }
 
+        @NonNull
         @Override
         protected Boolean doInBackground() throws Throwable
         {
@@ -2109,6 +2113,7 @@ public class PasswdSafe extends AppCompatActivity
             itsFileUri = uri;
         }
 
+        @NonNull
         @Override
         protected Boolean doInBackground() throws Throwable
         {
