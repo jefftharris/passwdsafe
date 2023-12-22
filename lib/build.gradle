@@ -5,8 +5,6 @@
  * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
-import java.text.SimpleDateFormat
-
 apply plugin: 'com.android.library'
 
 static def hgId() {
@@ -14,8 +12,7 @@ static def hgId() {
 }
 
 static def buildTime() {
-    def df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z")
-    return df.format(new Date())
+    return 'hg log -r . -T {date|isodate}'.execute().text.trim()
 }
 
 android {
