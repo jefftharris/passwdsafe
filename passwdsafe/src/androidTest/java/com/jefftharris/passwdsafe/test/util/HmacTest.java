@@ -15,7 +15,8 @@ import java.security.InvalidKeyException;
 import static org.junit.Assert.assertArrayEquals;
 
 /**
- * Tests for HMAC 256.  Test vectors from https://tools.ietf.org/html/rfc4231
+ * Tests for HMAC 256.  Test vectors from
+ * <a href="https://tools.ietf.org/html/rfc4231">RFC4321</a>
  */
 
 public final class HmacTest
