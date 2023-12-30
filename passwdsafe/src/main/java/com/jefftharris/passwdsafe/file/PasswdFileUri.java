@@ -538,7 +538,7 @@ public class PasswdFileUri
 
 
     /** Get the URI type */
-    public static Type getUriType(Uri uri)
+    public static Type getUriType(@NonNull Uri uri)
     {
         String scheme = uri.getScheme();
         if (scheme != null) {
@@ -569,6 +569,7 @@ public class PasswdFileUri
     /**
      * Implementation of resolving fields for a file URI
      */
+    @NonNull
     private Pair<Boolean, Integer> doResolveFileUri(Context ctx)
     {
         if (itsFile == null) {
@@ -615,12 +616,11 @@ public class PasswdFileUri
 
 
     /** Resolve fields for a generic provider URI */
-    private void resolveGenericProviderUri(Context context)
+    private void resolveGenericProviderUri(@NonNull Context context)
     {
         ContentResolver cr = context.getContentResolver();
         itsTitle = "(unknown)";
-        boolean writable = false;
-        boolean deletable = false;
+        var perms = new FilePerms(false, false);
         Cursor cursor = cr.query(itsUri, null, null, null, null);
         try {
             if ((cursor != null) && cursor.moveToFirst()) {
@@ -630,35 +630,60 @@ public class PasswdFileUri
                     itsTitle = cursor.getString(colidx);
                 }
 
-                Pair<Boolean, Boolean> rc =
-                        resolveGenericProviderFlags(cursor, context);
-                writable = rc.first;
-                deletable = rc.second;
+                perms = resolveGenericProviderFlags(cursor, context);
             }
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-        itsWritableInfo = new Pair<>(
-                writable, writable ? null : R.string.read_only_provider);
-        itsIsDeletable = deletable;
+        itsWritableInfo = new Pair<>(perms.isWritable,
+                                     perms.isWritable ? null :
+                                     R.string.read_only_provider);
+        itsIsDeletable = perms.isDeletable;
     }
 
 
     /**
      * Resolve the writable and deletable flags for a generic provider URI
      */
-    private Pair<Boolean, Boolean> resolveGenericProviderFlags(Cursor cursor,
-                                                               Context ctx)
+    @NonNull
+    private FilePerms resolveGenericProviderFlags(@NonNull Cursor cursor,
+                                                  @NonNull Context ctx)
     {
+        if (ApiCompat.isChromeOS(ctx)) {
+            /*
+            NOTES:
+            - Local files: can write, not doc uri, write perms, flags are 0
+            - GDrive files: can't write, not doc uri, write perms, flags are 0
+            - OneDrive files: can write, is doc uri, write perms, flags are 1
+            - GDrive app: can write, not doc uri, doesn't grant write
+            permissions but flags imply writes
+            - OneDrive app: can't write, doesn't grant write perms, flags N/A
+
+            So:
+            - If flags imply writes -> writeable and/or deletable
+            - If write permission -> writable / not deletable (not supported)
+            - not write / not delete
+             */
+            var perms = getDocumentUriFilePerms(cursor);
+            if ((perms != null) && perms.isWritable) {
+                return perms;
+            }
+
+            if (isUriGrantedWritePermission(ctx)) {
+                // ChromeOS doesn't seem to support deletes on its basic
+                // volume file provider
+                return new FilePerms(true, false);
+            }
+
+            return new FilePerms(false, false);
+        }
+
         boolean checkFlags = false;
         if (DocumentFile.isDocumentUri(ctx, itsUri)) {
-            if (ctx.checkCallingOrSelfUriPermission(
-                    itsUri,
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION) !=
-                PackageManager.PERMISSION_GRANTED) {
-                return new Pair<>(false, false);
+            if (!isUriGrantedWritePermission(ctx)) {
+                return new FilePerms(false, false);
             }
             checkFlags = true;
         } else if (cursor.getColumnIndex(
@@ -667,15 +692,9 @@ public class PasswdFileUri
         }
 
         if (checkFlags) {
-            int colidx = cursor.getColumnIndex(
-                    DocumentsContractCompat.COLUMN_FLAGS);
-            if (colidx != -1) {
-                int flags = cursor.getInt(colidx);
-                return new Pair<>(
-                        ((flags & DocumentsContractCompat.FLAG_SUPPORTS_WRITE)
-                         != 0),
-                        ((flags & DocumentsContractCompat.FLAG_SUPPORTS_DELETE)
-                         != 0));
+            var perms = getDocumentUriFilePerms(cursor);
+            if (perms != null) {
+                return perms;
             }
         }
 
@@ -683,10 +702,42 @@ public class PasswdFileUri
         if (colidx != -1) {
             int val = cursor.getInt(colidx);
             boolean writable = (val == 0);
-            return new Pair<>(writable, writable);
+            return new FilePerms(writable, writable);
         }
 
-        return new Pair<>(true, true);
+        return new FilePerms(true, true);
+    }
+
+
+    /**
+     * Get the file permissions from the resolved cursor for a document contract
+     * URI
+     */
+    @Nullable
+    private FilePerms getDocumentUriFilePerms(@NonNull Cursor cursor)
+    {
+        int colidx =
+                cursor.getColumnIndex(DocumentsContractCompat.COLUMN_FLAGS);
+        if (colidx != -1) {
+            int flags = cursor.getInt(colidx);
+            return new FilePerms(
+                    (flags & DocumentsContractCompat.FLAG_SUPPORTS_WRITE) != 0,
+                    (flags & DocumentsContractCompat.FLAG_SUPPORTS_DELETE) !=
+                    0);
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * Has the URI been granted write permission
+     */
+    private boolean isUriGrantedWritePermission(@NonNull Context ctx)
+    {
+        var rc = ctx.checkCallingOrSelfUriPermission(
+                itsUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        return rc == PackageManager.PERMISSION_GRANTED;
     }
 
 
@@ -726,7 +777,7 @@ public class PasswdFileUri
 
     /** Resolve sync provider information */
     private void resolveSyncProvider(long providerId,
-                                     ContentResolver cr)
+                                     @NonNull ContentResolver cr)
     {
         Uri providerUri = ContentUris.withAppendedId(
                 PasswdSafeContract.Providers.CONTENT_URI, providerId);
@@ -755,7 +806,7 @@ public class PasswdFileUri
 
 
     /** Resolve sync file information */
-    private void resolveSyncFile(ContentResolver cr)
+    private void resolveSyncFile(@NonNull ContentResolver cr)
     {
         Cursor fileCursor = cr.query(itsUri,
                                      PasswdSafeContract.Files.PROJECTION,
@@ -792,5 +843,20 @@ public class PasswdFileUri
             itsTitle = null;
         }
         return backup;
+    }
+
+    /**
+     * Resolved file permissions
+     */
+    private static class FilePerms
+    {
+        protected final boolean isWritable;
+        protected final boolean isDeletable;
+
+        protected FilePerms(boolean writable, boolean deletable)
+        {
+            isWritable = writable;
+            isDeletable = deletable;
+        }
     }
 }

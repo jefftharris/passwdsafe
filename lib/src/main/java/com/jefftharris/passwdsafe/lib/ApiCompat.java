@@ -48,6 +48,18 @@ public final class ApiCompat
     @ChecksSdkIntAtLeast
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
 
+    /**
+     * Is the app running on ChromeOS
+     */
+    public static boolean isChromeOS(@NonNull Context ctx)
+    {
+        // From https://stackoverflow.com/questions/39784415/how-to-detect-programmatically-if-android-app-is-running-in-chrome-book-or-in
+        var pkgmgr = ctx.getPackageManager();
+        return pkgmgr.hasSystemFeature("org.chromium.arc") ||
+               pkgmgr.hasSystemFeature("org.chromium.arc.device_management");
+    }
+
+
     /** Set whether the window is visible in the recent apps list */
     public static void setRecentAppsVisible(
             Window w, @SuppressWarnings("SameParameterValue") boolean visible)
@@ -215,7 +227,7 @@ public final class ApiCompat
     /**
      * Does the clipboard have text
      */
-    public static boolean clipboardHasText(Context ctx)
+    public static boolean clipboardHasText(@NonNull Context ctx)
     {
         ClipboardManager clipMgr = (ClipboardManager)
                 ctx.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -252,7 +264,7 @@ public final class ApiCompat
     /**
      * Does the device have a system vibrator
      */
-    public static boolean hasVibrator(Context ctx)
+    public static boolean hasVibrator(@NonNull Context ctx)
     {
         Vibrator vib = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
         return (vib != null) &&
@@ -274,7 +286,7 @@ public final class ApiCompat
      */
     private static ClipboardManager setClipboardText(String str,
                                                      boolean sensitive,
-                                                     Context ctx)
+                                                     @NonNull Context ctx)
     {
         ClipboardManager clipMgr = (ClipboardManager)
                 ctx.getSystemService(Context.CLIPBOARD_SERVICE);
