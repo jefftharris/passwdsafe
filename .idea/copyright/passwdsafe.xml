@@ -1,9 +1,8 @@
 <component name="CopyrightManager">
   <copyright>
-    <option name="notice" value="Copyright (©) &amp;#36;today.year Jeff Harris &lt;jefftharris@gmail.com&gt;&#10;All rights reserved. Use of the code is allowed under the&#10;Artistic License 2.0 terms, as specified in the LICENSE file&#10;distributed with this code, or available from&#10;http://www.opensource.org/licenses/artistic-license-2.0.php" />
-    <option name="keyword" value="Copyright" />
-    <option name="allowReplaceKeyword" value="" />
+    <option name="allowReplaceRegexp" value="2\d{3}" />
+    <option name="keyword" value="Copyright \(©\)" />
+    <option name="notice" value="Copyright (©) &amp;#36;originalComment.match(&quot;Copyright \(©\) (\d+)&quot;, 1, &quot;-&quot;)&amp;#36;today.year Jeff Harris &lt;jefftharris@gmail.com&gt;&#10;All rights reserved. Use of the code is allowed under the&#10;Artistic License 2.0 terms, as specified in the LICENSE file&#10;distributed with this code, or available from&#10;http://www.opensource.org/licenses/artistic-license-2.0.php" />
     <option name="myName" value="passwdsafe" />
-    <option name="myLocal" value="true" />
   </copyright>
 </component>
