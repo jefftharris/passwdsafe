@@ -662,16 +662,19 @@
     <plurals name="expiring_passwords">
         <item quantity="one">%1$d mot de passe expire</item>
         <item quantity="other">%1$d mots de passe expirent</item>
+        <item quantity="many">%1$d mots de passe expirent</item>
     </plurals>
 
     <plurals name="group_items">
         <item quantity="one">[%d entrée]</item>
         <item quantity="other">[%d entrées]</item>
+        <item quantity="many">[%d entrées]</item>
     </plurals>
 
     <plurals name="interval_days">
         <item quantity="one">%d jour</item>
         <item quantity="other">%d jours</item>
+        <item quantity="many">%d jours</item>
     </plurals>
 
     <!-- Order must match FileBackupPref enum values -->
