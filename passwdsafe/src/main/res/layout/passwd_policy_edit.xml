@@ -1,196 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:padding="3dp"
-              tools:context="com.jefftharris.passwdsafe.view.PasswdPolicyEditDialog">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="3dp"
+    tools:context="com.jefftharris.passwdsafe.view.PasswdPolicyEditDialog">
 
-    <ScrollView android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical">
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/name_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/name">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapSentences"/>
+                    android:inputType="textCapSentences"
+                    android:minHeight="48dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="@string/length">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/length"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
-                        android:inputType="number"/>
+                        android:inputType="number"
+                        android:minHeight="48dp"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Spinner android:id="@+id/type"
-                         style="@style/Widget.AppCompat.Spinner.Underlined"
-                         android:layout_width="0dp"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="bottom"
-                         android:layout_weight="1"
-                         android:entries="@array/policy_type"
-                         android:prompt="@string/choose_type"
-                         android:spinnerMode="dropdown"
-                         tools:ignore="UnusedAttribute"/>
+                <Spinner
+                    android:id="@+id/type"
+                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:entries="@array/policy_type"
+                    android:minHeight="48dp"
+                    android:prompt="@string/choose_type"
+                    android:spinnerMode="dropdown"
+                    tools:ignore="UnusedAttribute"/>
 
             </LinearLayout>
 
-            <TableLayout android:layout_width="match_parent"
-                         android:layout_height="wrap_content"
-                         android:shrinkColumns="2"
-                         android:stretchColumns="2">
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:shrinkColumns="2"
+                android:stretchColumns="2">
 
                 <TableRow android:id="@+id/lowercase_row">
 
-                    <CheckBox android:id="@+id/lowercase"
-                              style="@style/TableLabelColumn"
-                              android:text="@string/use_lowercase"/>
+                    <CheckBox
+                        android:id="@+id/lowercase"
+                        style="@style/TableLabelColumn"
+                        android:minHeight="49dp"
+                        android:text="@string/use_lowercase"/>
 
-                    <TextView android:id="@+id/lowercase_label"
-                              android:text="@string/at_least"/>
+                    <TextView
+                        android:id="@+id/lowercase_label"
+                        android:text="@string/at_least"/>
 
-                    <EditText android:id="@+id/lowercase_len"
-                              android:hint="@string/length"
-                              android:importantForAutofill="no"
-                              android:inputType="number"
-                              tools:targetApi="o"/>
+                    <EditText
+                        android:id="@+id/lowercase_len"
+                        android:hint="@string/use_lowercase"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:minHeight="48dp"
+                        tools:targetApi="o"/>
                 </TableRow>
 
                 <TableRow android:id="@+id/uppercase_row">
 
-                    <CheckBox android:id="@+id/uppercase"
-                              style="@style/TableLabelColumn"
-                              android:text="@string/use_uppercase"/>
+                    <CheckBox
+                        android:id="@+id/uppercase"
+                        style="@style/TableLabelColumn"
+                        android:minHeight="49dp"
+                        android:text="@string/use_uppercase"/>
 
-                    <TextView android:id="@+id/uppercase_label"
-                              android:text="@string/at_least"/>
+                    <TextView
+                        android:id="@+id/uppercase_label"
+                        android:text="@string/at_least"/>
 
-                    <EditText android:id="@+id/uppercase_len"
-                              android:hint="@string/length"
-                              android:importantForAutofill="no"
-                              android:inputType="number"
-                              tools:targetApi="o"/>
+                    <EditText
+                        android:id="@+id/uppercase_len"
+                        android:hint="@string/use_uppercase"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:minHeight="48dp"
+                        tools:targetApi="o"/>
                 </TableRow>
 
                 <TableRow android:id="@+id/digits_row">
 
-                    <CheckBox android:id="@+id/digits"
-                              style="@style/TableLabelColumn"
-                              android:text="@string/use_digits"/>
+                    <CheckBox
+                        android:id="@+id/digits"
+                        style="@style/TableLabelColumn"
+                        android:minHeight="49dp"
+                        android:text="@string/use_digits"/>
 
-                    <TextView android:id="@+id/digits_label"
-                              android:text="@string/at_least"/>
+                    <TextView
+                        android:id="@+id/digits_label"
+                        android:text="@string/at_least"/>
 
-                    <EditText android:id="@+id/digits_len"
-                              android:hint="@string/length"
-                              android:importantForAutofill="no"
-                              android:inputType="number"
-                              tools:targetApi="o"/>
+                    <EditText
+                        android:id="@+id/digits_len"
+                        android:hint="@string/use_digits"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:minHeight="48dp"
+                        tools:targetApi="o"/>
                 </TableRow>
 
                 <TableRow android:id="@+id/symbols_row">
 
-                    <CheckBox android:id="@+id/symbols"
-                              style="@style/TableLabelColumn"
-                              android:text="@string/use_symbols"/>
+                    <CheckBox
+                        android:id="@+id/symbols"
+                        style="@style/TableLabelColumn"
+                        android:minHeight="49dp"
+                        android:text="@string/use_symbols"/>
 
-                    <TextView android:id="@+id/symbols_label"
-                              android:text="@string/at_least"/>
+                    <TextView
+                        android:id="@+id/symbols_label"
+                        android:text="@string/at_least"/>
 
-                    <EditText android:id="@+id/symbols_len"
-                              android:hint="@string/length"
-                              android:importantForAutofill="no"
-                              android:inputType="number"
-                              tools:targetApi="o"/>
+                    <EditText
+                        android:id="@+id/symbols_len"
+                        android:hint="@string/use_symbols"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:minHeight="48dp"
+                        tools:targetApi="o"/>
                 </TableRow>
             </TableLayout>
 
-            <LinearLayout android:id="@+id/custom_symbols_set"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:layout_marginLeft="32dip"
-                          android:layout_marginStart="32dip"
-                          android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/custom_symbols_set"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dip"
+                android:orientation="vertical">
 
-                <CheckBox android:id="@+id/use_custom_symbols"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:text="@string/custom_symbols"/>
+                <CheckBox
+                    android:id="@+id/use_custom_symbols"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/custom_symbols"/>
 
-                <TextView android:id="@+id/symbols_default"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:layout_marginLeft="32dip"
-                          android:layout_marginStart="32dip"/>
+                <TextView
+                    android:id="@+id/symbols_default"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dip"/>
 
-                <EditText android:id="@+id/symbols_custom"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:layout_marginLeft="32dip"
-                          android:layout_marginStart="32dip"
-                          android:hint="@string/custom_symbols"
-                          android:importantForAutofill="no"
-                          android:inputType="text"
-                          android:selectAllOnFocus="true"
-                          tools:targetApi="o"/>
+                <EditText
+                    android:id="@+id/symbols_custom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dip"
+                    android:hint="@string/custom_symbols"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:minHeight="48dp"
+                    android:selectAllOnFocus="true"
+                    tools:targetApi="o"/>
 
             </LinearLayout>
 
-            <LinearLayout android:id="@+id/generate_row"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/generate_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <Button android:id="@+id/generate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/generate"/>
+                <Button
+                    android:id="@+id/generate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@+id/generated_passwd"
+                    android:text="@string/generate"/>
 
                 <TextView
                     android:id="@+id/generated_passwd"
                     style="@android:style/Widget.EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="48dp"
                     android:textAppearance="?android:textAppearanceSmall"
-                    android:typeface="monospace" />
+                    android:typeface="monospace"/>
 
             </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <View style="@style/Separator.Light"/>
 
-    <TextView android:id="@+id/error_msg"
-              android:layout_width="fill_parent"
-              android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/error_msg"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

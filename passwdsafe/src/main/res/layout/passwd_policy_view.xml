@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  ~ Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+  ~ All rights reserved. Use of the code is allowed under the
+  ~ Artistic License 2.0 terms, as specified in the LICENSE file
+  ~ distributed with this code, or available from
+  ~ http://www.opensource.org/licenses/artistic-license-2.0.php
+  -->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
 
     <TableLayout
         android:layout_width="fill_parent"
@@ -94,11 +103,13 @@
 
             <Button
                 android:id="@+id/policy_view_generate"
+                android:labelFor="@+id/policy_view_generated_passwd"
                 android:text="@string/generate"/>
 
             <TextView
                 android:id="@+id/policy_view_generated_passwd"
                 style="@android:style/Widget.EditText"
+                android:minHeight="48dp"
                 android:textAppearance="?android:textAppearanceSmall"
                 android:typeface="monospace"/>
 
@@ -107,4 +118,4 @@
 
     </TableLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -41,6 +41,7 @@ dependencies {
     api 'androidx.appcompat:appcompat:1.6.1'
     api 'androidx.cardview:cardview:1.0.0'
     api 'androidx.constraintlayout:constraintlayout:2.1.4'
+    api 'androidx.core:core:1.12.0'
     api 'androidx.gridlayout:gridlayout:1.0.0'
     api 'androidx.legacy:legacy-preference-v14:1.0.0'
     api 'androidx.legacy:legacy-support-v4:1.0.0'

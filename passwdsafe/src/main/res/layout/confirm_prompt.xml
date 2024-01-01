@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<!--
+  ~ Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+  ~ All rights reserved. Use of the code is allowed under the
+  ~ Artistic License 2.0 terms, as specified in the LICENSE file
+  ~ distributed with this code, or available from
+  ~ http://www.opensource.org/licenses/artistic-license-2.0.php
+  -->
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -7,7 +14,8 @@
     android:paddingStart="?attr/dialogPreferredPadding"
     android:paddingLeft="?attr/dialogPreferredPadding"
     android:paddingEnd="?attr/dialogPreferredPadding"
-    android:paddingRight="?attr/dialogPreferredPadding">
+    android:paddingRight="?attr/dialogPreferredPadding"
+    android:scrollbars="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -32,9 +40,10 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_min="48dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/confirm_message"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

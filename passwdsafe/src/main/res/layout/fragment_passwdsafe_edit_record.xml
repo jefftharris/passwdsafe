@@ -1,11 +1,12 @@
 <!--
-  ~ Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,6 +15,7 @@
     android:paddingTop="@dimen/fragment_full_vertical_margin"
     android:paddingRight="@dimen/fragment_full_horizontal_margin"
     android:paddingBottom="@dimen/fragment_full_vertical_margin"
+    android:scrollbars="vertical"
     tools:context="com.jefftharris.passwdsafe.PasswdSafeEditRecordFragment">
 
     <LinearLayout
@@ -36,7 +38,7 @@
                 android:paddingLeft="4dp"
                 android:paddingEnd="4dp"
                 android:paddingRight="4dp"
-                android:text="@string/type" />
+                android:text="@string/type"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,7 +54,7 @@
                     android:entries="@array/record_type"
                     android:prompt="@string/choose_type"
                     android:spinnerMode="dropdown"
-                    tools:ignore="UnusedAttribute" />
+                    tools:ignore="UnusedAttribute"/>
 
                 <TextView
                     android:id="@+id/link_ref"
@@ -60,9 +62,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:hint="@string/choose" />
+                    android:hint="@string/choose"/>
 
             </LinearLayout>
 
@@ -74,7 +75,7 @@
                 android:paddingStart="4dp"
                 android:paddingLeft="4dp"
                 android:paddingEnd="4dp"
-                android:paddingRight="4dp" />
+                android:paddingRight="4dp"/>
 
         </LinearLayout>
 
@@ -91,7 +92,7 @@
                 android:inputType="textCapSentences|textAutoCorrect"
                 android:maxLines="1">
 
-                <requestFocus />
+                <requestFocus/>
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -109,7 +110,7 @@
                 android:paddingLeft="4dp"
                 android:paddingEnd="4dp"
                 android:paddingRight="4dp"
-                android:text="@string/group" />
+                android:text="@string/group"/>
 
             <Spinner
                 android:id="@+id/group"
@@ -118,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:prompt="@string/choose_group"
                 android:spinnerMode="dialog"
-                tools:ignore="UnusedAttribute" />
+                tools:ignore="UnusedAttribute"/>
 
             <TextView
                 android:id="@+id/group_error"
@@ -128,7 +129,7 @@
                 android:paddingStart="4dp"
                 android:paddingLeft="4dp"
                 android:paddingEnd="4dp"
-                android:paddingRight="4dp" />
+                android:paddingRight="4dp"/>
 
         </LinearLayout>
 
@@ -142,7 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textNoSuggestions"
-                android:maxLines="1" />
+                android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -156,7 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textUri"
-                android:maxLines="1" />
+                android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -170,7 +171,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:maxLines="1" />
+                android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password fields -->
@@ -185,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/password"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <ImageView
                 android:id="@+id/password_generate"
@@ -197,7 +198,7 @@
                 android:contentDescription="@string/generate_password"
                 android:focusable="true"
                 android:longClickable="true"
-                android:src="?attr/drawableActionNewPassword" />
+                android:src="?attr/drawableActionNewPassword"/>
         </LinearLayout>
 
         <LinearLayout
@@ -222,7 +223,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:inputType="textMultiLine|textPassword" />
+                    android:inputType="textMultiLine|textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -236,7 +237,7 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine|textPassword" />
+                    android:inputType="textMultiLine|textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -251,7 +252,7 @@
                     android:id="@+id/password_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine|textPassword" />
+                    android:inputType="textMultiLine|textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Password policy -->
@@ -259,7 +260,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/password_policy"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -273,13 +274,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:gravity="fill_vertical" />
+                    android:gravity="fill_vertical"/>
 
                 <Button
                     android:id="@+id/policy_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/edit" />
+                    android:text="@string/edit"/>
 
             </LinearLayout>
 
@@ -287,7 +288,7 @@
                 android:id="@+id/policy_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"/>
 
             <!-- Pasword expiration -->
             <LinearLayout
@@ -300,7 +301,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/password_expiration"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <Spinner
                     android:id="@+id/expire_choice"
@@ -308,7 +309,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/expire_type"
-                    android:prompt="@string/choose_type" />
+                    android:prompt="@string/choose_type"/>
 
                 <LinearLayout
                     android:id="@+id/expire_date_fields"
@@ -320,15 +321,14 @@
                         android:id="@+id/expire_date_time"
                         style="@style/Widget.AppCompat.Spinner.Underlined"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"/>
 
                     <TextView
                         android:id="@+id/expire_date_date"
                         style="@style/Widget.AppCompat.Spinner.Underlined"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp" />
+                        android:layout_marginStart="8dp"/>
 
                 </LinearLayout>
 
@@ -359,7 +359,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
-                            android:minWidth="64dp" />
+                            android:minWidth="64dp"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <CheckBox
@@ -367,11 +367,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
                         android:layout_marginTop="16dp"
                         android:layout_toEndOf="@id/expire_interval_val_input"
-                        android:layout_toRightOf="@id/expire_interval_val_input"
-                        android:text="@string/recurring" />
+                        android:text="@string/recurring"/>
 
                 </RelativeLayout>
             </LinearLayout>
@@ -387,8 +385,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:text="@string/add" />
+                    android:text="@string/add"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -397,11 +394,9 @@
                     android:layout_alignTop="@id/history_addremove"
                     android:layout_alignBottom="@id/history_addremove"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
                     android:layout_toStartOf="@id/history_addremove"
-                    android:layout_toLeftOf="@id/history_addremove"
                     android:text="@string/history"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <CheckBox
                     android:id="@+id/history_enabled"
@@ -409,9 +404,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/history_addremove"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
                     android:layout_marginTop="16dp"
-                    android:text="@string/enabled" />
+                    android:text="@string/enabled"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/history_max_size_input"
@@ -419,9 +413,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/history_addremove"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_toEndOf="@+id/history_enabled"
-                    android:layout_toRightOf="@+id/history_enabled"
                     android:hint="@string/max_size">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -430,7 +422,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:maxLines="1"
-                        android:minWidth="100dip" />
+                        android:minWidth="100dip"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <ListView
@@ -438,7 +430,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/history_max_size_input"
-                    tools:ignore="NestedScrolling" />
+                    tools:ignore="NestedScrolling"/>
 
             </RelativeLayout>
 
@@ -450,7 +442,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/notes"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <EditText
             android:id="@+id/notes"
@@ -460,7 +452,7 @@
             android:importantForAutofill="no"
             android:inputType="textCapSentences|textMultiLine|textLongMessage|textAutoCorrect"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            tools:targetApi="o" />
+            tools:targetApi="o"/>
     </LinearLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
