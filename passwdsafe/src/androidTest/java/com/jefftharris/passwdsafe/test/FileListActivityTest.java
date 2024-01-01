@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -20,9 +20,10 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.espresso.intent.rule.IntentsRule;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -131,8 +132,11 @@ public class FileListActivityTest
     public TestModeRule itsTestMode = new TestModeRule();
 
     @Rule(order=3)
-    public IntentsTestRule<FileListActivity> itsActivityRule =
-            new IntentsTestRule<>(FileListActivity.class);
+    public IntentsRule itsIntentsRule = new IntentsRule();
+
+    @Rule(order=4)
+    public ActivityScenarioRule<FileListActivity> itsActivityRule =
+            new ActivityScenarioRule<>(FileListActivity.class);
 
     @Before
     public void setup()
