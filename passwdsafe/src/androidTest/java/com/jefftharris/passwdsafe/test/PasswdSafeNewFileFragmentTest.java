@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,11 +7,10 @@
  */
 package com.jefftharris.passwdsafe.test;
 
-import android.content.Intent;
 import android.net.Uri;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
 
 import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;
@@ -37,7 +36,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.jefftharris.passwdsafe.test.util.TestUtils.withTextInputError;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
 
 /**
@@ -50,16 +49,9 @@ public class PasswdSafeNewFileFragmentTest
     public TestModeRule itsTestMode = new TestModeRule();
 
     @Rule(order=2)
-    public ActivityTestRule<PasswdSafe> itsActivityRule =
-            new ActivityTestRule<>(PasswdSafe.class)
-            {
-                @Override
-                protected Intent getActivityIntent()
-                {
-                    return PasswdSafeUtil.createNewFileIntent(
-                            Uri.fromFile(FileListActivityTest.DIR));
-                }
-            };
+    public ActivityScenarioRule<PasswdSafe> itsActivityRule =
+            new ActivityScenarioRule<>(PasswdSafeUtil.createNewFileIntent(
+                    Uri.fromFile(FileListActivityTest.DIR)));
 
     @Before
     public void setup()
@@ -78,12 +70,12 @@ public class PasswdSafeNewFileFragmentTest
                 .check(matches(withTextInputError("Empty file name")));
 
         onView(withId(R.id.password))
-                .check(matches(withText(isEmptyString())));
+                .check(matches(withText(emptyString())));
         onView(withId(R.id.password_input))
                 .check(matches(withTextInputError("Empty password")));
 
         onView(withId(R.id.password_confirm))
-                .check(matches(withText(isEmptyString())));
+                .check(matches(withText(emptyString())));
         onView(withId(R.id.password_confirm_input))
                 .check(matches(withTextInputError(null)));
 
@@ -168,11 +160,11 @@ public class PasswdSafeNewFileFragmentTest
         onView(withId(R.id.file_name_input))
                 .check(matches(withTextInputError(null)));
         onView(withId(R.id.password))
-                .check(matches(withText(isEmptyString())));
+                .check(matches(withText(emptyString())));
         onView(withId(R.id.password_input))
                 .check(matches(withTextInputError("Empty password")));
         onView(withId(R.id.password_confirm))
-                .check(matches(withText(isEmptyString())));
+                .check(matches(withText(emptyString())));
         onView(withId(R.id.password_confirm_input))
                 .check(matches(withTextInputError(null)));
         onView(withId(R.id.ok))
@@ -183,7 +175,7 @@ public class PasswdSafeNewFileFragmentTest
         onView(withId(R.id.password_input))
                 .check(matches(withTextInputError(null)));
         onView(withId(R.id.password_confirm))
-                .check(matches(withText(isEmptyString())));
+                .check(matches(withText(emptyString())));
         onView(withId(R.id.password_confirm_input))
                 .check(matches(withTextInputError("Passwords do not match")));
         onView(withId(R.id.ok))
