@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -1423,13 +1423,30 @@ public class PasswdSafe extends AppCompatActivity
         FinishSaveInfo saveInfo = new FinishSaveInfo(task, popTag,
                                                      newLocation, postSaveRun);
         if (saveInfo.itsIsSave) {
-            String fileId = itsFileDataFrag.useFileData(
-                    fileData -> fileData.getUri().getIdentifier(PasswdSafe.this,
-                                                                false));
-            if (fileId == null) {
-                fileId = "";
-            }
-            itsTasks.startTask(new SaveTask(fileId, saveInfo, this));
+            var rc = itsFileDataFrag.useFileData((fileData) -> {
+                var uri = fileData.getUri();
+                String fileId = uri.getIdentifier(PasswdSafe.this, false);
+                if (fileId == null) {
+                    fileId = "";
+                }
+
+                boolean isFileUri = false;
+                switch (uri.getType()) {
+                case FILE: {
+                    isFileUri = true;
+                    break;
+                }
+                case SYNC_PROVIDER:
+                case EMAIL:
+                case GENERIC_PROVIDER:
+                case BACKUP: {
+                    break;
+                }
+                }
+                return new Pair<>(fileId, isFileUri);
+            });
+            itsTasks.startTask(new SaveTask(rc.first, rc.second, saveInfo,
+                                            this));
         } else {
             editFinished(saveInfo);
         }
@@ -1988,17 +2005,20 @@ public class PasswdSafe extends AppCompatActivity
     {
         private final @NonNull FinishSaveInfo itsSaveInfo;
         private final PasswdSafeFileDataFragment itsFileDataFrag;
+        private final boolean itsIsFileUri;
 
         /**
          * Constructor
          */
         private SaveTask(String fileId,
+                         boolean isFileUri,
                          @NonNull FinishSaveInfo saveInfo,
                          PasswdSafe act)
         {
             super(act.getString(R.string.saving_file, fileId), act);
             itsSaveInfo = saveInfo;
             itsFileDataFrag = act.itsFileDataFrag;
+            itsIsFileUri = isFileUri;
         }
 
         @NonNull
@@ -2024,7 +2044,7 @@ public class PasswdSafe extends AppCompatActivity
         protected void onTaskFinished(Boolean result, Throwable error,
                                       @NonNull PasswdSafe act)
         {
-            if ((error instanceof IOException) &&
+            if (itsIsFileUri && (error instanceof IOException) &&
                 (ApiCompat.SDK_VERSION >= ApiCompat.SDK_KITKAT)) {
                 String msg = act.getString(R.string.kitkat_sdcard_warning,
                                            error.toString());
