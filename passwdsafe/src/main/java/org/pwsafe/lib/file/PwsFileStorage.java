@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +11,7 @@ import org.pwsafe.lib.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -48,52 +49,44 @@ public class PwsFileStorage extends PwsStreamStorage
      * new file has been successfully saved.
      */
     @Override
-    public boolean save(byte[] data, boolean isV3)
+    public void save(byte[] data, boolean isV3) throws IOException
     {
+        File file = new File(getIdentifier());
+        if (!file.exists()) {
+            /* Original file doesn't exist, just go ahead and write it
+             * (no backup, temp files needed).
+             */
+            writeFile(file, data);
+            return;
+        }
+
+        File dir = file.getCanonicalFile().getParentFile();
+        if (dir == null) {
+            throw new FileNotFoundException(
+                    "Couldn't find the parent directory for: " +
+                    file.getAbsolutePath());
+        }
+        File FilePath = dir.getAbsoluteFile();
+        File fromFile = new File(FilePath, file.getName());
+        File toFile = new File(FilePath, getSaveFileName(file, isV3));
+
+        File tempFile = null;
         try {
-            File file = new File(getIdentifier());
-            if (!file.exists()) {
-                /* Original file doesn't exist, just go ahead and write it
-                 * (no backup, temp files needed).
-                 */
-                writeFile(file, data);
-                return true;
+            tempFile = File.createTempFile("pwsafe", null, FilePath);
+            writeFile(tempFile, data);
+
+            createBackupFile(fromFile, toFile);
+
+            if (tempFile.renameTo(toFile)) {
+                tempFile = null;
+            } else {
+                throw new IOException(
+                        "Error renaming " + tempFile + " to " + toFile);
             }
-            File dir = file.getCanonicalFile().getParentFile();
-            if (dir == null) {
-                LOG.error("Couldn't find the parent directory for: " +
-                          file.getAbsolutePath());
-                return false;
+        } finally {
+            if ((tempFile != null) && !tempFile.delete()) {
+                LOG.error("Error deleting temp file");
             }
-            File FilePath = dir.getAbsoluteFile();
-            File fromFile = new File(FilePath, file.getName());
-            File toFile = new File(FilePath,
-                                   getSaveFileName(file, isV3));
-
-            File tempFile = null;
-            try {
-                tempFile = File.createTempFile("pwsafe", null,
-                                               FilePath);
-                writeFile(tempFile, data);
-
-                createBackupFile(fromFile, toFile);
-
-                if (tempFile.renameTo(toFile)) {
-                    tempFile = null;
-                } else {
-                    throw new IOException("Error renaming " + tempFile +
-                                          " to " + toFile);
-                }
-            } finally {
-                if ((tempFile != null) && !tempFile.delete()) {
-                    LOG.error("Error deleting temp file");
-                }
-            }
-
-            return true;
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-            return false;
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2009-2013 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2009-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import com.jefftharris.passwdsafe.PasswdSafeApp;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ActContext;
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
 
@@ -1322,36 +1323,43 @@ public class PasswdFileData
                         Context context)
             throws IOException, ConcurrentModificationException
     {
-        if (itsPwsFile != null) {
-            for (int idx = 0; idx < itsRecords.size(); ++idx) {
-                PwsRecord rec = itsRecords.get(idx);
-                if (rec.isModified()) {
-                    PasswdSafeUtil.dbginfo(TAG, "Updating idx: %d", idx);
-                    itsPwsFile.set(idx, rec);
-                    rec.resetModified();
+        try {
+            if (itsPwsFile != null) {
+                for (int idx = 0; idx < itsRecords.size(); ++idx) {
+                    PwsRecord rec = itsRecords.get(idx);
+                    if (rec.isModified()) {
+                        PasswdSafeUtil.dbginfo(TAG, "Updating idx: %d", idx);
+                        itsPwsFile.set(idx, rec);
+                        rec.resetModified();
+                    }
+                }
+
+                setSaveHdrFields(context);
+
+                PwsStorage storage = (saveAsStorage != null) ? saveAsStorage :
+                                     itsPwsFile.getStorage();
+                try {
+                    if (saveHelper != null) {
+                        storage.setSaveHelper(saveHelper);
+                    }
+
+                    if (saveAsStorage != null) {
+                        itsPwsFile.saveAs(saveAsStorage);
+                    } else {
+                        itsPwsFile.save();
+                    }
+                    notifyObservers(this);
+                } finally {
+                    if (saveHelper != null) {
+                        storage.setSaveHelper(null);
+                    }
                 }
             }
-
-            setSaveHdrFields(context);
-
-            PwsStorage storage = (saveAsStorage != null) ?
-                                 saveAsStorage : itsPwsFile.getStorage();
-            try {
-                if (saveHelper != null) {
-                    storage.setSaveHelper(saveHelper);
-                }
-
-                if (saveAsStorage != null) {
-                    itsPwsFile.saveAs(saveAsStorage);
-                } else {
-                    itsPwsFile.save();
-                }
-                notifyObservers(this);
-            } finally {
-                if (saveHelper != null) {
-                    storage.setSaveHelper(null);
-                }
-            }
+        } catch (Exception e) {
+            var ioe = new IOException("Error saving to " + itsUri, e);
+            PasswdSafeLog.error(TAG, ioe, "Error saving %s",
+                                itsUri.getIdentifier(context, false));
+            throw ioe;
         }
     }
 

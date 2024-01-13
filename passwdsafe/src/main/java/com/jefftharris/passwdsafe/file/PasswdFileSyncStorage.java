@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -20,6 +20,7 @@ import org.pwsafe.lib.file.PwsFileStorage;
 import org.pwsafe.lib.file.PwsStreamStorage;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -41,7 +42,7 @@ public final class PasswdFileSyncStorage extends PwsStreamStorage
     }
 
     @Override
-    public boolean save(byte[] data, boolean isV3)
+    public void save(byte[] data, boolean isV3) throws IOException
     {
         File file = null;
         try {
@@ -61,10 +62,6 @@ public final class PasswdFileSyncStorage extends PwsStreamStorage
             cr.update(itsUri, values, null, null);
 
             PasswdSafeUtil.dbginfo(TAG, "Update %s with %s", itsUri, file);
-            return true;
-        } catch (Exception e) {
-            Log.e(TAG, "Error saving " + itsUri, e);
-            return false;
         } finally {
             if (file != null) {
                 PasswdClientProvider.removeFile(file);

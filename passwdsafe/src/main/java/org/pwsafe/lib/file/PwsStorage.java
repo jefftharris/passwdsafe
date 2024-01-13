@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -72,10 +73,8 @@ public interface PwsStorage
      *
      * @param data The bytes making up the PasswordSafe file
      * @param isV3 Is the file version 3
-     * @return true if save was successful
      */
-    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "RedundantSuppression"})
-    boolean save(byte[] data, boolean isV3);
+    void save(byte[] data, boolean isV3) throws IOException;
 
     /**
      * Returns a human readable identifier of this storage that might be

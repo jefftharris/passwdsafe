@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -58,6 +58,17 @@ public final class PasswdSafeLog
     }
 
     /**
+     * Log a formatted message at error level
+     */
+    public static void error(@NonNull String tag,
+                             @NonNull Throwable t,
+                             @PrintFormat String fmt,
+                             Object... args)
+    {
+        Log.e(tag, String.format(fmt, args), t);
+    }
+
+    /**
      * Log a formatted message at info level
      *
      * @noinspection RedundantSuppression
@@ -83,17 +94,29 @@ public final class PasswdSafeLog
     }
 
     /**
+     * Log a formatted message at debug level if enabled
+     */
+    private static void debug(@NonNull String tag,
+                              @NonNull Throwable t,
+                              @PrintFormat String fmt,
+                              Object... args)
+    {
+        if (isDebugEnabled(tag)) {
+            Log.d(tag, String.format(fmt, args), t);
+        }
+    }
+
+    /**
      * Log a formatted message and stack trace at debug level if enabled
      *
-     * @noinspection unused
+     * @noinspection unused, RedundantSuppression
      */
     public static void debugTrace(@NonNull String tag,
                                   @PrintFormat String fmt,
                                   Object... args)
     {
-        if (isDebugEnabled(tag)) {
-            Log.d(tag, String.format(fmt, args), new Exception());
-        }
+        //noinspection PatternValidation
+        debug(tag, new Exception(), fmt, args);
     }
 
     /**

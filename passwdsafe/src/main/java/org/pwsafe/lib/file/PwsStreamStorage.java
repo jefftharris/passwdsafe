@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -81,10 +81,10 @@ public class PwsStreamStorage implements PwsStorage
         }
     }
 
-    public boolean save(byte[] data, boolean isV3)
+    @Override
+    public void save(byte[] data, boolean isV3) throws IOException
     {
-        // Can't save
-        return false;
+        throw new IOException("Not supported");
     }
 
     public String getIdentifier()
