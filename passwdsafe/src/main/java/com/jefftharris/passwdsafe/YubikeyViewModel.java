@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -19,6 +19,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -80,7 +81,8 @@ public class YubikeyViewModel extends AndroidViewModel
         itsNfcState = getNfcState(app);
 
         var pkgmgr = app.getPackageManager();
-        itsHasUsb = pkgmgr.hasSystemFeature(PackageManager.FEATURE_USB_HOST);
+        itsHasUsb = pkgmgr.hasSystemFeature(PackageManager.FEATURE_USB_HOST) &&
+                    !ApiCompat.isChromeOS(app);
         if (itsHasUsb) {
             itsYubiMgr.startUsbDiscovery(new UsbConfiguration(), device -> {
                 PasswdSafeUtil.dbginfo(TAG, "USB discovery, device: %s",
