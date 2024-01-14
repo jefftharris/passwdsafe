@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -115,7 +115,8 @@ public final class SavedPasswordsMgr
     public void attach(Fragment frag)
     {
         BiometricManager bioMgr = BiometricManager.from(itsContext);
-        switch (bioMgr.canAuthenticate()) {
+        switch (bioMgr.canAuthenticate(
+                BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
         case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
         case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
         case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
