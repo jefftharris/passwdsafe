@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2018 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2018-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewAssertion;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
@@ -65,7 +66,7 @@ public final class RecyclerViewAssertions
             RecyclerView.ViewHolder holder =
                     rv.findViewHolderForAdapterPosition(index);
             Assert.assertNotNull(holder);
-            Assert.assertThat(holder.itemView, viewMatcher);
+            MatcherAssert.assertThat(holder.itemView, viewMatcher);
         };
     }
 }
