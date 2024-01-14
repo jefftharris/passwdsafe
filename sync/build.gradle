@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -58,8 +58,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
     implementation project(':lib-owncloud')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
-    implementation('androidx.work:work-runtime:2.8.1') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
+    implementation('androidx.work:work-runtime:2.9.0') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
