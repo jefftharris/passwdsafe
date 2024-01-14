@@ -1,13 +1,12 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package org.pwsafe.lib.crypto;
-
-import androidx.annotation.NonNull;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +26,13 @@ public class HmacPws
 
     public HmacPws(byte[] key) throws InvalidKeyException
     {
-        itsMac = getHmac();
+        try {
+            // Use the default provider's HMAC SHA-256
+            itsMac = Mac.getInstance("HmacSHA256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            throw new InvalidKeyException("No algorithm", e);
+        }
         itsMac.init(new SecretKeySpec(key, itsMac.getAlgorithm()));
     }
 
@@ -39,20 +44,5 @@ public class HmacPws
     public final byte[] doFinal()
     {
         return itsMac.doFinal();
-    }
-
-    /**
-     * Get the default provider's HMAC SHA-256
-     */
-    @NonNull
-    private static Mac getHmac()
-    {
-        try {
-            return Mac.getInstance("HmacSHA256");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            //noinspection ConstantConditions
-            return null;
-        }
     }
 }
