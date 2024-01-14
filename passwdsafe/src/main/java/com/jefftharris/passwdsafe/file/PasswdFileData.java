@@ -297,12 +297,14 @@ public class PasswdFileData
             (itsPwsFile.getFileVersionMajor() == PwsFileV2.VERSION);
     }
 
+    @Nullable
     public final String getOpenPasswordEncoding()
     {
         return (itsPwsFile != null) ? itsPwsFile.getOpenPasswordEncoding() :
             null;
     }
 
+    @NonNull
     public final String getId(PwsRecord rec)
     {
         return PasswdRecord.getRecordId(getGroup(rec), getTitle(rec),
@@ -315,7 +317,7 @@ public class PasswdFileData
         return getDateField(rec, PwsRecordV3.CREATION_TIME);
     }
 
-    public final String getEmail(PwsRecord rec, EmailStyle style)
+    public final String getEmail(PwsRecord rec, @NonNull EmailStyle style)
     {
         String email = getField(rec, PwsRecordV3.EMAIL);
         switch (style) {
@@ -353,7 +355,8 @@ public class PasswdFileData
     /**
      * Split the group into the given list
      */
-    public static void splitGroup(String group, ArrayList<String> groups)
+    public static void splitGroup(String group,
+                                  @NonNull ArrayList<String> groups)
     {
         groups.clear();
         String[] splitGroups = TextUtils.split(group, "\\.");
@@ -483,6 +486,7 @@ public class PasswdFileData
         setField(null, rec, PwsRecordV3.PASSWORD_MOD_TIME);
     }
 
+    @Nullable
     public final PasswdHistory getPasswdHistory(PwsRecord rec)
     {
         String fieldStr = getField(rec, PwsRecordV3.PASSWORD_HISTORY);
@@ -558,7 +562,7 @@ public class PasswdFileData
         setField(str, rec, PwsRecordV3.USERNAME);
     }
 
-    public final String getURL(PwsRecord rec, UrlStyle style)
+    public final String getURL(PwsRecord rec, @NonNull UrlStyle style)
     {
         String url = getField(rec, PwsRecordV3.URL);
         switch (style) {
@@ -919,6 +923,7 @@ public class PasswdFileData
     }
 
 
+    @Nullable
     private String getHdrField(int fieldId)
     {
         if (itsPwsFile == null) {
@@ -1075,7 +1080,8 @@ public class PasswdFileData
     }
 
 
-    private static String doHdrFieldToString(PwsField field)
+    @Nullable
+    private static String doHdrFieldToString(@NonNull PwsField field)
     {
         try {
             //noinspection CharsetObjectCanBeUsed
@@ -1111,6 +1117,7 @@ public class PasswdFileData
     }
 
     /** Get a field from a record */
+    @Nullable
     private static PwsField doGetField(PwsRecord rec, int fieldId)
     {
         switch (fieldId)
@@ -1434,6 +1441,7 @@ public class PasswdFileData
         rec.setField(newVer);
     }
 
+    @Nullable
     private static String getHdrLastSaveWhoField(PwsRecord rec,
                                                  boolean isUser) {
         PwsField field = doGetField(rec, PwsRecordV3.HEADER_LAST_SAVE_WHO);
@@ -1486,7 +1494,8 @@ public class PasswdFileData
             extends AsyncTask<PasswdFileData, Void, PasswdFileData>
     {
         @Override
-        protected PasswdFileData doInBackground(PasswdFileData... params)
+        protected PasswdFileData doInBackground(
+                @NonNull PasswdFileData... params)
         {
             return params[0];
         }
