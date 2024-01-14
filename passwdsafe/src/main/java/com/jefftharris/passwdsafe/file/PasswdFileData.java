@@ -790,7 +790,6 @@ public class PasswdFileData
         return date;
     }
 
-    @SuppressWarnings("ConstantConditions")
     private int getVersionFieldId(int fieldId)
     {
         if (itsPwsFile == null) {
@@ -809,41 +808,49 @@ public class PasswdFileData
             {
             case PwsRecordV3.GROUP:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.GROUP;
                 break;
             }
             case PwsRecordV3.NOTES:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.NOTES;
                 break;
             }
             case PwsRecordV3.PASSWORD:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.PASSWORD;
                 break;
             }
             case PwsRecordV3.PASSWORD_LIFETIME:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.PASSWORD_LIFETIME;
                 break;
             }
             case PwsRecordV3.TITLE:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.TITLE;
                 break;
             }
             case PwsRecordV3.USERNAME:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.USERNAME;
                 break;
             }
             case PwsRecordV3.UUID:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.UUID;
                 break;
             }
             case PwsRecordV3.URL:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV2.URL;
                 break;
             }
@@ -869,21 +876,25 @@ public class PasswdFileData
             {
             case PwsRecordV3.NOTES:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV1.NOTES;
                 break;
             }
             case PwsRecordV3.PASSWORD:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV1.PASSWORD;
                 break;
             }
             case PwsRecordV3.TITLE:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV1.TITLE;
                 break;
             }
             case PwsRecordV3.USERNAME:
             {
+                //noinspection DataFlowIssue
                 fieldId = PwsRecordV1.USERNAME;
                 break;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -22,7 +22,6 @@ import static junit.framework.Assert.assertSame;
 /**
  * Unit tests for Owner
  */
-@SuppressWarnings({"ConstantConditions"})
 public class OwnerTest
 {
     private Item itsOwnedItem;
@@ -65,6 +64,7 @@ public class OwnerTest
     {
         closeItem();
         itsItem.close();
+        //noinspection DataFlowIssue (item null only after close)
         assertNull(itsItem.get());
     }
 
@@ -95,6 +95,7 @@ public class OwnerTest
     {
         assertNotClosed();
         itsItem.close();
+        //noinspection DataFlowIssue (item null only after close)
         assertNull(itsItem.get());
         assertEquals(1, itsOwnedItem.itsCloseCount);
     }
