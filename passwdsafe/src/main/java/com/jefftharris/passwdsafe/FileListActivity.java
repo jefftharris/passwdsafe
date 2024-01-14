@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -458,7 +458,7 @@ public class FileListActivity extends AppCompatActivity
 
         FragmentManager fragMgr = getSupportFragmentManager();
         FragmentTransaction txn = fragMgr.beginTransaction();
-        txn.setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        txn.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
         if (clearBackStack) {
             //noinspection StatementWithEmptyBody
