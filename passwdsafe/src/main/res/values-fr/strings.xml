@@ -430,6 +430,9 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.24.0&lt;/b&gt; - Sauvegarde sur Chromebook et amélioration
+        de l\'interface utilisateur
+        \n\n
         &lt;b&gt;6.23.4&lt;/b&gt; - Correction de bugs
         \n\n
         &lt;b&gt;6.23.3&lt;/b&gt; - Mise à jour pour la compatibilité Android 12+.
