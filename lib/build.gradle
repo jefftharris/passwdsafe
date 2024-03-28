@@ -19,7 +19,7 @@ android {
     namespace 'com.jefftharris.passwdsafe.lib'
     compileSdk 34
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 34
         vectorDrawables.useSupportLibrary = true
         buildConfigField 'String', 'BUILD_ID', "\"${hgId()}\""
