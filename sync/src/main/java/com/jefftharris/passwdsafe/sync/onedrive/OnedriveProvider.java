@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -35,7 +35,6 @@ import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.microsoft.graph.authentication.IAuthenticationProvider;
-import com.microsoft.graph.core.IClientConfig;
 import com.microsoft.graph.extensions.GraphServiceClient;
 import com.microsoft.graph.extensions.IGraphServiceClient;
 import com.microsoft.graph.http.GraphServiceException;
@@ -44,6 +43,8 @@ import com.microsoft.identity.client.AuthenticationResult;
 import com.microsoft.identity.client.IAccount;
 import com.microsoft.identity.client.Logger;
 import com.microsoft.identity.client.PublicClientApplication;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -331,24 +332,35 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                                                      acct, tokenCb);
             }
 
-            AuthenticationResult authResult = tokenCb.getResult();
-            if (authResult == null) {
-                throw new Exception("Not authorized");
-            }
-
-            String auth = "Bearer " + authResult.getAccessToken();
-            IAuthenticationProvider authProvider =
-                    request -> request.addHeader("Authorization", auth);
-
-            final IClientConfig clientConfig = new ClientConfig(
-                    authProvider,
-                    VERBOSE_LOGS ? LoggerLevel.Debug : LoggerLevel.Error);
             service = new GraphServiceClient.Builder()
-                    .fromConfig(clientConfig)
+                    .fromConfig(createClientConfig(tokenCb))
                     .buildClient();
         }
 
         user.useOneDrive(service);
+    }
+
+    /**
+     * Create the client configuration
+     */
+    @Contract("_ -> new")
+    @NonNull
+    private static ClientConfig createClientConfig(
+            @NonNull AcquireTokenCallback tokenCb)
+            throws Exception
+    {
+        AuthenticationResult authResult = tokenCb.getResult();
+        if (authResult == null) {
+            throw new Exception("Not authorized");
+        }
+
+        String auth = "Bearer " + authResult.getAccessToken();
+        IAuthenticationProvider authProvider =
+                request -> request.addHeader("Authorization", auth);
+
+        return new ClientConfig(
+                authProvider,
+                VERBOSE_LOGS ? LoggerLevel.Debug : LoggerLevel.Error);
     }
 
     /**

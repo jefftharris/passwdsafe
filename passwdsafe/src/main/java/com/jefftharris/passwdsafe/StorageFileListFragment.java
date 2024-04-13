@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
@@ -116,6 +117,7 @@ public final class StorageFileListFragment extends Fragment
         itsRecentFilesDaoRef = new ManagedRef<>(itsRecentFilesDao);
     }
 
+    @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
@@ -139,41 +141,7 @@ public final class StorageFileListFragment extends Fragment
         itsFab = rootView.findViewById(R.id.fab);
         View noDefault = rootView.findViewById(R.id.no_default);
         if (hasMenu) {
-            ItemTouchHelper.SimpleCallback swipeCb =
-                    new ItemTouchHelper.SimpleCallback(
-                            0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
-            {
-                @Override
-                public float getSwipeEscapeVelocity(float defaultValue)
-                {
-                    return defaultValue * 7f;
-                }
-
-                @Override
-                public float getSwipeThreshold(
-                        @NonNull RecyclerView.ViewHolder viewHolder)
-                {
-                    return .75f;
-                }
-
-                @Override
-                public boolean onMove(
-                        @NonNull RecyclerView recyclerView,
-                        @NonNull RecyclerView.ViewHolder viewHolder,
-                        @NonNull RecyclerView.ViewHolder target)
-                {
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(
-                        @NonNull RecyclerView.ViewHolder viewHolder,
-                        int direction)
-                {
-                    removeFile(((StorageFileListHolder)viewHolder).getUri());
-                }
-            };
-            ItemTouchHelper swipeHelper = new ItemTouchHelper(swipeCb);
+            final ItemTouchHelper swipeHelper = createItemTouchHelper();
             swipeHelper.attachToRecyclerView(files);
 
             itsFab.setOnClickListener(this);
@@ -244,7 +212,7 @@ public final class StorageFileListFragment extends Fragment
     }
 
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         int id = v.getId();
         if (id == R.id.fab) {
@@ -268,14 +236,15 @@ public final class StorageFileListFragment extends Fragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_storage_file_list, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_file_open) {
@@ -363,6 +332,49 @@ public final class StorageFileListFragment extends Fragment
         onLoadFinished(cursorLoader, null);
     }
 
+    /**
+     * Create the swipe item touch helper
+     */
+    @NonNull
+    private ItemTouchHelper createItemTouchHelper()
+    {
+        ItemTouchHelper.SimpleCallback swipeCb =
+                new ItemTouchHelper.SimpleCallback(
+                        0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+                {
+                    @Override
+                    public float getSwipeEscapeVelocity(float defaultValue)
+                    {
+                        return defaultValue * 7f;
+                    }
+
+                    @Override
+                    public float getSwipeThreshold(
+                            @NonNull RecyclerView.ViewHolder viewHolder)
+                    {
+                        return .75f;
+                    }
+
+                    @Override
+                    public boolean onMove(
+                            @NonNull RecyclerView recyclerView,
+                            @NonNull RecyclerView.ViewHolder viewHolder,
+                            @NonNull RecyclerView.ViewHolder target)
+                    {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(
+                            @NonNull RecyclerView.ViewHolder viewHolder,
+                            int direction)
+                    {
+                        removeFile(((StorageFileListHolder)viewHolder).getUri());
+                    }
+                };
+        return new ItemTouchHelper(swipeCb);
+    }
+
     /** Start the intent to open a file */
     private void startOpenFile()
     {
@@ -391,7 +403,7 @@ public final class StorageFileListFragment extends Fragment
 
 
     /** Open a password file URI from an intent */
-    private void openUri(Intent openIntent)
+    private void openUri(@NonNull Intent openIntent)
     {
         Context ctx = requireContext();
 
@@ -493,7 +505,7 @@ public final class StorageFileListFragment extends Fragment
          * Constructor
          */
         private FileLoader(ManagedRef<RecentFilesDao> recentFilesDao,
-                           Context ctx)
+                           @NonNull Context ctx)
         {
             super(ctx.getApplicationContext());
             itsRecentFilesDao = recentFilesDao;
@@ -522,6 +534,7 @@ public final class StorageFileListFragment extends Fragment
         }
 
         /** Load the files in the background */
+        @Nullable
         @Override
         public Cursor loadInBackground()
         {

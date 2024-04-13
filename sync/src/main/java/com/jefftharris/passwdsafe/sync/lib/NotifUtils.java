@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -12,6 +12,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
@@ -19,6 +21,8 @@ import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.MainActivity;
 import com.jefftharris.passwdsafe.sync.R;
 import com.jefftharris.passwdsafe.sync.SyncLogsActivity;
+
+import org.jetbrains.annotations.Contract;
 
 /**
  *  Utilities for notifications
@@ -51,7 +55,7 @@ public final class NotifUtils
             "com.jefftharris.passwdsafe.sync.__owncloud_survey";
 
     /** Show a notification */
-    public static void showNotif(Type type, Context ctx)
+    public static void showNotif(@NonNull Type type, Context ctx)
     {
         String content = "";
         switch (type) {
@@ -100,27 +104,7 @@ public final class NotifUtils
                                  String tag,
                                  Context ctx)
     {
-        Class<? extends Activity> activityClass = null;
-        switch (type) {
-        case OWNCLOUD_CERT_TRUSTED:
-        case DROPBOX_MIGRATED:
-        case BOX_MIGRATGED:
-        case SYNC_PROGRESS:
-        case DRIVE_REAUTH_REQUIRED:
-        case ONEDRIVE_MIGRATED:
-        case OWNCLOUD_USAGE:
-        case DRIVE_FILE_MIGRATION: {
-            activityClass = MainActivity.class;
-            break;
-        }
-        case SYNC_RESULTS:
-        case SYNC_CONFLICT:
-        case SYNC_REPEAT_FAILURES: {
-            activityClass = SyncLogsActivity.class;
-        }
-        }
-
-        Intent launchIntent = new Intent(ctx, activityClass);
+        final Intent launchIntent = createNotifLaunchIntent(type, ctx);
         switch (type) {
         case OWNCLOUD_USAGE: {
             launchIntent.putExtra(OWNCLOUD_SURVEY_EXTRA, true);
@@ -155,7 +139,7 @@ public final class NotifUtils
     /**
      * Cancel a notification
      */
-    public static void cancelNotif(Type type, String tag, Context ctx)
+    public static void cancelNotif(@NonNull Type type, String tag, Context ctx)
     {
         getNotifMgr(ctx).cancel(tag, type.itsNotifId);
     }
@@ -171,7 +155,8 @@ public final class NotifUtils
     /**
      * Get the title of a notification type
      */
-    public static String getTitle(Type type, Context ctx)
+    @Nullable
+    public static String getTitle(@NonNull Type type, Context ctx)
     {
         switch (type) {
         case OWNCLOUD_CERT_TRUSTED: {
@@ -212,9 +197,40 @@ public final class NotifUtils
     }
 
     /**
+     * Create the launch intent for a notification type
+     */
+    @Contract("_, _ -> new")
+    @NonNull
+    private static Intent createNotifLaunchIntent(@NonNull Type type,
+                                                 Context ctx)
+    {
+        Class<? extends Activity> activityClass = null;
+        switch (type) {
+        case OWNCLOUD_CERT_TRUSTED:
+        case DROPBOX_MIGRATED:
+        case BOX_MIGRATGED:
+        case SYNC_PROGRESS:
+        case DRIVE_REAUTH_REQUIRED:
+        case ONEDRIVE_MIGRATED:
+        case OWNCLOUD_USAGE:
+        case DRIVE_FILE_MIGRATION: {
+            activityClass = MainActivity.class;
+            break;
+        }
+        case SYNC_RESULTS:
+        case SYNC_CONFLICT:
+        case SYNC_REPEAT_FAILURES: {
+            activityClass = SyncLogsActivity.class;
+        }
+        }
+
+        return new Intent(ctx, activityClass);
+    }
+
+    /**
      * Get the notification manager
      */
-    private static NotificationManager getNotifMgr(Context ctx)
+    private static NotificationManager getNotifMgr(@NonNull Context ctx)
     {
         return (NotificationManager)
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE);

@@ -903,25 +903,7 @@ public class PasswdSafeOpenFileFragment
     {
         GuiUtils.setVisible(itsSavedPasswordMsg, true);
         itsSavedPasswordMsg.setText(finishMsg);
-        int textColor = itsSavedPasswordTextColor;
-        switch (finishMode) {
-        case SUCCESS: {
-            textColor = R.attr.textColorGreen;
-            break;
-        }
-        case ERROR: {
-            textColor = R.attr.colorError;
-            break;
-        }
-        }
-
-        Context ctx = getContext();
-        if (ctx != null) {
-            TypedValue value = new TypedValue();
-            ctx.getTheme().resolveAttribute(textColor, value, true);
-            textColor = value.data;
-        }
-        itsSavedPasswordMsg.setTextColor(textColor);
+        itsSavedPasswordMsg.setTextColor(getTextColor(finishMode));
 
         setFieldsDisabled(false);
         if (isLoad) {
@@ -975,6 +957,32 @@ public class PasswdSafeOpenFileFragment
                 setPhase(Phase.WAITING_PASSWORD);
             }
         }
+    }
+
+    /**
+     * Get the text color for the finish mode
+     */
+    private int getTextColor(@NonNull SavedPasswordFinish finishMode)
+    {
+        int textColor = itsSavedPasswordTextColor;
+        switch (finishMode) {
+        case SUCCESS: {
+            textColor = R.attr.textColorGreen;
+            break;
+        }
+        case ERROR: {
+            textColor = R.attr.colorError;
+            break;
+        }
+        }
+
+        Context ctx = getContext();
+        if (ctx != null) {
+            TypedValue value = new TypedValue();
+            ctx.getTheme().resolveAttribute(textColor, value, true);
+            textColor = value.data;
+        }
+        return textColor;
     }
 
     /**

@@ -26,6 +26,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.ListFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
@@ -131,6 +132,7 @@ public final class FileListFragment extends ListFragment
     /* (non-Javadoc)
      * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
      */
+    @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
@@ -179,14 +181,15 @@ public final class FileListFragment extends ListFragment
      * @see android.support.v4.app.Fragment#onCreateOptionsMenu(android.view.Menu, android.view.MenuInflater)
      */
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_file_list, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu)
+    public void onPrepareOptionsMenu(@NonNull Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_file_new);
         item.setEnabled(itsListener.appHasFilePermission());
@@ -197,7 +200,7 @@ public final class FileListFragment extends ListFragment
      * @see android.support.v4.app.Fragment#onOptionsItemSelected(android.view.MenuItem)
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int menuId = item.getItemId();
         if (menuId == R.id.menu_file_new) {
@@ -215,7 +218,7 @@ public final class FileListFragment extends ListFragment
      * @see android.support.v4.app.ListFragment#onListItemClick(android.widget.ListView, android.view.View, int, long)
      */
     @Override
-    public void onListItemClick(ListView l,
+    public void onListItemClick(@NonNull ListView l,
                                 @NonNull View v,
                                 int position,
                                 long id)
@@ -241,7 +244,7 @@ public final class FileListFragment extends ListFragment
     }
 
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         int id = v.getId();
         if (id == R.id.current_group_panel) {
@@ -252,7 +255,7 @@ public final class FileListFragment extends ListFragment
     }
 
     @Override
-    public boolean onLongClick(View v)
+    public boolean onLongClick(@NonNull View v)
     {
         int id = v.getId();
         if (id == R.id.current_group_panel) {
@@ -307,8 +310,9 @@ public final class FileListFragment extends ListFragment
 
 
     /** Get the files in a directory */
+    @NonNull
     private static FileData[] getFiles(
-            File dir,
+            @NonNull File dir,
             final boolean showHiddenFiles,
             @SuppressWarnings("SameParameterValue") final boolean showDirs)
     {
@@ -360,32 +364,7 @@ public final class FileListFragment extends ListFragment
     /** Update files after the loader is complete */
     private void updateFiles(List<Map<String, Object>> fileData)
     {
-        SimpleAdapter adapter = null;
-        if (fileData != null) {
-            adapter = new SimpleAdapter(getActivity(), fileData,
-                                        R.layout.file_list_item,
-                                        new String[] { TITLE, ICON, MOD_DATE },
-                                        new int[] { R.id.text, R.id.icon,
-                                                    R.id.mod_date });
-            adapter.setViewBinder((view, data, textRepresentation) -> {
-                int id = view.getId();
-                if (id == R.id.text) {
-                    TextView tv = (TextView)view;
-                    tv.setText(textRepresentation);
-                    tv.requestLayout();
-                    return true;
-                } else if (id == R.id.mod_date) {
-                    if (data == null) {
-                        view.setVisibility(View.GONE);
-                        return true;
-                    } else {
-                        view.setVisibility(View.VISIBLE);
-                        return false;
-                    }
-                }
-                return false;
-            });
-        }
+        final SimpleAdapter adapter = createFilesAdapter(fileData);
 
         View rootView = getView();
         if (rootView == null) {
@@ -421,6 +400,41 @@ public final class FileListFragment extends ListFragment
         }
     }
 
+    /**
+     * Create the adapter for the file list
+     */
+    @Nullable
+    private SimpleAdapter createFilesAdapter(List<Map<String, Object>> fileData)
+    {
+        SimpleAdapter adapter = null;
+        if (fileData != null) {
+            adapter = new SimpleAdapter(getActivity(), fileData,
+                                        R.layout.file_list_item,
+                                        new String[] { TITLE, ICON, MOD_DATE },
+                                        new int[] { R.id.text, R.id.icon,
+                                                    R.id.mod_date });
+            adapter.setViewBinder((view, data, textRepresentation) -> {
+                int id = view.getId();
+                if (id == R.id.text) {
+                    TextView tv = (TextView)view;
+                    tv.setText(textRepresentation);
+                    tv.requestLayout();
+                    return true;
+                } else if (id == R.id.mod_date) {
+                    if (data == null) {
+                        view.setVisibility(View.GONE);
+                        return true;
+                    } else {
+                        view.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                }
+                return false;
+            });
+        }
+        return adapter;
+    }
+
 
     /** Open the given file */
     private void openFile(File file)
@@ -454,6 +468,7 @@ public final class FileListFragment extends ListFragment
 
 
     /** Get the files in the given directory */
+    @NonNull
     private static FileData[] getFiles(File dir, Context ctx)
     {
         SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
@@ -476,6 +491,7 @@ public final class FileListFragment extends ListFragment
 
 
     /** Get the directory for listing files */
+    @NonNull
     private File getFileDir()
     {
         SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
@@ -537,6 +553,7 @@ public final class FileListFragment extends ListFragment
         }
 
         /** Load the files in the background */
+        @Nullable
         @Override
         public List<Map<String, Object>> loadInBackground()
         {
@@ -558,6 +575,7 @@ public final class FileListFragment extends ListFragment
         }
 
         /** Create an adapter map for the file */
+        @NonNull
         private Map<String, Object> createItem(FileData file)
         {
             HashMap<String, Object> item = new HashMap<>(3);

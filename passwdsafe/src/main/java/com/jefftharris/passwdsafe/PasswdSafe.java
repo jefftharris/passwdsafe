@@ -1461,20 +1461,7 @@ public class PasswdSafe extends AppCompatActivity
             itsFileDataFrag.refreshFileData();
         }
 
-        FragmentManager fragMgr = getSupportFragmentManager();
-        if (saveState.itsIsPopBack) {
-            fragMgr.popBackStackImmediate();
-
-            if (saveState.itsPopTag != null) {
-                //noinspection StatementWithEmptyBody
-                while(fragMgr.popBackStackImmediate(
-                        saveState.itsPopTag,
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
-                    // Pop all fragments up to the first use of the given tag
-                }
-            }
-        }
-
+        final FragmentManager fragMgr = getEditFinishedFragMgr(saveState);
         if (saveState.itsIsAddRecord) {
             if (itsIsTwoPane) {
                 changeOpenView(saveState.itsNewLocation, OpenViewChange.VIEW);
@@ -1493,6 +1480,29 @@ public class PasswdSafe extends AppCompatActivity
         if (saveState.itsPostSaveRun != null) {
             saveState.itsPostSaveRun.run();
         }
+    }
+
+    /**
+     * Get the fragment manager for use when an edit is finished
+     */
+    @NonNull
+    private FragmentManager getEditFinishedFragMgr(
+            @NonNull FinishSaveInfo saveState)
+    {
+        FragmentManager fragMgr = getSupportFragmentManager();
+        if (saveState.itsIsPopBack) {
+            fragMgr.popBackStackImmediate();
+
+            if (saveState.itsPopTag != null) {
+                //noinspection StatementWithEmptyBody
+                while(fragMgr.popBackStackImmediate(
+                        saveState.itsPopTag,
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
+                    // Pop all fragments up to the first use of the given tag
+                }
+            }
+        }
+        return fragMgr;
     }
 
     /**

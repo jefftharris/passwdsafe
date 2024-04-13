@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -293,6 +293,17 @@ public class PasswdSafePolicyListFragment extends ListFragment
 
         Collections.sort(policies);
 
+        setListAdapter(createPolicyListAdapter(policies));
+        requireActivity().invalidateOptionsMenu();
+    }
+
+    /**
+     * Create the policy list adapter
+     */
+    @NonNull
+    private PolicyListAdapter createPolicyListAdapter(
+            ArrayList<PasswdPolicy> policies)
+    {
         PolicyListAdapter.PolicyItemUser listener =
                 new PolicyListAdapter.PolicyItemUser()
                 {
@@ -316,10 +327,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
                     }
                 };
 
-        PolicyListAdapter adapter = new PolicyListAdapter(
-                policies, itsIsFileReadonly, listener, getContext());
-        setListAdapter(adapter);
-        requireActivity().invalidateOptionsMenu();
+        return new PolicyListAdapter(policies, itsIsFileReadonly, listener,
+                                     getContext());
     }
 
     /**
