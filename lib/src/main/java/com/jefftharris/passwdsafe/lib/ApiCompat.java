@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016, 2021 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016, 2021, 2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * The ApiCompat class provides a compatibility interface for different Android
@@ -48,6 +49,8 @@ public final class ApiCompat
     @ChecksSdkIntAtLeast
     public static final int SDK_VERSION = Build.VERSION.SDK_INT;
 
+    private static Boolean IS_SAMSUNG_DEVICE = null;
+
     /**
      * Is the app running on ChromeOS
      */
@@ -57,6 +60,21 @@ public final class ApiCompat
         var pkgmgr = ctx.getPackageManager();
         return pkgmgr.hasSystemFeature("org.chromium.arc") ||
                pkgmgr.hasSystemFeature("org.chromium.arc.device_management");
+    }
+
+
+    /**
+     * Is the app running on a Samsung device
+     */
+    private static synchronized boolean isSamsungDevice()
+    {
+        if (IS_SAMSUNG_DEVICE == null) {
+            var samsungRe = Pattern.compile(Pattern.quote("samsung"),
+                                            Pattern.CASE_INSENSITIVE);
+            IS_SAMSUNG_DEVICE = samsungRe.matcher(Build.BRAND).find() ||
+                                samsungRe.matcher(Build.MANUFACTURER).find();
+        }
+        return IS_SAMSUNG_DEVICE;
     }
 
 
@@ -218,6 +236,9 @@ public final class ApiCompat
      */
     public static void clearClipboard(Context ctx)
     {
+        if (isSamsungDevice()) {
+            setClipboardText(" ", true, ctx);
+        }
         ClipboardManager clipMgr = setClipboardText("", true, ctx);
         if ((clipMgr != null) && (SDK_VERSION >= SDK_P)) {
             ApiCompatP.clearClipboard(clipMgr);
