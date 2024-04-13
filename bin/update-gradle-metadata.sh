@@ -10,6 +10,7 @@ pushd $topdir
           build \
           connectedDebugAndroidTest \
           check \
+          mergeDebugResources \
           test \
           help \
           --dry-run
