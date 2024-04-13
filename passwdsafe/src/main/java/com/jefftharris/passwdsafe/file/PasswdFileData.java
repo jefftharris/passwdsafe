@@ -107,6 +107,7 @@ public class PasswdFileData
         itsUri = uri;
     }
 
+    /** @noinspection RedundantSuppression*/
     public void load(Owner<PwsPassword>.Param passwd, Context context)
             throws IOException, EndOfFileException, InvalidPassphraseException,
                    UnsupportedFileVersionException

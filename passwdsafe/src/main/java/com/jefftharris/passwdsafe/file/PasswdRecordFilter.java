@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -133,6 +133,7 @@ public final class PasswdRecordFilter implements Closeable
      * Filter a record
      * @return A non-null string if the record matches the filter; null if it
      * does not
+     * @noinspection RedundantSuppression
      */
     public String filterRecord(PwsRecord rec,
                                PasswdFileData fileData,

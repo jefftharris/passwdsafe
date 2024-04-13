@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2013 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2013-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import androidx.annotation.NonNull;
 import androidx.core.os.OperationCanceledException;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
@@ -25,16 +26,20 @@ public class PasswdCursorLoader extends CursorLoader
     private Exception itsLoadException;
 
     /** Constructor */
-    public PasswdCursorLoader(
-            Context ctx, Uri uri, String[] projection, String selection,
-            @SuppressWarnings("SameParameterValue") String[] selectionArgs,
-            String sortOrder)
+    public PasswdCursorLoader(@NonNull Context ctx,
+                              Uri uri,
+                              String[] projection,
+                              String selection,
+                              @SuppressWarnings("SameParameterValue")
+                              String[] selectionArgs,
+                              String sortOrder)
     {
         super(ctx.getApplicationContext(), uri, projection,
               selection, selectionArgs, sortOrder);
     }
 
-    /** Load the cursor in the background */
+    /** Load the cursor in the background
+     * @noinspection RedundantSuppression*/
     @Override
     public Cursor loadInBackground()
     {

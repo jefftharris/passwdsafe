@@ -9,6 +9,8 @@ package com.jefftharris.passwdsafe.test.file;
 
 import android.annotation.SuppressLint;
 
+import androidx.annotation.NonNull;
+
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
 
 import org.junit.Test;
@@ -29,6 +31,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Tests for the PasswdPolicy class
+ * @noinspection RedundantSuppression
  */
 @SuppressWarnings({"ConstantConditions"})
 public class PasswdPolicyTest
@@ -745,7 +748,6 @@ public class PasswdPolicyTest
             }
             case PRONOUNCEABLE: {
                 for (int len: new int[] {0, 1, 2, 3, 5, 10, 20}) {
-                    //PasswdSafeApp.dbginfo("TAG", "Iter %x %d", flags, len);
                     policy = new PasswdPolicy(
                         "", PasswdPolicy.Location.DEFAULT,
                         flags, len, 1, 1, 1, 1, null);
@@ -763,7 +765,7 @@ public class PasswdPolicyTest
     }
 
     /** Verify a generated password */
-    private static void verifyGenPasswd(PasswdPolicy policy)
+    private static void verifyGenPasswd(@NonNull PasswdPolicy policy)
     {
         boolean useLower = policy.checkFlags(PasswdPolicy.FLAG_USE_LOWERCASE);
         boolean useUpper = policy.checkFlags(PasswdPolicy.FLAG_USE_UPPERCASE);
