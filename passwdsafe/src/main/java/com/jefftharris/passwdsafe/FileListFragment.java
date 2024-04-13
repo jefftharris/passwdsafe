@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -298,7 +298,7 @@ public final class FileListFragment extends ListFragment
     public boolean doBackPressed()
     {
         PasswdSafeUtil.dbginfo(TAG, "doBackPressed");
-        if (itsDirHistory.size() == 0) {
+        if (itsDirHistory.isEmpty()) {
             return false;
         }
         changeDir(itsDirHistory.removeFirst(), false);

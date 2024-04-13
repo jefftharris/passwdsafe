@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -561,7 +561,7 @@ public class PasswdSafeRecordBasicFragment
         String[] tokens = TextUtils.split(subset, SUBSET_SPLIT);
         for (int i = 0; i < tokens.length; ++i) {
             String trimToken = tokens[i].trim();
-            if ((trimToken.length() == 0) ||
+            if ((trimToken.isEmpty()) ||
                 ((i == (tokens.length - 1)) && trimToken.equals("-"))) {
                 continue;
             }

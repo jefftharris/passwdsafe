@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -428,7 +428,7 @@ public class ProviderSync
             if (!BuildConfig.DEBUG) return;
 
             long now = System.currentTimeMillis();
-            if (itsTraces.size() > 0) {
+            if (!itsTraces.isEmpty()) {
                 long prev = itsTraces.get(itsTraces.size() - 1).second;
                 if ((now - prev) > 20000) {
                     itsSaveTraces = true;

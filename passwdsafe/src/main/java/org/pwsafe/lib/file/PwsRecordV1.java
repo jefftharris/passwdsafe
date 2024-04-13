@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -269,7 +270,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
             setField(new PwsStringField(NOTES, new Item(file).getData()));
 
             String uuid;
-            if (username.trim().length() == 0) {
+            if (username.trim().isEmpty()) {
                 uuid = title;
             } else {
                 uuid = title + SplitString + username;
@@ -294,7 +295,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     {
         PwsField title;
 
-        if (getField(USERNAME).toString().trim().length() == 0) {
+        if (getField(USERNAME).toString().trim().isEmpty()) {
             title = getField(TITLE);
         } else {
             title = new PwsStringField(TITLE, getField(TITLE).toString() +

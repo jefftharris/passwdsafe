@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -115,7 +115,7 @@ public class SyncLogsFragment extends ListFragment
                     str.append(getString(R.string.network_connected));
                 }
 
-                if (log.length() != 0) {
+                if (!log.isEmpty()) {
                     str.append("\n");
                 }
                 str.append(log);
