@@ -374,7 +374,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
 
 
     /** Background task for listing files from a provider */
-    protected static abstract class AbstractListFilesTask
+    public static abstract class AbstractListFilesTask
             extends AsyncTask<String, Void,
                               Pair<List<ProviderRemoteFile>, Exception>>
     {
