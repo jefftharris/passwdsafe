@@ -28,6 +28,7 @@ import com.jefftharris.passwdsafe.db.PasswdSafeDb;
 import com.jefftharris.passwdsafe.db.SavedPassword;
 import com.jefftharris.passwdsafe.db.SavedPasswordsDao;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
 import org.pwsafe.lib.Util;
@@ -78,7 +79,7 @@ public final class SavedPasswordsMgr
         try {
             md = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            PasswdSafeLog.error(TAG, e, "No SHA-256 algorithm");
         }
         MD_SHA256 = md;
     }
@@ -99,7 +100,7 @@ public final class SavedPasswordsMgr
     /**
      * Constructor
      */
-    public SavedPasswordsMgr(Context ctx)
+    public SavedPasswordsMgr(@NonNull Context ctx)
     {
         itsContext = ctx.getApplicationContext();
         itsDao = PasswdSafeDb.get(itsContext).accessSavedPasswords();
@@ -176,7 +177,7 @@ public final class SavedPasswordsMgr
      * Generate a saved password key for a file
      */
     @TargetApi(Build.VERSION_CODES.M)
-    public synchronized void generateKey(PasswdFileUri fileUri)
+    public synchronized void generateKey(@NonNull PasswdFileUri fileUri)
             throws InvalidAlgorithmParameterException, NoSuchAlgorithmException,
             NoSuchProviderException, IOException
     {
@@ -267,6 +268,7 @@ public final class SavedPasswordsMgr
     /**
      * Load a saved password for a file
      */
+    @NonNull
     public @CheckResult
     Owner<PwsPassword> loadSavedPassword(PasswdFileUri fileUri, Cipher cipher)
             throws IOException, BadPaddingException, IllegalBlockSizeException
@@ -299,9 +301,9 @@ public final class SavedPasswordsMgr
      * Add a saved password for a file
      */
     public void addSavedPassword(PasswdFileUri fileUri,
+                                 @NonNull
                                  Owner<PwsPassword>.Param passwordParam,
-                                 Cipher cipher)
-            throws Exception
+                                 @NonNull Cipher cipher) throws Exception
     {
         try (Owner<PwsPassword> password = passwordParam.use()) {
             byte[] enc = cipher.doFinal(password.get().getBytes("UTF-8"));
@@ -316,7 +318,7 @@ public final class SavedPasswordsMgr
     /**
      * Removed the saved password and key for a file
      */
-    public synchronized void removeSavedPassword(PasswdFileUri fileUri)
+    public synchronized void removeSavedPassword(@NonNull PasswdFileUri fileUri)
     {
         Uri uri = fileUri.getUri();
         try {
@@ -337,12 +339,13 @@ public final class SavedPasswordsMgr
                     try {
                         keyStore.deleteEntry(keyName);
                     } catch (KeyStoreException e) {
-                        e.printStackTrace();
+                        PasswdSafeLog.error(TAG, e,
+                                            "removeSavedPassword error");
                     }
                 }
             } catch (KeyStoreException | CertificateException |
                     IOException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                PasswdSafeLog.error(TAG, e, "removeSavedPassword error");
             }
         }
     }
@@ -371,7 +374,7 @@ public final class SavedPasswordsMgr
                 }
             } catch (CertificateException | NoSuchAlgorithmException |
                     IOException | KeyStoreException e) {
-                e.printStackTrace();
+                PasswdSafeLog.error(TAG, e, "removeAllSavedPassword error");
             }
         }
     }
@@ -379,8 +382,9 @@ public final class SavedPasswordsMgr
     /**
      * Get the cipher for the key protecting the saved password for a file
      */
+    @NonNull
     @TargetApi(Build.VERSION_CODES.M)
-    private Cipher getKeyCipher(PasswdFileUri fileUri, boolean encrypt)
+    private Cipher getKeyCipher(@NonNull PasswdFileUri fileUri, boolean encrypt)
             throws CertificateException, NoSuchAlgorithmException,
                    KeyStoreException, IOException, UnrecoverableKeyException,
                    NoSuchPaddingException, InvalidKeyException,
@@ -434,6 +438,7 @@ public final class SavedPasswordsMgr
     /**
      * Get the Android keystore containing the keys protecting saved passwords
      */
+    @NonNull
     private KeyStore getKeystore()
             throws KeyStoreException, CertificateException,
             NoSuchAlgorithmException, IOException
@@ -446,6 +451,7 @@ public final class SavedPasswordsMgr
     /**
      * Get the v2 keystore alias for a URI
      */
+    @NonNull
     private static String getUriAlias2(Uri uri)
             throws UnsupportedEncodingException
     {
@@ -455,9 +461,10 @@ public final class SavedPasswordsMgr
     /**
      * Get the v1 keystore alias for a URI
      */
-    private static String getUriAlias1(Uri uri)
+    @NonNull
+    private static String getUriAlias1(@NonNull Uri uri)
     {
-        return "key_" + uri.toString();
+        return "key_" + uri;
     }
 
     /**
@@ -471,7 +478,7 @@ public final class SavedPasswordsMgr
     /**
      * Get a unique key for a URI
      */
-    private static String getUriKey(Uri uri)
+    private static String getUriKey(@NonNull Uri uri)
             throws UnsupportedEncodingException
     {
         String uristr = uri.toString();

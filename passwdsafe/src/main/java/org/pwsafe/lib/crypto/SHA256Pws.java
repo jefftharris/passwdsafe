@@ -11,6 +11,8 @@ package org.pwsafe.lib.crypto;
 import android.os.Build;
 import androidx.annotation.NonNull;
 
+import org.pwsafe.lib.Log;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
@@ -79,8 +81,9 @@ public class SHA256Pws {
         try {
             return MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new RuntimeException("No algorithm", e);
+            var re = new RuntimeException("No algorithm", e);
+            Log.getInstance(SHA256Pws.class.getName()).error(re);
+            throw re;
         }
     }
 }

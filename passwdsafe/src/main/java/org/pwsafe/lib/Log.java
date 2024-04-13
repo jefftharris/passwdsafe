@@ -9,6 +9,10 @@
  */
 package org.pwsafe.lib;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
+
 /**
  * This class provides logging facilities using commons logging.
  *
@@ -30,6 +34,8 @@ public class Log
      * @param name the logger name.
      * @return An <code>Log</code> instance.
      */
+    @NonNull
+    @Contract(value = "_ -> new", pure = true)
     public static Log getInstance(String name)
     {
         return new Log(name);
@@ -43,6 +49,16 @@ public class Log
     public final void error(String msg)
     {
         android.util.Log.e(itsTag, msg);
+    }
+
+    /**
+     * Writes an exception at error level
+     *
+     * @param e the exception to log
+     */
+    public final void error(Throwable e)
+    {
+        android.util.Log.e(itsTag, e.getMessage(), e);
     }
 
     /**

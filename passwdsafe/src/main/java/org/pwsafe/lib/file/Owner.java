@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -9,6 +9,8 @@ package org.pwsafe.lib.file;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+
+import org.pwsafe.lib.Log;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -84,7 +86,7 @@ public final class Owner<T extends Closeable> implements Closeable
                 try {
                     itsItem.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.getInstance(Owner.class.getName()).error(e);
                 }
                 itsItem = null;
             }
@@ -100,7 +102,7 @@ public final class Owner<T extends Closeable> implements Closeable
         super.finalize();
         if ((itsItem != null) && (itsRefCount > 0)) {
             Exception e = new Exception("NOT FINALIZED");
-            e.printStackTrace();
+            Log.getInstance(Owner.class.getName()).error(e);
         }
     }
 }

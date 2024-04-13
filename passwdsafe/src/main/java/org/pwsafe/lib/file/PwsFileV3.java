@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
- * Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2024-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,6 +7,11 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import org.jetbrains.annotations.Contract;
+import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.crypto.HmacPws;
 import org.pwsafe.lib.crypto.SHA256Pws;
@@ -107,9 +111,10 @@ public final class PwsFileV3 extends PwsFile
             Arrays.fill(decryptedRecordKey, (byte)0);
     }
 
-    private byte[] checkPassword(Owner<PwsPassword>.Param passwdParam,
+    @Nullable
+    private byte[] checkPassword(@NonNull Owner<PwsPassword>.Param passwdParam,
                                  String encoding,
-                                 PwsFileHeaderV3 headerV3,
+                                 @NonNull PwsFileHeaderV3 headerV3,
                                  int iter)
     {
         try {
@@ -201,8 +206,9 @@ public final class PwsFileV3 extends PwsFile
             hasher = new HmacPws(decryptedHmacKey);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new IOException("Error reading encrypted fields", e);
+            var ioe = new IOException("Error reading encrypted fields", e);
+            Log.getInstance(PwsFileV3.class.getName()).error(ioe);
+            throw ioe;
         }
         twofishCbc = new TwofishPws(decryptedRecordKey, false,
                                     theHeaderV3.getIV());
@@ -279,6 +285,8 @@ public final class PwsFileV3 extends PwsFile
      * @return A new empty record
      * @see org.pwsafe.lib.file.PwsFile#newRecord()
      */
+    @NonNull
+    @Contract(" -> new")
     @Override
     public PwsRecord newRecord()
     {
@@ -345,8 +353,9 @@ public final class PwsFileV3 extends PwsFile
         try {
             decrypted = twofishCbc.processCBC(buff);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new IOException("Error decrypting field");
+            var ioe = new IOException("Error decrypting field");
+            Log.getInstance(PwsFileV3.class.getName()).error(ioe);
+            throw ioe;
         }
         Util.copyBytes(decrypted, buff);
     }
@@ -357,7 +366,7 @@ public final class PwsFileV3 extends PwsFile
      * @param buff the data to be written.
      */
     @Override
-    public void writeEncryptedBytes(byte[] buff)
+    public void writeEncryptedBytes(@NonNull byte[] buff)
             throws IOException
     {
         if ((buff.length == 0) || ((buff.length % getBlockSize()) !=

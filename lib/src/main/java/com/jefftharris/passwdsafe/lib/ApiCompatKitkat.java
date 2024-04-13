@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -15,6 +15,8 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -37,6 +39,7 @@ public final class ApiCompatKitkat
     private static Method itsGetPersistedUriPermissionsMeth;
     private static Method itsDeleteDocumentMeth;
     private static Method itsUriPermissionsGetUriMeth;
+    private static final String TAG = "ApiCompatKitkat";
 
     static {
         try {
@@ -70,7 +73,7 @@ public final class ApiCompatKitkat
             itsUriPermissionsGetUriMeth =
                     uriPermissionsClass.getMethod("getUri");
         } catch (Throwable e) {
-            e.printStackTrace();
+            PasswdSafeLog.error(TAG, e, "static init error");
         }
     }
 
@@ -78,7 +81,7 @@ public final class ApiCompatKitkat
     /**
      * API compatible call for Context.getExternalFilesDirs
      */
-    public static File[] getExternalFilesDirs(Context ctx, String type)
+    public static File[] getExternalFilesDirs(@NonNull Context ctx, String type)
     {
         return ctx.getExternalFilesDirs(type);
     }
@@ -92,7 +95,8 @@ public final class ApiCompatKitkat
         try {
             itsTakePersistableUriPermissionMeth.invoke(cr, uri, flags);
         } catch (Exception e) {
-            e.printStackTrace();
+            PasswdSafeLog.error(TAG, e,
+                                "takePersistableUriPermission error");
         }
     }
 
@@ -106,7 +110,8 @@ public final class ApiCompatKitkat
                     itsDeleteDocumentMeth.invoke(null, cr, uri));
             return (Boolean)rc;
         } catch (Exception e) {
-            e.printStackTrace();
+            PasswdSafeLog.error(TAG, e,
+                                "documentsContractDeleteDocument error");
             return false;
         }
     }
@@ -121,12 +126,14 @@ public final class ApiCompatKitkat
         try {
             itsReleasePersistableUriPermissionMeth.invoke(cr, uri, flags);
         } catch (Exception e) {
-            e.printStackTrace();
+            PasswdSafeLog.error(TAG, e,
+                                "releasePersistableUriPermission error");
         }
     }
 
 
     /** API compatible call for ContentResolver.getPersistedUriPermissions */
+    @NonNull
     public static List<Uri> getPersistedUriPermissions(ContentResolver cr)
     {
         try {
@@ -139,7 +146,7 @@ public final class ApiCompatKitkat
             }
             return uris;
         } catch (Exception e) {
-            e.printStackTrace();
+            PasswdSafeLog.error(TAG, e, "getPersistedUriPermissions error");
             return Collections.emptyList();
         }
     }
@@ -150,7 +157,7 @@ public final class ApiCompatKitkat
      * InputMethodManager.shouldOfferSwitchingToNextInputMethod
      */
     public static boolean shouldOfferSwitchingToNextInputMethod(
-            InputMethodManager imm,
+            @NonNull InputMethodManager imm,
             IBinder imeToken)
     {
         return imm.shouldOfferSwitchingToNextInputMethod(imeToken);
@@ -160,9 +167,10 @@ public final class ApiCompatKitkat
      * API compatible call for
      * InputMethodManager.switchToNextInputMethod
      */
-    public static boolean switchToNextInputMethod(InputMethodManager imm,
-                                                  IBinder imeToken,
-                                                  boolean onlyCurrentIme)
+    public static boolean switchToNextInputMethod(
+            @NonNull InputMethodManager imm,
+            IBinder imeToken,
+            boolean onlyCurrentIme)
     {
         return imm.switchToNextInputMethod(imeToken, onlyCurrentIme);
     }
