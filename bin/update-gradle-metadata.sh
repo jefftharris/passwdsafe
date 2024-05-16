@@ -17,5 +17,6 @@ pushd $topdir
 mv gradle/verification-metadata.dryrun.xml gradle/verification-metadata.xml
 
 ./gradlew --write-verification-metadata sha256 \
+          mergeDebugResources \
           :lib:extractDebugAnnotations \
           :lib:compileDebugLibraryResources
