@@ -1,4 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!--
+  ~ Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+  ~ All rights reserved. Use of the code is allowed under the
+  ~ Artistic License 2.0 terms, as specified in the LICENSE file
+  ~ distributed with this code, or available from
+  ~ http://www.opensource.org/licenses/artistic-license-2.0.php
+  -->
 <resources>
     <string name="add_account">Legg til konto</string>
     <string name="adding_account">Legger til konto …</string>
@@ -34,24 +41,11 @@
     <string name="no_accounts">Ingen synkroniseringskontoer. Bruk menyen for å legge til en konto.</string>
     <string name="no_permissions">PasswdSafe Sync krever kontakttilgang for kontoer. \n\nTrykk reload for å bli spurt på nytt. Hvis du ikke blir spurt, trykk app-innstillinger og aktiver kontakttilgang.</string>
     <string name="no_logs">Ingen logger</string>
-    <string name="no_owncloud_accts">Ingen ownCloud-kontoer tilgjengelig. Legg til en konto i ownCloud-appen først. Deretter kan den velges her I PasswdSafe Sync.</string>
     <string name="notifications">Varslinger</string>
     <string name="onedrive_acct_unlinked">Appen er ikke lenger lenket til OneDrive-kontoen. Synkroniser igjen for å gi PasswdSafe Sync tilgang til OneDrive.</string>
     <string name="onedrive_service_updated">OneDrive-tjeneste oppdatert</string>
     <string name="onedrive_synced_files">OneDrive-synkroniserte filer</string>
     <string name="open_app_reauthorize">Åpne appen for å autorisere på nytt</string>
-    <string name="owncloud_auth_required">Autorisering kreves for tilgang til ownCloud-kontoen. Velg den kommende varslingen for å aktivere tilgang og deretter synkroniser kontoen.</string>
-    <string name="owncloud_cert_trusted">Tiltrodd sertifikat for ownCloud-konto</string>
-    <string name="owncloud_select_for_survey">Velg for en undersøkelse av brukere av ownCloud</string>
-    <string name="owncloud_survey">ownCloud-undersøkelse</string>
-    <string name="owncloud_survey_email_txt">Jeg er en bruker av ownCloud med PasswdSafe Sync</string>
-    <string name="owncloud_survey_msg">
-        Klikk for å sende en epost til app-utvikleren hvis du bruker
-        ownCloud. Støtte for ownCloud kan bli fjernet i kommende utgaver til
-        fordel for NextCloud.
-    </string>
-    <string name="owncloud_synced_files">ownCloud-synkroniserte filer</string>
-    <string name="owncloud_users_survey">ownCloud-brukerundersøkelse</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="recreated_local_copy">Gjenopprettet lokal kopi</string>
     <string name="remove_account">Fjern konto?</string>

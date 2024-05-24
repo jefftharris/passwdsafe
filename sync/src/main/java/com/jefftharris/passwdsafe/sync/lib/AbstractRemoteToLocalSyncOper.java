@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -14,6 +14,8 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.R;
@@ -33,13 +35,14 @@ public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
     }
 
     @Override
-    public final void doOper(ProviderClientT providerClient, Context ctx)
+    public final void doOper(ProviderClientT providerClient,
+                             @NonNull Context ctx)
         throws Exception
     {
         PasswdSafeUtil.dbginfo(itsTag, "syncRemoteToLocal %s", itsFile);
         itsDownloadFile = File.createTempFile("passwd", ".tmp",
                                               ctx.getFilesDir());
-        doDownload(itsDownloadFile, providerClient, ctx);
+        doDownload(itsDownloadFile, providerClient);
     }
 
     @Override
@@ -82,8 +85,9 @@ public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
         }
     }
 
+    @NonNull
     @Override
-    public final String getDescription(Context ctx)
+    public final String getDescription(@NonNull Context ctx)
     {
         return ctx.getString(R.string.sync_oper_remote_to_local,
                              itsFile.getRemoteTitleAndFolder());
@@ -93,6 +97,6 @@ public abstract class AbstractRemoteToLocalSyncOper<ProviderClientT>
      * Download the remote file to the given destination file
      */
     protected abstract void doDownload(File destFile,
-                                       ProviderClientT providerClient,
-                                       Context ctx) throws Exception;
+                                       ProviderClientT providerClient)
+            throws Exception;
 }

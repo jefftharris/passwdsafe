@@ -4,10 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PasswdSafe.iml" filepath="$PROJECT_DIR$/PasswdSafe.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-owncloud/PasswdSafe.lib-owncloud.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.unitTest.iml" />

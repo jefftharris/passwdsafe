@@ -1,13 +1,11 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync.onedrive;
-
-import android.content.Context;
 
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
@@ -31,8 +29,8 @@ public class OnedriveRmFileOper
 
     /** Remove the remote file */
     @Override
-    protected void doRemoteRemove(IGraphServiceClient providerClient,
-                                  Context ctx) throws ClientException
+    protected void doRemoteRemove(IGraphServiceClient providerClient)
+            throws ClientException
     {
         try {
             IDriveItemRequestBuilder rootRequest =

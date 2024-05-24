@@ -6,8 +6,6 @@
  */
 package com.jefftharris.passwdsafe.sync.box;
 
-import android.content.Context;
-
 import com.box.androidsdk.content.BoxApiFile;
 import com.box.androidsdk.content.models.BoxSession;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
@@ -26,7 +24,7 @@ public class BoxRmFileOper extends AbstractRmSyncOper<BoxSession>
     }
 
     @Override
-    protected void doRemoteRemove(BoxSession providerClient, Context ctx)
+    protected void doRemoteRemove(BoxSession providerClient)
             throws Exception
     {
         BoxApiFile fileApi = new BoxApiFile(providerClient);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -45,29 +45,11 @@
         settings and enable contact permissions.
     </string>
     <string name="no_logs">No logs</string>
-    <string name="no_owncloud_accts">
-        No ownCloud accounts available.  Add an account in the ownCloud app
-        first.  Then, it can be selected for PasswdSafe Sync.
-    </string>
     <string name="notifications">Notifications</string>
     <string name="onedrive_acct_unlinked">App unlinked from OneDrive account.  Sync again to allow OneDrive access for PasswdSafe Sync.</string>
     <string name="onedrive_service_updated">OneDrive service updated</string>
     <string name="onedrive_synced_files">OneDrive Synced Files</string>
     <string name="open_app_reauthorize">Open app to reauthorize</string>
-    <string name="owncloud_auth_required">
-        Authorization required for access to ownCloud account.  Select the 
-        pending notification to enable access and then sync the account.
-    </string>
-    <string name="owncloud_cert_trusted">Certificate trusted for ownCloud account</string>
-    <string name="owncloud_select_for_survey">Select for a survey of users of ownCloud</string>
-    <string name="owncloud_survey">ownCloud Survey</string>
-    <string name="owncloud_survey_email_txt">I am a user of ownCloud with PasswdSafe Sync</string>
-    <string name="owncloud_survey_msg">
-        Click to email the app developer if you use ownCloud.
-        Support may be removed in a future release in favor of NextCloud.
-    </string>
-    <string name="owncloud_synced_files">ownCloud Synced Files</string>
-    <string name="owncloud_users_survey">ownCloud users survey</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="recreated_local_copy">Recreated local copy</string>
     <string name="remove_account">Remove account?</string>

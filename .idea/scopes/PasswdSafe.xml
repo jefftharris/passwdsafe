@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="PasswdSafe" pattern="file[PasswdSafe.lib*]:*//*&amp;&amp;!file[PasswdSafe.lib-owncloud*]:*//*||file[PasswdSafe.passwdsafe*]:*//*" />
+  <scope name="PasswdSafe" pattern="file[PasswdSafe.lib*]:*//*||file[PasswdSafe.passwdsafe*]:*//*" />
 </component>

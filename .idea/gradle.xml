@@ -10,7 +10,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/lib" />
-            <option value="$PROJECT_DIR$/lib-owncloud" />
             <option value="$PROJECT_DIR$/passwdsafe" />
             <option value="$PROJECT_DIR$/sync" />
           </set>

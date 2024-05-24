@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2018 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2018-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -28,13 +28,6 @@ interface MainActivityProviderOps
      * Handle a request to delete a provider
      */
     void handleProviderDelete(Uri providerUri);
-
-    /**
-     * Handle a request to show a settings dialog for a provider, if supported
-     */
-    void handleProviderEditDialog(ProviderType type,
-                                  Uri providerUri,
-                                  ProviderSyncFreqPref freq);
 
     /**
      * Handle a request to sync a provider

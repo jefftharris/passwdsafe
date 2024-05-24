@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -48,32 +48,11 @@
         pas visible, allez dans les préférences de l\'application et activez les
         permissions de contact.
     </string>
-    <string name="no_owncloud_accts">
-        Aucune ownCloud comptes disponibles. Ajouter un compte dans 
-        l\'application ownCloud premier. Ensuite, il peut être sélectionné 
-        pour PasswdSafe Sync.
-    </string>
     <string name="notifications">Notifications</string>
     <string name="onedrive_acct_unlinked">App dissociée de compte OneDrive. Synchronisez à nouveau pour permettre l\'accès OneDrive pour PasswdSafe Sync.</string>
     <string name="onedrive_service_updated">Service de OneDrive est mis à jour</string>
     <string name="onedrive_synced_files">OneDrive Fichiers Synchronisé</string>
     <string name="open_app_reauthorize">Ouvrir l\'application d\'autoriser à nouveau</string>
-    <string name="owncloud_auth_required">
-        Autorisation requise pour accéder au compte ownCloud. Sélectionnez la 
-        notification est en attente pour permettre l\'accès, puis synchroniser 
-        le compte.
-    </string>
-    <string name="owncloud_cert_trusted">Certificat est approuvé pour le compte ownCloud</string>
-    <string name="owncloud_select_for_survey">Sélectionnez pour un sondage des utilisateurs owncloud</string>
-    <string name="owncloud_survey">Sondage owncloud</string>
-    <string name="owncloud_survey_email_txt">Je suis un utilisateur d\'owncloud avec passwdsafe sync</string>
-    <string name="owncloud_survey_msg">
-        Cliquez pour envoyer un email au developpeur si vous utilisez owncloud.
-        Le support sera peut être enlevé dans une version ultérieure au profit
-        de nextcloud
-    </string>
-    <string name="owncloud_synced_files">ownCloud Fichiers Synchronisé</string>
-    <string name="owncloud_users_survey">Sondage utilisateurs d\'owncloud</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="recreated_local_copy">Copie locale recréé</string>
     <string name="remove_account">Supprimer un compte?</string>

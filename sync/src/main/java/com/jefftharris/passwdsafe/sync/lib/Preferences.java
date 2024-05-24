@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -27,8 +27,6 @@ public class Preferences
     public static final String PREF_DEBUG_TAGS = "debugTagsPref";
     public static final String PREF_DEBUG_TAGS_DEF = "";
 
-    public static final String PREF_OWNCLOUD_SURVEY = "owncloudSurvey";
-
     /**
      * Get the default shared preferences
      */
@@ -40,7 +38,7 @@ public class Preferences
     /**
      * Get the preference to show sync notifications
      */
-    public static boolean getNotifShowSyncPref(SharedPreferences prefs)
+    public static boolean getNotifShowSyncPref(@NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_NOTIF_SHOW_SYNC, PREF_NOTIF_SHOW_SYNC_DEF);
     }
@@ -48,7 +46,8 @@ public class Preferences
     /**
      * Get the preference to show the help for GDrive
      */
-    public static boolean getShowHelpGDrivePref(SharedPreferences prefs)
+    public static boolean getShowHelpGDrivePref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_SHOW_HELP_GDRIVE,
                                 PREF_SHOW_HELP_GDRIVE_DEF);
@@ -57,7 +56,7 @@ public class Preferences
     /**
      * Set the preference to show the help for GDrive
      */
-    public static void setShowHelpGDrivePref(SharedPreferences prefs,
+    public static void setShowHelpGDrivePref(@NonNull SharedPreferences prefs,
                                              boolean show)
     {
         prefs.edit().putBoolean(PREF_SHOW_HELP_GDRIVE, show).apply();
@@ -67,7 +66,7 @@ public class Preferences
      * Get whether to show the GDrive file migration prompt
      */
     public static boolean getShowGDriveFileMigrationPref(
-            SharedPreferences prefs)
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_SHOW_GDRIVE_FILE_MIGRATION, true);
     }

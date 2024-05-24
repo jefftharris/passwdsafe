@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -17,7 +17,7 @@ public interface ActivityRequest
     int DROPBOX_LINK = 1;
     int BOX_AUTH = 2;
     int ONEDRIVE_LINK = AuthorizationStrategy.BROWSER_FLOW;
-    int OWNCLOUD_LINK = 4;
+    //int OWNCLOUD_LINK = 4;
     int PERMISSIONS = 5;
     int APP_SETTINGS = 6;
     int GDRIVE_PLAY_LINK = 7;

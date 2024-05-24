@@ -1,3 +1,10 @@
+<!--
+  ~ Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+  ~ All rights reserved. Use of the code is allowed under the
+  ~ Artistic License 2.0 terms, as specified in the LICENSE file
+  ~ distributed with this code, or available from
+  ~ http://www.opensource.org/licenses/artistic-license-2.0.php
+  -->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -44,14 +51,6 @@
             android:text="Force sync failure"
             android:visibility="gone"
             tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/owncloud_survey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/owncloud_survey"
-            android:visibility="gone"
             />
 
         <TextView

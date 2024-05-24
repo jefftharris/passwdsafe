@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,7 +7,7 @@
  */
 package com.jefftharris.passwdsafe.sync.dropbox;
 
-import android.content.Context;
+import androidx.annotation.NonNull;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
@@ -37,8 +37,7 @@ public class DropboxCoreRemoteToLocalOper
 
     @Override
     protected final void doDownload(File destFile,
-                                    DbxClientV2 providerClient,
-                                    Context ctx)
+                                    @NonNull DbxClientV2 providerClient)
             throws DbxException, IOException
     {
         OutputStream fos = null;

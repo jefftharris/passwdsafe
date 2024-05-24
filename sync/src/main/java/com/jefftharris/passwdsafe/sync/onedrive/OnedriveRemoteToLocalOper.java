@@ -1,13 +1,11 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync.onedrive;
-
-import android.content.Context;
 
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
@@ -39,8 +37,7 @@ public class OnedriveRemoteToLocalOper
 
     @Override
     protected final void doDownload(File destFile,
-                                    IGraphServiceClient providerClient,
-                                    Context ctx)
+                                    IGraphServiceClient providerClient)
             throws IOException, ClientException
     {
         OutputStream os = null;

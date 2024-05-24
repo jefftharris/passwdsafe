@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -45,15 +46,11 @@ import com.jefftharris.passwdsafe.sync.lib.AbstractSyncedFilesActivity;
 import com.jefftharris.passwdsafe.sync.lib.AccountSyncFreqUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.AccountUpdateTask;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
-import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.Provider;
 import com.jefftharris.passwdsafe.sync.lib.RemoveAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.SyncResults;
 import com.jefftharris.passwdsafe.sync.onedrive.OnedriveFilesActivity;
-import com.jefftharris.passwdsafe.sync.owncloud.OwncloudEditDialog;
-import com.jefftharris.passwdsafe.sync.owncloud.OwncloudFilesActivity;
-import com.jefftharris.passwdsafe.sync.owncloud.OwncloudProvider;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -64,7 +61,6 @@ public class MainActivity extends AppCompatActivity
                    MainActivityProviderOps,
                    SyncUpdateHandler,
                    AccountUpdateTask.Listener,
-                   OwncloudEditDialog.Listener,
                    View.OnClickListener
 {
     private static final String TAG = "MainActivity";
@@ -75,7 +71,6 @@ public class MainActivity extends AppCompatActivity
     private static final int MENU_BIT_HAS_DROPBOX = 1;
     private static final int MENU_BIT_HAS_BOX = 2;
     private static final int MENU_BIT_HAS_ONEDRIVE = 3;
-    private static final int MENU_BIT_HAS_OWNCLOUD = 4;
 
     private DynamicPermissionMgr itsPermissionMgr;
     private MainActivityProviderAdapter itsAccountsAdapter;
@@ -118,8 +113,6 @@ public class MainActivity extends AppCompatActivity
 
         View passwdSafe = findViewById(R.id.passwd_safe);
         passwdSafe.setOnClickListener(this);
-        View owncloudSurvey = findViewById(R.id.owncloud_survey);
-        owncloudSurvey.setOnClickListener(this);
 
         LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_PROVIDERS, null, this);
@@ -131,11 +124,6 @@ public class MainActivity extends AppCompatActivity
             success.setOnCheckedChangeListener(
                     (buttonView, isChecked) ->
                             SyncApp.get(this).setIsForceSyncFailure(isChecked));
-        }
-
-        Intent intent = getIntent();
-        if (intent.getBooleanExtra(NotifUtils.OWNCLOUD_SURVEY_EXTRA, false)) {
-            onOwncloudSurveyClick();
         }
 
         SharedPreferences prefs = Preferences.getSharedPrefs(this);
@@ -214,12 +202,6 @@ public class MainActivity extends AppCompatActivity
                     getAccountLinkUri(ActivityRequest.ONEDRIVE_LINK));
             break;
         }
-        case ActivityRequest.OWNCLOUD_LINK: {
-            itsNewAccountTask = getOwncloudProvider().finishAccountLink(
-                    this, requestCode, resultCode, data,
-                    getAccountLinkUri(ActivityRequest.OWNCLOUD_LINK));
-            break;
-        }
         case ActivityRequest.GDRIVE_PLAY_LINK:
         case ActivityRequest.GDRIVE_PLAY_LINK_PERMS: {
             itsNewAccountTask = getGDrivePlayProvider().finishAccountLink(
@@ -260,7 +242,7 @@ public class MainActivity extends AppCompatActivity
 
     /** Prepare the Screen's standard options menu to be displayed. */
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu)
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_add);
         item.setEnabled(itsPermissionMgr.hasRequiredPerms());
@@ -273,13 +255,11 @@ public class MainActivity extends AppCompatActivity
                                MENU_BIT_HAS_GDRIVE);
         setProviderMenuEnabled(menu, R.id.menu_add_onedrive,
                                MENU_BIT_HAS_ONEDRIVE);
-        setProviderMenuEnabled(menu, R.id.menu_add_owncloud,
-                               MENU_BIT_HAS_OWNCLOUD);
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_about) {
@@ -307,56 +287,18 @@ public class MainActivity extends AppCompatActivity
         } else if (itemId == R.id.menu_add_onedrive) {
             onOnedriveChoose(null);
             return true;
-        } else if (itemId == R.id.menu_add_owncloud) {
-            onOwncloudChoose(null);
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
 
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         int id = v.getId();
         if (id == R.id.passwd_safe) {
             PasswdSafeUtil.startMainActivity(PasswdSafeUtil.PACKAGE, this);
-        } else if (id == R.id.owncloud_survey) {
-            onOwncloudSurveyClick();
         }
-    }
-
-
-    /**
-     * Button handler for an ownCloud survey
-     */
-    private void onOwncloudSurveyClick()
-    {
-        AlertDialog.Builder dlg = new AlertDialog.Builder(this);
-        dlg.setTitle(R.string.owncloud_survey)
-           .setMessage(R.string.owncloud_survey_msg)
-           .setCancelable(false)
-           .setPositiveButton(R.string.send, (dialog, which) -> {
-               Intent mailIntent = new Intent(Intent.ACTION_SENDTO);
-               mailIntent.setData(Uri.parse("mailto:"));
-               mailIntent.putExtra(
-                       Intent.EXTRA_EMAIL,
-                       new String[] {"jeffharris@users.sourceforge.net"});
-               mailIntent.putExtra(Intent.EXTRA_SUBJECT,
-                                   getString(R.string.owncloud_survey));
-               mailIntent.putExtra(
-                       Intent.EXTRA_TEXT,
-                       getString(R.string.owncloud_survey_email_txt));
-               if (mailIntent.resolveActivity(getPackageManager()) != null) {
-                   SharedPreferences prefs = Preferences.getSharedPrefs(this);
-                   prefs.edit()
-                        .putInt(Preferences.PREF_OWNCLOUD_SURVEY, 100).apply();
-                   startActivity(mailIntent);
-               }
-           })
-           .setNegativeButton(R.string.cancel,
-                              (dialog, which) -> dialog.cancel())
-           .show();
     }
 
 
@@ -422,34 +364,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /** Handler to choose an ownCloud account */
-    private void onOwncloudChoose(Uri currProviderUri)
-    {
-        Provider owncloudProvider = getOwncloudProvider();
-        try {
-            owncloudProvider.startAccountLink(this,
-                                              ActivityRequest.OWNCLOUD_LINK);
-            itsAccountLinkUris.put(ActivityRequest.OWNCLOUD_LINK,
-                                   currProviderUri);
-        } catch (Exception e) {
-            Log.e(TAG, "ownCloud startAccountLink failed", e);
-            owncloudProvider.unlinkAccount();
-        }
-    }
-
-
-    /** Handle changed settings for ownCloud */
-    @Override
-    public void handleOwncloudSettingsChanged(Uri providerUri,
-                                              String url,
-                                              ProviderSyncFreqPref freq)
-    {
-        getOwncloudProvider().setSettings(url);
-        updateProviderSyncFreq(providerUri, freq);
-        reloadProviders();
-    }
-
-
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
@@ -493,9 +407,6 @@ public class MainActivity extends AppCompatActivity
                     break;
                 }
                 case OWNCLOUD: {
-                    itsMenuOptions.set(MENU_BIT_HAS_OWNCLOUD);
-                    View owncloudSurveyBtn = findViewById(R.id.owncloud_survey);
-                    GuiUtils.setVisible(owncloudSurveyBtn, true);
                     break;
                 }
                 }
@@ -545,7 +456,6 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
             case OWNCLOUD: {
-                onOwncloudChoose(providerUri);
                 break;
             }
             }
@@ -553,7 +463,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void handleProviderChooseFiles(ProviderType type, Uri providerUri)
+    public void handleProviderChooseFiles(@NonNull ProviderType type,
+                                          Uri providerUri)
     {
         Class<? extends AbstractSyncedFilesActivity> chooseActivity = null;
         String uriKey = null;
@@ -568,11 +479,7 @@ public class MainActivity extends AppCompatActivity
             uriKey = OnedriveFilesActivity.INTENT_PROVIDER_URI;
             break;
         }
-        case OWNCLOUD: {
-            chooseActivity = OwncloudFilesActivity.class;
-            uriKey = OwncloudFilesActivity.INTENT_PROVIDER_URI;
-            break;
-        }
+        case OWNCLOUD:
         case BOX:
         case GDRIVE: {
             break;
@@ -597,28 +504,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void handleProviderEditDialog(ProviderType type,
-                                         Uri providerUri,
-                                         ProviderSyncFreqPref freq)
-    {
-        switch (type) {
-        case OWNCLOUD: {
-            String url = getOwncloudProvider().getUrl().toString();
-            DialogFragment dialog = OwncloudEditDialog.newInstance(
-                    providerUri, url, freq.getFreq());
-            dialog.show(getSupportFragmentManager(), null);
-            break;
-        }
-        case BOX:
-        case DROPBOX:
-        case GDRIVE:
-        case ONEDRIVE: {
-            break;
-        }
-        }
-    }
-
-    @Override
     public void updateProviderSyncFreq(final Uri providerUri,
                                        ProviderSyncFreqPref freq)
     {
@@ -634,7 +519,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public CharSequence getProviderWarning(ProviderType type)
+    public CharSequence getProviderWarning(@NonNull ProviderType type)
     {
         CharSequence warning = null;
         switch (type) {
@@ -672,10 +557,6 @@ public class MainActivity extends AppCompatActivity
             break;
         }
         case OWNCLOUD: {
-            boolean authorized = getOwncloudProvider().isAccountAuthorized();
-            if (!authorized) {
-                warning = getText(R.string.owncloud_auth_required);
-            }
             break;
         }
         }
@@ -752,13 +633,6 @@ public class MainActivity extends AppCompatActivity
         return ProviderFactory.getProvider(ProviderType.BOX, this);
     }
 
-    /** Get the ownCloud provider */
-    private OwncloudProvider getOwncloudProvider()
-    {
-        return (OwncloudProvider)
-                ProviderFactory.getProvider(ProviderType.OWNCLOUD, this);
-    }
-
     /** Get the OneDrive provider */
     private Provider getOnedriveProvider()
     {
@@ -768,7 +642,8 @@ public class MainActivity extends AppCompatActivity
     /**
      * Get the provider
      */
-    private Provider getProvider(ProviderType type)
+    @Nullable
+    private Provider getProvider(@NonNull ProviderType type)
     {
         switch (type) {
         case GDRIVE: {
@@ -784,14 +659,16 @@ public class MainActivity extends AppCompatActivity
             return getOnedriveProvider();
         }
         case OWNCLOUD: {
-            return getOwncloudProvider();
+            return ProviderFactory.getProvider(ProviderType.OWNCLOUD, this);
         }
         }
         return null;
     }
 
     /** Update a menu item based on the presence of a provider */
-    private void setProviderMenuEnabled(Menu menu, int id, int hasProviderBit)
+    private void setProviderMenuEnabled(@NonNull Menu menu,
+                                        int id,
+                                        int hasProviderBit)
     {
         MenuItem item = menu.findItem(id);
         item.setEnabled(!itsMenuOptions.get(hasProviderBit));
@@ -830,6 +707,7 @@ public class MainActivity extends AppCompatActivity
     public static class ClearPromptDlg extends DialogFragment
     {
         /** Create an instance of the dialog */
+        @NonNull
         protected static ClearPromptDlg newInstance(Uri currAcct)
         {
             ClearPromptDlg dlg = new ClearPromptDlg();

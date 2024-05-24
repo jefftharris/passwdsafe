@@ -6,14 +6,14 @@
  */
 package com.jefftharris.passwdsafe.sync.gdrive;
 
-import java.io.IOException;
-
-import android.content.Context;
+import androidx.annotation.NonNull;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
+
+import java.io.IOException;
 
 /**
  * A Google Drive sync operation to remove a file
@@ -29,7 +29,7 @@ public class GDriveRmFileOper extends AbstractRmSyncOper<Drive>
     }
 
     @Override
-    protected void doRemoteRemove(Drive providerClient, Context ctx)
+    protected void doRemoteRemove(@NonNull Drive providerClient)
             throws IOException
     {
         File updatedFile = new File();

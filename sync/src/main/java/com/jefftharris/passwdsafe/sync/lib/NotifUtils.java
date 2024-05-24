@@ -31,7 +31,7 @@ public final class NotifUtils
 {
     public enum Type
     {
-        OWNCLOUD_CERT_TRUSTED(0),
+        //OWNCLOUD_CERT_TRUSTED(0),
         DROPBOX_MIGRATED(1),
         BOX_MIGRATGED(2),
         SYNC_PROGRESS(3),
@@ -40,7 +40,7 @@ public final class NotifUtils
         SYNC_REPEAT_FAILURES(6),
         DRIVE_REAUTH_REQUIRED(7),
         ONEDRIVE_MIGRATED(8),
-        OWNCLOUD_USAGE(9),
+        //OWNCLOUD_USAGE(9),
         DRIVE_FILE_MIGRATION(10);
 
         private final int itsNotifId;
@@ -51,23 +51,15 @@ public final class NotifUtils
         }
     }
 
-    public static final String OWNCLOUD_SURVEY_EXTRA =
-            "com.jefftharris.passwdsafe.sync.__owncloud_survey";
-
     /** Show a notification */
     public static void showNotif(@NonNull Type type, Context ctx)
     {
         String content = "";
         switch (type) {
-        case OWNCLOUD_CERT_TRUSTED:
         case SYNC_PROGRESS:
         case SYNC_RESULTS:
         case SYNC_CONFLICT:
         case SYNC_REPEAT_FAILURES: {
-            break;
-        }
-        case OWNCLOUD_USAGE: {
-            content = ctx.getString(R.string.owncloud_select_for_survey);
             break;
         }
         case DROPBOX_MIGRATED:
@@ -84,7 +76,7 @@ public final class NotifUtils
 
 
     /** Show a notification with a custom content*/
-    public static void showNotif(Type type, String content, Context ctx)
+    private static void showNotif(Type type, String content, Context ctx)
     {
         String title = getTitle(type, ctx);
         NotificationCompat.Builder builder =
@@ -105,25 +97,6 @@ public final class NotifUtils
                                  Context ctx)
     {
         final Intent launchIntent = createNotifLaunchIntent(type, ctx);
-        switch (type) {
-        case OWNCLOUD_USAGE: {
-            launchIntent.putExtra(OWNCLOUD_SURVEY_EXTRA, true);
-            break;
-        }
-        case OWNCLOUD_CERT_TRUSTED:
-        case DROPBOX_MIGRATED:
-        case BOX_MIGRATGED:
-        case SYNC_PROGRESS:
-        case SYNC_RESULTS:
-        case SYNC_CONFLICT:
-        case SYNC_REPEAT_FAILURES:
-        case DRIVE_REAUTH_REQUIRED:
-        case ONEDRIVE_MIGRATED:
-        case DRIVE_FILE_MIGRATION: {
-            break;
-        }
-        }
-
         PendingIntent intent = PendingIntent.getActivity(
                 ctx, type.itsNotifId, launchIntent,
                 (PendingIntent.FLAG_UPDATE_CURRENT |
@@ -159,9 +132,6 @@ public final class NotifUtils
     public static String getTitle(@NonNull Type type, Context ctx)
     {
         switch (type) {
-        case OWNCLOUD_CERT_TRUSTED: {
-            return ctx.getString(R.string.owncloud_cert_trusted);
-        }
         case DROPBOX_MIGRATED: {
             return ctx.getString(R.string.dropbox_service_updated);
         }
@@ -186,9 +156,6 @@ public final class NotifUtils
         case ONEDRIVE_MIGRATED: {
             return ctx.getString(R.string.onedrive_service_updated);
         }
-        case OWNCLOUD_USAGE: {
-            return ctx.getString(R.string.owncloud_users_survey);
-        }
         case DRIVE_FILE_MIGRATION: {
             return ctx.getString(R.string.gdrive_file_auth_changed);
         }
@@ -206,13 +173,11 @@ public final class NotifUtils
     {
         Class<? extends Activity> activityClass = null;
         switch (type) {
-        case OWNCLOUD_CERT_TRUSTED:
         case DROPBOX_MIGRATED:
         case BOX_MIGRATGED:
         case SYNC_PROGRESS:
         case DRIVE_REAUTH_REQUIRED:
         case ONEDRIVE_MIGRATED:
-        case OWNCLOUD_USAGE:
         case DRIVE_FILE_MIGRATION: {
             activityClass = MainActivity.class;
             break;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -47,31 +47,11 @@
         \n\nDrücke Neu Laden um diese neu zu gewähren, wenn dies nicht geht,
         können Sie die Kontactberechtigung in den App-Einstellungen aktivieren.
     </string>
-    <string name="no_owncloud_accts">
-        Kein ownCloud Konten zur Verfügung. Fügen Sie ein Konto in der ownCloud
-        App zuerst. Dann kann es für PasswdSafe Sync ausgewählt werden.
-    </string>
     <string name="notifications">Benachrichtigungen"</string>
     <string name="onedrive_acct_unlinked">App unverknüpft von OneDrive-Konto. Synchronisieren Sie erneut, um OneDrive-Zugang für PasswdSafe Sync ermöglichen.</string>
     <string name="onedrive_service_updated">OneDrive-Dienstes aktualisiert</string>
     <string name="onedrive_synced_files">OneDrive Synchronisiert Dateien</string>
     <string name="open_app_reauthorize">Öffnen Sie App, die neu aktivieren</string>
-    <string name="owncloud_auth_required">
-        Die Zulassung zum ownCloud-Konto erforderlich. Wählen Sie das 
-        ausstehende Benachrichtigung Zugriff aktivieren und synchronisieren 
-        Sie das Konto.
-    </string>
-    <string name="owncloud_cert_trusted">Zertifikat vertrauenswürdige für ownCloud Konto</string>
-    <string name="owncloud_select_for_survey">Für eine Umfrage von Nutzern von ownCloud ausgewählt</string>
-    <string name="owncloud_survey">ownCloud-Umfrage</string>
-    <string name="owncloud_survey_email_txt">Ich benutze PasswdSafe Sync mit ownCloud</string>
-    <string name="owncloud_survey_msg">
-        Hier klicken um eine E-Mail an den Entwickler zu schicken wenn Sie
-        ownCloud benutzen. Unterstützung für ownCloud könnte in späteren
-        Versionen durch Nextcloud ersetzt werden.
-    </string>
-    <string name="owncloud_synced_files">ownCloud Synchronisiert Dateien</string>
-    <string name="owncloud_users_survey">ownCloud-Nutzer-Umfrage</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="recreated_local_copy">Erstellt lokale Kopie</string>
     <string name="remove_account">Konto löschen?</string>

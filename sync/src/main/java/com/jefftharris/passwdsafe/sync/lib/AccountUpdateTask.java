@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,12 +7,10 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.jefftharris.passwdsafe.lib.ManagedRef;
@@ -103,9 +101,4 @@ public abstract class AccountUpdateTask extends AsyncTask<Void, Void, Void>
         itsListener.notifyUpdateFinished(this);
     }
 
-    /** Get the activity for the task */
-    protected final @Nullable Activity getActivity()
-    {
-        return itsActivity.get();
-    }
 }

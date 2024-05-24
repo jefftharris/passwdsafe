@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2018 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2018-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,12 +53,10 @@ class MainActivityProviderHolder
     private final Spinner itsFreqSpin;
     private final ImageButton itsDelete;
     private final ImageButton itsSync;
-    private final ImageButton itsEdit;
     private final Button itsChooseFiles;
     private final ImageButton itsHelp;
     private final TextView itsHelpText;
     private ProviderType itsType;
-    private ProviderSyncFreqPref itsFreq;
     private Uri itsProviderUri;
 
     /**
@@ -82,8 +81,6 @@ class MainActivityProviderHolder
         itsDelete.setOnClickListener(this);
         itsSync = view.findViewById(R.id.sync);
         itsSync.setOnClickListener(this);
-        itsEdit = view.findViewById(R.id.edit);
-        itsEdit.setOnClickListener(this);
         itsChooseFiles = view.findViewById(R.id.choose_files);
         itsChooseFiles.setOnClickListener(this);
         itsHelp = view.findViewById(R.id.help);
@@ -95,7 +92,7 @@ class MainActivityProviderHolder
     /**
      * Update the view for a provider item
      */
-    public void updateView(Cursor item)
+    public void updateView(@NonNull Cursor item)
     {
         Context ctx = itemView.getContext();
         
@@ -109,7 +106,7 @@ class MainActivityProviderHolder
 
         int freqVal = item.getInt(
                 PasswdSafeContract.Providers.PROJECTION_IDX_SYNC_FREQ);
-        itsFreq = ProviderSyncFreqPref.freqValueOf(freqVal);
+        ProviderSyncFreqPref freq = ProviderSyncFreqPref.freqValueOf(freqVal);
 
         itsTitle.setCompoundDrawablesWithIntrinsicBounds(
                 itsType.getIconId(false), 0, 0, 0);
@@ -133,7 +130,6 @@ class MainActivityProviderHolder
         updateLast(itsLastFailureLabel, itsLastFailure, lastFailure);
 
         boolean hasChooseFiles = false;
-        boolean hasEditDialog = false;
         boolean hasHelp = false;
         switch (itsType) {
         case GDRIVE: {
@@ -149,20 +145,15 @@ class MainActivityProviderHolder
             hasChooseFiles = true;
             break;
         }
-        case OWNCLOUD: {
-            hasChooseFiles = true;
-            hasEditDialog = true;
-            break;
-        }
+        case OWNCLOUD:
         case BOX: {
             break;
         }
         }
-        itsFreqSpin.setSelection(itsFreq.getDisplayIdx());
+        itsFreqSpin.setSelection(freq.getDisplayIdx());
         GuiUtils.setVisible(itsHelp, hasHelp);
-        GuiUtils.setVisible(itsEdit, hasEditDialog);
-        GuiUtils.setVisible(itsFreqLabel, !hasEditDialog);
-        GuiUtils.setVisible(itsFreqSpin, !hasEditDialog);
+        GuiUtils.setVisible(itsFreqLabel, true);
+        GuiUtils.setVisible(itsFreqSpin, true);
 
         GuiUtils.setVisible(itsChooseFiles, hasChooseFiles);
 
@@ -181,9 +172,6 @@ class MainActivityProviderHolder
             itsProviderOps.handleProviderDelete(itsProviderUri);
         } else if (v == itsSync) {
             itsProviderOps.handleProviderSync(itsType, itsProviderUri);
-        } else if (v == itsEdit) {
-            itsProviderOps.handleProviderEditDialog(itsType, itsProviderUri,
-                                                    itsFreq);
         } else if (v == itsChooseFiles) {
             itsProviderOps.handleProviderChooseFiles(itsType, itsProviderUri);
         } else if (v == itsHelp) {
