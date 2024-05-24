@@ -23,6 +23,8 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
+import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
+import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
@@ -50,7 +52,15 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
         super.init(dbProvider);
         updateOwncloudAcct();
 
-        // TODO: notification that support is removed...
+        if (dbProvider != null) {
+            SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
+            int numNotify = prefs.getInt(Preferences.PREF_OWNCLOUD_DISABLED, 0);
+            if (numNotify < 3) {
+                NotifUtils.showNotif(NotifUtils.Type.OWNCLOUD_DISABLED,
+                                     getContext());
+            }
+
+        }
     }
 
     @Override

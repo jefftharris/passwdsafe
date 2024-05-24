@@ -27,6 +27,8 @@ public class Preferences
     public static final String PREF_DEBUG_TAGS = "debugTagsPref";
     public static final String PREF_DEBUG_TAGS_DEF = "";
 
+    public static final String PREF_OWNCLOUD_DISABLED = "owncloudDisabled";
+
     /**
      * Get the default shared preferences
      */

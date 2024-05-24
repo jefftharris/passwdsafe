@@ -41,7 +41,8 @@ public final class NotifUtils
         DRIVE_REAUTH_REQUIRED(7),
         ONEDRIVE_MIGRATED(8),
         //OWNCLOUD_USAGE(9),
-        DRIVE_FILE_MIGRATION(10);
+        DRIVE_FILE_MIGRATION(10),
+        OWNCLOUD_DISABLED(11);
 
         private final int itsNotifId;
 
@@ -59,7 +60,8 @@ public final class NotifUtils
         case SYNC_PROGRESS:
         case SYNC_RESULTS:
         case SYNC_CONFLICT:
-        case SYNC_REPEAT_FAILURES: {
+        case SYNC_REPEAT_FAILURES:
+        case OWNCLOUD_DISABLED: {
             break;
         }
         case DROPBOX_MIGRATED:
@@ -91,7 +93,7 @@ public final class NotifUtils
     /**
      * Show a notification with a custom builder
      */
-    public static void showNotif(NotificationCompat.Builder builder,
+    public static void showNotif(@NonNull NotificationCompat.Builder builder,
                                  Type type,
                                  String tag,
                                  Context ctx)
@@ -159,6 +161,9 @@ public final class NotifUtils
         case DRIVE_FILE_MIGRATION: {
             return ctx.getString(R.string.gdrive_file_auth_changed);
         }
+        case OWNCLOUD_DISABLED: {
+            return ctx.getString(R.string.owncloud_sync_disabled);
+        }
         }
         return null;
     }
@@ -178,7 +183,8 @@ public final class NotifUtils
         case SYNC_PROGRESS:
         case DRIVE_REAUTH_REQUIRED:
         case ONEDRIVE_MIGRATED:
-        case DRIVE_FILE_MIGRATION: {
+        case DRIVE_FILE_MIGRATION:
+        case OWNCLOUD_DISABLED: {
             activityClass = MainActivity.class;
             break;
         }
