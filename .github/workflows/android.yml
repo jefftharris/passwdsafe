@@ -26,7 +26,11 @@ jobs:
 
     - name: Archive results
       uses: actions/upload-artifact@v4
-      if: always()
+      if: {{ !cancelled() }}
       with:
-        name: build-dependencies
-        path: build/reports/dependency-verification/
+        name: archive
+        if-no-files-found: ignore
+        path: |
+          build/reports/dependency-verification/
+          */build/reports/
+          */build/intermediates/lint_intermediate_text_report/
