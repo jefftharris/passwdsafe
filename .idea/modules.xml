@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PasswdSafe.iml" filepath="$PROJECT_DIR$/PasswdSafe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PasswdSafe.iml" filepath="$PROJECT_DIR$/.idea/modules/PasswdSafe.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib/PasswdSafe.lib.main.iml" />

@@ -37,32 +37,3 @@ allprojects {
 tasks.register('clean', Delete) {
     delete rootProject.layout.buildDirectory
 }
-
-// Task to push to common repositories
-tasks.addRule("Pattern: hgpush_<ID>") { String taskName ->
-    if (taskName.startsWith("hgpush_")) {
-        //noinspection ConfigurationAvoidance
-        task(taskName, type:Exec) {
-            executable = "hg"
-            args = ["push", taskName - "hgpush_"]
-            ignoreExitValue = true
-            doLast {
-                def execResult = getExecutionResult().get()
-                def rc = execResult.getExitValue()
-                if ((rc != 0) && (rc != 1)) {
-                    execResult.assertNormalExitValue()
-                }
-            }
-        }
-    }
-}
-
-tasks.register('hgpush_all') {
-    description = "Mercurial push to common repositories"
-    group = "other"
-
-    dependsOn << "hg paths".execute().text.split("\n").collect({ line ->
-        def path = line.split(" ")[0]
-        "hgpush_$path"
-    })
-}

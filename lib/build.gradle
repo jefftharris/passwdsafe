@@ -7,12 +7,12 @@
  */
 apply plugin: 'com.android.library'
 
-static def hgId() {
-    return 'hg id'.execute().text.trim()
+static def buildId() {
+    return 'git describe'.execute().text.trim()
 }
 
 static def buildTime() {
-    return 'hg log -r . -T {date|isodate}'.execute().text.trim()
+    return 'git show --no-patch --format=%ci HEAD'.execute().text.trim()
 }
 
 android {
@@ -22,7 +22,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         vectorDrawables.useSupportLibrary = true
-        buildConfigField 'String', 'BUILD_ID', "\"${hgId()}\""
+        buildConfigField 'String', 'BUILD_ID', "\"${buildId()}\""
         buildConfigField 'String', 'BUILD_DATE', "\"${buildTime()}\""
     }
     buildFeatures {
