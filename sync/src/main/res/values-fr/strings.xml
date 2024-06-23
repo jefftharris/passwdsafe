@@ -53,6 +53,7 @@
     <string name="onedrive_service_updated">Service de OneDrive est mis à jour</string>
     <string name="onedrive_synced_files">OneDrive Fichiers Synchronisé</string>
     <string name="open_app_reauthorize">Ouvrir l\'application d\'autoriser à nouveau</string>
+    <string name="owncloud_sync_disabled">Le support de synchronisation pour ownCloud est désactivé</string>
     <string name="passwdsafe">PasswdSafe</string>
     <string name="recreated_local_copy">Copie locale recréé</string>
     <string name="remove_account">Supprimer un compte?</string>
