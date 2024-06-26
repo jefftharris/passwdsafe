@@ -84,6 +84,9 @@ jobs:
       uses: github/codeql-action/autobuild@v3
       with:
         working-directory: passwdsafe/src/main/cpp
+      env:
+        CXXFLAGS: -I/usr/lib/jvm/java/include
+        CFLAGS: -I/usr/lib/jvm/java/include
 
     # If the analyze step fails for one of the languages you are analyzing with
     # "We were unable to automatically build your code", modify the matrix above
