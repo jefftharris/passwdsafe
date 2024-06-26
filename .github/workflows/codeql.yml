@@ -85,6 +85,7 @@ jobs:
         which java
         env
         dirname $(realpath $(which javac))
+        find ${ANDROID_NDK_HOME} -name sysroot
 
     - name: C++ Build
       if: matrix.language == 'c-cpp'
@@ -92,8 +93,8 @@ jobs:
       with:
         working-directory: passwdsafe/src/main/cpp
       env:
-        CXXFLAGS: -I${ANDROID_NDK_HOME}/sysroot/usr/include
-        CFLAGS: -I${ANDROID_NDK_HOME}/sysroot/usr/include
+        CXXFLAGS: -I${JAVA_HOME}/include
+        CFLAGS: -I${JAVA_HOME}/include
 
     # If the analyze step fails for one of the languages you are analyzing with
     # "We were unable to automatically build your code", modify the matrix above
