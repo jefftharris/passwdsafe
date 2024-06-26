@@ -79,6 +79,13 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Tests
+      shell: bash
+      run: |
+        which java
+        env
+        dirname $(realpath $(which javac))
+
     - name: C++ Build
       if: matrix.language == 'c-cpp'
       uses: github/codeql-action/autobuild@v3
