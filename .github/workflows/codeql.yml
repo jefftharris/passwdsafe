@@ -93,8 +93,8 @@ jobs:
       with:
         working-directory: passwdsafe/src/main/cpp
       env:
-        CXXFLAGS: -I${JAVA_HOME}/include
-        CFLAGS: -I${JAVA_HOME}/include
+        CXXFLAGS: -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux
+        CFLAGS: -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux
 
     # If the analyze step fails for one of the languages you are analyzing with
     # "We were unable to automatically build your code", modify the matrix above
