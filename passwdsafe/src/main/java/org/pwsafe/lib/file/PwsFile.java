@@ -138,7 +138,7 @@ public abstract class PwsFile
     /**
      * Cipher spec for storing passwords in memory
      */
-    private static final String CIPHER_SPEC = "AES/CBC/PKCS5Padding";
+    private static final String CIPHER_SPEC = "AES/CTR/NoPadding";
 
     /**
      * Cipher key spec for storing passwords in memory
