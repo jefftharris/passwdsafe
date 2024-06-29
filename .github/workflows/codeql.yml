@@ -34,7 +34,7 @@ jobs:
         # This mode only analyzes Java. Set this to 'autobuild' or 'manual' to
         # analyze Kotlin too.
         - language: java-kotlin
-          build-mode: none
+          build-mode: autobuild
 
     steps:
 
