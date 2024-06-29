@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.db.PasswdSafeDb;
@@ -41,10 +42,9 @@ import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.CountedBool;
 import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;
-
-import java.util.regex.Pattern;
 
 
 /**
@@ -87,15 +87,12 @@ public class PasswdSafeNewFileFragment
 
     private static final int CREATE_DOCUMENT_REQUEST = 0;
 
-    /// Regex for a valid new file name, without extension
-    private static final Pattern FILENAME_REGEX = Pattern.compile(
-            "^[\\p{Alnum}_-]+$");
-
     private static final String TAG = "PasswdSafeNewFileFrag";
 
     /**
      * Create a new instance
      */
+    @NonNull
     public static PasswdSafeNewFileFragment newInstance(Uri newFileUri)
     {
         PasswdSafeNewFileFragment fragment = new PasswdSafeNewFileFragment();
@@ -219,24 +216,14 @@ public class PasswdSafeNewFileFragment
     }
 
     @Override
-    public void onClick(View view)
+    public void onClick(@NonNull View view)
     {
         if (view.getId() == R.id.ok) {
             GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
             String fileName = itsFileName.getText().toString();
             if (itsUseStorage) {
-                Intent createIntent = new Intent(
-                        DocumentsContractCompat.INTENT_ACTION_CREATE_DOCUMENT);
-
-                // Filter to only show results that can be "opened", such as
-                // a file (as opposed to a list of contacts or timezones).
-                createIntent.addCategory(Intent.CATEGORY_OPENABLE);
-
-                // Create a file with the requested MIME type and name.
-                createIntent.setType(PasswdSafeUtil.MIME_TYPE_PSAFE3);
-                createIntent.putExtra(Intent.EXTRA_TITLE, fileName);
-
-                startActivityForResult(createIntent, CREATE_DOCUMENT_REQUEST);
+                startActivityForResult(createNewFileIntent(fileName),
+                                       CREATE_DOCUMENT_REQUEST);
             } else {
                 try (Owner<PwsPassword> passwd =
                              PwsPassword.create(itsPassword.getText())) {
@@ -394,6 +381,24 @@ public class PasswdSafeNewFileFragment
     }
 
     /**
+     * Create the intent for creating a new file document
+     */
+    private static @NonNull Intent createNewFileIntent(String fileName)
+    {
+        Intent createIntent = new Intent(
+                DocumentsContractCompat.INTENT_ACTION_CREATE_DOCUMENT);
+
+        // Filter to only show results that can be "opened", such as
+        // a file (as opposed to a list of contacts or timezones).
+        createIntent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // Create a file with the requested MIME type and name.
+        createIntent.setType(PasswdSafeUtil.MIME_TYPE_PSAFE3);
+        createIntent.putExtra(Intent.EXTRA_TITLE, fileName);
+        return createIntent;
+    }
+
+    /**
      * Handle when the new task is finished
      */
     private void newTaskFinished(PasswdFileData result,
@@ -415,6 +420,8 @@ public class PasswdSafeNewFileFragment
      * Validate the file name
      * @return error message if invalid; null if valid
      */
+    @Nullable
+    @Contract("null -> !null")
     private String validateFileName(String fileName)
     {
         if ((fileName == null) || !fileName.endsWith(itsPsafe3Sfx)) {
@@ -424,17 +431,16 @@ public class PasswdSafeNewFileFragment
         String fileNameBase = fileName.substring(
                 0, fileName.length() - itsPsafe3Sfx.length());
 
-        if (fileNameBase.isEmpty()) {
-            return getString(R.string.empty_file_name);
-        }
-        if (!FILENAME_REGEX.matcher(fileNameBase).matches()) {
-            return getString(R.string.invalid_file_name);
+        var ctx = requireContext();
+        var error = PasswdFileUri.validateFileNameBase(fileNameBase, ctx);
+        if (error != null) {
+            return error;
         }
 
         if (!itsUseStorage) {
             PasswdFileUri uri = getPasswdFileUri();
             if (uri != null) {
-                return uri.validateNewChild(fileNameBase, getContext());
+                return uri.validateNewChild(fileNameBase, ctx);
             }
         }
 
@@ -474,7 +480,7 @@ public class PasswdSafeNewFileFragment
         /**
          * Register a text view with the validator to revalidate on text change
          */
-        protected void registerTextView(TextView tv)
+        protected void registerTextView(@NonNull TextView tv)
         {
             tv.addTextChangedListener(itsTextWatcher);
         }
@@ -482,7 +488,7 @@ public class PasswdSafeNewFileFragment
         /**
          * Unregister a text view
          */
-        protected void unregisterTextView(TextView tv)
+        protected void unregisterTextView(@NonNull TextView tv)
         {
             tv.removeTextChangedListener(itsTextWatcher);
         }
@@ -530,7 +536,7 @@ public class PasswdSafeNewFileFragment
          * Constructor
          */
         private NewTask(String fileName,
-                        Owner<PwsPassword>.Param passwd,
+                        @NonNull Owner<PwsPassword>.Param passwd,
                         PasswdSafeNewFileFragment frag)
         {
             super(frag);
@@ -540,6 +546,7 @@ public class PasswdSafeNewFileFragment
             itsUseStorage = frag.itsUseStorage;
         }
 
+        @NonNull
         @Override
         protected PasswdFileData doInBackground() throws Exception
         {

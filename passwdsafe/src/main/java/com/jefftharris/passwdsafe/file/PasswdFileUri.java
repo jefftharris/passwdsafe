@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -50,6 +50,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * The PasswdFileUri class encapsulates a URI to a password file
@@ -66,6 +67,10 @@ public class PasswdFileUri
     private Pair<Boolean, Integer> itsWritableInfo;
     private boolean itsIsDeletable;
     private ProviderType itsSyncType = null;
+
+    /// Regex for a valid new file name, without extension
+    private static final Pattern FILENAME_REGEX = Pattern.compile(
+            "^[\\p{Alnum}_-]+$");
 
     /** The type of URI */
     public enum Type
@@ -301,6 +306,25 @@ public class PasswdFileUri
 
 
     /**
+     * Validate the file name base (no extension)
+     * @return error message if invalid; null if valid
+     */
+    @Nullable
+    public static String validateFileNameBase(@NonNull String fileNameBase,
+                                              @NonNull Context ctx)
+    {
+        if (fileNameBase.isEmpty()) {
+            return ctx.getString(R.string.empty_file_name);
+        }
+        if (!FILENAME_REGEX.matcher(fileNameBase).matches()) {
+            return ctx.getString(R.string.invalid_file_name);
+        }
+
+        return null;
+    }
+
+
+    /**
      * Validate a new file that is a child of the current URI. Return null if
      * successful; error string otherwise
      */
@@ -308,6 +332,15 @@ public class PasswdFileUri
     {
         switch (itsType) {
         case FILE: {
+            if (fileName.contains("..") || fileName.contains("/") ||
+                fileName.contains("\\")) {
+                return ctx.getString(R.string.invalid_file_name);
+            }
+            var error = validateFileNameBase(fileName, ctx);
+            if (error != null) {
+                return error;
+            }
+
             File f = new File(itsFile, fileName + ".psafe3");
             if (f.exists()) {
                 return ctx.getString(R.string.file_exists);
