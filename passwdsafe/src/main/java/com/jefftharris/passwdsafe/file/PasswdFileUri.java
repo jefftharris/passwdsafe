@@ -319,6 +319,11 @@ public class PasswdFileUri
         if (!FILENAME_REGEX.matcher(fileNameBase).matches()) {
             return ctx.getString(R.string.invalid_file_name);
         }
+        for (var check: new String[] {"..", "/", "\\"}) {
+            if (fileNameBase.contains(check)) {
+                return ctx.getString(R.string.invalid_file_name);
+            }
+        }
 
         return null;
     }
