@@ -319,11 +319,6 @@ public class PasswdFileUri
         if (!FILENAME_REGEX.matcher(fileNameBase).matches()) {
             return ctx.getString(R.string.invalid_file_name);
         }
-        for (var check: new String[] {"..", "/", "\\"}) {
-            if (fileNameBase.contains(check)) {
-                return ctx.getString(R.string.invalid_file_name);
-            }
-        }
 
         return null;
     }
@@ -337,10 +332,15 @@ public class PasswdFileUri
     {
         switch (itsType) {
         case FILE: {
+            if (fileName.contains("..") || fileName.contains("/") ||
+                fileName.contains("\\")) {
+                return ctx.getString(R.string.invalid_file_name);
+            }
             var error = validateFileNameBase(fileName, ctx);
             if (error != null) {
                 return error;
             }
+
             File f = new File(itsFile, fileName + ".psafe3");
             if (f.exists()) {
                 return ctx.getString(R.string.file_exists);
