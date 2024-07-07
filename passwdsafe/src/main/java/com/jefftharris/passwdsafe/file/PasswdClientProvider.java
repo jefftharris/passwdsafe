@@ -30,6 +30,7 @@ import org.pwsafe.lib.file.PwsRecord;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -114,13 +115,18 @@ public class PasswdClientProvider extends ContentProvider
                     throw new FileNotFoundException(fileName);
                 }
 
-                if (!fileName.startsWith(filedir + File.separator)) {
+                try {
+                    File file = new File(fileName).getCanonicalFile();
+                    fileName = file.toString();
+                    if (!fileName.startsWith(filedir + File.separator)) {
+                        throw new FileNotFoundException(fileName);
+                    }
+
+                    return ParcelFileDescriptor.open(
+                            file, ParcelFileDescriptor.MODE_READ_ONLY);
+                } catch (IOException ioe) {
                     throw new FileNotFoundException(fileName);
                 }
-
-                File file = new File(fileName);
-                return ParcelFileDescriptor.open(
-                        file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
         }
         case MATCH_SEARCH_SUGGESTIONS: {
