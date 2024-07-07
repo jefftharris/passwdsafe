@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  *  The PasswdClientProvider class is a content provider for the PasswdSafe
@@ -58,6 +59,7 @@ public class PasswdClientProvider extends ContentProvider
     private static final Object itsProviderLock = new Object();
     private final Map<String, File> itsFiles = new HashMap<>();
     private int itsSearchFlags = 0;
+    private boolean itsIsSearchRegex = false;
     private MatchComparator itsSearchComp = new MatchComparator(true, false);
 
     static {
@@ -222,10 +224,25 @@ public class PasswdClientProvider extends ContentProvider
             }
 
             PasswdSafeUtil.dbginfo(TAG, "query suggestions: %s", query);
+            var compileQuery = Pattern.quote(query);
+            if (itsIsSearchRegex) {
+                if (compileQuery.startsWith("\\Q") &&
+                    compileQuery.endsWith("\\E")) {
+                    compileQuery = compileQuery.substring(
+                            2, compileQuery.length() - 2);
+                } else {
+                    compileQuery = query;
+                }
+            }
             Pattern queryPattern;
             MatchComparator comparator;
             synchronized (this) {
-                queryPattern = Pattern.compile(query, itsSearchFlags);
+                try {
+                    queryPattern = Pattern.compile(compileQuery,
+                                                   itsSearchFlags);
+                } catch (PatternSyntaxException pse) {
+                    return null;
+                }
                 comparator = itsSearchComp;
             }
             // Groups are matched separately
@@ -276,11 +293,12 @@ public class PasswdClientProvider extends ContentProvider
     private synchronized void updatePrefs(SharedPreferences prefs)
     {
         itsSearchFlags = 0;
+        itsIsSearchRegex = false;
         if (!Preferences.getSearchCaseSensitivePref(prefs)) {
             itsSearchFlags |= Pattern.CASE_INSENSITIVE;
         }
-        if (!Preferences.getSearchRegexPref(prefs)) {
-            itsSearchFlags |= Pattern.LITERAL;
+        if (Preferences.getSearchRegexPref(prefs)) {
+            itsIsSearchRegex = true;
         }
 
         itsSearchComp = new MatchComparator(
