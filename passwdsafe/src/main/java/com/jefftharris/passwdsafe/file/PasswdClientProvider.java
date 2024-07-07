@@ -112,7 +112,9 @@ public class PasswdClientProvider extends ContentProvider
                         (fileName != null) ? itsFiles.get(fileName) : null;
                 if (filedir == null) {
                     throw new FileNotFoundException(fileName);
-                } else if (!fileName.startsWith(filedir + File.separator)) {
+                }
+
+                if (!fileName.startsWith(filedir + File.separator)) {
                     throw new FileNotFoundException(fileName);
                 }
 
