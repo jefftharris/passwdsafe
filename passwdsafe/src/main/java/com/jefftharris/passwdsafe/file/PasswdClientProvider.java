@@ -116,6 +116,7 @@ public class PasswdClientProvider extends ContentProvider
                 }
 
                 try {
+                    filedir = filedir.getCanonicalFile();
                     File file = new File(fileName).getCanonicalFile();
                     fileName = file.toString();
                     if (!fileName.startsWith(filedir + File.separator)) {
@@ -124,6 +125,8 @@ public class PasswdClientProvider extends ContentProvider
 
                     return ParcelFileDescriptor.open(
                             file, ParcelFileDescriptor.MODE_READ_ONLY);
+                } catch (FileNotFoundException fnfe) {
+                    throw fnfe;
                 } catch (IOException ioe) {
                     throw new FileNotFoundException(fileName);
                 }
