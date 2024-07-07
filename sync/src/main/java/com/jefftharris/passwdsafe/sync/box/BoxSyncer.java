@@ -10,6 +10,9 @@ package com.jefftharris.passwdsafe.sync.box;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.box.androidsdk.content.BoxApiFolder;
 import com.box.androidsdk.content.BoxApiSearch;
 import com.box.androidsdk.content.BoxApiUser;
@@ -63,6 +66,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     /**
      * Get the account display name
      */
+    @Nullable
     public static String getDisplayName(BoxSession client) throws Exception
     {
         BoxApiUser userApi = new BoxApiUser(client);
@@ -75,7 +79,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     }
 
     /** Get the folder for a file */
-    public static String getFileFolder(BoxItem file)
+    @NonNull
+    public static String getFileFolder(@NonNull BoxItem file)
     {
         StringBuilder folderStr = new StringBuilder();
         for (BoxFolder folder: file.getPathCollection()) {
@@ -88,7 +93,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     }
 
     @Override
-    protected SyncRemoteFiles getSyncRemoteFiles(List<DbFile> dbfiles)
+    protected SyncRemoteFiles getSyncRemoteFiles(@NonNull List<DbFile> dbfiles)
             throws BoxException
     {
         BoxApiFolder folderApi = new BoxApiFolder(itsProviderClient);
@@ -116,10 +121,10 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
         BoxRequestsSearch.Search searchReq =
                 searchApi.getSearchRequest("passwdsafe");
 
-        int offset = 0;
+        long offset = 0L;
         boolean hasMoreFiles = true;
         while (hasMoreFiles) {
-            searchReq.setOffset(offset);
+            searchReq.setOffset(Math.toIntExact(offset));
             BoxIteratorItems items = searchReq.send();
             for (BoxItem item: items) {
                 PasswdSafeUtil.dbginfo(TAG, "search item %s",
@@ -130,7 +135,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
                 }
             }
             offset += items.limit();
-            hasMoreFiles = (offset < items.fullSize());
+            hasMoreFiles = (offset < items.fullSize()) &&
+                           (offset < (long)Integer.MAX_VALUE);
         }
 
         return boxfiles;
@@ -183,7 +189,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     private void retrieveBoxFolderFiles(
             String folderId,
             String[] fileFields,
-            BoxApiFolder folderApi,
+            @NonNull BoxApiFolder folderApi,
             SyncRemoteFiles boxfiles)
             throws BoxException
     {
@@ -191,10 +197,10 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
                 folderApi.getItemsRequest(folderId);
         req.setFields(fileFields);
 
-        int offset = 0;
+        long offset = 0L;
         boolean hasMoreItems = true;
         while (hasMoreItems) {
-            req.setOffset(offset);
+            req.setOffset(Math.toIntExact(offset));
             BoxIteratorItems items = req.send();
             for (BoxItem item: items) {
                 PasswdSafeUtil.dbginfo(TAG, "item %s", boxToString(item));
@@ -206,7 +212,8 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
                 }
             }
             offset += items.limit();
-            hasMoreItems = (offset < items.fullSize());
+            hasMoreItems = (offset < items.fullSize()) &&
+                           (offset < (long)Integer.MAX_VALUE);
         }
     }
 
