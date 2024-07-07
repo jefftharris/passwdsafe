@@ -112,14 +112,11 @@ public class PasswdClientProvider extends ContentProvider
                         (fileName != null) ? itsFiles.get(fileName) : null;
                 if (filedir == null) {
                     throw new FileNotFoundException(fileName);
-                }
-
-                File file = new File(fileName).getAbsoluteFile();
-                fileName = file.getAbsolutePath();
-                if (!fileName.startsWith(filedir + File.separator)) {
+                } else if (!fileName.startsWith(filedir + File.separator)) {
                     throw new FileNotFoundException(fileName);
                 }
 
+                File file = new File(fileName);
                 return ParcelFileDescriptor.open(
                         file, ParcelFileDescriptor.MODE_READ_ONLY);
             }
