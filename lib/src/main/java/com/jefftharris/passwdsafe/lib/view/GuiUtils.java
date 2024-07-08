@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -54,7 +54,8 @@ public final class GuiUtils
     /**
      * Set the height of a ListView based on all of its children
      */
-    public static void setListViewHeightBasedOnChildren(final ListView listView)
+    public static void setListViewHeightBasedOnChildren(
+            @NonNull final ListView listView)
     {
         final ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
@@ -85,7 +86,7 @@ public final class GuiUtils
     }
 
 
-    public static boolean isPasswordVisible(TextView tv)
+    public static boolean isPasswordVisible(@NonNull TextView tv)
     {
         return (tv.getInputType() & InputType.TYPE_MASK_VARIATION) ==
                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
@@ -95,7 +96,7 @@ public final class GuiUtils
     /**
      * Set whether the view shows a visible password
      */
-    public static void setPasswordVisible(TextView tv,
+    public static void setPasswordVisible(@NonNull TextView tv,
                                           boolean visible,
                                           Context ctx)
     {
@@ -122,7 +123,7 @@ public final class GuiUtils
     /**
      * Clear the contents of an EditText
      */
-    public static void clearEditText(EditText tv)
+    public static void clearEditText(@NonNull EditText tv)
     {
         tv.getText().clear();
         Runtime.getRuntime().gc();
@@ -137,13 +138,13 @@ public final class GuiUtils
     }
 
     /** Set whether a view is visible */
-    public static void setVisible(View view, boolean visible)
+    public static void setVisible(@NonNull View view, boolean visible)
     {
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /** Set whether a menu item is enabled */
-    public static void setMenuEnabled(MenuItem item, boolean enabled)
+    public static void setMenuEnabled(@NonNull MenuItem item, boolean enabled)
     {
         item.setEnabled(enabled);
         var icon = item.getIcon();
@@ -157,7 +158,8 @@ public final class GuiUtils
     /**
      * Set a button checked without animation
      */
-    public static void setCheckedNoAnim(CompoundButton view, boolean checked)
+    public static void setCheckedNoAnim(@NonNull CompoundButton view,
+                                        boolean checked)
     {
         view.setChecked(checked);
         view.jumpDrawablesToCurrentState();
@@ -166,7 +168,7 @@ public final class GuiUtils
     /**
      * Set whether a TextInputLayout is visible
      */
-    public static void setTextInputVisible(final TextInputLayout view,
+    public static void setTextInputVisible(@NonNull final TextInputLayout view,
                                            final boolean visible)
     {
         // Use a delayed post to prevent stack overflow errors on gingerbread
@@ -223,7 +225,9 @@ public final class GuiUtils
     /**
      * Set the keyboard visibility on a view
      */
-    public static void setKeyboardVisible(View v, Context ctx, boolean visible)
+    public static void setKeyboardVisible(View v,
+                                          @NonNull Context ctx,
+                                          boolean visible)
     {
         InputMethodManager imm = (InputMethodManager)
             ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -324,7 +328,7 @@ public final class GuiUtils
     public static void setInboxStyle(NotificationCompat.Builder builder,
                                      String title,
                                      String content,
-                                     List<String> lines)
+                                     @NonNull List<String> lines)
     {
         NotificationCompat.InboxStyle style =
                 new NotificationCompat.InboxStyle(builder)
@@ -345,6 +349,7 @@ public final class GuiUtils
     /**
      * Create a notification builder
      */
+    @NonNull
     public static NotificationCompat.Builder createNotificationBuilder(
             Context ctx)
     {
