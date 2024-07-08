@@ -55,8 +55,7 @@ public class FileTimeoutReceiver extends BroadcastReceiver
         Intent intent = new Intent(PasswdSafeApp.FILE_TIMEOUT_INTENT);
         intent.setPackage("com.jefftharris.passwdsafe");
         itsCloseIntent = PendingIntent.getBroadcast(
-                itsActivity, 0, intent,
-                ApiCompat.getPendingIntentImmutableFlag());
+                itsActivity, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         IntentFilter filter =
                 new IntentFilter(PasswdSafeApp.FILE_TIMEOUT_INTENT);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
