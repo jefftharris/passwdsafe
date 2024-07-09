@@ -107,7 +107,7 @@ public class SyncDb
         /**
          * Use the database
          */
-        T useDb(SQLiteDatabase db) throws Exception;
+        @Nullable T useDb(SQLiteDatabase db) throws Exception;
     }
 
     /** Initialize the single SyncDb instance */

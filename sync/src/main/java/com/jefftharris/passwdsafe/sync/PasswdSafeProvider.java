@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.jefftharris.passwdsafe.lib.ManagedRef;
@@ -815,6 +816,7 @@ public class PasswdSafeProvider extends ContentProvider
             itsProvider = new ManagedRef<>(provider);
         }
 
+        @Nullable
         @Override
         protected Void doInBackground(Void... voids)
         {
