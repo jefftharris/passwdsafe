@@ -322,13 +322,13 @@ public class PasswdSafeProvider extends ContentProvider
                         String[] projection,
                         String selection,
                         String[] selectionArgs,
-                        String sortOrder)
+                        final String userSortOrder)
     {
         PasswdSafeUtil.dbginfo(TAG, "query uri: %s", uri);
 
         boolean selectionValid = (selection == null);
         boolean selectionArgsValid = (selectionArgs == null);
-        boolean sortOrderValid = (sortOrder == null);
+        final var sortOrder = new QuerySortOrder(userSortOrder);
 
         final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         switch (PasswdSafeContract.MATCHER.match(uri)) {
@@ -336,10 +336,7 @@ public class PasswdSafeProvider extends ContentProvider
             qb.setTables(SyncDb.DB_TABLE_PROVIDERS);
             qb.setProjectionMap(PROVIDERS_MAP);
 
-            if (PasswdSafeContract.Providers.PROVIDER_SORT_ORDER.equals(
-                    sortOrder)) {
-                sortOrderValid = true;
-            }
+            sortOrder.check(PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
             break;
         }
         case PasswdSafeContract.MATCH_PROVIDER: {
@@ -366,9 +363,7 @@ public class PasswdSafeProvider extends ContentProvider
 
             selectionArgs =
                     new String[] { PasswdSafeContract.Providers.getIdStr(uri) };
-            if (PasswdSafeContract.Files.TITLE_SORT_ORDER.equals(sortOrder)) {
-                sortOrderValid = true;
-            }
+            sortOrder.check(PasswdSafeContract.Files.TITLE_SORT_ORDER);
             break;
         }
         case PasswdSafeContract.MATCH_PROVIDER_FILE: {
@@ -382,9 +377,7 @@ public class PasswdSafeProvider extends ContentProvider
         case PasswdSafeContract.MATCH_SYNC_LOGS: {
             qb.setTables(SyncDb.DB_TABLE_SYNC_LOGS);
             qb.setProjectionMap(SYNC_LOGS_MAP);
-            if (PasswdSafeContract.SyncLogs.START_SORT_ORDER.equals(sortOrder)) {
-                sortOrderValid = true;
-            }
+            sortOrder.check(PasswdSafeContract.SyncLogs.START_SORT_ORDER);
             if (PasswdSafeContract.SyncLogs.DEFAULT_SELECTION.equals(
                         selection)) {
                 selectionValid = true;
@@ -439,13 +432,13 @@ public class PasswdSafeProvider extends ContentProvider
         if (!selectionArgsValid) {
             throw new IllegalArgumentException("selectionArgs not supported");
         }
-        if (!sortOrderValid) {
+        if (!sortOrder.itsIsValid) {
             throw new IllegalArgumentException("sortOrder not supported");
         }
 
         try {
             Cursor c = SyncDb.queryDb(qb, projection, selection, selectionArgs,
-                                      sortOrder);
+                                      sortOrder.itsSortOrder);
             Context ctx = getContext();
             if ((c != null) && (ctx != null)) {
                 c.setNotificationUri(ctx.getContentResolver(),
@@ -832,6 +825,36 @@ public class PasswdSafeProvider extends ContentProvider
                 Log.e(TAG, "Error validating accounts", e);
             }
             return null;
+        }
+    }
+
+    /**
+     * Checker for a valid query sort order
+     */
+    private static class QuerySortOrder
+    {
+        private final String itsUserSortOrder;
+        private boolean itsIsValid;
+        private String itsSortOrder = null;
+
+        /**
+         * Constructor
+         */
+        private QuerySortOrder(@Nullable String userSortOrder)
+        {
+            itsUserSortOrder = userSortOrder;
+            itsIsValid = (itsUserSortOrder == null);
+        }
+
+        /**
+         * Check whether a known valid sort order matches the user's sort order
+         */
+        private void check(@NonNull String checkSort)
+        {
+            if (!itsIsValid && checkSort.equals(itsUserSortOrder)) {
+                itsIsValid = true;
+                itsSortOrder = checkSort;
+            }
         }
     }
 }
