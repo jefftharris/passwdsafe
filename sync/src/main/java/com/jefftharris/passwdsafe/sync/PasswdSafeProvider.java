@@ -47,6 +47,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -318,16 +319,17 @@ public class PasswdSafeProvider extends ContentProvider
      * @see android.content.ContentProvider#query(android.net.Uri, java.lang.String[], java.lang.String, java.lang.String[], java.lang.String)
      */
     @Override
-    public Cursor query(@NonNull Uri uri,
-                        String[] projection,
-                        String selection,
-                        String[] selectionArgs,
+    public Cursor query(final @NonNull Uri uri,
+                        final String[] userProjection,
+                        final String userSelection,
+                        final String[] userSelectionArgs,
                         final String userSortOrder)
     {
         PasswdSafeUtil.dbginfo(TAG, "query uri: %s", uri);
 
-        boolean selectionValid = (selection == null);
-        boolean selectionArgsValid = (selectionArgs == null);
+        final var projection = new QueryProjection(userProjection);
+        final var selection = new QuerySelection(userSelection,
+                                                 userSelectionArgs);
         final var sortOrder = new QuerySortOrder(userSortOrder);
 
         final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
@@ -336,57 +338,52 @@ public class PasswdSafeProvider extends ContentProvider
             qb.setTables(SyncDb.DB_TABLE_PROVIDERS);
             qb.setProjectionMap(PROVIDERS_MAP);
 
+            projection.check(PasswdSafeContract.Providers.PROJECTION);
             sortOrder.check(PasswdSafeContract.Providers.PROVIDER_SORT_ORDER);
             break;
         }
         case PasswdSafeContract.MATCH_PROVIDER: {
             qb.setTables(SyncDb.DB_TABLE_PROVIDERS);
             qb.setProjectionMap(PROVIDERS_MAP);
-            selection = SyncDb.DB_MATCH_PROVIDERS_ID;
-            selectionArgs =
-                    new String[] { PasswdSafeContract.Providers.getIdStr(uri) };
+
+            projection.check(PasswdSafeContract.Providers.PROJECTION);
+            selection.set(SyncDb.DB_MATCH_PROVIDERS_ID, new String[]{
+                    PasswdSafeContract.Providers.getIdStr(uri)});
             break;
         }
         case PasswdSafeContract.MATCH_PROVIDER_FILES: {
             qb.setTables(SyncDb.DB_TABLE_FILES);
             qb.setProjectionMap(FILES_MAP);
 
-            StringBuilder fullSelection =
-                    new StringBuilder(SyncDb.DB_MATCH_FILES_PROVIDER_ID);
-            if (PasswdSafeContract.Files.NOT_DELETED_SELECTION.equals(
-                        selection)) {
-                selectionValid = true;
-                fullSelection.append(" and ");
-                fullSelection.append(selection);
-            }
-            selection = fullSelection.toString();
+            projection.check(PasswdSafeContract.Files.PROJECTION);
 
-            selectionArgs =
-                    new String[] { PasswdSafeContract.Providers.getIdStr(uri) };
+            selection.set(SyncDb.DB_MATCH_FILES_PROVIDER_ID, new String[]{
+                    PasswdSafeContract.Providers.getIdStr(uri)});
+            selection.checkAppend(
+                    PasswdSafeContract.Files.NOT_DELETED_SELECTION);
+
             sortOrder.check(PasswdSafeContract.Files.TITLE_SORT_ORDER);
             break;
         }
         case PasswdSafeContract.MATCH_PROVIDER_FILE: {
             qb.setTables(SyncDb.DB_TABLE_FILES);
             qb.setProjectionMap(FILES_MAP);
-            selection = SyncDb.DB_MATCH_FILES_ID;
-            selectionArgs =
-                    new String[] { PasswdSafeContract.Files.getIdStr(uri) };
+            projection.check(PasswdSafeContract.Files.PROJECTION);
+            selection.set(SyncDb.DB_MATCH_FILES_ID,
+                          new String[]{PasswdSafeContract.Files.getIdStr(uri)});
             break;
         }
         case PasswdSafeContract.MATCH_SYNC_LOGS: {
             qb.setTables(SyncDb.DB_TABLE_SYNC_LOGS);
             qb.setProjectionMap(SYNC_LOGS_MAP);
+            projection.check(PasswdSafeContract.SyncLogs.PROJECTION);
             sortOrder.check(PasswdSafeContract.SyncLogs.START_SORT_ORDER);
-            if (PasswdSafeContract.SyncLogs.DEFAULT_SELECTION.equals(
-                        selection)) {
-                selectionValid = true;
-            }
+            selection.check(PasswdSafeContract.SyncLogs.DEFAULT_SELECTION);
             break;
         }
         case PasswdSafeContract.MATCH_METHODS: {
             try {
-                doMethod(selectionArgs);
+                doMethod(userSelectionArgs);
                 return null;
             } catch (Exception e) {
                 String msg = "Error executing method";
@@ -398,26 +395,19 @@ public class PasswdSafeProvider extends ContentProvider
             qb.setTables(SyncDb.DB_TABLE_FILES);
             qb.setProjectionMap(REMOTE_FILES_MAP);
 
-            StringBuilder fullSelection =
-                    new StringBuilder(SyncDb.DB_MATCH_FILES_PROVIDER_ID);
-            if (PasswdSafeContract.RemoteFiles.NOT_DELETED_SELECTION.equals(
-                        selection)) {
-                selectionValid = true;
-                fullSelection.append(" and ");
-                fullSelection.append(selection);
-            }
-            selection = fullSelection.toString();
-
-            selectionArgs =
-                    new String[] { PasswdSafeContract.Providers.getIdStr(uri) };
+            projection.check(PasswdSafeContract.RemoteFiles.PROJECTION);
+            selection.set(SyncDb.DB_MATCH_FILES_PROVIDER_ID, new String[]{
+                    PasswdSafeContract.Providers.getIdStr(uri)});
+            selection.checkAppend(
+                    PasswdSafeContract.RemoteFiles.NOT_DELETED_SELECTION);
             break;
         }
         case PasswdSafeContract.MATCH_PROVIDER_REMOTE_FILE: {
             qb.setTables(SyncDb.DB_TABLE_FILES);
             qb.setProjectionMap(REMOTE_FILES_MAP);
-            selection = SyncDb.DB_MATCH_FILES_ID;
-            selectionArgs =
-                new String[] { PasswdSafeContract.RemoteFiles.getIdStr(uri) };
+            projection.check(PasswdSafeContract.RemoteFiles.PROJECTION);
+            selection.set(SyncDb.DB_MATCH_FILES_ID, new String[]{
+                    PasswdSafeContract.RemoteFiles.getIdStr(uri)});
             break;
         }
        default: {
@@ -426,10 +416,13 @@ public class PasswdSafeProvider extends ContentProvider
         }
         }
 
-        if (!selectionValid) {
+        if (!projection.itsIsValid) {
+            throw new IllegalArgumentException("projection not supported");
+        }
+        if (!selection.itsIsSelectionValid) {
             throw new IllegalArgumentException("selection not supported");
         }
-        if (!selectionArgsValid) {
+        if (!selection.itsIsSelectionArgsValid) {
             throw new IllegalArgumentException("selectionArgs not supported");
         }
         if (!sortOrder.itsIsValid) {
@@ -437,7 +430,9 @@ public class PasswdSafeProvider extends ContentProvider
         }
 
         try {
-            Cursor c = SyncDb.queryDb(qb, projection, selection, selectionArgs,
+            Cursor c = SyncDb.queryDb(qb, projection.itsProjection,
+                                      selection.getSelection(),
+                                      selection.getArgs(),
                                       sortOrder.itsSortOrder);
             Context ctx = getContext();
             if ((c != null) && (ctx != null)) {
@@ -854,6 +849,114 @@ public class PasswdSafeProvider extends ContentProvider
             if (!itsIsValid && checkSort.equals(itsUserSortOrder)) {
                 itsIsValid = true;
                 itsSortOrder = checkSort;
+            }
+        }
+    }
+
+    /**
+     * Checker for a valid query selection
+     */
+    private static class QuerySelection
+    {
+        private final String itsUserSelection;
+        private boolean itsIsSelectionValid;
+        private boolean itsIsSelectionArgsValid;
+        private StringBuilder itsSelection = null;
+        private String[] itsSelectionArgs = null;
+
+        /**
+         * Constructor
+         */
+        private QuerySelection(@Nullable String userSelection,
+                               @Nullable String[] userSelectionArgs)
+        {
+            itsUserSelection = userSelection;
+            itsIsSelectionValid = (itsUserSelection == null);
+            itsIsSelectionArgsValid = (userSelectionArgs == null);
+        }
+
+        /**
+         * Get the valid selection
+         */
+        @Nullable
+        private String getSelection()
+        {
+            return itsSelection != null ? itsSelection.toString() : null;
+        }
+
+        /**
+         * Get the valid selection args
+         */
+        @Nullable
+        private String[] getArgs()
+        {
+            return itsSelectionArgs;
+        }
+
+        /**
+         * Set the selection
+         */
+        private void set(@NonNull String selection,
+                         @Nullable String[] selectionArgs)
+        {
+            itsIsSelectionValid = true;
+            itsIsSelectionArgsValid = true;
+            itsSelection = new StringBuilder(selection);
+            itsSelectionArgs = selectionArgs;
+        }
+
+        /**
+         * Check whether a known valid selection matches the user's selection
+         *
+         * @noinspection SameParameterValue
+         */
+        private void check(@NonNull String checkSelection)
+        {
+            if (checkSelection.equals(itsUserSelection)) {
+                set(checkSelection, null);
+            }
+        }
+
+        /**
+         * Check whether a known valid suffix matches the user's selection
+         */
+        private void checkAppend(@NonNull String checkSelection)
+        {
+            if ((itsSelection != null) &&
+                checkSelection.equals(itsUserSelection)) {
+                itsSelection.append(" and ");
+                itsSelection.append(checkSelection);
+            }
+        }
+    }
+
+    /**
+     * Checker for a valid query projection
+     */
+    private static class QueryProjection
+    {
+        private final String[] itsUserProjection;
+        private boolean itsIsValid;
+        private String[] itsProjection;
+
+        /**
+         * Constructor
+         */
+        private QueryProjection(@Nullable String[] userProjection)
+        {
+            itsUserProjection = userProjection;
+            itsIsValid = (itsUserProjection == null);
+        }
+
+        /**
+         * Check whether a known valid projection matches the user's projection
+         */
+        private void check(@NonNull String[] checkProjection)
+        {
+            if (!itsIsValid && (Arrays.equals(checkProjection,
+                                              itsUserProjection))) {
+                itsIsValid = true;
+                itsProjection = checkProjection;
             }
         }
     }
