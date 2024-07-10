@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 
 /**
  * The PasswdSafeContract class is the contract for the PasswdSafe client and
@@ -105,7 +106,7 @@ public final class PasswdSafeContract
         private static final int PROJECTION_IDX_DISPLAY_NAME = 4;
 
         /** Get the provider's display name */
-        public static String getDisplayName(Cursor cursor)
+        public static String getDisplayName(@NonNull Cursor cursor)
         {
             String displayName = null;
             if (cursor.getColumnCount() > PROJECTION_IDX_DISPLAY_NAME) {
@@ -124,7 +125,7 @@ public final class PasswdSafeContract
         }
 
         /** Get the provider id string from the URI */
-        public static String getIdStr(Uri uri)
+        public static String getIdStr(@NonNull Uri uri)
         {
             return uri.getPathSegments().get(1);
         }
@@ -174,7 +175,7 @@ public final class PasswdSafeContract
         }
 
         /** Get the file id string from the URI */
-        public static String getIdStr(Uri uri)
+        public static String getIdStr(@NonNull Uri uri)
         {
             return uri.getPathSegments().get(3);
         }
@@ -203,7 +204,7 @@ public final class PasswdSafeContract
         public static final int PROJECTION_IDX_REMOTE_ID = 1;
 
         /** Get the file id string from the URI */
-        public static String getIdStr(Uri uri)
+        public static String getIdStr(@NonNull Uri uri)
         {
             return uri.getPathSegments().get(3);
         }

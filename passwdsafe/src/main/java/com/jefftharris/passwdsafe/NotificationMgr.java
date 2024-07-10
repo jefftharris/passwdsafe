@@ -406,7 +406,7 @@ public class NotificationMgr implements PasswdFileDataObserver
                 itsTimerIntent = PendingIntent.getBroadcast(
                     itsCtx, 0, intent,
                     (PendingIntent.FLAG_CANCEL_CURRENT |
-                     ApiCompat.getPendingIntentImmutableFlag()));
+                     PendingIntent.FLAG_IMMUTABLE));
             }
             long nextTimer = System.currentTimeMillis() +
                 (nextExpiration.itsValue - expiration);
@@ -482,8 +482,7 @@ public class NotificationMgr implements PasswdFileDataObserver
 
         PendingIntent intent = PendingIntent.getActivity(
             itsCtx, 0, PasswdSafeUtil.createOpenIntent(uri, record),
-            (PendingIntent.FLAG_UPDATE_CURRENT |
-             ApiCompat.getPendingIntentImmutableFlag()));
+            (PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 
         String title = itsCtx.getResources().getQuantityString(
             R.plurals.expiring_passwords, numExpired, numExpired);

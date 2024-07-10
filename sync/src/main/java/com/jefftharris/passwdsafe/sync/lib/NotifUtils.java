@@ -102,7 +102,7 @@ public final class NotifUtils
         PendingIntent intent = PendingIntent.getActivity(
                 ctx, type.itsNotifId, launchIntent,
                 (PendingIntent.FLAG_UPDATE_CURRENT |
-                 ApiCompat.getPendingIntentImmutableFlag()));
+                 PendingIntent.FLAG_IMMUTABLE));
         builder.setContentIntent(intent);
 
         builder.setSmallIcon(R.drawable.ic_stat_app);

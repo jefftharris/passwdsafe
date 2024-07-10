@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2013 Jeff Harris <jefftharris@gmail.com> All rights reserved.
+ * Copyright (©) 2013-2024 Jeff Harris <jefftharris@gmail.com> All rights reserved.
  * Use of the code is allowed under the Artistic License 2.0 terms, as specified
  * in the LICENSE file distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
@@ -30,13 +30,17 @@ import org.pwsafe.lib.file.PwsRecord;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  *  The PasswdClientProvider class is a content provider for the PasswdSafe
@@ -53,8 +57,9 @@ public class PasswdClientProvider extends ContentProvider
 
     private static PasswdClientProvider itsProvider = null;
     private static final Object itsProviderLock = new Object();
-    private final Set<String> itsFiles = new HashSet<>();
+    private final Map<String, File> itsFiles = new HashMap<>();
     private int itsSearchFlags = 0;
+    private boolean itsIsSearchRegex = false;
     private MatchComparator itsSearchComp = new MatchComparator(true, false);
 
     static {
@@ -68,21 +73,23 @@ public class PasswdClientProvider extends ContentProvider
     }
 
     /** Add a file to those provided and return the URI to access it */
-    public static Uri addFile(File file)
+    public static Uri addFile(@NonNull File file)
     {
-        String name = file.getAbsolutePath();
+        File absfile = file.getAbsoluteFile();
+        File absdir = absfile.getParentFile();
+        String name = absfile.toString();
         Uri uri = PasswdSafeContract.CLIENT_CONTENT_URI.buildUpon()
                 .appendPath(PasswdSafeContract.ClientFiles.TABLE)
                 .appendPath(name)
                 .build();
         synchronized (itsProviderLock) {
-            itsProvider.itsFiles.add(name);
+            itsProvider.itsFiles.put(name, absdir);
         }
         return uri;
     }
 
     /** Remove a file from those provided */
-    public static void removeFile(File file)
+    public static void removeFile(@NonNull File file)
     {
         synchronized (itsProviderLock) {
             itsProvider.itsFiles.remove(file.getAbsolutePath());
@@ -104,12 +111,27 @@ public class PasswdClientProvider extends ContentProvider
         case MATCH_FILES: {
             String fileName = uri.getLastPathSegment();
             synchronized (this) {
-                if ((fileName == null) || !itsFiles.contains(fileName)) {
+                File filedir =
+                        (fileName != null) ? itsFiles.get(fileName) : null;
+                if (filedir == null) {
                     throw new FileNotFoundException(fileName);
                 }
-                File file = new File(fileName);
-                return ParcelFileDescriptor.open(
-                        file, ParcelFileDescriptor.MODE_READ_ONLY);
+
+                try {
+                    filedir = filedir.getCanonicalFile();
+                    File file = new File(fileName).getCanonicalFile();
+                    fileName = file.toString();
+                    if (!fileName.startsWith(filedir + File.separator)) {
+                        throw new FileNotFoundException(fileName);
+                    }
+
+                    return ParcelFileDescriptor.open(
+                            file, ParcelFileDescriptor.MODE_READ_ONLY);
+                } catch (FileNotFoundException fnfe) {
+                    throw fnfe;
+                } catch (IOException ioe) {
+                    throw new FileNotFoundException(fileName);
+                }
             }
         }
         case MATCH_SEARCH_SUGGESTIONS: {
@@ -202,10 +224,25 @@ public class PasswdClientProvider extends ContentProvider
             }
 
             PasswdSafeUtil.dbginfo(TAG, "query suggestions: %s", query);
+            var compileQuery = Pattern.quote(query);
+            if (itsIsSearchRegex) {
+                if (compileQuery.startsWith("\\Q") &&
+                    compileQuery.endsWith("\\E")) {
+                    compileQuery = compileQuery.substring(
+                            2, compileQuery.length() - 2);
+                } else {
+                    compileQuery = query;
+                }
+            }
             Pattern queryPattern;
             MatchComparator comparator;
             synchronized (this) {
-                queryPattern = Pattern.compile(query, itsSearchFlags);
+                try {
+                    queryPattern = Pattern.compile(compileQuery,
+                                                   itsSearchFlags);
+                } catch (PatternSyntaxException pse) {
+                    return null;
+                }
                 comparator = itsSearchComp;
             }
             // Groups are matched separately
@@ -256,11 +293,12 @@ public class PasswdClientProvider extends ContentProvider
     private synchronized void updatePrefs(SharedPreferences prefs)
     {
         itsSearchFlags = 0;
+        itsIsSearchRegex = false;
         if (!Preferences.getSearchCaseSensitivePref(prefs)) {
             itsSearchFlags |= Pattern.CASE_INSENSITIVE;
         }
-        if (!Preferences.getSearchRegexPref(prefs)) {
-            itsSearchFlags |= Pattern.LITERAL;
+        if (Preferences.getSearchRegexPref(prefs)) {
+            itsIsSearchRegex = true;
         }
 
         itsSearchComp = new MatchComparator(
@@ -292,6 +330,7 @@ public class PasswdClientProvider extends ContentProvider
             itsContext = ctx;
         }
 
+        @NonNull
         @Override
         public Cursor useFileData(@NonNull PasswdFileData fileData)
         {
@@ -355,7 +394,7 @@ public class PasswdClientProvider extends ContentProvider
          */
         protected RecordMatch(PwsRecord rec,
                               String match,
-                              PasswdFileData fileData)
+                              @NonNull PasswdFileData fileData)
         {
             itsTitle = fileData.getTitle(rec);
             itsUser = fileData.getUsername(rec);
@@ -396,7 +435,7 @@ public class PasswdClientProvider extends ContentProvider
         }
 
         @Override
-        public int compare(RecordMatch m1, RecordMatch m2)
+        public int compare(@NonNull RecordMatch m1, @NonNull RecordMatch m2)
         {
             int rc = compareField(m1.itsTitle, m2.itsTitle);
             if (rc == 0) {

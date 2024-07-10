@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -16,6 +16,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -104,7 +107,7 @@ public class SyncDb
         /**
          * Use the database
          */
-        T useDb(SQLiteDatabase db) throws Exception;
+        @Nullable T useDb(SQLiteDatabase db) throws Exception;
     }
 
     /** Initialize the single SyncDb instance */
@@ -125,7 +128,7 @@ public class SyncDb
     /**
      * Use the database with a transaction
      */
-    public static <T> T useDb(DbUser<T> user) throws Exception
+    public static <T> T useDb(@NonNull DbUser<T> user) throws Exception
     {
         SyncDb syncDb = getDb();
         SQLiteDatabase db = syncDb.itsDbHelper.getWritableDatabase();
@@ -142,7 +145,7 @@ public class SyncDb
     /**
      * Query the database without a transaction
      */
-    public static Cursor queryDb(SQLiteQueryBuilder qb,
+    public static Cursor queryDb(@NonNull SQLiteQueryBuilder qb,
                                  String[] projection,
                                  String selection, String[] selectionArgs,
                                  String sortOrder) throws SQLException
@@ -166,7 +169,7 @@ public class SyncDb
     }
 
     /** Add a provider */
-    public static long addProvider(String name, ProviderType type,
+    public static long addProvider(String name, @NonNull ProviderType type,
                                    int freq, SQLiteDatabase db)
         throws SQLException
     {
@@ -241,7 +244,7 @@ public class SyncDb
 
     /** Get a provider by name and type */
     public static DbProvider getProvider(String acctName,
-                                         ProviderType type,
+                                         @NonNull ProviderType type,
                                          SQLiteDatabase db)
             throws SQLException
     {
@@ -252,19 +255,18 @@ public class SyncDb
     }
 
     /** Get the providers */
-    public static List<DbProvider> getProviders(SQLiteDatabase db)
+    @NonNull
+    public static List<DbProvider> getProviders(@NonNull SQLiteDatabase db)
             throws SQLException
     {
         List<DbProvider> providers = new ArrayList<>();
-        Cursor cursor = db.query(DB_TABLE_PROVIDERS, DbProvider.QUERY_FIELDS,
-                                 null, null, null, null, null);
-        try {
+        try (Cursor cursor = db.query(DB_TABLE_PROVIDERS,
+                                      DbProvider.QUERY_FIELDS, null, null, null,
+                                      null, null)) {
             for (boolean more = cursor.moveToFirst(); more;
-                    more = cursor.moveToNext()) {
+                 more = cursor.moveToNext()) {
                 providers.add(new DbProvider(cursor));
             }
-        } finally {
-            cursor.close();
         }
         return providers;
     }
@@ -292,21 +294,20 @@ public class SyncDb
 
 
     /** Get all of the files for a provider by id */
-    public static List<DbFile> getFiles(long providerId, SQLiteDatabase db)
+    @NonNull
+    public static List<DbFile> getFiles(long providerId,
+                                        @NonNull SQLiteDatabase db)
             throws SQLException
     {
         List<DbFile> files = new ArrayList<>();
-        Cursor cursor = db.query(DB_TABLE_FILES, DbFile.QUERY_FIELDS,
-                                 DB_MATCH_FILES_PROVIDER_ID,
-                                 new String[] { Long.toString(providerId) },
-                                 null, null, null);
-        try {
+        try (Cursor cursor = db.query(DB_TABLE_FILES, DbFile.QUERY_FIELDS,
+                                      DB_MATCH_FILES_PROVIDER_ID,
+                                      new String[]{Long.toString(providerId)},
+                                      null, null, null)) {
             for (boolean more = cursor.moveToFirst(); more;
-                    more = cursor.moveToNext()) {
+                 more = cursor.moveToNext()) {
                 files.add(new DbFile(cursor));
             }
-        } finally {
-            cursor.close();
         }
 
         return files;
@@ -468,7 +469,8 @@ public class SyncDb
 
 
     /** Add a sync log */
-    public static void addSyncLog(SyncLogRecord logrec, SQLiteDatabase db,
+    public static void addSyncLog(@NonNull SyncLogRecord logrec,
+                                  SQLiteDatabase db,
                                   Context ctx)
         throws SQLException
     {
@@ -518,18 +520,17 @@ public class SyncDb
     }
 
     /** Get a provider */
+    @Nullable
     private static DbProvider getProvider(String match, String[] matchArgs,
-                                          SQLiteDatabase db)
+                                          @NonNull SQLiteDatabase db)
             throws SQLException
     {
-        Cursor cursor = db.query(DB_TABLE_PROVIDERS, DbProvider.QUERY_FIELDS,
-                                 match, matchArgs, null, null, null);
-        try {
+        try (Cursor cursor = db.query(DB_TABLE_PROVIDERS,
+                                      DbProvider.QUERY_FIELDS, match, matchArgs,
+                                      null, null, null)) {
             if (cursor.moveToFirst()) {
                 return new DbProvider(cursor);
             }
-        } finally {
-            cursor.close();
         }
         return null;
     }
@@ -546,18 +547,16 @@ public class SyncDb
 
 
     /** Get a file */
+    @Nullable
     private static DbFile getFile(String match, String[] matchArgs,
-                                  SQLiteDatabase db)
+                                  @NonNull SQLiteDatabase db)
             throws SQLException
     {
-        Cursor cursor = db.query(DB_TABLE_FILES, DbFile.QUERY_FIELDS,
-                                 match, matchArgs, null, null, null);
-        try {
+        try (Cursor cursor = db.query(DB_TABLE_FILES, DbFile.QUERY_FIELDS,
+                                      match, matchArgs, null, null, null)) {
             if (cursor.moveToFirst()) {
                 return new DbFile(cursor);
             }
-        } finally {
-            cursor.close();
         }
 
         return null;
@@ -566,7 +565,7 @@ public class SyncDb
     /**
      * Insert into the database
      */
-    private static long doInsert(SQLiteDatabase db, String table,
+    private static long doInsert(@NonNull SQLiteDatabase db, String table,
                                  ContentValues values) throws SQLException
     {
         long id = db.insertOrThrow(table, null, values);
@@ -577,7 +576,7 @@ public class SyncDb
     /**
      * Update the database
      */
-    private static void doUpdate(SQLiteDatabase db, String table,
+    private static void doUpdate(@NonNull SQLiteDatabase db, String table,
                                  ContentValues values,
                                  String where, String[] args)
     {
@@ -588,7 +587,9 @@ public class SyncDb
     /**
      * Delete from the database
      */
-    private static void doDelete(SQLiteDatabase db, String table, String where,
+    private static void doDelete(@NonNull SQLiteDatabase db,
+                                 String table,
+                                 String where,
                                  String[] args)
     {
         db.delete(table, where, args);
@@ -752,7 +753,7 @@ public class SyncDb
         }
 
         /** Upgrade a file for the v4 schema */
-        private void onUpgradeV4File(DbFile file, SQLiteDatabase db)
+        private void onUpgradeV4File(@NonNull DbFile file, SQLiteDatabase db)
                 throws SQLException
         {
             DbFile.FileChange local = DbFile.FileChange.NO_CHANGE;
@@ -786,7 +787,7 @@ public class SyncDb
         }
 
         /** Enable support for foreign keys on the open database connection */
-        private void enableForeignKey(SQLiteDatabase db)
+        private void enableForeignKey(@NonNull SQLiteDatabase db)
             throws SQLException
         {
             if (!db.isReadOnly()) {
