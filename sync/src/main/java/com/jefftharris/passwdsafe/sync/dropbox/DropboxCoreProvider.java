@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -25,12 +25,15 @@ import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.android.AuthActivity;
+import com.dropbox.core.json.JsonReadException;
+import com.dropbox.core.oauth.DbxCredential;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.BuildConfig;
@@ -49,6 +52,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -62,7 +66,11 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     private static final String PREF_OAUTH2_TOKEN = "dropboxOAuth2Token";
     private static final String PREF_OATH_KEY = "dropboxOAuthKey";
     private static final String PREF_OATH_SECRET = "dropboxOAuthSecret";
+    private static final String PREF_PKCE_TOKEN = "dropboxPkceToken";
     private static final String PREF_USER_ID = "dropboxUserId";
+
+    private static final DbxRequestConfig REQUEST_CONFIG =
+            new DbxRequestConfig("PasswdSafe");
 
     private static final String TAG = "DropboxCoreProvider";
 
@@ -109,10 +117,17 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             unlinkAccount();
         }
         AuthActivity.result = null;
-        Auth.startOAuth2Authentication(activity, DROPBOX_SYNC_APP_KEY);
+        Auth.startOAuth2PKCE(activity, DROPBOX_SYNC_APP_KEY,
+                             REQUEST_CONFIG,
+                             Arrays.asList("account_info.read",
+                                           "files.metadata.write",
+                                           "files.content.read",
+                                           "files.content.write",
+                                           "file_requests.write"));
     }
 
 
+    @Nullable
     @Override
     public NewAccountTask<? extends AbstractSyncTimerProvider>
     finishAccountLink(FragmentActivity activity,
@@ -121,12 +136,12 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
                       Intent activityData,
                       Uri providerAcctUri)
     {
-        String authToken = Auth.getOAuth2Token();
-        if (authToken == null) {
+        var cred = Auth.getDbxCredential();
+        if (cred == null) {
             PasswdSafeUtil.dbginfo(TAG, "finishAccountLink auth failed");
             return null;
         }
-        saveAuthData(authToken);
+        saveAuthData(cred);
         updateDropboxAcct();
 
         // If user already exists, this is a re-authorization so don't trigger
@@ -287,11 +302,30 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
                 PreferenceManager.getDefaultSharedPreferences(getContext());
 
         boolean haveAuth = false;
-        String authToken = prefs.getString(PREF_OAUTH2_TOKEN, null);
-        if (authToken != null) {
-            itsClient = new DbxClientV2(new DbxRequestConfig("PasswdSafe"),
-                                        authToken);
-            haveAuth = true;
+
+        String credStr = prefs.getString(PREF_PKCE_TOKEN, null);
+        if (credStr != null) {
+            try {
+                final var cred = DbxCredential.Reader.readFully(credStr);
+
+                if (cred != null) {
+                    PasswdSafeUtil.dbginfo(TAG, "PKCE auth config");
+                    itsClient = new DbxClientV2(REQUEST_CONFIG, cred);
+                    haveAuth = true;
+                }
+            } catch (JsonReadException e) {
+                PasswdSafeLog.error(TAG, e, "Credential read failure");
+                saveAuthData(null);
+            }
+        }
+
+        if (!haveAuth) {
+            String authToken = prefs.getString(PREF_OAUTH2_TOKEN, null);
+            if (authToken != null) {
+                PasswdSafeUtil.dbginfo(TAG, "oauth2 auth config");
+                itsClient = new DbxClientV2(REQUEST_CONFIG, authToken);
+                haveAuth = true;
+            }
         }
 
         if (haveAuth) {
@@ -330,17 +364,19 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
 
 
     /** Save or clear authentication data */
-    private synchronized void saveAuthData(String oauth2Token)
+    private synchronized void saveAuthData(DbxCredential cred)
     {
-        PasswdSafeUtil.dbginfo(TAG, "saveAuthData: %b", oauth2Token);
+        PasswdSafeUtil.dbginfo(TAG, "saveAuthData: %b", cred);
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = prefs.edit();
-        if (oauth2Token != null) {
-            editor.putString(PREF_OAUTH2_TOKEN, oauth2Token);
+        if (cred != null) {
+            editor.putString(PREF_PKCE_TOKEN,
+                             DbxCredential.Writer.writeToString(cred));
         } else {
-            editor.remove(PREF_OAUTH2_TOKEN);
+            editor.remove(PREF_PKCE_TOKEN);
         }
+        editor.remove(PREF_OAUTH2_TOKEN);
         editor.remove(PREF_OATH_KEY);
         editor.remove(PREF_OATH_SECRET);
         editor.apply();
