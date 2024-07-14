@@ -70,9 +70,8 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     // Dropbox
-    implementation('com.dropbox.core:dropbox-core-sdk:5.4.5') {
-        exclude group: 'com.google.guava'
-    }
+    implementation 'com.dropbox.core:dropbox-core-sdk:7.0.0'
+    implementation 'com.dropbox.core:dropbox-android-sdk:7.0.0'
     // Box
     implementation('com.box:box-android-sdk:5.0.0') {
         exclude group: 'com.google.guava'
