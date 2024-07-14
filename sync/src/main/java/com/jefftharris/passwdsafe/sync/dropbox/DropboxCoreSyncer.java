@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,6 +8,9 @@
 package com.jefftharris.passwdsafe.sync.dropbox;
 
 import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
@@ -47,7 +50,8 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
     }
 
     /** Create a remote identifier from the local name of a file */
-    public static String createRemoteIdFromLocal(DbFile dbfile)
+    @NonNull
+    public static String createRemoteIdFromLocal(@NonNull DbFile dbfile)
     {
         return ProviderRemoteFile.PATH_SEPARATOR +
                dbfile.itsLocalTitle.toLowerCase();
@@ -56,7 +60,9 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
     /**
      * Get the account display name
      */
-    public static String getDisplayName(DbxClientV2 client) throws DbxException
+    @NonNull
+    public static String getDisplayName(@NonNull DbxClientV2 client)
+            throws DbxException
     {
         FullAccount acct = client.users().getCurrentAccount();
         return acct.getName().getDisplayName();
@@ -64,7 +70,7 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
 
 
     @Override
-    protected SyncRemoteFiles getSyncRemoteFiles(List<DbFile> dbfiles)
+    protected SyncRemoteFiles getSyncRemoteFiles(@NonNull List<DbFile> dbfiles)
             throws DbxException
     {
         SyncRemoteFiles files = new SyncRemoteFiles();
@@ -134,6 +140,7 @@ public class DropboxCoreSyncer extends ProviderSyncer<DbxClientV2>
      * @return The file's FileMetadata if found; null or DeletedMetadata if
      * not found
      */
+    @Nullable
     private Metadata getRemoteFile(String remoteId)
             throws DbxException
     {

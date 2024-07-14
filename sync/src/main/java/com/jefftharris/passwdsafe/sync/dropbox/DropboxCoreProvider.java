@@ -496,8 +496,9 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             itsProvider = new ManagedRef<>(provider);
         }
 
+        @Nullable
         @Override
-        protected Void doInBackground(DbxClientV2... clients)
+        protected Void doInBackground(@NonNull DbxClientV2... clients)
         {
             PasswdSafeUtil.dbginfo(TAG, "revoking auth tokens");
             for (DbxClientV2 client: clients) {
