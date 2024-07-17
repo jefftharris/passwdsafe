@@ -241,22 +241,25 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
 
     /** List files */
     public List<ProviderRemoteFile> listFiles(String path)
-            throws DbxException
+            throws Exception
     {
         List<ProviderRemoteFile> files = new ArrayList<>();
-        ListFolderResult result = itsClient.files().listFolder(path);
-        do {
-            for (Metadata child: result.getEntries()) {
-                files.add(new DropboxCoreProviderFile(child));
-            }
+        useDropboxService(() -> {
+            ListFolderResult result = itsClient.files().listFolder(path);
+            do {
+                for (Metadata child : result.getEntries()) {
+                    files.add(new DropboxCoreProviderFile(child));
+                }
 
-            if (result.getHasMore()) {
-                result = itsClient.files()
-                                  .listFolderContinue(result.getCursor());
-            } else {
-                result = null;
-            }
-        } while(result != null);
+                if (result.getHasMore()) {
+                    result = itsClient
+                            .files()
+                            .listFolderContinue(result.getCursor());
+                } else {
+                    result = null;
+                }
+            } while (result != null);
+        });
 
         return files;
     }
