@@ -27,6 +27,7 @@ import com.dropbox.core.android.Auth;
 import com.dropbox.core.android.AuthActivity;
 import com.dropbox.core.json.JsonReadException;
 import com.dropbox.core.oauth.DbxCredential;
+import com.dropbox.core.oauth.DbxOAuthException;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
@@ -75,6 +76,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     private static final String TAG = "DropboxCoreProvider";
 
     private DbxClientV2 itsClient;
+    private DbxCredential itsClientCred;
     private String itsUserId = null;
     private final ArrayList<TokenRevokeTask> itsRevokeTasks = new ArrayList<>();
 
@@ -280,9 +282,18 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             authorized = isAccountAuthorized();
             PasswdSafeUtil.dbginfo(TAG, "account authorized: %b", authorized);
             if (authorized) {
+                synchronized (this) {
+                    if ((itsClientCred != null) &&
+                        itsClientCred.aboutToExpire()) {
+                        PasswdSafeUtil.dbginfo(TAG, "refreshing cred");
+                        itsClientCred.refresh(REQUEST_CONFIG);
+                        saveAuthData(itsClientCred);
+                    }
+                }
+
                 user.useDropbox();
             }
-        } catch (InvalidAccessTokenException e) {
+        } catch (InvalidAccessTokenException | DbxOAuthException e) {
             Log.e(TAG, "unlinked error", e);
             saveAuthData(null);
             updateDropboxAcct();
@@ -311,6 +322,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
                 if (cred != null) {
                     PasswdSafeUtil.dbginfo(TAG, "PKCE auth config");
                     itsClient = new DbxClientV2(REQUEST_CONFIG, cred);
+                    itsClientCred = cred;
                     haveAuth = true;
                 }
             } catch (JsonReadException e) {
@@ -343,6 +355,7 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
             itsUserId = null;
             updateSyncFreq(null, 0);
             itsClient = null;
+            itsClientCred = null;
         }
 
         PasswdSafeUtil.dbginfo(TAG, "init auth %b", isAccountAuthorized());
