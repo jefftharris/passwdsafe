@@ -76,12 +76,16 @@
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.11.0&lt;/b&gt; - Unterstützung für Sync mit ownCloud wurde deaktiviert.
+        Ein bereits bestehendes Konto und die Datei bleiben erhalten werden
+        jedoch nicht mehr abgeglichen.  Bibliothek aktualisiert.
+        \n\n
         &lt;b&gt;3.10.0&lt;/b&gt; - Update für Android 13-Kompatibilität.
         Bibliothek aktualisiert.
-        \n
+        \n\n
         &lt;b&gt;3.9.0&lt;/b&gt; - Unterstützung für das neue Berechtigungssystem von
         Google Drive
-        \n
+        \n\n
         &lt;b&gt;Hinweis für Google Drive:&lt;/b&gt; Sie müssen eventuell die Zugriff auf
         Dateien auf Google Drive neu zulassen. Siehe auch die Anleitung für
         Konten in der Hilfe.

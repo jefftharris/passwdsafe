@@ -70,12 +70,17 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.11.0&lt;/b&gt; - Deaktivere støtte for synkronisering av en
+        ownCloud-konto. En eksisterende konto og dens filer blir bevart, men
+        ikke lenger synkronisert.  Oppdaterte bibliotek for
+        synkroniseringstilbydere.
+        \n\n
         &lt;b&gt;3.10.0&lt;/b&gt; - Forbedret Android 13 kompatibilitet.
         Oppdaterte bibliotek for synkroniseringstilbydere.
-        \n
+        \n\n
         &lt;b&gt;3.9.0&lt;/b&gt; - Støtte for mer restriktive rettigheter for Google
         Disk.
-        \n
+        \n\n
         &lt;b&gt;Merknad for Google Disk:&lt;/b&gt; Brukere må kanskje godkjenne
         tilgangen på nytt for å synke filer i Google Disk. Se hjelpen for
         kontoen for instruksjoner.

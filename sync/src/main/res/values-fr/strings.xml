@@ -77,13 +77,18 @@
     <string name="updating_account">Mise à jour compte&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.11.0&lt;/b&gt; - Desactivation synchronisation d\'un compte ownCloud.
+        Un compte existant et ses fichier resteront intact mais ne seront plus
+        synchronisé.  Mise à jour des librairies des fournisseurs de
+        synchronisation.
+        \n\n
         &lt;b&gt;3.10.0&lt;/b&gt; - Mise à jour pour la compatibilité
         Android 13.  Mise à jour des librairies des fournisseurs de
         synchronisation.
-        \n
+        \n\n
         &lt;b&gt;3.9.0&lt;/b&gt; - Support de permissions plus restrictives avec Google
         Drive
-        \n
+        \n\n
         &lt;b&gt;Remarque sur Google Drive:&lt;/b&gt; Les utilisateurs devront peut-être
         re-autoriser l\'accès au fichiers synchronisés Google Drive. Voir
         l\'aide sur le compte pour les instructions.
