@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2019 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2019-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,26 +7,35 @@
  */
 package com.jefftharris.passwdsafe.sync.onedrive;
 
-import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
-import com.microsoft.graph.extensions.IGraphServiceClient;
+import androidx.annotation.NonNull;
+
+import com.microsoft.graph.drives.item.items.item.DriveItemItemRequestBuilder;
 
 /**
  * OneDrive utilities
  */
 public class OnedriveUtils
 {
+    private static final String ROOT_PATH = "root:/";
+
     /**
      * Get a request builder for accessing a file path
      */
-    public static IDriveItemRequestBuilder getFilePathRequest(
-            IGraphServiceClient client,
-            String path)
+    @NonNull
+    public static DriveItemItemRequestBuilder getFilePathRequest(
+            @NonNull OnedriveProviderClient providerClient,
+            @NonNull String path)
     {
-        IDriveItemRequestBuilder rootRequest =
-                client.getMe().getDrive().getRoot();
         if (path.length() > 1) {
-            rootRequest = rootRequest.getItemWithPath(path.substring(1));
+            path = ROOT_PATH + path.substring(1) + ":";
+        } else {
+            path = "root";
         }
-        return rootRequest;
+
+        return providerClient.itsClient
+                .drives()
+                .byDriveId(providerClient.itsDriveId)
+                .items()
+                .byDriveItemId(path);
     }
 }

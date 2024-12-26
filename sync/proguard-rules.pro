@@ -54,9 +54,6 @@
 #
 # Apache http
 #
--keep class org.apache.commons.httpclient.auth.BasicScheme
--keep class org.apache.commons.httpclient.auth.DigestScheme
--keep class org.apache.commons.httpclient.auth.NTLMScheme
 -keep class org.apache.commons.httpclient.cookie.**
 
 #
@@ -80,12 +77,22 @@
 #
 # OneDrive
 #
--keep class com.microsoft.graph.extensions.Hashes
 -keep class com.microsoft.identity.common.** { *; }
 -keep class com.microsoft.identity.client.PublicClientApplication { *; }
 -keep class com.microsoft.identity.client.PublicClientApplicationConfiguration { *; }
 -keep class com.microsoft.identity.** { *; }
 -keepclassmembers class com.microsoft.graph.extensions.** { *; }
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.crypto.tink.subtle.Ed25519Sign$KeyPair
+-dontwarn com.google.crypto.tink.subtle.Ed25519Sign
+-dontwarn com.google.crypto.tink.subtle.Ed25519Verify
+-dontwarn com.google.crypto.tink.subtle.X25519
+-dontwarn com.google.crypto.tink.subtle.XChaCha20Poly1305
+-dontwarn com.microsoft.device.display.DisplayMask
+-dontwarn edu.umd.cs.findbugs.annotations.NonNull
+-dontwarn edu.umd.cs.findbugs.annotations.Nullable
+-dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+-dontwarn reactor.blockhound.integration.BlockHoundIntegration
 
 ##---------------Begin: proguard configuration for MSAL  --------
 -keep class com.microsoft.identity.** { *; }

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,7 +8,9 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.content.Context;
-import android.net.Uri;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.sync.lib.AbstractLocalToRemoteSyncOper;
@@ -21,51 +23,53 @@ import com.jefftharris.passwdsafe.sync.lib.ProviderSyncer;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.jefftharris.passwdsafe.sync.lib.SyncRemoteFiles;
-import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.extensions.DriveItem;
-import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
-import com.microsoft.graph.extensions.IGraphServiceClient;
-import com.microsoft.graph.extensions.User;
+import com.microsoft.graph.models.DriveItem;
+import com.microsoft.graph.models.User;
+import com.microsoft.graph.serviceclient.GraphServiceClient;
+import com.microsoft.kiota.ApiException;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 
 /**
  * The OnedriveSyncer class encapsulates an OneDrive sync operation
  */
-public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
+public class OnedriveSyncer extends ProviderSyncer<OnedriveProviderClient>
 {
     private static final String TAG = "OnedriveSyncer";
 
     /**
      * Constructor
      */
-    public OnedriveSyncer(IGraphServiceClient service,
+    public OnedriveSyncer(GraphServiceClient service,
                           DbProvider provider,
                           SyncConnectivityResult connResult,
                           SyncLogRecord logrec, Context ctx)
+            throws ApiException
     {
-        super(service, provider, connResult, logrec, ctx, TAG);
+        super(new OnedriveProviderClient(service), provider, connResult, logrec,
+              ctx, TAG);
     }
 
 
     /**
      * Get the account display name
      */
-    public static String getDisplayName(IGraphServiceClient client)
+    public static String getDisplayName(@NonNull GraphServiceClient client)
     {
-        User user = client.getMe().buildRequest().get();
-        return user.displayName;
+        User user = client.me().get();
+        return (user != null) ? user.getDisplayName() : "";
     }
 
     /**
      * Check whether the exception is a 404 not found exception
-     * @throws ClientException if not a 404 error
+     * @throws ApiException if not a 404 error
      */
-    public static void check404Error(ClientException e)
-            throws ClientException
+    public static void check404Error(@NonNull ApiException e)
+            throws ApiException
     {
-        String msg = e.getMessage();
-        if ((msg == null) || !msg.contains("\n404 : Not Found\n")) {
+        if (e.getResponseStatusCode() != 404) {
             throw e;
         }
     }
@@ -74,23 +78,23 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
     /**
      * Does the exception represent a 401 unauthorized exception
      */
-    public static boolean is401Error(ClientException e)
+    public static boolean is401Error(@NonNull ApiException e)
     {
-        String msg = e.getMessage();
-        return (msg != null) && msg.contains("\n401 : Unauthorized");
+        return e.getResponseStatusCode() == 401;
     }
 
 
     /** Create a remote identifier from the local name of a file */
-    public static String createRemoteIdFromLocal(DbFile dbfile)
+    @NonNull
+    @Contract(pure = true)
+    public static String createRemoteIdFromLocal(@NonNull DbFile dbfile)
     {
-        return ProviderRemoteFile.PATH_SEPARATOR +
-               Uri.encode(dbfile.itsLocalTitle);
+        return ProviderRemoteFile.PATH_SEPARATOR + dbfile.itsLocalTitle;
     }
 
 
     @Override
-    protected SyncRemoteFiles getSyncRemoteFiles(List<DbFile> dbfiles)
+    protected SyncRemoteFiles getSyncRemoteFiles(@NonNull List<DbFile> dbfiles)
     {
         SyncRemoteFiles files = new SyncRemoteFiles();
         for (DbFile dbfile: dbfiles) {
@@ -131,7 +135,7 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
      * Create an operation to sync local to remote
      */
     @Override
-    protected AbstractLocalToRemoteSyncOper<IGraphServiceClient>
+    protected AbstractLocalToRemoteSyncOper<OnedriveProviderClient>
     createLocalToRemoteOper(DbFile dbfile)
     {
         return new OnedriveLocalToRemoteOper(dbfile);
@@ -142,7 +146,7 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
      * Create an operation to sync remote to local
      */
     @Override
-    protected AbstractRemoteToLocalSyncOper<IGraphServiceClient>
+    protected AbstractRemoteToLocalSyncOper<OnedriveProviderClient>
     createRemoteToLocalOper(DbFile dbfile)
     {
         return new OnedriveRemoteToLocalOper(dbfile);
@@ -153,7 +157,7 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
      * Create an operation to remove a file
      */
     @Override
-    protected AbstractRmSyncOper<IGraphServiceClient>
+    protected AbstractRmSyncOper<OnedriveProviderClient>
     createRmFileOper(DbFile dbfile)
     {
         return new OnedriveRmFileOper(dbfile);
@@ -164,18 +168,21 @@ public class OnedriveSyncer extends ProviderSyncer<IGraphServiceClient>
      * Get a remote file's entry from OneDrive
      * @return The file's entry if found; null if not found or deleted
      */
-    private DriveItem getRemoteFile(String remoteId) throws ClientException
+    @Nullable
+    private DriveItem getRemoteFile(String remoteId) throws ApiException
     {
         try {
-            IDriveItemRequestBuilder rootRequest =
-                    OnedriveUtils.getFilePathRequest(itsProviderClient,
-                                                     remoteId);
-            DriveItem item = rootRequest.buildRequest().get();
-            if ((item != null) && (item.deleted != null)) {
+            // TODO: Use same query select as in files activity?
+            var item = OnedriveUtils
+                    .getFilePathRequest(itsProviderClient, remoteId)
+                    .get();
+
+            if ((item != null) && (item.getDeleted() != null)) {
                 return null;
             }
+
             return item;
-        } catch (ClientException e) {
+        } catch (ApiException e) {
             check404Error(e);
             return null;
         }
