@@ -16,6 +16,7 @@ import java.util.Date;
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
 /**
  * The Utils class provides general utilities
@@ -23,7 +24,7 @@ import android.util.Log;
 public final class Utils
 {
     /** Format a date according to the current locale settings */
-    public static String formatDate(Date date, Context ctx)
+    public static String formatDate(@NonNull Date date, Context ctx)
     {
         return formatDate(date.getTime(), ctx);
     }
@@ -76,7 +77,7 @@ public final class Utils
 
 
     /** Close the streams */
-    public static void closeStreams(Closeable... cs)
+    public static void closeStreams(@NonNull Closeable... cs)
     {
         for (Closeable c: cs) {
             try {
