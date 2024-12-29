@@ -7,8 +7,15 @@
  */
 package com.jefftharris.passwdsafe.sync.onedrive;
 
+import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.ProviderFactory;
@@ -27,11 +34,11 @@ import java.util.List;
  */
 public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
 {
-    private final OnedriveProvider itsProvider;
-
     private static final String[] QUERY_SELECT =
             new String[]{"id", "name", "lastModifiedDateTime", "eTag",
                          "parentReference", "children", "folder", "file"};
+
+    private FilesViewModel itsFilesModel;
 
     /**
      * Constructor
@@ -39,8 +46,13 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
     public OnedriveFilesActivity()
     {
         super(ProviderType.ONEDRIVE);
-        itsProvider = (OnedriveProvider)
-                ProviderFactory.getProvider(ProviderType.ONEDRIVE, this);
+    }
+
+    @Override
+    protected void onCreate(Bundle args)
+    {
+        super.onCreate(args);
+        itsFilesModel = new ViewModelProvider(this).get(FilesViewModel.class);
     }
 
     /**
@@ -51,7 +63,28 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
             Context ctx,
             AbstractListFilesTask.Callback cb)
     {
-        return new ListFilesTask(itsProvider, ctx, cb);
+        return new ListFilesTask(itsFilesModel, ctx, cb);
+    }
+
+
+    /**
+     * View model for the activity
+     *
+     * @noinspection WeakerAccess (must be public for ViewModel)
+     */
+    public static class FilesViewModel extends AndroidViewModel
+    {
+        public final OnedriveProvider itsProvider;
+        public final MutableLiveData<OnedriveProviderClient> itsClientData;
+
+        /** Constructor */
+        public FilesViewModel(Application app)
+        {
+            super(app);
+            itsProvider = (OnedriveProvider)
+                    ProviderFactory.getProvider(ProviderType.ONEDRIVE, app);
+            itsClientData = new MutableLiveData<>();
+        }
     }
 
 
@@ -59,14 +92,16 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
     private static class ListFilesTask extends AbstractListFilesTask
     {
         private final OnedriveProvider itsProvider;
-
+        private final MutableLiveData<OnedriveProviderClient> itsActClientData;
 
         /** Constructor */
-        protected ListFilesTask(OnedriveProvider provider,
-                                Context ctx, Callback cb)
+        protected ListFilesTask(@NonNull FilesViewModel filesModel,
+                                @NonNull Context ctx,
+                                @NonNull Callback cb)
         {
             super(ctx, cb);
-            itsProvider = provider;
+            itsProvider = filesModel.itsProvider;
+            itsActClientData = filesModel.itsClientData;
         }
 
 
@@ -82,10 +117,14 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
             }
 
             try {
-                // TODO: Need some mechanism for caching the graph client and
-                //  the drive id for the activity
+                final var activityClient = itsActClientData.getValue();
                 itsProvider.useOneDriveService(client -> {
-                    var providerClient = new OnedriveProviderClient(client);
+                    var providerClient = activityClient;
+                    if (providerClient == null) {
+                        providerClient = new OnedriveProviderClient(client);
+                        itsActClientData.postValue(providerClient);
+                    }
+
                     var resp = OnedriveUtils
                             .getFilePathRequest(providerClient, params[0])
                             .children()
@@ -110,7 +149,7 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
                                     })
                                     .build();
                     pageIter.iterate();
-                });
+                }, (activityClient != null) ? activityClient.itsClient : null);
             } catch (Exception e) {
                 result = Pair.create(null, e);
             }

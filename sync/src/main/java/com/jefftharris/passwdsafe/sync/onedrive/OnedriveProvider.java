@@ -65,7 +65,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private static final String PREF_OLD_USER_ID = "onedriveUserId";
     private static final String PREF_HOME_ACCT_ID = "onedriveHomeAcctId";
 
-    private static final boolean VERBOSE_LOGS = false;//false;
+    private static final boolean VERBOSE_LOGS = false;
 
     private static final String TAG = "OnedriveProvider";
 
@@ -271,7 +271,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             String displayName = OnedriveSyncer.getDisplayName(client);
             connResult.set(
                     new OnedriveSyncConnectivityResult(displayName, client));
-        });
+        }, null);
         return connResult.get();
     }
 
@@ -317,19 +317,11 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     }
 
     /**
-     * Use the OneDrive service
-     */
-    public void useOneDriveService(OneDriveUser user) throws Exception
-    {
-        useOneDriveService(user, null);
-    }
-
-    /**
-     * Use the OneDrive service with optional provided service
+     * Use the OneDrive service with optional provided service for caching
      */
     @WorkerThread
-    private void useOneDriveService(OneDriveUser user,
-                                    GraphServiceClient service)
+    public void useOneDriveService(OneDriveUser user,
+                                   GraphServiceClient service)
         throws Exception
     {
         if (Looper.myLooper() == Looper.getMainLooper()) {
