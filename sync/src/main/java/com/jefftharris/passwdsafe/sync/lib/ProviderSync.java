@@ -424,8 +424,9 @@ public class ProviderSync
          */
         private void addTrace(String trace)
         {
-            // TODO: remove tracing
-            if (!BuildConfig.DEBUG) return;
+            if (!BuildConfig.DEBUG) {
+                return;
+            }
 
             long now = System.currentTimeMillis();
             if (!itsTraces.isEmpty()) {
