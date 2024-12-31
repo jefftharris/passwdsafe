@@ -101,8 +101,8 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public long getModTime()
     {
-        var modtime = Objects.requireNonNull(itsItem.getLastModifiedDateTime());
-        return modtime.toInstant().toEpochMilli();
+        var modtime = itsItem.getLastModifiedDateTime();
+        return (modtime != null) ? modtime.toInstant().toEpochMilli() : 0;
     }
 
     /**
