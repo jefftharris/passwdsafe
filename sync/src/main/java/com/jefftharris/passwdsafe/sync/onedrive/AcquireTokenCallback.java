@@ -22,10 +22,16 @@ import com.microsoft.identity.client.exception.MsalException;
  */
 public class AcquireTokenCallback implements AuthenticationCallback
 {
+    private final boolean itsIsReauth;
     private IAuthenticationResult itsAuthResult = null;
     private boolean itsHasResult = false;
 
     private static final String TAG = "AcquireTokenCallback";
+
+    public AcquireTokenCallback(boolean reauthorization)
+    {
+        itsIsReauth = reauthorization;
+    }
 
     @Override
     public void onSuccess(IAuthenticationResult authResult)
@@ -46,6 +52,14 @@ public class AcquireTokenCallback implements AuthenticationCallback
     {
         Log.e(TAG, "auth cancel");
         onAuthDone(null);
+    }
+
+    /**
+     * Get whether the acquisition was for a reauthorization
+     */
+    public boolean isReauth()
+    {
+        return itsIsReauth;
     }
 
     /**

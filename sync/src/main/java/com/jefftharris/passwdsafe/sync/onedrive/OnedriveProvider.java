@@ -42,7 +42,9 @@ import com.microsoft.identity.client.IPublicClientApplication;
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication;
 import com.microsoft.identity.client.PublicClientApplication;
 import com.microsoft.identity.client.SignInParameters;
+import com.microsoft.identity.client.SilentAuthenticationCallback;
 import com.microsoft.identity.client.exception.MsalException;
+import com.microsoft.identity.client.exception.MsalUiRequiredException;
 import com.microsoft.kiota.ApiException;
 
 import java.io.File;
@@ -69,9 +71,19 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
 
     private static final String TAG = "OnedriveProvider";
 
+    /**
+     * Type of account check to perform
+     */
+    private enum AcctCheck
+    {
+        PRESENT,
+        AUTHORIZED
+    }
+
     private File itsConfigFile;
     private ISingleAccountPublicClientApplication itsClientApp = null;
     private IAccount itsAccount = null;
+    private boolean itsAccountTokenOk = false;
     private final Object itsAccountLock = new Object();
     private final ReentrantLock itsServiceLock = new ReentrantLock();
     private AcquireTokenCallback itsNewAcctCb;
@@ -129,7 +141,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
 //            NotifUtils.showNotif(NotifUtils.Type.ONEDRIVE_MIGRATED, ctx);
 //        }
 
-        updateOnedriveAcct(null);
+        updateOnedriveAcct();
     }
 
     /**
@@ -147,22 +159,19 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             return;
         }
 
-        Runnable loginTask = () -> {
-            itsNewAcctCb = new AcquireTokenCallback();
-            var params = SignInParameters
-                    .builder()
-                    .withActivity(activity)
-                    .withCallback(itsNewAcctCb)
-                    .withScopes(Arrays.asList(Constants.SCOPES))
-                    .build();
-            // TODO: how to re-authenticate (signin again?)
-            itsClientApp.signIn(params);
-        };
+        boolean isReauth = checkAccount(AcctCheck.PRESENT);
+        itsNewAcctCb = new AcquireTokenCallback(isReauth);
 
-        if (isAccountAuthorized()) {
-            unlinkAccount(loginTask);
+        var params = SignInParameters
+                .builder()
+                .withActivity(activity)
+                .withCallback(itsNewAcctCb)
+                .withScopes(Arrays.asList(Constants.SCOPES))
+                .build();
+        if (isReauth) {
+            itsClientApp.signInAgain(params);
         } else {
-            loginTask.run();
+            itsClientApp.signIn(params);
         }
     }
 
@@ -191,7 +200,12 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @MainThread
     public void unlinkAccount()
     {
-        unlinkAccount(null);
+        PasswdSafeLog.debug(TAG, "unlinkAccount");
+        if (checkAccount(AcctCheck.PRESENT)) {
+            itsClientApp.signOut(new SignOutCallback());
+        } else {
+            updateOnedriveAcct();
+        }
     }
 
     /**
@@ -201,9 +215,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @MainThread
     public boolean isAccountAuthorized()
     {
-        synchronized (itsAccountLock) {
-            return (itsAccount != null) && (itsClientApp != null);
-        }
+        return checkAccount(AcctCheck.AUTHORIZED);
     }
 
     /**
@@ -335,6 +347,10 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         try {
             try {
                 useOneDriveServiceImpl(user, service);
+            } catch (MsalUiRequiredException e) {
+                PasswdSafeLog.error(TAG, e, "Auth token invalid");
+                updateOnedriveAcct();
+                throw e;
             } catch (ApiException e) {
                 if (OnedriveSyncer.is401Error(e)) {
                     Log.i(TAG, "Unauthorized, retrying", e);
@@ -363,25 +379,11 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         throws Exception
     {
         if (service == null) {
-            AcquireTokenSilentParameters tokenParams;
-            synchronized (itsAccountLock) {
-                if ((itsAccount == null) || (itsClientApp == null)) {
-                    throw new Exception(
-                            TAG + " useOneDriveService not authorized");
-                }
-
-                tokenParams = new AcquireTokenSilentParameters.Builder()
-                        .withScopes(Arrays.asList(Constants.SCOPES))
-                        .fromAuthority(itsClientApp
-                                               .getConfiguration()
-                                               .getDefaultAuthority()
-                                               .getAuthorityURL()
-                                               .toString())
-                        .forAccount(itsAccount)
-                        .build();
+            var tokenParams = createAcquireTokenParams(null);
+            if (tokenParams == null) {
+                throw new Exception(TAG + " useOneDriveService not authorized");
             }
 
-            // TODO: test unauthorized and whether to trigger an account update
             var auth = itsClientApp.acquireTokenSilent(tokenParams);
 
             var httpClientFactory = GraphClientFactory.create();
@@ -399,55 +401,130 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     }
 
     /**
-     * Asynchronously unlink the account
-     * @param completeCb The callback to run when the unlink is complete
-     */
-    @MainThread
-    private void unlinkAccount(final Runnable completeCb)
-    {
-        PasswdSafeLog.debug(TAG, "unlinkAccount");
-        if (isAccountAuthorized()) {
-            itsClientApp.signOut(new SignOutCallback(completeCb));
-        } else {
-            updateOnedriveAcct(completeCb);
-        }
-    }
-
-    /**
      * Asynchronously update the OneDrive account client based on availability
      * of authentication information
-     * @param completeCb The callback to run when the update is complete
      */
-    @MainThread
-    private void updateOnedriveAcct(final Runnable completeCb)
+    private void updateOnedriveAcct()
     {
         if (itsClientApp == null) {
             return;
         }
 
-        itsClientApp.getCurrentAccountAsync(
-                new CurrentAccountCallback(completeCb));
+        itsClientApp.getCurrentAccountAsync(new CurrentAccountCallback());
+    }
+
+    /**
+     * Check whether an account exists and optionally is it authorized
+     */
+    private boolean checkAccount(AcctCheck check)
+    {
+        synchronized (itsAccountLock) {
+            if ((itsAccount == null) || (itsClientApp == null)) {
+                return false;
+            }
+
+            switch (check) {
+            case PRESENT: {
+                return true;
+            }
+            case AUTHORIZED: {
+                return itsAccountTokenOk;
+            }
+            }
+
+            return false;
+        }
     }
 
     /**
      * Set the account to use for the client
      */
+    @MainThread
     private void setAccount(IAccount newAccount)
     {
-        boolean updateProviders = false;
+        boolean changed = false;
+        String newAccountId;
         synchronized (itsAccountLock) {
-            var acctStr = getAccountId(itsAccount);
-            var newStr = getAccountId(newAccount);
-            PasswdSafeLog.debug(TAG, "setAccount %s -> %s", acctStr, newStr);
+            var acctId = getAccountId(itsAccount);
+            newAccountId = getAccountId(newAccount);
+            PasswdSafeLog.debug(TAG, "setAccount %s -> %s", acctId,
+                                newAccountId);
 
             itsAccount = newAccount;
-            if (!TextUtils.equals(acctStr, newStr)) {
-                updateProviders = true;
+            if (!TextUtils.equals(acctId, newAccountId)) {
+                changed = true;
             }
         }
 
-        if (updateProviders) {
+        if (changed) {
+            if (newAccountId != null) {
+                try {
+                    updateProviderSyncFreq(newAccountId);
+                } catch (Exception e) {
+                    Log.e(TAG, "setAccount update provider failure", e);
+                }
+            } else {
+                updateSyncFreq(null, 0);
+            }
             SyncApp.get(getContext()).updateProviderState();
+        }
+
+        if (newAccountId != null) {
+            var tokenParams =
+                    createAcquireTokenParams(new AccountTokenCallback());
+            if (tokenParams != null) {
+                itsClientApp.acquireTokenSilentAsync(tokenParams);
+            }
+        } else {
+            setAccountTokenOk(false);
+        }
+    }
+
+    /**
+     * Set whether the token is OK for the account
+     */
+    @MainThread
+    private void setAccountTokenOk(boolean tokenOk)
+    {
+        boolean changed = false;
+        synchronized (itsAccountLock) {
+            if (tokenOk != itsAccountTokenOk) {
+                PasswdSafeLog.debug(TAG, "setAccountTokenOk %b -> %b",
+                                    itsAccountTokenOk, tokenOk);
+                itsAccountTokenOk = tokenOk;
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            SyncApp.get(getContext()).updateProviderState();
+        }
+    }
+
+    /**
+     * Create the parameters to silently acquire the auth token
+     */
+    private @Nullable AcquireTokenSilentParameters createAcquireTokenParams(
+            @Nullable SilentAuthenticationCallback authCb)
+    {
+        synchronized (itsAccountLock) {
+            if ((itsAccount == null) || (itsClientApp == null)) {
+                return null;
+            }
+
+            var builder = new AcquireTokenSilentParameters.Builder()
+                    .withScopes(Arrays.asList(Constants.SCOPES))
+                    .fromAuthority(itsClientApp
+                                           .getConfiguration()
+                                           .getDefaultAuthority()
+                                           .getAuthorityURL()
+                                           .toString())
+                    .forAccount(itsAccount);
+            if (authCb != null) {
+                builder.withCallback(authCb);
+            }
+
+            return builder.build();
         }
     }
 
@@ -466,21 +543,18 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private static class NewOneDriveTask
             extends NewAccountTask<OnedriveProvider>
     {
-        private final AcquireTokenCallback itsTokenCb;
-        private final boolean itsIsReauth;
+        private final @NonNull AcquireTokenCallback itsTokenCb;
 
         /**
          * Constructor
          */
         protected NewOneDriveTask(Uri currAcctUri,
-                                  AcquireTokenCallback tokenCb,
-                                  //boolean reauthorization,
+                                  @NonNull AcquireTokenCallback tokenCb,
                                   OnedriveProvider provider)
         {
             super(currAcctUri, null, provider, false, provider.getContext(),
                   TAG);
             itsTokenCb = tokenCb;
-            itsIsReauth = false;//reauthorization;
         }
 
         @Override
@@ -488,32 +562,16 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                 throws Exception
         {
             String acctId = null;
-            IAccount newAccount = null;
             IAuthenticationResult authResult = itsTokenCb.getResult();
             if (authResult != null) {
-                newAccount = authResult.getAccount();
-                acctId = newAccount.getId();
+                acctId = authResult.getAccount().getId();
             }
 
             itsNewAcct = acctId;
-            provider.setAccount(newAccount);
+            provider.updateOnedriveAcct();
 
-            // TODO: Is reauth needed with upgrade from previous?
-//            if (itsIsReauth && !TextUtils.isEmpty(itsNewAcct)) {
-//                // Change account identifier
-//                SyncDb.useDb(db -> {
-//                    long id = PasswdSafeContract.Providers.getId(itsAccountUri);
-//                    DbProvider dbprovider = SyncDb.getProvider(id, db);
-//                    if ((dbprovider != null) &&
-//                        !TextUtils.equals(dbprovider.itsAcct, itsNewAcct)) {
-//                        SyncDb.updateProviderAccount(id, itsNewAcct, db);
-//                    }
-//                    return null;
-//                });
-//                provider.updateOnedriveAcct(null);
-//            }
-
-            return !itsIsReauth;
+            // On a re-authorization, don't delete and recreate the provider
+            return !itsTokenCb.isReauth();
         }
     }
 
@@ -530,7 +588,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             rmConfigFile();
             itsClientApp = app;
 
-            updateOnedriveAcct(null);
+            updateOnedriveAcct();
         }
 
         @Override
@@ -554,13 +612,6 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private class SignOutCallback
             implements ISingleAccountPublicClientApplication.SignOutCallback
     {
-        private final Runnable itsCompleteCb;
-
-        public SignOutCallback(Runnable completeCb)
-        {
-            itsCompleteCb = completeCb;
-        }
-
         @Override
         public void onSignOut()
         {
@@ -577,7 +628,38 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
 
         private void finish()
         {
-            updateOnedriveAcct(itsCompleteCb);
+            updateOnedriveAcct();
+        }
+    }
+
+    /**
+     * Callback for acquiring the token for the client's current account
+     */
+    private class AccountTokenCallback implements SilentAuthenticationCallback
+    {
+        @Override
+        public void onSuccess(IAuthenticationResult authenticationResult)
+        {
+            PasswdSafeLog.debug(TAG, "Acquire token success");
+            finish(true);
+        }
+
+        @Override
+        public void onError(MsalException e)
+        {
+            PasswdSafeLog.error(TAG, e, "Acquire token failed");
+            finish(false);
+        }
+
+        @MainThread
+        private void finish(boolean tokenOk)
+        {
+            try {
+                setAccountTokenOk(tokenOk);
+            } catch (Exception e) {
+                PasswdSafeLog.error(TAG, e,
+                                    "updateOnedriveAcct token finish failure");
+            }
         }
     }
 
@@ -587,13 +669,6 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private class CurrentAccountCallback
             implements ISingleAccountPublicClientApplication.CurrentAccountCallback
     {
-        private final Runnable itsCompleteCb;
-
-        public CurrentAccountCallback(Runnable completeCb)
-        {
-            itsCompleteCb = completeCb;
-        }
-
         @Override
         public void onAccountLoaded(@Nullable IAccount activeAccount)
         {
@@ -619,28 +694,14 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             finish(null);
         }
 
+        @MainThread
         private void finish(IAccount newAccount)
         {
             try {
                 setAccount(newAccount);
-
-                if (newAccount != null) {
-                    try {
-                        updateProviderSyncFreq(newAccount.getId());
-                    } catch (Exception e) {
-                        Log.e(TAG, "updateOnedriveAcct update " +
-                                   "provider failure", e);
-                    }
-                } else {
-                    updateSyncFreq(null, 0);
-                }
-
-                if (itsCompleteCb != null) {
-                    itsCompleteCb.run();
-                }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 PasswdSafeLog.error(TAG, e,
-                                    "updateOnedriveAcct update failure");
+                                    "updateOnedriveAcct update finish failure");
             }
         }
     }

@@ -155,7 +155,6 @@ public class SyncApp extends Application
     /**
      * Update after a provider's state may have changed
      */
-    @WorkerThread
     public void updateProviderState()
     {
         runOnUiThread(() -> {
