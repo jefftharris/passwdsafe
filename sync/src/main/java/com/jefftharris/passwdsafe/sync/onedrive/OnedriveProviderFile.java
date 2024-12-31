@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
 import com.microsoft.graph.models.DriveItem;
@@ -108,16 +109,26 @@ public class OnedriveProviderFile implements ProviderRemoteFile
      * Get the file's hash code
      */
     @Override
-    @NonNull
+    @Nullable
     public String getHash()
     {
-        // TODO: sha256?
         var file = itsItem.getFile();
-        return Objects.requireNonNull(
-                (file != null) ? Objects
-                        .requireNonNull(file.getHashes())
-                        .getSha1Hash() :
-                itsItem.getETag());
+        if (file != null) {
+            var hashes = file.getHashes();
+            if (hashes != null) {
+                // SHA1 hash is being deprecated in favor of the quick XOR hash.
+                // However, check it first as existing files may have it.
+                var sha1 = hashes.getSha1Hash();
+                if (sha1 != null) {
+                    return sha1;
+                }
+                var xor = hashes.getQuickXorHash();
+                if (xor != null) {
+                    return xor;
+                }
+            }
+        }
+        return itsItem.getETag();
     }
 
     /**
