@@ -42,6 +42,8 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     public void init(@Nullable DbProvider dbProvider)
     {
         super.init(dbProvider);
+        // TODO: Refactor and reuse from SyncApp...  each provider doesn't
+        //  need its own
         itsHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -92,6 +94,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         });
     }
 
+    @Nullable
     @Override
     public final ProviderSync createBackgroundSync(boolean manual)
     {
