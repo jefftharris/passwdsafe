@@ -144,6 +144,14 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         updateOnedriveAcct();
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        PasswdSafeLog.debug(TAG, "onResume");
+        updateOnedriveAcct();
+    }
+
     /**
      * Start the process of linking to an account
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -29,6 +29,9 @@ public interface Provider
 
     /** Finalize the provider */
     void fini();
+
+    /** Resume the provider in the main activity */
+    void onResume();
 
     /** Start the process of linking to an account */
     void startAccountLink(FragmentActivity activity, int requestCode);

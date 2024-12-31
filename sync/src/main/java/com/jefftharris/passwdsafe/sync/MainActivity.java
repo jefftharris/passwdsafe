@@ -192,6 +192,10 @@ public class MainActivity extends AppCompatActivity
         }
         reloadProviders();
         SyncApp.get(this).setSyncUpdateHandler(this);
+
+        for (ProviderType type: ProviderType.values()) {
+            ProviderFactory.getProvider(type, this).onResume();
+        }
     }
 
     @Override
@@ -204,12 +208,6 @@ public class MainActivity extends AppCompatActivity
                     getAccountLinkUri(ActivityRequest.BOX_AUTH));
             break;
         }
-//        case ActivityRequest.ONEDRIVE_LINK: {
-//            itsNewAccountTask = getOnedriveProvider().finishAccountLink(
-//                    this, requestCode, resultCode, data,
-//                    getAccountLinkUri(ActivityRequest.ONEDRIVE_LINK));
-//            break;
-//        }
         case ActivityRequest.GDRIVE_PLAY_LINK:
         case ActivityRequest.GDRIVE_PLAY_LINK_PERMS: {
             itsNewAccountTask = getGDrivePlayProvider().finishAccountLink(
@@ -520,6 +518,7 @@ public class MainActivity extends AppCompatActivity
                 .startTask(this, this);
     }
 
+    @Nullable
     @Override
     public SyncResults getProviderSyncResults(ProviderType type)
     {
@@ -528,6 +527,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    @Nullable
     public CharSequence getProviderWarning(@NonNull ProviderType type)
     {
         CharSequence warning = null;
