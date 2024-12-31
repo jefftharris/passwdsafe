@@ -452,11 +452,10 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         synchronized (itsAccountLock) {
             var acctId = getAccountId(itsAccount);
             newAccountId = getAccountId(newAccount);
-            PasswdSafeLog.debug(TAG, "setAccount %s -> %s", acctId,
-                                newAccountId);
-
-            itsAccount = newAccount;
             if (!TextUtils.equals(acctId, newAccountId)) {
+                PasswdSafeLog.debug(TAG, "setAccount %s -> %s", acctId,
+                                    newAccountId);
+                itsAccount = newAccount;
                 changed = true;
             }
         }
@@ -595,6 +594,10 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @Nullable
     private static String getAccountId(@Nullable IAccount acct)
     {
+        if (acct instanceof com.microsoft.identity.client.Account) {
+            var account = (com.microsoft.identity.client.Account)acct;
+            return account.getHomeAccountId();
+        }
         return (acct != null) ? acct.getId() : null;
     }
 
@@ -625,7 +628,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             String acctId = null;
             IAuthenticationResult authResult = itsTokenCb.getResult();
             if (authResult != null) {
-                acctId = authResult.getAccount().getId();
+                acctId = getAccountId(authResult.getAccount());
             }
 
             itsNewAcct = acctId;
