@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Looper;
@@ -20,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceManager;
 
 import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.ObjectHolder;
@@ -30,6 +32,7 @@ import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
+import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
@@ -87,6 +90,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private final Object itsAccountLock = new Object();
     private final ReentrantLock itsServiceLock = new ReentrantLock();
     private AcquireTokenCallback itsNewAcctCb;
+    private boolean itsIsMigrationNeeded = false;
 
     /**
      * Constructor
@@ -132,15 +136,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         super.init(dbProvider);
         PasswdSafeLog.debug(TAG, "init");
 
-        // TODO: PREF_HOME_ACCT_ID is present, show notification
-        //  for migration
-//        Context ctx = getContext();
-//        SharedPreferences prefs =
-//                PreferenceManager.getDefaultSharedPreferences(ctx);
-//        if (old prefs) {
-//            NotifUtils.showNotif(NotifUtils.Type.ONEDRIVE_MIGRATED, ctx);
-//        }
-
+        checkMigration();
         updateOnedriveAcct();
     }
 
@@ -214,6 +210,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         } else {
             updateOnedriveAcct();
         }
+        clearMigration(true);
     }
 
     /**
@@ -506,7 +503,63 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
 
         if (changed) {
             SyncApp.get(getContext()).updateProviderState();
+            if (tokenOk) {
+                clearMigration(false);
+            }
         }
+    }
+
+    /**
+     * Check whether a migration to reauthorize is needed
+     */
+    @MainThread
+    private void checkMigration()
+    {
+        var ctx = getContext();
+        if (checkMigrationPrefs(ctx) != null) {
+            PasswdSafeLog.debug(TAG, "Migration needed");
+            NotifUtils.showNotif(NotifUtils.Type.ONEDRIVE_MIGRATED, ctx);
+            itsIsMigrationNeeded = true;
+        }
+    }
+
+    /**
+     * Remove the migration preferences and notification if needed
+     */
+    @MainThread
+    private void clearMigration(boolean force)
+    {
+        if (!force && !itsIsMigrationNeeded) {
+            return;
+        }
+        itsIsMigrationNeeded = false;
+        var ctx = getContext();
+        var prefs = checkMigrationPrefs(ctx);
+        if (prefs != null) {
+            PasswdSafeLog.debug(TAG, "Migration cleared");
+            prefs
+                    .edit()
+                    .remove(PREF_OLD_USER_ID)
+                    .remove(PREF_HOME_ACCT_ID)
+                    .apply();
+            NotifUtils.cancelNotif(NotifUtils.Type.ONEDRIVE_MIGRATED, ctx);
+        }
+    }
+
+    /**
+     * Check whether the migration preferences exist
+     * @return The preferences if they exist; null otherwise
+     */
+    @Nullable
+    @MainThread
+    private SharedPreferences checkMigrationPrefs(Context ctx)
+    {
+        var prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        if (prefs.contains(PREF_OLD_USER_ID) ||
+            prefs.contains(PREF_HOME_ACCT_ID)) {
+            return prefs;
+        }
+        return null;
     }
 
     /**
