@@ -45,8 +45,7 @@ public class OnedriveProviderFile implements ProviderRemoteFile
         builder.appendPath(itsItem.getName());
         Uri uri = builder.build();
         itsPath = uri.getPath();
-        // TODO: compatibilty issue with existing synced files?
-        String remoteId = uri.getPath();//uri.getEncodedPath();
+        String remoteId = uri.getEncodedPath();
         if (remoteId != null) {
             remoteId = remoteId.toLowerCase();
         }

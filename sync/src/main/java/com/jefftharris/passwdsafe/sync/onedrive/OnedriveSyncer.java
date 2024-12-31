@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -89,7 +90,8 @@ public class OnedriveSyncer extends ProviderSyncer<OnedriveProviderClient>
     @Contract(pure = true)
     public static String createRemoteIdFromLocal(@NonNull DbFile dbfile)
     {
-        return ProviderRemoteFile.PATH_SEPARATOR + dbfile.itsLocalTitle;
+        return ProviderRemoteFile.PATH_SEPARATOR +
+               Uri.encode(dbfile.itsLocalTitle);
     }
 
 

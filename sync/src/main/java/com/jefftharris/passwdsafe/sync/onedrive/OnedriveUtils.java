@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.sync.onedrive;
 
+import android.net.Uri;
 import androidx.annotation.NonNull;
 
 import com.microsoft.graph.drives.item.items.item.DriveItemItemRequestBuilder;
@@ -27,7 +28,7 @@ public class OnedriveUtils
             @NonNull String path)
     {
         if (path.length() > 1) {
-            path = ROOT_PATH + path.substring(1) + ":";
+            path = ROOT_PATH + Uri.decode(path.substring(1)) + ":";
         } else {
             path = "root";
         }
