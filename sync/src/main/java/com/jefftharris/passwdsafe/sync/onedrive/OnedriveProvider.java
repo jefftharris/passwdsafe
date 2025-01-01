@@ -377,7 +377,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             }
             var httpClient = httpClientFactory.build();
             service = new GraphServiceClient(
-                    (request, additionalAuthenticationContext) -> request.headers.add(
+                    (request, extraAuthCtx) -> request.headers.add(
                             "Authorization", auth.getAuthorizationHeader()),
                     httpClient);
         }
