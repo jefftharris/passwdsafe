@@ -11,7 +11,6 @@ import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -54,7 +53,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -230,25 +228,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @MainThread
     public Account getAccount(String acctName)
     {
-        // TODO: Add base-class impl to use account type
         return new Account(acctName, SyncDb.ONEDRIVE_ACCOUNT_TYPE);
-    }
-
-    /**
-     * Check whether a provider can be added
-     */
-    @Override
-    @MainThread
-    public void checkProviderAdd(SQLiteDatabase db)
-            throws Exception
-    {
-        // TODO: Add base-class impl to check against type
-        List<DbProvider> providers = SyncDb.getProviders(db);
-        for (DbProvider provider: providers) {
-            if (provider.itsType == ProviderType.ONEDRIVE) {
-                throw new Exception("Only one OneDrive account allowed");
-            }
-        }
     }
 
     /**

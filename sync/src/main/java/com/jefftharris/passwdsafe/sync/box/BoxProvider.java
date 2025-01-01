@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,7 +13,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,8 +38,6 @@ import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
-
-import java.util.List;
 
 /**
  * Implements a provider for the Box.com service
@@ -158,17 +155,6 @@ public class BoxProvider extends AbstractSyncTimerProvider
     public Account getAccount(String acctName)
     {
         return new Account(acctName, SyncDb.BOX_ACCOUNT_TYPE);
-    }
-
-    @Override
-    public void checkProviderAdd(SQLiteDatabase db) throws Exception
-    {
-        List<DbProvider> providers = SyncDb.getProviders(db);
-        for (DbProvider provider: providers) {
-            if (provider.itsType == ProviderType.BOX) {
-                throw new Exception("Only one Box account allowed");
-            }
-        }
     }
 
     @Override

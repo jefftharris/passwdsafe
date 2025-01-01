@@ -9,12 +9,16 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import androidx.annotation.CallSuper;
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+
+import java.util.List;
 
 /**
  *  Abstract provider that uses a system timer to perform syncing
@@ -69,6 +73,25 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     public synchronized void setPendingAdd(boolean pending)
     {
         itsIsPendingAdd = pending;
+    }
+
+    /**
+     * Check whether a provider can be added.  By default, only a single
+     * account can be added for a provider type.
+     */
+    @Override
+    @MainThread
+    public void checkProviderAdd(SQLiteDatabase db)
+            throws Exception
+    {
+        List<DbProvider> providers = SyncDb.getProviders(db);
+        for (DbProvider provider: providers) {
+            if (provider.itsType == itsProviderType) {
+                throw new Exception(
+                        String.format("Only one %s account allowed",
+                                      itsProviderType.getName(itsContext)));
+            }
+        }
     }
 
     @Override
