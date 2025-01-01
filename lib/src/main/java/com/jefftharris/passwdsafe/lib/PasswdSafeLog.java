@@ -61,6 +61,16 @@ public final class PasswdSafeLog
      * Log a formatted message at error level
      */
     public static void error(@NonNull String tag,
+                             @PrintFormat String fmt,
+                             Object... args)
+    {
+        Log.e(tag, String.format(fmt, args));
+    }
+
+    /**
+     * Log a formatted message at error level
+     */
+    public static void error(@NonNull String tag,
                              @NonNull Throwable t,
                              @PrintFormat String fmt,
                              Object... args)

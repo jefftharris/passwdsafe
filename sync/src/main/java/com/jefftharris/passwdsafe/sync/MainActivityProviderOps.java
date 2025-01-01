@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.sync;
 
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -43,11 +44,13 @@ interface MainActivityProviderOps
     /**
      * Get the results of the syncs for a provider
      */
+    @Nullable
     SyncResults getProviderSyncResults(ProviderType type);
 
     /**
      * Get a warning message to show for the provider
      */
+    @Nullable
     CharSequence getProviderWarning(ProviderType type);
 
     /**

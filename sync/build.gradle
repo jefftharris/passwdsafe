@@ -13,7 +13,7 @@ android {
     compileSdk 34
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
-        minSdkVersion 21
+        minSdkVersion 26
         resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 34
         // <major><minor><bugfix><beta/extra>
@@ -38,6 +38,7 @@ android {
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             proguardFiles += 'proguard-google-api-client.pro'
+            signingConfig signingConfigs.debug
         }
     }
     packagingOptions {
@@ -77,13 +78,10 @@ dependencies {
         exclude group: 'com.google.guava'
     }
     // OneDrive
-    implementation 'com.microsoft.graph:msgraph-sdk-android:1.7.0'
-    implementation('com.microsoft.identity.client:msal:0.2.2') {
-        exclude group: 'com.android.support', module: 'appcompat-v7'
-        exclude group: 'com.google.com.gson'
+    implementation ('com.microsoft.identity.client:msal:5.8.2') {
+        exclude group: 'com.microsoft.device.display'
     }
-    // Misc dependencies
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.microsoft.graph:microsoft-graph:6.24.0'
 }
 
 secrets {

@@ -10,9 +10,7 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.sync.lib.AbstractRemoteToLocalSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
-import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.kiota.ApiException;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -20,12 +18,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 
 /**
  * An OneDrive sync operation to sync a remote file to a local one
  */
 public class OnedriveRemoteToLocalOper
-        extends AbstractRemoteToLocalSyncOper<IGraphServiceClient>
+        extends AbstractRemoteToLocalSyncOper<OnedriveProviderClient>
 {
     private static final String TAG = "OnedriveRemoteToLocalOp";
 
@@ -37,17 +36,16 @@ public class OnedriveRemoteToLocalOper
 
     @Override
     protected final void doDownload(File destFile,
-                                    IGraphServiceClient providerClient)
-            throws IOException, ClientException
+                                    OnedriveProviderClient providerClient)
+            throws ApiException, IOException, NullPointerException
     {
         OutputStream os = null;
         InputStream is = null;
         try {
-            IDriveItemRequestBuilder rootRequest =
-                    OnedriveUtils.getFilePathRequest(providerClient,
-                                                     itsFile.itsRemoteId);
-            is = rootRequest.getContent().buildRequest().get();
-
+            var request = OnedriveUtils.getFilePathRequest(providerClient,
+                                                           itsFile.itsRemoteId);
+            is = Objects.requireNonNull(request.content().get(),
+                                        "No file content");
             os = new BufferedOutputStream(new FileOutputStream(destFile));
             Utils.copyStream(is, os);
         } finally {

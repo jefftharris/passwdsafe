@@ -9,18 +9,29 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.accounts.Account;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
+import android.os.Looper;
+
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+
+import org.jetbrains.annotations.Contract;
 
 /**
  * The SyncHelper class contains some helper methods for performing a sync.
  */
 public class SyncHelper
 {
+    private static final Handler itsUIHandler =
+            new Handler(Looper.getMainLooper());
+
     private static final String TAG = "SyncHelper";
 
     /** Get the filename for a local file */
+    @NonNull
+    @Contract(pure = true)
     public static String getLocalFileName(long fileId)
     {
         return "syncfile-" + fileId;
@@ -64,5 +75,21 @@ public class SyncHelper
             PasswdSafeUtil.dbginfo(TAG, "No provider for %s", acct.name);
         }
         return provider;
+    }
+
+    /**
+     * Run the given task on the UI thread
+     */
+    public static void runOnUiThread(Runnable run)
+    {
+        itsUIHandler.post(run);
+    }
+
+    /**
+     * Is the caller running on the UI thread
+     */
+    public static boolean isOnUiThread()
+    {
+        return Looper.myLooper() == Looper.getMainLooper();
     }
 }

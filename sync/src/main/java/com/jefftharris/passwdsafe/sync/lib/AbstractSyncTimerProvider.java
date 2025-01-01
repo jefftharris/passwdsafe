@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -9,14 +9,16 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.accounts.Account;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import androidx.annotation.CallSuper;
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+
+import java.util.List;
 
 /**
  *  Abstract provider that uses a system timer to perform syncing
@@ -26,7 +28,6 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     private final ProviderType itsProviderType;
     private final Context itsContext;
     private final String itsTag;
-    private Handler itsHandler = null;
     private boolean itsIsPendingAdd = false;
 
     protected AbstractSyncTimerProvider(ProviderType type,
@@ -42,7 +43,6 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     public void init(@Nullable DbProvider dbProvider)
     {
         super.init(dbProvider);
-        itsHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -75,11 +75,30 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         itsIsPendingAdd = pending;
     }
 
+    /**
+     * Check whether a provider can be added.  By default, only a single
+     * account can be added for a provider type.
+     */
+    @Override
+    @MainThread
+    public void checkProviderAdd(SQLiteDatabase db)
+            throws Exception
+    {
+        List<DbProvider> providers = SyncDb.getProviders(db);
+        for (DbProvider provider: providers) {
+            if (provider.itsType == itsProviderType) {
+                throw new Exception(
+                        String.format("Only one %s account allowed",
+                                      itsProviderType.getName(itsContext)));
+            }
+        }
+    }
+
     @Override
     public void updateSyncFreq(Account acct, final int freq)
     {
         super.updateSyncFreq(acct, freq);
-        itsHandler.post(() -> {
+        SyncHelper.runOnUiThread(() -> {
             String userId = getAccountUserId();
             PasswdSafeUtil.dbginfo(itsTag, "updateSyncFreq acct %s, freq %d",
                                    userId, freq);
@@ -92,6 +111,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
         });
     }
 
+    @Nullable
     @Override
     public final ProviderSync createBackgroundSync(boolean manual)
     {
@@ -137,6 +157,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     }
 
     /** Get the account user identifier */
+    @Nullable
     protected abstract String getAccountUserId();
 
     /** Get the context */

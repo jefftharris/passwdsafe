@@ -11,7 +11,6 @@ import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -181,18 +180,6 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     public Account getAccount(String acctName)
     {
         return new Account(acctName, SyncDb.DROPBOX_ACCOUNT_TYPE);
-    }
-
-
-    @Override
-    public void checkProviderAdd(SQLiteDatabase db) throws Exception
-    {
-        List<DbProvider> providers = SyncDb.getProviders(db);
-        for (DbProvider provider: providers) {
-            if (provider.itsType == ProviderType.DROPBOX) {
-                throw new Exception("Only one Dropbox account allowed");
-            }
-        }
     }
 
 

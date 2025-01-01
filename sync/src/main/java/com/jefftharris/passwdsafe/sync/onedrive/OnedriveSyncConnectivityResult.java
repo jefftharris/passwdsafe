@@ -8,17 +8,17 @@
 package com.jefftharris.passwdsafe.sync.onedrive;
 
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
-import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.graph.serviceclient.GraphServiceClient;
 
 public final class OnedriveSyncConnectivityResult extends SyncConnectivityResult
 {
-    private final IGraphServiceClient itsService;
+    private final GraphServiceClient itsService;
 
     /**
      * Constructor
      */
     public OnedriveSyncConnectivityResult(String displayName,
-                                          IGraphServiceClient service)
+                                          GraphServiceClient service)
     {
         super(displayName);
         itsService = service;
@@ -27,7 +27,7 @@ public final class OnedriveSyncConnectivityResult extends SyncConnectivityResult
     /**
      * Get the client
      */
-    public IGraphServiceClient getService()
+    public GraphServiceClient getService()
     {
         return itsService;
     }
