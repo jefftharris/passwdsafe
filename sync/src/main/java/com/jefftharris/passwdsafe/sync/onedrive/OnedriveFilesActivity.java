@@ -34,10 +34,6 @@ import java.util.List;
  */
 public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
 {
-    private static final String[] QUERY_SELECT =
-            new String[]{"id", "name", "lastModifiedDateTime", "eTag",
-                         "parentReference", "children", "folder", "file"};
-
     private FilesViewModel itsFilesModel;
 
     /**
@@ -128,12 +124,7 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
                     var resp = OnedriveUtils
                             .getFilePathRequest(providerClient, params[0])
                             .children()
-                            .get(requestCfg -> {
-                                if (requestCfg.queryParameters != null) {
-                                    requestCfg.queryParameters.select =
-                                            QUERY_SELECT;
-                                }
-                            });
+                            .get(OnedriveUtils::updateGetChildrenRequest);
 
                     var pageIter =
                             new PageIterator.Builder<DriveItem,

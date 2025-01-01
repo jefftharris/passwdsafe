@@ -174,12 +174,11 @@ public class OnedriveSyncer extends ProviderSyncer<OnedriveProviderClient>
     private DriveItem getRemoteFile(String remoteId) throws ApiException
     {
         try {
-            // TODO: Use same query select as in files activity?
             var item = OnedriveUtils
                     .getFilePathRequest(itsProviderClient, remoteId)
-                    .get();
+                    .get(OnedriveUtils::updateGetItemRequest);
 
-            if ((item != null) && (item.getDeleted() != null)) {
+            if (OnedriveUtils.isDeleted(item)) {
                 return null;
             }
 
