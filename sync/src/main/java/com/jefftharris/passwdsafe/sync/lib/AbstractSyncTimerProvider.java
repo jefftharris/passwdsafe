@@ -9,8 +9,6 @@ package com.jefftharris.passwdsafe.sync.lib;
 
 import android.accounts.Account;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
@@ -26,7 +24,6 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     private final ProviderType itsProviderType;
     private final Context itsContext;
     private final String itsTag;
-    private Handler itsHandler = null;
     private boolean itsIsPendingAdd = false;
 
     protected AbstractSyncTimerProvider(ProviderType type,
@@ -42,9 +39,6 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     public void init(@Nullable DbProvider dbProvider)
     {
         super.init(dbProvider);
-        // TODO: Refactor and reuse from SyncApp...  each provider doesn't
-        //  need its own
-        itsHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -81,7 +75,7 @@ public abstract class AbstractSyncTimerProvider extends AbstractProvider
     public void updateSyncFreq(Account acct, final int freq)
     {
         super.updateSyncFreq(acct, freq);
-        itsHandler.post(() -> {
+        SyncHelper.runOnUiThread(() -> {
             String userId = getAccountUserId();
             PasswdSafeUtil.dbginfo(itsTag, "updateSyncFreq acct %s, freq %d",
                                    userId, freq);

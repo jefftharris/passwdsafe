@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.MainThread;
@@ -35,6 +34,7 @@ import com.jefftharris.passwdsafe.sync.lib.NewAccountTask;
 import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
+import com.jefftharris.passwdsafe.sync.lib.SyncHelper;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
 import com.microsoft.graph.core.requests.GraphClientFactory;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
@@ -341,7 +341,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                                    GraphServiceClient service)
         throws Exception
     {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (SyncHelper.isOnUiThread()) {
             throw new Exception("Can't invoke getOnedriveService in ui thread");
         }
 
@@ -367,7 +367,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             }
         } finally {
             itsServiceLock.unlock();
-            SyncApp.runOnUiThread(() -> {
+            SyncHelper.runOnUiThread(() -> {
                 if (!isAccountAuthorized()) {
                     SyncApp.get(getContext()).updateProviderState();
                 }

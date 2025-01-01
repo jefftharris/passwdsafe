@@ -115,7 +115,7 @@ public class ProviderSync
      */
     private void updateUIBegin()
     {
-        SyncApp.runOnUiThread(() -> {
+        SyncHelper.runOnUiThread(() -> {
             if (itsIsShowNotifs) {
                 showProgressNotif();
             }
@@ -127,7 +127,7 @@ public class ProviderSync
      */
     private void updateUIEnd(final SyncLogRecord logrec)
     {
-        SyncApp.runOnUiThread(() -> {
+        SyncHelper.runOnUiThread(() -> {
             if (itsIsShowNotifs) {
                 NotifUtils.cancelNotif(NotifUtils.Type.SYNC_PROGRESS,
                                        itsNotifTag, itsContext);

@@ -9,8 +9,6 @@ package com.jefftharris.passwdsafe.sync;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -23,6 +21,7 @@ import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
 import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
+import com.jefftharris.passwdsafe.sync.lib.SyncHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,8 +42,6 @@ public class SyncApp extends Application
     private SyncUpdateHandler.GDriveState itsSyncGDriveState =
             SyncUpdateHandler.GDriveState.OK;
     private boolean itsIsForceSyncFailure = false;
-    private static final Handler itsUIHandler =
-            new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate()
@@ -144,7 +141,7 @@ public class SyncApp extends Application
     @WorkerThread
     public void updateGDriveSyncState(final SyncUpdateHandler.GDriveState state)
     {
-        runOnUiThread(() -> {
+        SyncHelper.runOnUiThread(() -> {
             itsSyncGDriveState = state;
             if (itsSyncUpdateHandler != null) {
                 itsSyncUpdateHandler.updateGDriveState(state);
@@ -157,7 +154,7 @@ public class SyncApp extends Application
      */
     public void updateProviderState()
     {
-        runOnUiThread(() -> {
+        SyncHelper.runOnUiThread(() -> {
             if (itsSyncUpdateHandler != null) {
                 itsSyncUpdateHandler.updateProviderState();
             }
@@ -178,14 +175,6 @@ public class SyncApp extends Application
     public void setIsForceSyncFailure(boolean forceFailure)
     {
         itsIsForceSyncFailure = forceFailure;
-    }
-
-    /**
-     * Run the given task on the UI thread
-     */
-    public static void runOnUiThread(Runnable run)
-    {
-        itsUIHandler.post(run);
     }
 
     /**
