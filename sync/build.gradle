@@ -27,6 +27,8 @@ android {
     buildTypes {
         debug {
             debuggable true
+            // Uncomment below option to minify during debug development
+            // minifyEnabled true
             proguardFiles += getDefaultProguardFile(
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
@@ -38,7 +40,8 @@ android {
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             proguardFiles += 'proguard-google-api-client.pro'
-            signingConfig signingConfigs.debug
+            // Uncomment below to run minified release build in emulator
+            // signingConfig signingConfigs.debug
         }
     }
     packagingOptions {
