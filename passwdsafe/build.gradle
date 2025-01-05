@@ -10,7 +10,7 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.jefftharris.passwdsafe'
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
         minSdkVersion 21
