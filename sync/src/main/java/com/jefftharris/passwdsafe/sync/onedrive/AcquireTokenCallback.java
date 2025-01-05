@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2019 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2019-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,7 +13,7 @@ import androidx.annotation.WorkerThread;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.microsoft.identity.client.AuthenticationCallback;
-import com.microsoft.identity.client.AuthenticationResult;
+import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.exception.MsalException;
 
 /**
@@ -22,13 +22,19 @@ import com.microsoft.identity.client.exception.MsalException;
  */
 public class AcquireTokenCallback implements AuthenticationCallback
 {
-    private AuthenticationResult itsAuthResult = null;
+    private final boolean itsIsReauth;
+    private IAuthenticationResult itsAuthResult = null;
     private boolean itsHasResult = false;
 
     private static final String TAG = "AcquireTokenCallback";
 
+    public AcquireTokenCallback(boolean reauthorization)
+    {
+        itsIsReauth = reauthorization;
+    }
+
     @Override
-    public void onSuccess(AuthenticationResult authResult)
+    public void onSuccess(IAuthenticationResult authResult)
     {
         PasswdSafeUtil.dbginfo(TAG, "auth ok");
         onAuthDone(authResult);
@@ -49,10 +55,18 @@ public class AcquireTokenCallback implements AuthenticationCallback
     }
 
     /**
+     * Get whether the acquisition was for a reauthorization
+     */
+    public boolean isReauth()
+    {
+        return itsIsReauth;
+    }
+
+    /**
      * Get the authentication result
      */
     @WorkerThread
-    public synchronized AuthenticationResult getResult()
+    public synchronized IAuthenticationResult getResult()
             throws InterruptedException
     {
         while (!itsHasResult) {
@@ -65,7 +79,7 @@ public class AcquireTokenCallback implements AuthenticationCallback
      * Handle when authentication is finished
      */
     @MainThread
-    private synchronized void onAuthDone(AuthenticationResult result)
+    private synchronized void onAuthDone(IAuthenticationResult result)
     {
         itsAuthResult = result;
         itsHasResult = true;

@@ -7,8 +7,6 @@
  */
 package com.jefftharris.passwdsafe.sync;
 
-import com.microsoft.identity.common.internal.providers.oauth2.AuthorizationStrategy;
-
 /**
  * Activity request codes
  */
@@ -16,7 +14,7 @@ public interface ActivityRequest
 {
     int DROPBOX_LINK = 1;
     int BOX_AUTH = 2;
-    int ONEDRIVE_LINK = AuthorizationStrategy.BROWSER_FLOW;
+    int ONEDRIVE_LINK = 3;
     //int OWNCLOUD_LINK = 4;
     int PERMISSIONS = 5;
     int APP_SETTINGS = 6;

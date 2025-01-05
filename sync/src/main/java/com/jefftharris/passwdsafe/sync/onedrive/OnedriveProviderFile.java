@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -9,18 +9,20 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
-import com.microsoft.graph.extensions.DriveItem;
+import com.microsoft.graph.models.DriveItem;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  *  Abstraction of an OneDrive remote file
  */
 public class OnedriveProviderFile implements ProviderRemoteFile
 {
-    private static final String DRIVE_ROOT_PATH = "/drive/root:";
-
     private final DriveItem itsItem;
     private final String itsRemoteId;
     private final String itsPath;
@@ -32,12 +34,16 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     {
         itsItem = item;
         Uri.Builder builder = new Uri.Builder();
-        if (itsItem.parentReference != null) {
-            builder.encodedPath(
-                    itsItem.parentReference.path.substring(
-                            DRIVE_ROOT_PATH.length()));
+        var parent = itsItem.getParentReference();
+        if (parent != null) {
+            var parentPath = Objects.requireNonNull(parent.getPath());
+            // Per MS docs, path relative to root starts after the first colon
+            var pos = parentPath.indexOf(':');
+            if (pos >= 0) {
+                builder.encodedPath(parentPath.substring(pos + 1));
+            }
         }
-        builder.appendPath(itsItem.name);
+        builder.appendPath(itsItem.getName());
         Uri uri = builder.build();
         itsPath = uri.getPath();
         String remoteId = uri.getEncodedPath();
@@ -69,9 +75,10 @@ public class OnedriveProviderFile implements ProviderRemoteFile
      * Get the file's title
      */
     @Override
+    @NonNull
     public String getTitle()
     {
-        return itsItem.name;
+        return Objects.requireNonNull(itsItem.getName());
     }
 
     /**
@@ -94,17 +101,34 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public long getModTime()
     {
-        return itsItem.lastModifiedDateTime.getTimeInMillis();
+        var modtime = itsItem.getLastModifiedDateTime();
+        return (modtime != null) ? modtime.toInstant().toEpochMilli() : 0;
     }
 
     /**
      * Get the file's hash code
      */
     @Override
+    @Nullable
     public String getHash()
     {
-        return (itsItem.file != null) ?
-                itsItem.file.hashes.sha1Hash : itsItem.eTag;
+        var file = itsItem.getFile();
+        if (file != null) {
+            var hashes = file.getHashes();
+            if (hashes != null) {
+                // SHA1 hash is being deprecated in favor of the quick XOR hash.
+                // However, check it first as existing files may have it.
+                var sha1 = hashes.getSha1Hash();
+                if (sha1 != null) {
+                    return sha1;
+                }
+                var xor = hashes.getQuickXorHash();
+                if (xor != null) {
+                    return xor;
+                }
+            }
+        }
+        return itsItem.getETag();
     }
 
     /**
@@ -113,7 +137,7 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public boolean isFolder()
     {
-        return (itsItem.folder != null);
+        return (itsItem.getFolder() != null);
     }
 
     /**
@@ -122,16 +146,16 @@ public class OnedriveProviderFile implements ProviderRemoteFile
     @Override
     public String toDebugString()
     {
-        long modtime = itsItem.lastModifiedDateTime.getTimeInMillis();
+        long modtime = getModTime();
         return String.format(
                 Locale.US,
                 "{name: %s, parent: %s, id: %s, folder: %b, remid: %s, " +
                 "mod: %tc(%d)}",
-                itsItem.name,
-                (itsItem.parentReference != null) ?
-                        itsItem.parentReference.path : "null",
-                itsItem.id, itsRemoteId,
-                (itsItem.folder != null),
+                itsItem.getName(),
+                (itsItem.getParentReference() != null) ?
+                        itsItem.getParentReference().getPath() : "null",
+                itsItem.getId(), itsRemoteId,
+                (itsItem.getFolder() != null),
                 modtime, modtime);
     }
 }

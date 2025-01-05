@@ -9,15 +9,13 @@ package com.jefftharris.passwdsafe.sync.onedrive;
 
 import com.jefftharris.passwdsafe.sync.lib.AbstractRmSyncOper;
 import com.jefftharris.passwdsafe.sync.lib.DbFile;
-import com.microsoft.graph.core.ClientException;
-import com.microsoft.graph.extensions.IDriveItemRequestBuilder;
-import com.microsoft.graph.extensions.IGraphServiceClient;
+import com.microsoft.kiota.ApiException;
 
 /**
  * An OneDrive sync operation to remove a file
  */
 public class OnedriveRmFileOper
-        extends AbstractRmSyncOper<IGraphServiceClient>
+        extends AbstractRmSyncOper<OnedriveProviderClient>
 {
     private static final String TAG = "OnedriveRmFileOper";
 
@@ -29,15 +27,14 @@ public class OnedriveRmFileOper
 
     /** Remove the remote file */
     @Override
-    protected void doRemoteRemove(IGraphServiceClient providerClient)
-            throws ClientException
+    protected void doRemoteRemove(OnedriveProviderClient providerClient)
+            throws ApiException
     {
         try {
-            IDriveItemRequestBuilder rootRequest =
-                    OnedriveUtils.getFilePathRequest(providerClient,
-                                                     itsFile.itsRemoteId);
-            rootRequest.buildRequest().delete();
-        } catch (ClientException e) {
+            var request = OnedriveUtils.getFilePathRequest(providerClient,
+                                                           itsFile.itsRemoteId);
+            request.delete();
+        } catch (ApiException e) {
             OnedriveSyncer.check404Error(e);
         }
     }

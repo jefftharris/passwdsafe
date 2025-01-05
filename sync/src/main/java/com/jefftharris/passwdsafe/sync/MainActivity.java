@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity
     private GDriveState itsGDriveState = GDriveState.OK;
     private final SparseArray<Uri> itsAccountLinkUris = new SparseArray<>();
     private boolean itsDropboxPendingAcctLink = false;
+    private boolean itsOnedrivePendingAcctLink = false;
     private NewAccountTask<?> itsNewAccountTask = null;
     private final List<AccountUpdateTask> itsUpdateTasks = new ArrayList<>();
     private boolean itsIsRunning = false;
@@ -178,12 +179,23 @@ public class MainActivity extends AppCompatActivity
                     null, getAccountLinkUri(ActivityRequest.DROPBOX_LINK));
         }
 
+        if (itsOnedrivePendingAcctLink) {
+            itsOnedrivePendingAcctLink = false;
+            itsNewAccountTask = getOnedriveProvider().finishAccountLink(
+                    this, ActivityRequest.ONEDRIVE_LINK, Activity.RESULT_OK,
+                    null, getAccountLinkUri(ActivityRequest.ONEDRIVE_LINK));
+        }
+
         if (itsNewAccountTask != null) {
             itsNewAccountTask.startTask(this, this);
             itsNewAccountTask = null;
         }
         reloadProviders();
         SyncApp.get(this).setSyncUpdateHandler(this);
+
+        for (ProviderType type: ProviderType.values()) {
+            ProviderFactory.getProvider(type, this).onResume();
+        }
     }
 
     @Override
@@ -194,12 +206,6 @@ public class MainActivity extends AppCompatActivity
             itsNewAccountTask = getBoxProvider().finishAccountLink(
                     this, requestCode, resultCode, data,
                     getAccountLinkUri(ActivityRequest.BOX_AUTH));
-            break;
-        }
-        case ActivityRequest.ONEDRIVE_LINK: {
-            itsNewAccountTask = getOnedriveProvider().finishAccountLink(
-                    this, requestCode, resultCode, data,
-                    getAccountLinkUri(ActivityRequest.ONEDRIVE_LINK));
             break;
         }
         case ActivityRequest.GDRIVE_PLAY_LINK:
@@ -355,6 +361,7 @@ public class MainActivity extends AppCompatActivity
         try {
             onedriveProvider.startAccountLink(this,
                                               ActivityRequest.ONEDRIVE_LINK);
+            itsOnedrivePendingAcctLink = true;
             itsAccountLinkUris.put(ActivityRequest.ONEDRIVE_LINK,
                                    currProviderUri);
         } catch (Exception e) {
@@ -511,6 +518,7 @@ public class MainActivity extends AppCompatActivity
                 .startTask(this, this);
     }
 
+    @Nullable
     @Override
     public SyncResults getProviderSyncResults(ProviderType type)
     {
@@ -519,6 +527,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    @Nullable
     public CharSequence getProviderWarning(@NonNull ProviderType type)
     {
         CharSequence warning = null;

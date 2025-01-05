@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -16,6 +16,7 @@ import java.util.Date;
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
 /**
  * The Utils class provides general utilities
@@ -23,7 +24,7 @@ import android.util.Log;
 public final class Utils
 {
     /** Format a date according to the current locale settings */
-    public static String formatDate(Date date, Context ctx)
+    public static String formatDate(@NonNull Date date, Context ctx)
     {
         return formatDate(date.getTime(), ctx);
     }
@@ -60,10 +61,11 @@ public final class Utils
 
 
     /** Copy the input stream to the output */
-    public static int copyStream(InputStream is, OutputStream os)
+    public static long copyStream(@NonNull InputStream is,
+                                  @NonNull OutputStream os)
             throws IOException
     {
-        int streamSize = 0;
+        long streamSize = 0;
         byte[] buf = new byte[4096];
         int len;
         while ((len = is.read(buf)) > 0) {
@@ -75,7 +77,7 @@ public final class Utils
 
 
     /** Close the streams */
-    public static void closeStreams(Closeable... cs)
+    public static void closeStreams(@NonNull Closeable... cs)
     {
         for (Closeable c: cs) {
             try {
