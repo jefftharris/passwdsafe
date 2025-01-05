@@ -656,7 +656,8 @@ public class MainActivity extends AppCompatActivity
     {
         switch (type) {
         case GDRIVE: {
-            return getGDrivePlayProvider();        }
+            return getGDrivePlayProvider();
+        }
         case DROPBOX: {
             return getDbxProvider();
         }
