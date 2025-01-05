@@ -77,61 +77,12 @@
 #
 # OneDrive
 #
--keep class com.microsoft.identity.common.** { *; }
--keep class com.microsoft.identity.client.PublicClientApplication { *; }
--keep class com.microsoft.identity.client.PublicClientApplicationConfiguration { *; }
--keep class com.microsoft.identity.** { *; }
--keepclassmembers class com.microsoft.graph.extensions.** { *; }
--dontwarn com.google.auto.value.AutoValue
--dontwarn com.google.crypto.tink.subtle.Ed25519Sign$KeyPair
--dontwarn com.google.crypto.tink.subtle.Ed25519Sign
--dontwarn com.google.crypto.tink.subtle.Ed25519Verify
--dontwarn com.google.crypto.tink.subtle.X25519
--dontwarn com.google.crypto.tink.subtle.XChaCha20Poly1305
--dontwarn com.microsoft.device.display.DisplayMask
--dontwarn edu.umd.cs.findbugs.annotations.NonNull
--dontwarn edu.umd.cs.findbugs.annotations.Nullable
--dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
--dontwarn reactor.blockhound.integration.BlockHoundIntegration
+# OneDrive MSAL library has its own proguard rules file.  MS graph needs
+# specific rules.
 
-##---------------Begin: proguard configuration for MSAL  --------
--keep class com.microsoft.identity.** { *; }
--keep class com.microsoft.device.display.** { *; }
+# For the PageIterator, need the collection response classes
+-keep class com.microsoft.graph.models.DriveItemCollectionResponse { *; }
 
-##---------------Begin: proguard configuration for Nimbus  ----------
-#-keep class com.nimbusds.** { *; }
-
-##---------------Begin: proguard configuration for Gson  --------
-# Gson uses generic type information stored in a class file when working with fields. Proguard
-# removes such information by default, so configure it to keep all of it.
--keepattributes Signature
-
-# For using GSON @Expose annotation
--keepattributes *Annotation*
-
-# Gson specific classes
--dontwarn sun.misc.**
-#-keep class com.google.gson.stream.** { *; }
-
-# Application classes that will be serialized/deserialized over Gson
-#-keep class com.google.gson.examples.android.model.** { <fields>; }
-
-# Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
-# JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
--keep class * extends com.google.gson.TypeAdapter
--keep class * implements com.google.gson.TypeAdapterFactory
--keep class * implements com.google.gson.JsonSerializer
--keep class * implements com.google.gson.JsonDeserializer
-
-# Prevent R8 from leaving Data object members always null
--keepclassmembers,allowobfuscation class * {
-  @com.google.gson.annotations.SerializedName <fields>;
-}
-
-# Retain generic signatures of TypeToken and its subclasses with R8 version 3.0
-# and higher. From https://github.com/google/gson/blob/main/examples/android-proguard-example/proguard.cfg
--keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
--keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 
 #
 # Retrofit library
@@ -152,3 +103,36 @@
 -dontwarn okhttp3.**
 -dontwarn com.squareup.okhttp.**
 -dontwarn javax.servlet.**
+
+#
+# okhttp
+#
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+
+#
+# okio
+#
+-keep class sun.misc.**
+-dontwarn java.nio.file.*
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn okio.**
+
+#
+# Extras required by build
+#
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.crypto.tink.subtle.Ed25519Sign$KeyPair
+-dontwarn com.google.crypto.tink.subtle.Ed25519Sign
+-dontwarn com.google.crypto.tink.subtle.Ed25519Verify
+-dontwarn com.google.crypto.tink.subtle.X25519
+-dontwarn com.google.crypto.tink.subtle.XChaCha20Poly1305
+-dontwarn com.microsoft.device.display.DisplayMask
+-dontwarn edu.umd.cs.findbugs.annotations.NonNull
+-dontwarn edu.umd.cs.findbugs.annotations.Nullable
+-dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+-dontwarn reactor.blockhound.integration.BlockHoundIntegration
+
