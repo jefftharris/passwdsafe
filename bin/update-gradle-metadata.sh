@@ -4,7 +4,12 @@ set -ex
 topdir=$(realpath $(dirname $0)/..)
 
 pushd $topdir
-./gradlew --write-verification-metadata sha256 --refresh-dependencies \
+
+gradleArgs="--write-verification-metadata sha256"
+gradleArgs="${gradleArgs} --refresh-dependencies"
+
+./gradlew ${gradleArgs} \
+          --dry-run \
           :lib:extractDebugAnnotations \
           :lib:compileDebugLibraryResources \
           assembleDebug \
@@ -16,10 +21,9 @@ pushd $topdir
           :passwdsafe:processDebugResources \
           :sync:processDebugResources \
           test \
-          help \
-          --dry-run
+          help
 mv gradle/verification-metadata.dryrun.xml gradle/verification-metadata.xml
 
-./gradlew --write-verification-metadata sha256 --refresh-dependencies \
+./gradlew ${gradleArgs} \
           build \
-          mergeDebugResources \
+          mergeDebugResources
