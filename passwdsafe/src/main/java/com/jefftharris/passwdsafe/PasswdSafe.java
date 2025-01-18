@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -279,6 +280,7 @@ public class PasswdSafe extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         PasswdSafeApp.setupTheme(this);
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         ApiCompat.setRecentAppsVisible(getWindow(), false);
         setContentView(R.layout.activity_passwdsafe);
