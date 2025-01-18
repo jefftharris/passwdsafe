@@ -15,7 +15,7 @@ android {
         applicationId "com.jefftharris.passwdsafe"
         minSdkVersion 21
         resourceConfigurations += ['de', 'fr', 'nb']
-        targetSdkVersion 34
+        targetSdkVersion 35
         // <major><minor><bugfix><beta/extra>
         versionCode 6240000
         versionName "6.24.0"

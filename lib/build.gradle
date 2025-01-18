@@ -20,7 +20,7 @@ android {
     compileSdk 35
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         vectorDrawables.useSupportLibrary = true
         buildConfigField 'String', 'BUILD_ID', "\"${buildId()}\""
         buildConfigField 'String', 'BUILD_DATE', "\"${buildTime()}\""

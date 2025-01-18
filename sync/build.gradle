@@ -15,7 +15,7 @@ android {
         applicationId "com.jefftharris.passwdsafe.sync"
         minSdkVersion 26
         resourceConfigurations += ['de', 'fr', 'nb']
-        targetSdkVersion 34
+        targetSdkVersion 35
         // <major><minor><bugfix><beta/extra>
         versionCode 3110000
         versionName "3.11.0"
