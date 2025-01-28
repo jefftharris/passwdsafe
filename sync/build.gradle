@@ -10,12 +10,12 @@ apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 
 android {
     namespace 'com.jefftharris.passwdsafe.sync'
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe.sync"
         minSdkVersion 26
         resourceConfigurations += ['de', 'fr', 'nb']
-        targetSdkVersion 34
+        targetSdkVersion 35
         // <major><minor><bugfix><beta/extra>
         versionCode 3110000
         versionName "3.11.0"
@@ -60,12 +60,12 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.3'
-    implementation('androidx.work:work-runtime:2.9.0') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.7'
+    implementation('androidx.work:work-runtime:2.10.0') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
-    implementation 'com.google.android.gms:play-services-auth:21.2.0'
+    implementation 'com.google.android.gms:play-services-auth:21.3.0'
     // Google Drive
     implementation('com.google.api-client:google-api-client-android:2.2.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -84,7 +84,7 @@ dependencies {
     implementation ('com.microsoft.identity.client:msal:5.8.2') {
         exclude group: 'com.microsoft.device.display'
     }
-    implementation 'com.microsoft.graph:microsoft-graph:6.24.0'
+    implementation 'com.microsoft.graph:microsoft-graph:6.25.1'
 }
 
 secrets {

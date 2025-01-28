@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.view;
 
 import android.os.Bundle;
 import android.view.ViewGroup;
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +24,7 @@ public abstract class DialogActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         PasswdSafeApp.setupDialogTheme(this);
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(getViewLayoutId());
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -22,7 +22,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
@@ -79,6 +82,26 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     {
         super.onViewCreated(viewFrag, savedInstanceState);
         setHasOptionsMenu(true);
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                viewFrag,
+                (v, windowInsets) -> {
+                    Insets insets = windowInsets.getInsets(
+                            WindowInsetsCompat.Type.systemBars());
+                    // Apply the insets as a margin to the view. Apply
+                    // whichever insets are appropriate to the layout. You can
+                    // also update the view padding if that's more appropriate.
+                    var mlp = (ViewGroup.MarginLayoutParams)v.getLayoutParams();
+                    mlp.topMargin = insets.top;
+                    mlp.leftMargin = insets.left;
+                    mlp.bottomMargin = insets.bottom;
+                    mlp.rightMargin = insets.right;
+                    v.setLayoutParams(mlp);
+
+                    // Return CONSUMED to keep the insets from passing down
+                    // to descendant views
+                    return WindowInsetsCompat.CONSUMED;
+        });
     }
 
     @Override

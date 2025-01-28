@@ -10,12 +10,12 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.jefftharris.passwdsafe'
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.jefftharris.passwdsafe"
         minSdkVersion 21
         resourceConfigurations += ['de', 'fr', 'nb']
-        targetSdkVersion 34
+        targetSdkVersion 35
         // <major><minor><bugfix><beta/extra>
         versionCode 6240000
         versionName "6.24.0"
@@ -82,7 +82,7 @@ android {
 
 dependencies {
     def room_version = "2.6.1"
-    def yubikey_version = "2.3.0"
+    def yubikey_version = "2.7.0"
     def espresso_version = "3.6.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -102,7 +102,7 @@ dependencies {
     androidTestImplementation 'androidx.test:core:1.6.1'
 
     // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation 'androidx.test:runner:1.6.1'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
 
     // Assertions
