@@ -15,6 +15,7 @@ import androidx.annotation.WorkerThread;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -48,6 +49,7 @@ public class SyncApp extends Application
     {
         PasswdSafeUtil.dbginfo(TAG, "onCreate");
         super.onCreate();
+        ApiCompat.setDebugAppStrictMode();
 
         SharedPreferences prefs = Preferences.getSharedPrefs(this);
         prefs.registerOnSharedPreferenceChangeListener(this);

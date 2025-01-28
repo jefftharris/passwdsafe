@@ -18,6 +18,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.os.Vibrator;
 import android.view.Window;
 import android.view.WindowManager;
@@ -74,6 +75,26 @@ public final class ApiCompat
                                 samsungRe.matcher(Build.MANUFACTURER).find();
         }
         return IS_SAMSUNG_DEVICE;
+    }
+
+
+    /**
+     * Setup strict mode during development
+     */
+    public static void setDebugAppStrictMode()
+    {
+        if (PasswdSafeUtil.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                                               .detectAll()
+                                               .permitDiskReads()
+                                               .permitDiskWrites()
+                                               .penaltyLog()
+                                               .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                                           .detectAll()
+                                           .penaltyLog()
+                                           .build());
+        }
     }
 
 
