@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -64,6 +64,7 @@ import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
+import com.jefftharris.passwdsafe.sync.lib.TrafficStatsGuard;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -327,7 +328,8 @@ public class GDriveProvider extends AbstractSyncTimerProvider
         Pair<Drive, String> driveService = getDriveService(acct, ctx);
         SyncUpdateHandler.GDriveState syncState =
                 SyncUpdateHandler.GDriveState.OK;
-        try {
+        try (var ignored = new TrafficStatsGuard(
+                TrafficStatsGuard.Stats.GDRIVE)) {
             if (driveService.first != null) {
                 syncState = user.useDrive(driveService.first);
             } else {

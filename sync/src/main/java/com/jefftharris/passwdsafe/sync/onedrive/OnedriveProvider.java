@@ -35,6 +35,7 @@ import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncHelper;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
+import com.jefftharris.passwdsafe.sync.lib.TrafficStatsGuard;
 import com.microsoft.graph.core.requests.GraphClientFactory;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import com.microsoft.identity.client.AcquireTokenSilentParameters;
@@ -329,7 +330,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
             throw new Exception("Timeout waiting for OneDrive service");
         }
 
-        try {
+        try (var ignored = new TrafficStatsGuard(
+                TrafficStatsGuard.Stats.ONEDRIVE)) {
             try {
                 useOneDriveServiceImpl(user, service);
             } catch (MsalUiRequiredException e) {

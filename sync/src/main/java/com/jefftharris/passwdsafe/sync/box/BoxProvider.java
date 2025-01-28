@@ -38,6 +38,7 @@ import com.jefftharris.passwdsafe.sync.lib.NotifUtils;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
+import com.jefftharris.passwdsafe.sync.lib.TrafficStatsGuard;
 
 /**
  * Implements a provider for the Box.com service
@@ -258,7 +259,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
     private void useBoxService(BoxUser user) throws Exception
     {
         boolean authorized = false;
-        try {
+        try (var ignored = new TrafficStatsGuard(TrafficStatsGuard.Stats.BOX)) {
             authorized = isAccountAuthorized();
             PasswdSafeUtil.dbginfo(TAG, "account authorized: %b", authorized);
             if (authorized) {

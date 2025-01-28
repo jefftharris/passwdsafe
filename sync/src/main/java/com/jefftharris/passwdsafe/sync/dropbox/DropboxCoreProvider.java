@@ -47,6 +47,7 @@ import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
+import com.jefftharris.passwdsafe.sync.lib.TrafficStatsGuard;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -268,7 +269,8 @@ public class DropboxCoreProvider extends AbstractSyncTimerProvider
     private void useDropboxService(DropboxUser user) throws Exception
     {
         boolean authorized = false;
-        try {
+        try (var ignored = new TrafficStatsGuard(
+                TrafficStatsGuard.Stats.DROPBOX)) {
             authorized = isAccountAuthorized();
             PasswdSafeUtil.dbginfo(TAG, "account authorized: %b", authorized);
             if (authorized) {
