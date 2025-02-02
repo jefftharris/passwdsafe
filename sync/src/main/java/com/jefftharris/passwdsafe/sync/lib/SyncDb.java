@@ -190,16 +190,6 @@ public class SyncDb
         doDelete(db, DB_TABLE_PROVIDERS, DB_MATCH_PROVIDERS_ID, idargs);
     }
 
-    /** Update a provider account */
-    public static void updateProviderAccount(long id, String acct,
-                                             SQLiteDatabase db)
-           throws SQLException
-    {
-        ContentValues values = new ContentValues();
-        values.put(DB_COL_PROVIDERS_ACCT, acct);
-        updateProviderFields(id, values, db);
-    }
-
     /** Update a provider display name */
     public static void updateProviderDisplayName(long id, String displayName,
                                                  SQLiteDatabase db)
