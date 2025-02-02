@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -312,22 +312,23 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         {
             itsFileDirPref = requirePreference(Preferences.PREF_FILE_DIR);
             itsFileDirPref.setDefaultValue(Preferences.PREF_FILE_DIR_DEF);
-            onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_DIR);
 
             itsDefFilePref = requirePreference(Preferences.PREF_DEF_FILE);
             itsDefFilePref.setOnPreferenceClickListener(this);
-            onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
 
             itsFileClosePref =
                     requirePreference(Preferences.PREF_FILE_CLOSE_TIMEOUT);
             itsFileClosePref.setEntries(FileTimeoutPref.getDisplayNames(res));
             itsFileClosePref.setEntryValues(FileTimeoutPref.getValues());
-            onSharedPreferenceChanged(prefs,
-                                      Preferences.PREF_FILE_CLOSE_TIMEOUT);
 
             itsFileBackupPref = requirePreference(Preferences.PREF_FILE_BACKUP);
             itsFileBackupPref.setEntries(FileBackupPref.getDisplayNames(res));
             itsFileBackupPref.setEntryValues(FileBackupPref.getValues());
+
+            onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_DIR);
+            onSharedPreferenceChanged(prefs, Preferences.PREF_DEF_FILE);
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_FILE_CLOSE_TIMEOUT);
             onSharedPreferenceChanged(prefs, Preferences.PREF_FILE_BACKUP);
 
             if (!ApiCompat.supportsExternalFilesDirs()) {
@@ -473,8 +474,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                     PasswdTimeoutPref.getDisplayNames(res));
             itsPasswdVisibleTimeoutPref.setEntryValues(
                     PasswdTimeoutPref.getValues());
-            onSharedPreferenceChanged(prefs,
-                                      Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
 
             itsPasswdEncPref = requirePreference(Preferences.PREF_PASSWD_ENC);
             String[] charsets =
@@ -482,7 +481,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
             itsPasswdEncPref.setEntries(charsets);
             itsPasswdEncPref.setEntryValues(charsets);
             itsPasswdEncPref.setDefaultValue(Preferences.PREF_PASSWD_ENC_DEF);
-            onSharedPreferenceChanged(prefs, Preferences.PREF_PASSWD_ENC);
 
             itsPasswdExpiryNotifPref =
                     requirePreference(Preferences.PREF_PASSWD_EXPIRY_NOTIF);
@@ -490,8 +488,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                     PasswdExpiryNotifPref.getDisplayNames(res));
             itsPasswdExpiryNotifPref.setEntryValues(
                     PasswdExpiryNotifPref.getValues());
-            onSharedPreferenceChanged(prefs,
-                                      Preferences.PREF_PASSWD_EXPIRY_NOTIF);
 
             itsPasswdDefaultSymsPref =
                     requirePreference(Preferences.PREF_PASSWD_DEFAULT_SYMS);
@@ -500,6 +496,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                               PasswdPolicy.SYMBOLS_DEFAULT));
             itsPasswdDefaultSymsPref.setDefaultValue(
                     PasswdPolicy.SYMBOLS_DEFAULT);
+
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_PASSWD_VISIBLE_TIMEOUT);
+            onSharedPreferenceChanged(prefs, Preferences.PREF_PASSWD_ENC);
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_PASSWD_EXPIRY_NOTIF);
             onSharedPreferenceChanged(prefs,
                                       Preferences.PREF_PASSWD_DEFAULT_SYMS);
 
@@ -640,8 +642,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                     RecordSortOrderPref.getDisplayNames(res));
             itsRecordSortOrderPref.setEntryValues(
                     RecordSortOrderPref.getValues());
-            onSharedPreferenceChanged(prefs,
-                                      Preferences.PREF_RECORD_SORT_ORDER);
 
             itsRecordFieldSortPref =
                     requirePreference(Preferences.PREF_RECORD_FIELD_SORT);
@@ -649,6 +649,9 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                     RecordFieldSortPref.getDisplayNames(res));
             itsRecordFieldSortPref.setEntryValues(
                     RecordFieldSortPref.getValues());
+
+            onSharedPreferenceChanged(prefs,
+                                      Preferences.PREF_RECORD_SORT_ORDER);
             onSharedPreferenceChanged(prefs,
                                       Preferences.PREF_RECORD_FIELD_SORT);
         }
