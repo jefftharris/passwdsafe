@@ -705,21 +705,16 @@ public class SyncDb
                            " ADD COLUMN " + DB_COL_FILES_REMOTE_HASH +
                            " TEXT;");
 
-                Cursor cursor = db.query(
+                try (Cursor cursor = db.query(
                         DB_TABLE_PROVIDERS,
-                        new String[] { SyncDb.DB_COL_PROVIDERS_ID },
-                        null, null, null, null, null);
-                if (cursor != null) {
-                    try {
-                        for (boolean more = cursor.moveToFirst();
-                             more; more = cursor.moveToNext()) {
-                            long id = cursor.getLong(0);
-                            for (DbFile file: getFiles(id, db)) {
-                                onUpgradeV4File(file, db);
-                            }
+                        new String[]{SyncDb.DB_COL_PROVIDERS_ID},
+                        null, null, null, null, null)) {
+                    for (boolean more = cursor.moveToFirst(); more;
+                         more = cursor.moveToNext()) {
+                        long id = cursor.getLong(0);
+                        for (DbFile file : getFiles(id, db)) {
+                            onUpgradeV4File(file, db);
                         }
-                    } finally {
-                        cursor.close();
                     }
                 }
             }
