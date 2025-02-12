@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -457,10 +457,12 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         }
 
         if (newAccountId != null) {
-            var tokenParams =
-                    createAcquireTokenParams(new AccountTokenCallback());
+            final var authCb = new AccountTokenCallback();
+            var tokenParams = createAcquireTokenParams(authCb);
             if (tokenParams != null) {
                 itsClientApp.acquireTokenSilentAsync(tokenParams);
+            } else {
+                authCb.finish(AccountTokenFinish.CANCELED);
             }
         } else {
             setAccountTokenOk(false);
@@ -680,29 +682,62 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     }
 
     /**
+     * How the AccountTokenCallback is finished
+     */
+    private enum AccountTokenFinish
+    {
+        SUCCESS,
+        FAILURE,
+        CANCELED
+    }
+
+    /**
      * Callback for acquiring the token for the client's current account
      */
     private class AccountTokenCallback implements SilentAuthenticationCallback
     {
+        private final TrafficStatsGuard itsTrafficGuard;
+
+        @MainThread
+        public AccountTokenCallback()
+        {
+            itsTrafficGuard = new TrafficStatsGuard(
+                    TrafficStatsGuard.Stats.ONEDRIVE);
+        }
+
         @Override
         public void onSuccess(IAuthenticationResult authenticationResult)
         {
             PasswdSafeLog.debug(TAG, "Acquire token success");
-            finish(true);
+            finish(AccountTokenFinish.SUCCESS);
         }
 
         @Override
         public void onError(MsalException e)
         {
             PasswdSafeLog.error(TAG, e, "Acquire token failed");
-            finish(false);
+            finish(AccountTokenFinish.FAILURE);
         }
 
         @MainThread
-        private void finish(boolean tokenOk)
+        public void finish(AccountTokenFinish finish)
         {
             try {
-                setAccountTokenOk(tokenOk);
+                itsTrafficGuard.close();
+
+                switch (finish) {
+                case SUCCESS: {
+                    setAccountTokenOk(true);
+                    break;
+                }
+                case FAILURE: {
+                    setAccountTokenOk(false);
+                    break;
+                }
+                case CANCELED: {
+                    break;
+                }
+                }
             } catch (Exception e) {
                 PasswdSafeLog.error(TAG, e,
                                     "updateOnedriveAcct token finish failure");
