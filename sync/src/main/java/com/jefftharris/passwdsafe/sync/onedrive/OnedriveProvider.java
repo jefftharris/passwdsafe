@@ -26,6 +26,7 @@ import com.jefftharris.passwdsafe.lib.ObjectHolder;
 import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
+import com.jefftharris.passwdsafe.lib.StrictModePermitGuard;
 import com.jefftharris.passwdsafe.sync.SyncApp;
 import com.jefftharris.passwdsafe.sync.lib.AbstractSyncTimerProvider;
 import com.jefftharris.passwdsafe.sync.lib.DbProvider;
@@ -715,6 +716,15 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     private class CurrentAccountCallback
             implements ISingleAccountPublicClientApplication.CurrentAccountCallback
     {
+        private final StrictModePermitGuard itsThreadPolicy;
+
+        @MainThread
+        public CurrentAccountCallback()
+        {
+            itsThreadPolicy = new StrictModePermitGuard(
+                    StrictModePermitGuard.Permit.SLOW_CALLS);
+        }
+
         @Override
         public void onAccountLoaded(@Nullable IAccount activeAccount)
         {
@@ -743,6 +753,8 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
         @MainThread
         private void finish(IAccount newAccount)
         {
+            itsThreadPolicy.close();
+
             try {
                 setAccount(newAccount);
             } catch (Exception e) {
