@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -531,6 +531,14 @@ public final class StorageFileListFragment extends Fragment
         protected void onStopLoading()
         {
             cancelLoad();
+        }
+
+        /** Handle when the loader was cancelled before finishing */
+        @Override
+        public void onCanceled(@Nullable Cursor cursor) {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
         /** Load the files in the background */
