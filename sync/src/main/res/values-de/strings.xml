@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -76,6 +76,9 @@
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.12.0&lt;/b&gt; - Update für Android 15-Kompatibilität.
+        OneDrive-Unterstützung aktualisiert.
+        \n\n
         &lt;b&gt;3.11.0&lt;/b&gt; - Unterstützung für Sync mit ownCloud wurde deaktiviert.
         Ein bereits bestehendes Konto und die Datei bleiben erhalten werden
         jedoch nicht mehr abgeglichen.  Bibliothek aktualisiert.

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!--
-  ~ Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2024-2025 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -70,6 +70,9 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.11.0&lt;/b&gt; - Forbedret Android 15 kompatibilitet.
+        Oppdaterte OneDrive-biblioteket.
+        \n\n
         &lt;b&gt;3.11.0&lt;/b&gt; - Deaktivere støtte for synkronisering av en
         ownCloud-konto. En eksisterende konto og dens filer blir bevart, men
         ikke lenger synkronisert.  Oppdaterte bibliotek for
