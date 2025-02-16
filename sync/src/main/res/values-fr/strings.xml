@@ -77,7 +77,7 @@
     <string name="updating_account">Mise à jour compte&#8230;</string>
 
     <string name="release_notes">
-        &lt;b&gt;3.11.0&lt;/b&gt; - Mise à jour pour la compatibilité
+        &lt;b&gt;3.12.0&lt;/b&gt; - Mise à jour pour la compatibilité
         Android 15.  Maj librairie OneDrive.
         \n\n
         &lt;b&gt;3.11.0&lt;/b&gt; - Desactivation synchronisation d\'un compte ownCloud.
