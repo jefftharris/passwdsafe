@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -39,7 +40,8 @@ public class SyncHelper
 
 
     /** Get the DB provider for an account */
-    public static DbProvider getDbProviderForAcct(Account acct,
+    @Nullable
+    public static DbProvider getDbProviderForAcct(@NonNull Account acct,
                                                   SQLiteDatabase db)
     {
         ProviderType providerType;

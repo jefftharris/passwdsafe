@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -63,7 +63,7 @@ public final class RecordSimilarFields implements Closeable
     /**
      * Is the given record the same as the matcher
      */
-    public boolean isRecord(PasswdRecord passwdRec)
+    public boolean isRecord(@NonNull PasswdRecord passwdRec)
     {
         return TextUtils.equals(itsRecUuid, passwdRec.getUUID());
     }
@@ -126,6 +126,7 @@ public final class RecordSimilarFields implements Closeable
     /**
      * Get a description of the record being matched
      */
+    @NonNull
     public String getDescription()
     {
         return PasswdRecord.getRecordId(null, itsTitle, itsUserName);
@@ -155,6 +156,7 @@ public final class RecordSimilarFields implements Closeable
     /**
      * Return the value if non-null and non-empty; null otherwise
      */
+    @Nullable
     private static String getField(String value)
     {
         return TextUtils.isEmpty(value) ? null : value;

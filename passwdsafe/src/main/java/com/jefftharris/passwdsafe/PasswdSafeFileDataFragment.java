@@ -163,7 +163,7 @@ public class PasswdSafeFileDataFragment extends Fragment
     }
 
     /** Set the location in the file */
-    public void setLocation(PasswdLocation location)
+    public void setLocation(@NonNull PasswdLocation location)
     {
         itsFileDataView.setCurrGroups(location.getGroups());
         if (location.isRecord()) {
@@ -174,6 +174,7 @@ public class PasswdSafeFileDataFragment extends Fragment
     /**
      * Use the global open password file data
      */
+    @Nullable
     public static <RetT> RetT useOpenFileData(PasswdFileDataUser<RetT> user)
     {
         PasswdFileToken token = acquireFileData();

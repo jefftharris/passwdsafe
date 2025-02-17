@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.sync.lib;
 import android.database.Cursor;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
@@ -35,6 +36,7 @@ public class DbFile
         }
 
         /** Get the string form of the FileChange for storage in the database */
+        @Nullable
         public static String toDbStr(FileChange change)
         {
             if (change == NO_CHANGE) {
@@ -76,7 +78,7 @@ public class DbFile
         SyncDb.DB_COL_FILES_REMOTE_HASH };
 
     /** Constructor */
-    public DbFile(Cursor cursor)
+    public DbFile(@NonNull Cursor cursor)
     {
         itsId = cursor.getLong(0);
         itsLocalFile = cursor.getString(1);

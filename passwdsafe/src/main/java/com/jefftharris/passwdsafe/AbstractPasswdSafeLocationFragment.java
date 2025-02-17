@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -54,6 +54,7 @@ public abstract class AbstractPasswdSafeLocationFragment
         /**
          * Callback to use the file data record
          */
+        @Nullable
         RetT useRecordInfo(@NonNull RecordInfo info);
     }
 
@@ -65,6 +66,7 @@ public abstract class AbstractPasswdSafeLocationFragment
         /**
          * Callback to use the file data and record
          */
+        @Nullable
         RetT useFile(@Nullable RecordInfo info,
                      @NonNull PasswdFileData fileData);
     }
@@ -74,6 +76,7 @@ public abstract class AbstractPasswdSafeLocationFragment
     /**
      * Create arguments for new instance
      */
+    @NonNull
     protected static Bundle createArgs(PasswdLocation location)
     {
         Bundle args = new Bundle();
@@ -104,6 +107,7 @@ public abstract class AbstractPasswdSafeLocationFragment
     /**
      * Use the file data record at the current location
      */
+    @Nullable
     protected final <RetT> RetT useRecordInfo(final RecordInfoUser<RetT> user)
     {
         return useRecordFile((info, fileData) -> {
@@ -117,6 +121,7 @@ public abstract class AbstractPasswdSafeLocationFragment
     /**
      * Use the file data with an optional record at the current location
      */
+    @Nullable
     protected final <RetT> RetT useRecordFile(final RecordFileUser<RetT> user)
     {
         return useFileData(fileData -> {

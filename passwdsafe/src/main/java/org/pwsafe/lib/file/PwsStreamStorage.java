@@ -7,6 +7,8 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -92,6 +94,7 @@ public class PwsStreamStorage implements PwsStorage
         return itsIdentifier;
     }
 
+    @Nullable
     public Date getModifiedDate()
     {
         return null;

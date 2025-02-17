@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -32,6 +34,7 @@ public abstract class SavedPasswordsDao
      * Get a saved password for a file
      * @return The saved password if found; null otherwise
      */
+    @Nullable
     @Transaction
     public SavedPassword get(PasswdFileUri fileUri, Context ctx)
     {
@@ -73,7 +76,7 @@ public abstract class SavedPasswordsDao
     /**
      * Remove a saved password
      */
-    public void remove(Uri uri)
+    public void remove(@NonNull Uri uri)
     {
         deleteByUri(uri.toString());
     }
@@ -87,7 +90,7 @@ public abstract class SavedPasswordsDao
     /**
      * Upgrade the database storage
      */
-    public void processDbUpgrade(Context ctx)
+    public void processDbUpgrade(@NonNull Context ctx)
     {
         // Upgrade from preferences storage
         SharedPreferences prefs =
@@ -114,8 +117,9 @@ public abstract class SavedPasswordsDao
     /**
      * Get the provider URI and display name for a file URI
      */
+    @NonNull
     private static Pair<String, String> getProviderAndDisplay(
-            PasswdFileUri fileUri,
+            @NonNull PasswdFileUri fileUri,
             Context ctx)
     {
         Uri uri = fileUri.getUri();

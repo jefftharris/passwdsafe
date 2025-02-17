@@ -9,9 +9,11 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.bouncycastle.crypto.RuntimeCryptoException;
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.crypto.InMemoryKey;
@@ -259,6 +261,8 @@ public abstract class PwsFile
      * @param length the number of bytes the array must hold.
      * @return A byte array of the correct length.
      */
+    @NonNull
+    @Contract("_ -> new")
     static byte[] allocateBuffer(int length)
     {
         int bLen;
@@ -607,6 +611,7 @@ public abstract class PwsFile
      * @throws UnsupportedFileVersionException If this version of the file
      * cannot be handled.
      */
+    @Nullable
     protected PwsRecord readRecord()
             throws EndOfFileException, IOException,
                    UnsupportedFileVersionException
@@ -692,7 +697,7 @@ public abstract class PwsFile
      * Sets the passphrase that will be used to encrypt the file when it is
      * saved.
      */
-    public void setPassphrase(Owner<PwsPassword>.Param passwdParam)
+    public void setPassphrase(@NonNull Owner<PwsPassword>.Param passwdParam)
     {
         Owner<PwsPassword> passwd = passwdParam.use();
         try {
@@ -773,6 +778,7 @@ public abstract class PwsFile
     }
 
 
+    @NonNull
     public static synchronized List<String> getPasswordEncodings()
     {
         return Collections.singletonList(itsPasswordEncoding);

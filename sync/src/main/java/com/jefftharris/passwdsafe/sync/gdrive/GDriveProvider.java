@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.PreferenceManager;
@@ -64,6 +65,8 @@ import com.jefftharris.passwdsafe.sync.lib.Preferences;
 import com.jefftharris.passwdsafe.sync.lib.SyncConnectivityResult;
 import com.jefftharris.passwdsafe.sync.lib.SyncDb;
 import com.jefftharris.passwdsafe.sync.lib.SyncLogRecord;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -144,6 +147,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
         }
     }
 
+    @Nullable
     @Override
     public NewAccountTask<? extends AbstractSyncTimerProvider>
     finishAccountLink(FragmentActivity activity,
@@ -472,6 +476,7 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     /**
      * Get the sign-in client
      */
+    @NonNull
     private static GoogleSignInClient getSigninClient(String accountName,
                                                       Context ctx)
     {
@@ -483,7 +488,10 @@ public class GDriveProvider extends AbstractSyncTimerProvider
     }
 
     /** Get the Google account credential */
-    private static GoogleAccountCredential getAcctCredential(Context ctx)
+    @NonNull
+    @Contract("_ -> new")
+    private static GoogleAccountCredential getAcctCredential(
+            @NonNull Context ctx)
     {
         return GoogleAccountCredential.usingOAuth2(
                 ctx.getApplicationContext(),
@@ -498,6 +506,8 @@ public class GDriveProvider extends AbstractSyncTimerProvider
      *
      * @return An authorized service object and its auth token.
      */
+    @NonNull
+    @Contract("_, _ -> new")
     private static Pair<Drive, String> getDriveService(Account acct,
                                                        Context ctx)
     {

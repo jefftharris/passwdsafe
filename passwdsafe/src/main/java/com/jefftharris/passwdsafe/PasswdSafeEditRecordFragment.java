@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -60,6 +60,7 @@ import com.jefftharris.passwdsafe.view.PasswdPolicyView;
 import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
 import com.jefftharris.passwdsafe.view.TimePickerDialogFragment;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.file.PwsRecord;
 
 import java.util.ArrayList;
@@ -180,6 +181,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Create a new instance
      */
+    @NonNull
     public static PasswdSafeEditRecordFragment newInstance(
             PasswdLocation location)
     {
@@ -381,7 +383,7 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_save) {
@@ -416,7 +418,7 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item)
+    public boolean onContextItemSelected(@NonNull MenuItem item)
     {
         AdapterView.AdapterContextMenuInfo info =
                 (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
@@ -455,7 +457,7 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         int id = v.getId();
         if (id == R.id.expire_date_date) {
@@ -526,7 +528,7 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public boolean onLongClick(View v)
+    public boolean onLongClick(@NonNull View v)
     {
         if (v.getId() == R.id.password_generate) {
             Toast.makeText(getContext(), R.string.generate_password,
@@ -537,7 +539,7 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> spinnerView, View view,
+    public void onItemSelected(@NonNull AdapterView<?> spinnerView, View view,
                                int position, long id)
     {
         int spinnerViewId = spinnerView.getId();
@@ -568,7 +570,7 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> spinnerView)
+    public void onNothingSelected(@NonNull AdapterView<?> spinnerView)
     {
         int id = spinnerView.getId();
         if (id == R.id.type) {
@@ -632,7 +634,8 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    protected void doOnCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    protected void doOnCreateOptionsMenu(Menu menu,
+                                         @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_passwdsafe_edit_record, menu);
     }
@@ -1124,7 +1127,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Set the items in a spinner
      */
-    private void setSpinnerItems(Spinner spinner, List<?> items)
+    private void setSpinnerItems(@NonNull Spinner spinner, List<?> items)
     {
         ArrayAdapter<Object> adapter =
                 new ArrayAdapter<>(requireContext(),
@@ -1139,7 +1142,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Initialize the list of protected views
      */
-    private void initProtViews(View v)
+    private void initProtViews(@NonNull View v)
     {
         int id = v.getId();
         //noinspection StatementWithEmptyBody
@@ -1203,6 +1206,8 @@ public class PasswdSafeEditRecordFragment
     /**
      * Save the updated fields in the record
      */
+    @Nullable
+    @Contract("_, _ -> new")
     private EditRecordResult updateSaveRecord(@Nullable RecordInfo info,
                                               @NonNull PasswdFileData fileData)
     {
@@ -1213,6 +1218,9 @@ public class PasswdSafeEditRecordFragment
             newRecord = false;
         } else {
             record = fileData.createRecord();
+            if (record == null) {
+                return null;
+            }
             record.setLoaded();
             newRecord = true;
         }
@@ -1346,6 +1354,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Get the updated value of the group.  Return null if no changes
      */
+    @Nullable
     private String getUpdatedGroup(String currVal)
     {
         if (currVal == null) {
@@ -1358,6 +1367,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Get the updated value from a text field.  Return null if no changes.
      */
+    @Nullable
     private String getUpdatedField(String currVal, TextView field)
     {
         if (currVal == null) {
@@ -1370,6 +1380,8 @@ public class PasswdSafeEditRecordFragment
     /**
      * Get the password policy that may have been updated
      */
+    @NonNull
+    @Contract(" -> new")
     private Pair<Boolean, PasswdPolicy> getUpdatedPolicy()
     {
         PasswdPolicy.Location origLoc = PasswdPolicy.Location.DEFAULT;
@@ -1438,6 +1450,8 @@ public class PasswdSafeEditRecordFragment
     /**
      * Get the password expiration that may have been updated
      */
+    @NonNull
+    @Contract(" -> new")
     private Pair<Boolean, PasswdExpiration> getUpdatedExpiry()
     {
         // Get the updated expiration
@@ -1486,6 +1500,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Get the group value
      */
+    @NonNull
     private String getGroupVal()
     {
         return (itsGroup.getSelectedItemPosition() > 0) ?
@@ -1495,7 +1510,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Get the integer value of a field
      */
-    private static int getTextFieldInt(TextView tv, int defaultValue)
+    private static int getTextFieldInt(@NonNull TextView tv, int defaultValue)
     {
         try {
             return Integer.parseInt(tv.getText().toString());
@@ -1515,7 +1530,7 @@ public class PasswdSafeEditRecordFragment
         /**
          * Register a text view with the validator
          */
-        protected final void registerTextView(TextView field)
+        protected final void registerTextView(@NonNull TextView field)
         {
             field.addTextChangedListener(this);
         }
@@ -1648,6 +1663,7 @@ public class PasswdSafeEditRecordFragment
          * Validate the title field
          * @return error message if invalid; null if valid
          */
+        @Nullable
         private String validateTitle()
         {
             CharSequence title = itsTitle.getText();
@@ -1668,6 +1684,7 @@ public class PasswdSafeEditRecordFragment
          * Validate the password field
          * @return error message if invalid; null if valid
          */
+        @Nullable
         private String validatePassword()
         {
             switch (itsRecType) {
@@ -1689,6 +1706,7 @@ public class PasswdSafeEditRecordFragment
          * Validate the password confirm field
          * @return error message if invalid; null if valid
          */
+        @Nullable
         private String validatePasswordConfirm()
         {
             switch (itsRecType) {
@@ -1711,6 +1729,7 @@ public class PasswdSafeEditRecordFragment
          * Validate the password expiration field
          * @return error message if invalid; null if valid
          */
+        @Nullable
         private String validateExpiryInterval()
         {
             int interval = getTextFieldInt(itsExpireInterval, -1);

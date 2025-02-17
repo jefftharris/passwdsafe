@@ -25,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
@@ -210,7 +211,7 @@ public class PasswdSafeIME extends InputMethodService
     }
 
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         if (v.getId() == R.id.record) {
             openPasswdSafe();
@@ -529,6 +530,7 @@ public class PasswdSafeIME extends InputMethodService
     /**
      * Get the IME token
      */
+    @Nullable
     private IBinder getToken()
     {
         final Dialog dialog = getWindow();
@@ -550,6 +552,7 @@ public class PasswdSafeIME extends InputMethodService
         /**
          * Callback to refresh with the optional file data and record
          */
+        @Nullable
         RetT refresh(@Nullable PasswdFileData fileData,
                      @Nullable PwsRecord rec);
     }

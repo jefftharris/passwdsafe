@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,9 +13,12 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.util.Pair;
+
+import org.jetbrains.annotations.Contract;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -60,12 +63,16 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     public static final Parcelable.Creator<PasswdPolicy> CREATOR =
             new Parcelable.Creator<>()
             {
+                @NonNull
+                @Contract("_ -> new")
                 @Override
                 public PasswdPolicy createFromParcel(Parcel source)
                 {
                     return new PasswdPolicy(source);
                 }
 
+                @NonNull
+                @Contract(value = "_ -> new", pure = true)
                 @Override
                 public PasswdPolicy[] newArray(int size)
                 {
@@ -145,6 +152,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     private final String itsSpecialSymbols;
 
     private static final Random itsRandom = getRandom();
+    @NonNull
     private static Random getRandom()
     {
         Random random = new SecureRandom();
@@ -202,7 +210,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Copy constructor with a different name */
-    public PasswdPolicy(String name, PasswdPolicy copy)
+    public PasswdPolicy(String name, @NonNull PasswdPolicy copy)
     {
         this(name, copy.itsLocation, copy.itsFlags, copy.itsLength,
              copy.itsMinLowercase, copy.itsMinUppercase,
@@ -212,7 +220,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     /**
      * Constructor from a parcel
      */
-    private PasswdPolicy(Parcel source)
+    private PasswdPolicy(@NonNull Parcel source)
     {
         itsName = source.readString();
         itsLocation = Location.valueOf(source.readString());
@@ -226,14 +234,18 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Create a default policy */
-    public static PasswdPolicy createDefaultPolicy(Context ctx)
+    @NonNull
+    @Contract("_ -> new")
+    public static PasswdPolicy createDefaultPolicy(@NonNull Context ctx)
     {
         return new PasswdPolicy(ctx.getString(R.string.default_policy),
                                 PasswdPolicy.Location.DEFAULT);
     }
 
     /** Create a default policy with custom flags and length */
-    public static PasswdPolicy createDefaultPolicy(Context ctx,
+    @NonNull
+    @Contract("_, _, _ -> new")
+    public static PasswdPolicy createDefaultPolicy(@NonNull Context ctx,
                                                    int flags, int length)
     {
         return new PasswdPolicy(ctx.getString(R.string.default_policy),
@@ -280,7 +292,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Get the type of policy as a string */
-    public static String getTypeStr(Type type, Context ctx)
+    public static String getTypeStr(@NonNull Type type, @NonNull Context ctx)
     {
         return ctx.getResources().getStringArray(
             R.array.policy_type)[type.itsStrIdx];
@@ -417,7 +429,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
 
     /** Are the policies equal for the fields used by a record policy */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean recordPolicyEquals(PasswdPolicy policy)
+    public boolean recordPolicyEquals(@NonNull PasswdPolicy policy)
     {
         return ((itsFlags == policy.itsFlags) &&
                 (itsLength == policy.itsLength) &&
@@ -451,7 +463,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
+    public void writeToParcel(@NonNull Parcel dest, int flags)
     {
         dest.writeString(itsName);
         dest.writeString(itsLocation.name());
@@ -465,6 +477,8 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Parse a header policy from a string */
+    @NonNull
+    @Contract("_, _, _, _ -> new")
     public static Pair<PasswdPolicy, Integer> parseHdrPolicy(String policyStr,
                                                              int pos,
                                                              int policyNum,
@@ -503,6 +517,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Parse policies from the header named policies field */
+    @Nullable
     public static List<PasswdPolicy> parseHdrPolicies(String policyStr)
         throws IllegalArgumentException
     {
@@ -537,6 +552,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Convert the header policies to a string */
+    @Nullable
     public static String hdrPoliciesToString(List<PasswdPolicy> policies)
     {
         if (policies == null) {
@@ -577,6 +593,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Convert a policy to the string fields for a record */
+    @Nullable
     public static RecordPolicyStrs recordPolicyToString(PasswdPolicy policy)
     {
         if (policy == null) {
@@ -630,6 +647,8 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Parse the flags and lengths of a policy from a string */
+    @NonNull
+    @Contract("_, _, _ -> new")
     private static ParsedFields parsePolicyFlagsAndLengths(String policyStr,
                                                            int policyNum,
                                                            int fieldStart)
@@ -664,6 +683,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Convert the policy's flags and lengths to a string */
+    @NonNull
     private String flagsAndLengthsToString()
     {
         return String.format("%04x%03x%03x%03x%03x%03x",
@@ -686,7 +706,8 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Get a field from a policy string */
-    private static String getPolicyStrField(String policyStr,
+    @NonNull
+    private static String getPolicyStrField(@NonNull String policyStr,
                                             int policyNum,
                                             int fieldStart,
                                             int fieldLen,
@@ -708,6 +729,8 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
     }
 
     /** Generate a pronounceable password */
+    @NonNull
+    @Contract(" -> new")
     private String generatePronounceable()
     {
         // Pronounceable passwords generation code copied from

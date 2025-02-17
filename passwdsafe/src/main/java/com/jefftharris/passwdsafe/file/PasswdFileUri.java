@@ -207,6 +207,7 @@ public class PasswdFileUri
 
 
     /** Load the password file */
+    @Nullable
     public PwsFile load(Owner<PwsPassword>.Param passwd, Context context)
             throws EndOfFileException, InvalidPassphraseException, IOException,
                    UnsupportedFileVersionException
@@ -265,10 +266,10 @@ public class PasswdFileUri
         }
         case EMAIL:
         case BACKUP: {
-            throw new IOException("no file");
+            break;
         }
         }
-        return null;
+        throw new IOException("no file");
     }
 
 
@@ -328,6 +329,7 @@ public class PasswdFileUri
      * Validate a new file that is a child of the current URI. Return null if
      * successful; error string otherwise
      */
+    @Nullable
     public String validateNewChild(String fileName, Context ctx)
     {
         switch (itsType) {
