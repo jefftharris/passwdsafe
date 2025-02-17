@@ -96,14 +96,11 @@ public abstract class PwsFileV1V2 extends PwsFile
         sha1 = new SHA1();
         salt = header.getSalt();
 
-        Owner<PwsPassword> passwd = passwdParam.use();
-        try {
+        try (Owner<PwsPassword> passwd = passwdParam.use()) {
             byte[] passwordBytes = passwd.get().getBytes(encoding);
             sha1.update(passwordBytes, 0, passwordBytes.length);
             sha1.update(salt, 0, salt.length);
             sha1.finish();
-        } finally {
-            passwd.close();
         }
 
         return new BlowfishPws(sha1.getDigest(), header.getIpThing());
@@ -176,13 +173,9 @@ public abstract class PwsFileV1V2 extends PwsFile
             header.save(this);
 
             // Can only be created once the V1 header's been written.
-            Owner<PwsPassword> passwd = getPassphrase();
-            try {
-                algorithm = makeBlowfish(
-                        passwd.pass(),
-                        PwsFile.getUpdatePasswordEncoding());
-            } finally {
-                passwd.close();
+            try (Owner<PwsPassword> passwd = getPassphrase()) {
+                algorithm = makeBlowfish(passwd.pass(),
+                                         PwsFile.getUpdatePasswordEncoding());
             }
 
             writeExtraHeader(this);

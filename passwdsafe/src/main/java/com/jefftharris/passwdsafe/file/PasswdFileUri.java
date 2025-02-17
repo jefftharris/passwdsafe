@@ -656,8 +656,7 @@ public class PasswdFileUri
         ContentResolver cr = context.getContentResolver();
         itsTitle = "(unknown)";
         var perms = new FilePerms(false, false);
-        Cursor cursor = cr.query(itsUri, null, null, null, null);
-        try {
+        try (Cursor cursor = cr.query(itsUri, null, null, null, null)) {
             if ((cursor != null) && cursor.moveToFirst()) {
                 int colidx =
                         cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -666,10 +665,6 @@ public class PasswdFileUri
                 }
 
                 perms = resolveGenericProviderFlags(cursor, context);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
         itsWritableInfo = new Pair<>(perms.isWritable,
@@ -816,11 +811,10 @@ public class PasswdFileUri
     {
         Uri providerUri = ContentUris.withAppendedId(
                 PasswdSafeContract.Providers.CONTENT_URI, providerId);
-        Cursor providerCursor = cr.query(
+        try (Cursor providerCursor = cr.query(
                 providerUri,
                 PasswdSafeContract.Providers.PROJECTION,
-                null, null, null);
-        try {
+                null, null, null)) {
             if ((providerCursor != null) && providerCursor.moveToFirst()) {
                 String typeStr = providerCursor.getString(
                         PasswdSafeContract.Providers.PROJECTION_IDX_TYPE);
@@ -832,10 +826,6 @@ public class PasswdFileUri
                     Log.e(TAG, "Unknown provider type: " + typeStr);
                 }
             }
-        } finally {
-            if (providerCursor != null) {
-                providerCursor.close();
-            }
         }
     }
 
@@ -843,17 +833,12 @@ public class PasswdFileUri
     /** Resolve sync file information */
     private void resolveSyncFile(@NonNull ContentResolver cr)
     {
-        Cursor fileCursor = cr.query(itsUri,
-                                     PasswdSafeContract.Files.PROJECTION,
-                                     null, null, null);
-        try {
+        try (Cursor fileCursor = cr.query(itsUri,
+                                          PasswdSafeContract.Files.PROJECTION,
+                                          null, null, null)) {
             if ((fileCursor != null) && fileCursor.moveToFirst()) {
                 itsTitle = fileCursor.getString(
                         PasswdSafeContract.Files.PROJECTION_IDX_TITLE);
-            }
-        } finally {
-            if (fileCursor != null) {
-                fileCursor.close();
             }
         }
     }

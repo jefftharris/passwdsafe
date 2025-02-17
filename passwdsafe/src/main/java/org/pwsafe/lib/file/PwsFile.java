@@ -1,4 +1,12 @@
 /*
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
+ * http://www.opensource.org/licenses/artistic-license-2.0.php
+ */
+
+/*
  * $Id: PwsFile.java 411 2009-09-25 18:19:34Z roxon $
  *
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
@@ -699,13 +707,10 @@ public abstract class PwsFile
      */
     public void setPassphrase(@NonNull Owner<PwsPassword>.Param passwdParam)
     {
-        Owner<PwsPassword> passwd = passwdParam.use();
-        try {
+        try (Owner<PwsPassword> passwd = passwdParam.use()) {
             passphrase = passwd.get().seal(getWriteCipher());
         } catch (IllegalBlockSizeException | IOException e) {
             throw new RuntimeCryptoException(e.getMessage());
-        } finally {
-            passwd.close();
         }
     }
 

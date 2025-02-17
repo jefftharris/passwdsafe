@@ -118,8 +118,7 @@ public final class PwsFileV3 extends PwsFile
                                  int iter)
     {
         try {
-            Owner<PwsPassword> passwd = passwdParam.use();
-            try {
+            try (Owner<PwsPassword> passwd = passwdParam.use()) {
                 byte[] stretch =
                         Util.stretchPassphrase(passwd.get().getBytes(encoding),
                                                headerV3.getSalt(), iter);
@@ -127,8 +126,6 @@ public final class PwsFileV3 extends PwsFile
                                        SHA256Pws.digest(stretch))) {
                     return stretch;
                 }
-            } finally {
-                passwd.close();
             }
         } catch (UnsupportedEncodingException e) {
             // Skip this charset
@@ -172,19 +169,16 @@ public final class PwsFileV3 extends PwsFile
 
         if (stretchedPassword == null) {
             //try another method to avoid asymmetric encoding bug in V0.8 Beta1
-            Owner<PwsPassword> passwd = passwdParam.use();
-            try {
-                stretchedPassword = Util.stretchPassphrase(
-                        passwd.get().getBytes(null),
-                        theHeaderV3.getSalt(), iter);
+            try (Owner<PwsPassword> passwd = passwdParam.use()) {
+                stretchedPassword =
+                        Util.stretchPassphrase(passwd.get().getBytes(null),
+                                               theHeaderV3.getSalt(), iter);
                 if (Util.bytesAreEqual(theHeaderV3.getPassword(),
                                        SHA256Pws.digest(stretchedPassword))) {
                     encoding = Charset.defaultCharset().name();
                 } else {
                     throw new IOException("Invalid password");
                 }
-            } finally {
-                passwd.close();
             }
         }
 

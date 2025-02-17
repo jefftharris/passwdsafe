@@ -100,15 +100,10 @@ public abstract class RecentFilesDao
     public static String getSafDisplayName(Uri uri, @NonNull Context ctx)
     {
         ContentResolver cr = ctx.getContentResolver();
-        Cursor cursor = cr.query(uri, null, null, null, null);
-        try {
+        try (Cursor cursor = cr.query(uri, null, null, null, null)) {
             if ((cursor != null) && (cursor.moveToFirst())) {
                 return cursor.getString(cursor.getColumnIndexOrThrow(
                         OpenableColumns.DISPLAY_NAME));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
         return null;

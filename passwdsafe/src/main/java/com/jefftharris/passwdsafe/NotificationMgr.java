@@ -277,22 +277,22 @@ public class NotificationMgr implements PasswdFileDataObserver
                                fileData.getUri(), uriId);
 
         TreeMap<ExpiryEntry, Long> entries = new TreeMap<>();
-        Cursor cursor =
-            db.query(DB_TABLE_EXPIRYS,
-                     new String[] { DB_COL_EXPIRYS_ID, DB_COL_EXPIRYS_UUID,
-                                    DB_COL_EXPIRYS_TITLE, DB_COL_EXPIRYS_GROUP,
-                                    DB_COL_EXPIRYS_EXPIRE },
-                     DB_MATCH_EXPIRYS_URI,
-                     new String[] { Long.toString(uriId) }, null, null, null);
-        try {
+        try (Cursor cursor = db.query(DB_TABLE_EXPIRYS,
+                                      new String[]{DB_COL_EXPIRYS_ID,
+                                                   DB_COL_EXPIRYS_UUID,
+                                                   DB_COL_EXPIRYS_TITLE,
+                                                   DB_COL_EXPIRYS_GROUP,
+                                                   DB_COL_EXPIRYS_EXPIRE},
+                                      DB_MATCH_EXPIRYS_URI,
+                                      new String[]{Long.toString(uriId)}, null,
+                                      null, null)) {
             while (cursor.moveToNext()) {
-                ExpiryEntry entry =
-                    new ExpiryEntry(cursor.getString(1), cursor.getString(2),
-                                    cursor.getString(3), cursor.getLong(4));
+                ExpiryEntry entry = new ExpiryEntry(cursor.getString(1),
+                                                    cursor.getString(2),
+                                                    cursor.getString(3),
+                                                    cursor.getLong(4));
                 entries.put(entry, cursor.getLong(0));
             }
-        } finally {
-            cursor.close();
         }
 
         boolean dbchanged = false;
@@ -365,11 +365,10 @@ public class NotificationMgr implements PasswdFileDataObserver
         itsNotifUris.clear();
         HashSet<Long> uris = new HashSet<>();
         ArrayList<Long> removeUriIds = new ArrayList<>();
-        Cursor uriCursor =
-            db.query(DB_TABLE_URIS,
-                     new String[] { DB_COL_URIS_ID, DB_COL_URIS_URI },
-                     null, null, null, null, null);
-        try {
+        try (Cursor uriCursor = db.query(DB_TABLE_URIS,
+                                         new String[]{DB_COL_URIS_ID,
+                                                      DB_COL_URIS_URI}, null,
+                                         null, null, null, null)) {
             while (uriCursor.moveToNext()) {
                 long id = uriCursor.getLong(0);
                 Uri uri = Uri.parse(uriCursor.getString(1));
@@ -379,8 +378,6 @@ public class NotificationMgr implements PasswdFileDataObserver
                     removeUriIds.add(id);
                 }
             }
-        } finally {
-            uriCursor.close();
         }
 
         for (int i = itsUriNotifs.size() - 1; i >= 0; --i) {
@@ -507,15 +504,14 @@ public class NotificationMgr implements PasswdFileDataObserver
         throws SQLException
     {
         TreeSet<ExpiryEntry> expired = new TreeSet<>();
-        Cursor cursor = db.query(DB_TABLE_EXPIRYS,
-                                 new String[] { DB_COL_EXPIRYS_UUID,
-                                                DB_COL_EXPIRYS_TITLE,
-                                                DB_COL_EXPIRYS_GROUP,
-                                                DB_COL_EXPIRYS_EXPIRE },
-                                 DB_MATCH_EXPIRYS_URI,
-                                 new String[] { Long.toString(uriId) },
-                                 null, null, null);
-        try {
+        try (Cursor cursor = db.query(DB_TABLE_EXPIRYS,
+                                      new String[]{DB_COL_EXPIRYS_UUID,
+                                                   DB_COL_EXPIRYS_TITLE,
+                                                   DB_COL_EXPIRYS_GROUP,
+                                                   DB_COL_EXPIRYS_EXPIRE},
+                                      DB_MATCH_EXPIRYS_URI,
+                                      new String[]{Long.toString(uriId)}, null,
+                                      null, null)) {
             while (cursor.moveToNext()) {
                 long expiry = cursor.getLong(3);
                 if (expiry <= expiration) {
@@ -527,13 +523,10 @@ public class NotificationMgr implements PasswdFileDataObserver
                                            entry.itsGroup, entry.itsTitle,
                                            entry.itsExpiry);
                     expired.add(entry);
-                }
-                else if (expiry < nextExpiration.itsValue) {
+                } else if (expiry < nextExpiration.itsValue) {
                     nextExpiration.itsValue = expiry;
                 }
             }
-        } finally {
-            cursor.close();
         }
 
         return expired;
@@ -558,17 +551,15 @@ public class NotificationMgr implements PasswdFileDataObserver
         if ((uri == null) || (uri.getUri() == null)) {
             return null;
         }
-        Cursor cursor = db.query(DB_TABLE_URIS, new String[] { DB_COL_URIS_ID },
-                                 DB_MATCH_URIS_URI,
-                                 new String[] { uri.getUri().toString() },
-                                 null, null, null);
-        try {
+        try (Cursor cursor = db.query(DB_TABLE_URIS,
+                                      new String[]{DB_COL_URIS_ID},
+                                      DB_MATCH_URIS_URI,
+                                      new String[]{uri.getUri().toString()},
+                                      null, null, null)) {
             if (!cursor.moveToFirst()) {
                 return null;
             }
             return cursor.getLong(0);
-        } finally {
-            cursor.close();
         }
     }
 
