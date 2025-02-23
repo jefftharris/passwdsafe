@@ -37,6 +37,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.jefftharris.passwdsafe.lib.AboutUtils;
 import com.jefftharris.passwdsafe.lib.DynamicPermissionMgr;
+import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -245,6 +246,19 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.activity_main, menu);
+
+        GenericProviderNaming.setAddProviderMenuItem(menu, R.id.menu_add_box,
+                                                     ProviderType.BOX);
+        GenericProviderNaming.setAddProviderMenuItem(menu,
+                                                     R.id.menu_add_dropbox,
+                                                     ProviderType.DROPBOX);
+        GenericProviderNaming.setAddProviderMenuItem(menu,
+                                                     R.id.menu_add_google_drive,
+                                                     ProviderType.GDRIVE);
+        GenericProviderNaming.setAddProviderMenuItem(menu,
+                                                     R.id.menu_add_onedrive,
+                                                     ProviderType.ONEDRIVE);
+
         return true;
     }
 

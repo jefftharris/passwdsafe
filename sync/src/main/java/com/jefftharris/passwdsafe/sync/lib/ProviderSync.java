@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.util.Pair;
 
 import com.jefftharris.passwdsafe.lib.BuildConfig;
+import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.SyncApp;
@@ -268,9 +269,12 @@ public class ProviderSync
 
             PasswdSafeUtil.dbginfo(TAG, "Performing sync %s (%s), manual %b",
                                    itsAccount.name, itsAccount.type, manual);
-            String displayName =
-                    TextUtils.isEmpty(itsProvider.itsDisplayName) ?
-                    itsProvider.itsAcct : itsProvider.itsDisplayName;
+            String displayName = GenericProviderNaming.ENABLED ?
+                                 GenericProviderNaming.ACCT_USER_NAME :
+                                 (TextUtils.isEmpty(
+                                         itsProvider.itsDisplayName) ?
+                                  itsProvider.itsAcct :
+                                  itsProvider.itsDisplayName);
 
             itsLogrec = new SyncLogRecord(
                     displayName,
