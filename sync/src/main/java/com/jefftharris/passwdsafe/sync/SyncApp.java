@@ -1,7 +1,8 @@
 /*
- * Copyright (©) 2013-2014 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2013-2025 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.sync;
@@ -10,12 +11,12 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
 import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -121,7 +122,8 @@ public class SyncApp extends Application
 
 
     /** Get the Sync application */
-    public static SyncApp get(Context ctx)
+    @NonNull
+    public static SyncApp get(@NonNull Context ctx)
     {
         return (SyncApp)ctx.getApplicationContext();
     }
