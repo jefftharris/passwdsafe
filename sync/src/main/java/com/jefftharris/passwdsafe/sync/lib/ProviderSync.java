@@ -18,7 +18,6 @@ import androidx.annotation.WorkerThread;
 import androidx.core.app.NotificationCompat;
 import androidx.core.util.Pair;
 
-import com.jefftharris.passwdsafe.lib.BuildConfig;
 import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -428,7 +427,7 @@ public class ProviderSync
          */
         private void addTrace(String trace)
         {
-            if (!BuildConfig.DEBUG) {
+            if (!PasswdSafeUtil.DEBUG) {
                 return;
             }
 

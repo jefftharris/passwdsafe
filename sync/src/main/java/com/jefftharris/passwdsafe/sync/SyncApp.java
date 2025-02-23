@@ -15,6 +15,7 @@ import androidx.annotation.WorkerThread;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
 import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
@@ -166,7 +167,7 @@ public class SyncApp extends Application
      */
     public boolean isForceSyncFailure()
     {
-        return BuildConfig.DEBUG && itsIsForceSyncFailure;
+        return PasswdSafeUtil.DEBUG && itsIsForceSyncFailure;
     }
 
     /**

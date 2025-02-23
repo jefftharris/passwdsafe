@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity
         LoaderManager lm = LoaderManager.getInstance(this);
         lm.initLoader(LOADER_PROVIDERS, null, this);
 
-        if (BuildConfig.DEBUG) {
+        if (PasswdSafeUtil.DEBUG) {
             CheckBox success = findViewById(R.id.force_sync_failure);
             GuiUtils.setVisible(success, true);
             success.setChecked(SyncApp.get(this).isForceSyncFailure());
