@@ -7,6 +7,8 @@
  */
 package com.jefftharris.passwdsafe.sync.lib;
 
+import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
+
 /**
  * Contains the result of a sync connectivity check
  */
@@ -19,7 +21,8 @@ public class SyncConnectivityResult
      */
     public SyncConnectivityResult(String displayName)
     {
-        itsDisplayName = displayName;
+        itsDisplayName = GenericProviderNaming.ENABLED ?
+                         GenericProviderNaming.ACCT_USER_NAME : displayName;
     }
 
     /**

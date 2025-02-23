@@ -32,6 +32,7 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.jefftharris.passwdsafe.lib.ActContext;
+import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -92,6 +93,9 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
         EdgeToEdge.enable(this);
         super.onCreate(args);
         setContentView(R.layout.activity_synced_files);
+
+        GenericProviderNaming.setSyncedFilesActivityTitle(this,
+                                                          itsProviderType);
 
         itsProviderUri = getIntent().getParcelableExtra(INTENT_PROVIDER_URI);
         if (itsProviderUri == null) {

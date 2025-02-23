@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jefftharris.passwdsafe.lib.GenericProviderNaming;
 import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.Utils;
@@ -228,7 +229,8 @@ class MainActivityProviderHolder
             switch (itsType) {
             case GDRIVE: {
                 itsHelpText.setText(HtmlCompat.fromHtml(
-                        ctx.getString(R.string.gdrive_help),
+                        GenericProviderNaming.updateGdriveHelp(
+                                ctx.getString(R.string.gdrive_help)),
                         HtmlCompat.FROM_HTML_MODE_LEGACY));
                 break;
             }
