@@ -132,7 +132,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     public void sync(Account acct,
                      final DbProvider provider,
                      final SyncConnectivityResult connResult,
-                     final SyncLogRecord logrec) throws Exception
+                     final SyncLogRecord logrec)
     {
     }
 
