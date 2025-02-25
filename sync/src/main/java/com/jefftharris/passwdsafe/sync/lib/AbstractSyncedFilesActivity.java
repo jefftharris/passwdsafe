@@ -260,7 +260,7 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
 
 
     /** Reload the files shown by the activity */
-    protected void reloadFiles()
+    private void reloadFiles()
     {
         FragmentManager fragmgr = getSupportFragmentManager();
         Fragment filesfrag = fragmgr.findFragmentById(R.id.content);
