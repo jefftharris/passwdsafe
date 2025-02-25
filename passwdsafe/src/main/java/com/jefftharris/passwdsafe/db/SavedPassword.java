@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -33,6 +33,7 @@ public class SavedPassword
     /**
      * Unique id for the record.  The field is a Long for migration as the
      * field is not marked NOT NULL
+     * @noinspection WeakerAccess
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = COL_ID)
@@ -47,6 +48,7 @@ public class SavedPassword
 
     /**
      * The URI of the provider of the file (without path, etc.)
+     * @noinspection WeakerAccess
      */
     @ColumnInfo(name = COL_PROVIDER_URI)
     @NonNull
@@ -54,6 +56,7 @@ public class SavedPassword
 
     /**
      * Display name of the file in the provider
+     * @noinspection WeakerAccess
      */
     @ColumnInfo(name = COL_DISPLAY_NAME)
     @NonNull
