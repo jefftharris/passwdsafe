@@ -12,7 +12,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/keyboard_background"
     android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:ignore="Overdraw">
 
     <LinearLayout
         android:layout_width="match_parent"
