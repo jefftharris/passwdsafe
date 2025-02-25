@@ -41,7 +41,7 @@ public class OnedriveFilesActivity extends AbstractSyncedFilesActivity
      */
     public OnedriveFilesActivity()
     {
-        super(ProviderType.ONEDRIVE);
+        super(ProviderType.ONEDRIVE, ProviderRemoteFile.PATH_SEPARATOR);
     }
 
     @Override

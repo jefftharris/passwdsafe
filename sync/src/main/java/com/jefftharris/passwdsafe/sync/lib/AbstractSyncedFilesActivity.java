@@ -68,12 +68,6 @@ public abstract class AbstractSyncedFilesActivity extends AppCompatActivity
     private final List<AbstractListFilesTask> itsListTasks = new ArrayList<>();
     private final List<FileSyncedUpdateTask> itsUpdateTasks = new ArrayList<>();
 
-    /** Constructor */
-    protected AbstractSyncedFilesActivity(ProviderType providerType)
-    {
-        this(providerType, ProviderRemoteFile.PATH_SEPARATOR);
-    }
-
 
     /** Constructor */
     protected AbstractSyncedFilesActivity(ProviderType providerType,
