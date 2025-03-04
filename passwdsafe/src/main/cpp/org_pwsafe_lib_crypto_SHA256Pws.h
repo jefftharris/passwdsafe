@@ -2,8 +2,8 @@
 #include <jni.h>
 /* Header for class org_pwsafe_lib_crypto_SHA256Pws */
 
-#ifndef _Included_org_pwsafe_lib_crypto_SHA256Pws
-#define _Included_org_pwsafe_lib_crypto_SHA256Pws
+#ifndef INCLUDE_org_pwsafe_lib_crypto_SHA256Pws
+#define INCLUDE_org_pwsafe_lib_crypto_SHA256Pws
 #ifdef __cplusplus
 extern "C" {
 #endif
