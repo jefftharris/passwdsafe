@@ -34,7 +34,8 @@
     <item
         android:id="@+id/menu_file_ops"
         android:orderInCategory="100"
-        android:title="@string/file_operations">
+        android:title="@string/file_operations"
+        app:showAsAction="never">
         <menu>
             <item
                 android:id="@+id/menu_file_change_password"
@@ -57,9 +58,9 @@
     <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_action_share_light"
-        android:orderInCategory="1000"
+        android:orderInCategory="100"
         android:title="@string/share_file"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_close"

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -478,13 +478,11 @@ public class PasswdSafe extends AppCompatActivity
         itsFileDataFrag.useFileData((PasswdFileDataUser<Void>)fileData -> {
             boolean fileCanRestore = false;
             boolean fileCanRestoreEnabled = false;
-            boolean fileCanShare = false;
             switch (fileData.getUri().getType()) {
             case BACKUP: {
                 BackupFile backup = fileData.getUri().getBackupFile();
                 fileCanRestore = true;
                 fileCanRestoreEnabled = (backup != null) && backup.hasUriPerm;
-                fileCanShare = true;
                 break;
             }
             case FILE:
@@ -500,12 +498,12 @@ public class PasswdSafe extends AppCompatActivity
             case VIEW_LIST: {
                 options.set(MENU_BIT_CAN_ADD, fileEditable);
                 options.set(MENU_BIT_HAS_SEARCH, true);
+                options.set(MENU_BIT_HAS_SHARE, true);
                 if (fileEditable) {
                     options.set(MENU_BIT_HAS_FILE_OPS, true);
                     options.set(MENU_BIT_HAS_FILE_CHANGE_PASSWORD,
                                 fileData.isNotYubikey());
                     options.set(MENU_BIT_HAS_FILE_PROTECT, true);
-                    fileCanShare = true;
                     options.set(MENU_BIT_PROTECT_ALL,
                                 itsLocation.getGroups().isEmpty());
                 }
@@ -513,7 +511,6 @@ public class PasswdSafe extends AppCompatActivity
                     options.set(MENU_BIT_HAS_FILE_OPS, true);
                     options.set(MENU_BIT_HAS_FILE_DELETE, true);
                 }
-                options.set(MENU_BIT_HAS_SHARE, fileCanShare);
                 options.set(MENU_BIT_HAS_RESTORE, fileCanRestore);
                 options.set(MENU_BIT_HAS_RESTORE_ENABLED,
                             fileCanRestoreEnabled);

@@ -16,6 +16,6 @@
         android:icon="@drawable/ic_action_content_sort"
         android:orderInCategory="100"
         android:title="@string/sort"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
 </menu>
