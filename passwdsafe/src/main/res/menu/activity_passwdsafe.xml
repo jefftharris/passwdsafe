@@ -1,26 +1,29 @@
 <!--
-  ~ Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
   ~ http://www.opensource.org/licenses/artistic-license-2.0.php
   -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".PasswdSafe">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".PasswdSafe">
 
-    <item android:id="@+id/menu_search"
-          android:title="@string/search"
-          android:icon="@drawable/ic_action_search"
-          app:showAsAction="ifRoom|collapseActionView"
-          app:actionViewClass="androidx.appcompat.widget.SearchView" />
+    <item
+        android:id="@+id/menu_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="@string/search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView"/>
 
-    <item android:id="@+id/menu_add"
-          android:title="@string/add_record"
-          android:icon="@drawable/ic_action_add"
-          android:orderInCategory="100"
-          app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_add"
+        android:icon="@drawable/ic_action_add"
+        android:orderInCategory="100"
+        android:title="@string/add_record"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/menu_restore"
@@ -28,35 +31,41 @@
         android:title="@string/restore"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/menu_file_ops"
-          android:title="@string/file_operations"
-          android:orderInCategory="100">
+    <item
+        android:id="@+id/menu_file_ops"
+        android:orderInCategory="100"
+        android:title="@string/file_operations">
         <menu>
-            <item android:id="@+id/menu_file_change_password"
-                  android:title="@string/change_password"/>
+            <item
+                android:id="@+id/menu_file_change_password"
+                android:title="@string/change_password"/>
 
-            <item android:id="@+id/menu_file_protect_records"
-                  android:title="@string/protect_all"/>
+            <item
+                android:id="@+id/menu_file_protect_records"
+                android:title="@string/protect_all"/>
 
-            <item android:id="@+id/menu_file_unprotect_records"
-                  android:title="@string/unprotect_all"/>
+            <item
+                android:id="@+id/menu_file_unprotect_records"
+                android:title="@string/unprotect_all"/>
 
-            <item android:id="@+id/menu_file_delete"
-                  android:title="@string/delete_file"/>
+            <item
+                android:id="@+id/menu_file_delete"
+                android:title="@string/delete_file"/>
         </menu>
     </item>
 
     <item
         android:id="@+id/menu_share"
-        android:title="@string/share_file"
         android:icon="@drawable/ic_action_share_light"
         android:orderInCategory="1000"
+        android:title="@string/share_file"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/menu_close"
-          android:title="@string/close_file"
-          android:icon="@drawable/ic_action_close_cancel"
-          android:orderInCategory="1000"
-          app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_close"
+        android:icon="@drawable/ic_action_close_cancel"
+        android:orderInCategory="1000"
+        android:title="@string/close_file"
+        app:showAsAction="ifRoom"/>
 
 </menu>
