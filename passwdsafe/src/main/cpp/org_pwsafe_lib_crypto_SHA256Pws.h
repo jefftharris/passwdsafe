@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ([BI)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_org_pwsafe_lib_crypto_SHA256Pws_digestNNative
-  (JNIEnv *, jclass, jbyteArray, jint);
+  (JNIEnv* env, jclass clazz, jbyteArray inbuf, jint iter);
 
 #ifdef __cplusplus
 }
