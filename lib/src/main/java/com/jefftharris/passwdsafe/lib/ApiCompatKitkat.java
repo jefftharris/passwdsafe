@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,15 +8,16 @@
 package com.jefftharris.passwdsafe.lib;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -30,7 +31,7 @@ import java.util.Objects;
  *  and higher
  */
 @SuppressLint("ObsoleteSdkInt")
-@TargetApi(19)
+@RequiresApi(Build.VERSION_CODES.KITKAT)
 @SuppressWarnings({"unchecked", "CanBeFinal"})
 public final class ApiCompatKitkat
 {

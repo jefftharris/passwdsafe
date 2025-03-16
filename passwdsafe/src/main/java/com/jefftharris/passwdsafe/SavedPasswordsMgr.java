@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,7 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +18,7 @@ import android.util.Log;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
@@ -176,8 +176,19 @@ public final class SavedPasswordsMgr
     /**
      * Generate a saved password key for a file
      */
-    @TargetApi(Build.VERSION_CODES.M)
-    public synchronized void generateKey(@NonNull PasswdFileUri fileUri)
+    public void generateKey(@NonNull PasswdFileUri fileUri)
+            throws InvalidAlgorithmParameterException, NoSuchAlgorithmException,
+                   NoSuchProviderException, IOException
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            generateKeyM(fileUri);
+        } else {
+            throw new IOException("Not supported before API 23");
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private synchronized void generateKeyM(@NonNull PasswdFileUri fileUri)
             throws InvalidAlgorithmParameterException, NoSuchAlgorithmException,
             NoSuchProviderException, IOException
     {
@@ -383,8 +394,23 @@ public final class SavedPasswordsMgr
      * Get the cipher for the key protecting the saved password for a file
      */
     @NonNull
-    @TargetApi(Build.VERSION_CODES.M)
     private Cipher getKeyCipher(@NonNull PasswdFileUri fileUri, boolean encrypt)
+            throws CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, IOException, UnrecoverableKeyException,
+                   NoSuchPaddingException, InvalidKeyException,
+                   InvalidAlgorithmParameterException
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return getKeyCipherM(fileUri, encrypt);
+        } else {
+            throw new IOException("Not supported before API 23");
+        }
+    }
+
+    @NonNull
+    @RequiresApi(Build.VERSION_CODES.M)
+    private Cipher getKeyCipherM(@NonNull PasswdFileUri fileUri,
+                                 boolean encrypt)
             throws CertificateException, NoSuchAlgorithmException,
                    KeyStoreException, IOException, UnrecoverableKeyException,
                    NoSuchPaddingException, InvalidKeyException,

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,7 +7,6 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,12 +16,13 @@ import android.os.storage.StorageVolume;
 import android.provider.DocumentsContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 /**
  * The ApiCompatQ class contains helper methods that are usable on
  * Q and higher
  */
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public final class ApiCompatQ
 {
     /**

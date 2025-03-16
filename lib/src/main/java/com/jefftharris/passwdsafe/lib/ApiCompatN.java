@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2022 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2022-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,17 +7,17 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
-import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.content.ClipData;
 import android.os.Build;
 import android.os.PersistableBundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 /**
  * The ApiCompatM class contains helper methods that are usable on N and higher
  */
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public class ApiCompatN
 {
     private static final String CLIPBOARD_SENSITIVE_FLAG =

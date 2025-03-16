@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,19 +7,19 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 /**
  * The ApiCompatTiramisu class contains helper methods that are usable on
  * Tiramisu and higher
  */
-@TargetApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class ApiCompatTiramisu
 {
     /**
