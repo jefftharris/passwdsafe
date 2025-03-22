@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.lib;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -19,7 +20,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.ChecksSdkIntAtLeast;
@@ -77,11 +77,21 @@ public final class ApiCompat
     }
 
 
-    /** Set whether the window is visible in the recent apps list */
-    public static void setRecentAppsVisible(
-            Window w, @SuppressWarnings("SameParameterValue") boolean visible)
+    /**
+     * Protect the window from being shown in the recent apps and from
+     * screenshots
+     */
+    public static void protectDisplay(Activity act,
+                                      boolean showUntrustedExternal)
     {
-        if (visible) {
+        boolean setRecentVisible = false;
+        if (supportsExternalDisplays()) {
+            setRecentVisible = showUntrustedExternal &&
+                               ApiCompatR.isOnExternalDisplay(act);
+        }
+
+        var w = act.getWindow();
+        if (setRecentVisible) {
             w.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         } else {
             w.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -100,6 +110,15 @@ public final class ApiCompat
         } else {
             return new File[] {ctx.getExternalFilesDir(type)};
         }
+    }
+
+
+    /**
+     * Are external displays supported
+     */
+    public static boolean supportsExternalDisplays()
+    {
+        return SDK_VERSION >= SDK_R;
     }
 
 

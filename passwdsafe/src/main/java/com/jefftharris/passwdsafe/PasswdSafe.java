@@ -282,7 +282,8 @@ public class PasswdSafe extends AppCompatActivity
         PasswdSafeApp.setupTheme(this);
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        ApiCompat.setRecentAppsVisible(getWindow(), false);
+        protectDisplay();
+
         setContentView(R.layout.activity_passwdsafe);
         itsIsTwoPane = (findViewById(R.id.two_pane) != null);
 
@@ -1310,6 +1311,17 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void promptCanceled()
     {
+    }
+
+    /**
+     * Protect the window from being shown in the recent apps and from
+     * screenshots
+     */
+    private void protectDisplay()
+    {
+        var prefs = Preferences.getSharedPrefs(this);
+        ApiCompat.protectDisplay(
+                this, Preferences.isDisplayShowUntrustedExternal(prefs));
     }
 
     /**

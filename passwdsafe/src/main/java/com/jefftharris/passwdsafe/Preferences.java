@@ -132,6 +132,11 @@ public class Preferences
             "displayVibrateKeyboard";
     private static final boolean PREF_DISPLAY_VIBRATE_KEYBOARD_DEF = false;
 
+    public static final String PREF_DISPLAY_SHOW_UNTRUSTED_EXTERNAL =
+            "displayShowUntrustedExternal";
+    private static final boolean PREF_DISPLAY_SHOW_UNTRUSTED_EXTERNAL_DEF =
+            false;
+
     private static final String PREF_COPY_PASSWORD_CONFIRM =
             "copyPasswordConfirm";
     private static final boolean PREF_COPY_PASSWORD_CONFIRM_DEF = false;
@@ -468,6 +473,17 @@ public class Preferences
     {
         return prefs.getBoolean(PREF_DISPLAY_VIBRATE_KEYBOARD,
                                 PREF_DISPLAY_VIBRATE_KEYBOARD_DEF);
+    }
+
+
+    /**
+     * Get whether to show the main screen on untrusted external displays
+     */
+    public static boolean isDisplayShowUntrustedExternal(
+            @NonNull SharedPreferences prefs)
+    {
+        return prefs.getBoolean(PREF_DISPLAY_SHOW_UNTRUSTED_EXTERNAL,
+                                PREF_DISPLAY_SHOW_UNTRUSTED_EXTERNAL_DEF);
     }
 
     /**
