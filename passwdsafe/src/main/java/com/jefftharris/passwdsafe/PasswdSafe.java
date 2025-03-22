@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -1320,19 +1319,9 @@ public class PasswdSafe extends AppCompatActivity
      */
     private void protectDisplay()
     {
-        boolean setRecentVisible = false;
-        if (ApiCompat.supportsExternalDisplays()) {
-            var prefs = Preferences.getSharedPrefs(this);
-            if (Preferences.isDisplayShowUntrustedExternal(prefs)) {
-                var display = getDisplay();
-                if ((display != null) &&
-                    (display.getDisplayId() != Display.DEFAULT_DISPLAY)) {
-                    setRecentVisible = true;
-                }
-            }
-        }
-
-        ApiCompat.setRecentAppsVisible(getWindow(), setRecentVisible);
+        var prefs = Preferences.getSharedPrefs(this);
+        ApiCompat.protectDisplay(
+                this, Preferences.isDisplayShowUntrustedExternal(prefs));
     }
 
     /**
