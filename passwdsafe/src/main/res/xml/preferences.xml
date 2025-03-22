@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -12,52 +12,45 @@
     <PreferenceScreen android:key="fileOptions"
                       android:title="@string/files">
         <PreferenceCategory android:title="@string/files">
-            <!--suppress AndroidElementNotAllowed -->
+
             <com.jefftharris.passwdsafe.lib.view.LongEditTextPreference
                 android:name="FileDir Pref"
                 android:key="fileDirPref"
                 android:title="@string/directory_for_files"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongPreference
                 android:name="defaultFile Pref"
                 android:key="defFilePref"
                 android:title="@string/default_file_to_open"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="fileTimeout Pref"
                 android:key="fileCloseTimeoutPref"
                 android:title="@string/file_close_timeout"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="fileCloseScreenOff Pref"
                 android:defaultValue="false"
                 android:key="fileCloseScreenOffPref"
                 android:title="@string/close_file_screen_off"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="fileBackup Pref"
                 android:key="fileBackupPref"
                 android:title="@string/file_backups"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="showBackupFiles Pref"
                 android:defaultValue="false"
                 android:key="showBackupFilesPref"
                 android:title="@string/show_backup_files"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="fileCloseClearClipboard Pref"
                 android:defaultValue="true"
                 android:key="fileCloseClearClipboardPref"
                 android:title="@string/clear_clipboard_on_close"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="fileLegacyFileChooser Pref"
                 android:defaultValue="true"
@@ -71,36 +64,30 @@
                       android:title="@string/passwords">
         <PreferenceCategory android:title="@string/passwords">
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="passwordVisibleTimeout Pref"
                 android:key="passwordVisibleTimeoutPref"
                 android:title="@string/password_visibility_timeout"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="passwordEncoding Pref"
                 android:key="passwordEncodingPref"
                 android:title="@string/file_password_encoding"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="passwordExpiryNotify Pref"
                 android:key="passwordExpiryNotifyPref"
                 android:title="@string/expired_password_notification"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.lib.view.LongEditTextPreference
                 android:key="passwordDefaultSymbolsPref"
                 android:title="@string/default_symbols"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongPreference
                 android:key="passwordClearAllNotifsPref"
                 android:summary="@string/erase_all_expiration_notifications"
                 android:title="@string/clear_password_notifications"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongPreference
                 android:key="passwordClearAllSavedPref"
                 android:summary="@string/erase_all_saved_passwords"
@@ -112,34 +99,29 @@
                       android:title="@string/records">
         <PreferenceCategory android:title="@string/records">
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="sortCaseSensitive Pref"
                 android:defaultValue="true"
                 android:key="sortCaseSensitivePref"
                 android:title="@string/case_sensitive_sorting"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="sortAscending Pref"
                 android:defaultValue="true"
                 android:key="sortAscendingPref"
                 android:title="@string/sort_ascending"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
                 android:name="groupRecords Pref"
                 android:defaultValue="true"
                 android:key="groupRecordsPref"
                 android:title="@string/group_records"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="recordSortOrder Pref"
                 android:key="recordSortOrderPref"
                 android:title="@string/record_sort_order"/>
 
-            <!--suppress AndroidElementNotAllowed -->
             <com.jefftharris.passwdsafe.view.LongListPreference
                 android:name="recordFieldSortPref"
                 android:key="recordFieldSortPref"
@@ -150,14 +132,12 @@
     <PreferenceCategory android:key="searchOptions"
                         android:title="@string/search">
 
-        <!--suppress AndroidElementNotAllowed -->
         <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
             android:name="searchCaseSensitive Pref"
             android:defaultValue="false"
             android:key="searchCaseSensitivePref"
             android:title="@string/case_sensitive"/>
 
-        <!--suppress AndroidElementNotAllowed -->
         <com.jefftharris.passwdsafe.view.LongCheckBoxPreference
             android:name="searchRegex Pref"
             android:defaultValue="false"
@@ -170,13 +150,11 @@
     <PreferenceCategory android:key="displayOptions"
                         android:title="@string/display">
 
-        <!--suppress AndroidElementNotAllowed -->
         <com.jefftharris.passwdsafe.view.LongListPreference
             android:name="displayThemePref"
             android:key="displayThemePref"
             android:title="@string/theme"/>
 
-        <!--suppress AndroidElementNotAllowed -->
         <com.jefftharris.passwdsafe.lib.view.LongSwitchPreference
             android:name="displayVibrateKeyboard Pref"
             android:defaultValue="false"
@@ -188,7 +166,6 @@
     <PreferenceCategory android:key="debugOptions"
         android:title="@string/debugging">
 
-        <!--suppress AndroidElementNotAllowed -->
         <com.jefftharris.passwdsafe.lib.view.LongEditTextPreference
             android:key="debugTagsPref"
             android:title="@string/logging_tags"/>
