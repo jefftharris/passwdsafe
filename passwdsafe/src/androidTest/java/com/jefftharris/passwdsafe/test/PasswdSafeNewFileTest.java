@@ -275,18 +275,25 @@ public class PasswdSafeNewFileTest
                     getInstrumentation().getTargetContext());
             onView(withText(R.string.file_operations))
                     .check(matches(isEnabled()));
+            onView(withText(R.string.share_file))
+                    .check(matches(isEnabled()));
             onView(withText(R.string.sort))
                     .check(matches(isEnabled()));
             onView(withText(R.string.close_file))
                     .check(matches(isEnabled()));
             pressBack();
         } else {
-            onView(withId(R.id.menu_sort))
-                    .check(matches(isEnabled()));
             onView(withId(R.id.menu_close))
                     .check(matches(isEnabled()));
             onView(withId(R.id.menu_add))
                     .check(doesNotExist());
+            openActionBarOverflowOrOptionsMenu(
+                    getInstrumentation().getTargetContext());
+            onView(withText(R.string.share_file))
+                    .check(matches(isEnabled()));
+            onView(withText(R.string.sort))
+                    .check(matches(isEnabled()));
+            pressBack();
         }
     }
 
