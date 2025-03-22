@@ -104,6 +104,15 @@ public final class ApiCompat
 
 
     /**
+     * Are external displays supported
+     */
+    public static boolean supportsExternalDisplays()
+    {
+        return SDK_VERSION >= SDK_R;
+    }
+
+
+    /**
      * Are the external files directories supported
      */
     public static boolean supportsExternalFilesDirs()

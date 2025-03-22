@@ -250,6 +250,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                 pref.setVisible(ApiCompat.hasVibrator(requireContext()));
             }
 
+            pref = findPreference(
+                    Preferences.PREF_DISPLAY_SHOW_UNTRUSTED_EXTERNAL);
+            if (pref != null) {
+                pref.setVisible(ApiCompat.supportsExternalDisplays());
+            }
+
             itsDebugTagsPref = requirePreference(Preferences.PREF_DEBUG_TAGS);
             itsDebugTagsPref.setDialogMessage(R.string.logging_tags_desc);
             itsDebugTagsPref.setDefaultValue(Preferences.PREF_DEBUG_TAGS_DEF);

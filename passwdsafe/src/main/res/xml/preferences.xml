@@ -156,6 +156,12 @@
             android:title="@string/theme"/>
 
         <com.jefftharris.passwdsafe.lib.view.LongSwitchPreference
+            android:name="displayShowUntrustedExternal Pref"
+            android:defaultValue="false"
+            android:key="displayShowUntrustedExternal"
+            android:title="@string/show_on_untrusted_external_displays"/>
+
+        <com.jefftharris.passwdsafe.lib.view.LongSwitchPreference
             android:name="displayVibrateKeyboard Pref"
             android:defaultValue="false"
             android:key="displayVibrateKeyboard"

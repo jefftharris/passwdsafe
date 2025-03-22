@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -282,7 +283,8 @@ public class PasswdSafe extends AppCompatActivity
         PasswdSafeApp.setupTheme(this);
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        ApiCompat.setRecentAppsVisible(getWindow(), false);
+        protectDisplay();
+
         setContentView(R.layout.activity_passwdsafe);
         itsIsTwoPane = (findViewById(R.id.two_pane) != null);
 
@@ -1310,6 +1312,27 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void promptCanceled()
     {
+    }
+
+    /**
+     * Protect the window from being shown in the recent apps and from
+     * screenshots
+     */
+    private void protectDisplay()
+    {
+        boolean setRecentVisible = false;
+        if (ApiCompat.supportsExternalDisplays()) {
+            var prefs = Preferences.getSharedPrefs(this);
+            if (Preferences.isDisplayShowUntrustedExternal(prefs)) {
+                var display = getDisplay();
+                if ((display != null) &&
+                    (display.getDisplayId() != Display.DEFAULT_DISPLAY)) {
+                    setRecentVisible = true;
+                }
+            }
+        }
+
+        ApiCompat.setRecentAppsVisible(getWindow(), setRecentVisible);
     }
 
     /**
