@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,6 +13,9 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
@@ -59,7 +62,7 @@ public abstract class DialogValidator
     /**
      * Constructor with a specific view and optional password fields
      */
-    private DialogValidator(View view, Context ctx)
+    private DialogValidator(@NonNull View view, Context ctx)
     {
         itsContext = ctx;
         itsErrorMsgView = view.findViewById(R.id.error_msg);
@@ -67,7 +70,7 @@ public abstract class DialogValidator
     }
 
 
-    public final void registerTextView(TextView tv)
+    public final void registerTextView(@NonNull TextView tv)
     {
         tv.addTextChangedListener(itsTextWatcher);
     }
@@ -96,16 +99,19 @@ public abstract class DialogValidator
 
     protected abstract View getDoneButton();
 
+    @Nullable
     protected String doValidation()
     {
         return null;
     }
 
+    @NonNull
     protected final String getString(int id)
     {
         return itsContext.getString(id);
     }
 
+    @NonNull
     protected final String getString(int id, Object... args)
     {
         return itsContext.getString(id, args);

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,9 +11,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.file.PwsRecord;
 
 import java.util.ArrayList;
@@ -26,11 +28,15 @@ public class PasswdLocation implements Parcelable
     public static final Parcelable.Creator<PasswdLocation> CREATOR =
             new Parcelable.Creator<>()
             {
+                @NonNull
+                @Contract("_ -> new")
                 public PasswdLocation createFromParcel(Parcel in)
                 {
                     return new PasswdLocation(in);
                 }
 
+                @NonNull
+                @Contract(value = "_ -> new", pure = true)
                 public PasswdLocation[] newArray(int size)
                 {
                     return new PasswdLocation[size];
@@ -56,7 +62,7 @@ public class PasswdLocation implements Parcelable
     }
 
     /** Constructor from a password record */
-    public PasswdLocation(PwsRecord rec, PasswdFileData fileData)
+    public PasswdLocation(PwsRecord rec, @NonNull PasswdFileData fileData)
     {
         String group = fileData.getGroup(rec);
         if (!TextUtils.isEmpty(group)) {
@@ -75,7 +81,7 @@ public class PasswdLocation implements Parcelable
     }
 
     /** Constructor from a parcel */
-    private PasswdLocation(Parcel parcel)
+    private PasswdLocation(@NonNull Parcel parcel)
     {
         parcel.readStringList(itsGroups);
         byte hasRecord = parcel.readByte();
@@ -99,6 +105,7 @@ public class PasswdLocation implements Parcelable
     }
 
     /** Get the path string for the group as stored in a record */
+    @Nullable
     public String getRecordGroup()
     {
         if (itsGroups.isEmpty()) {
@@ -150,7 +157,7 @@ public class PasswdLocation implements Parcelable
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int flags)
+    public void writeToParcel(@NonNull Parcel parcel, int flags)
     {
         parcel.writeStringList(itsGroups);
         parcel.writeByte((byte)((itsRecord != null) ? 1 : 0));
@@ -160,7 +167,7 @@ public class PasswdLocation implements Parcelable
     }
 
     /** Are the locations' groups equal */
-    public boolean equalGroups(PasswdLocation loc)
+    public boolean equalGroups(@NonNull PasswdLocation loc)
     {
         return itsGroups.equals(loc.itsGroups);
     }

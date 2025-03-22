@@ -1,4 +1,12 @@
 /*
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
+ * http://www.opensource.org/licenses/artistic-license-2.0.php
+ */
+
+/*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -182,11 +190,8 @@ public class PwsFileHeaderV3 implements Serializable
     public void save(PwsFile file)
             throws IOException
     {
-        Owner<PwsPassword> passwd = file.getPassphrase();
-        try {
+        try (Owner<PwsPassword> passwd = file.getPassphrase()) {
             update(passwd.pass(), (PwsFileV3)file);
-        } finally {
-            passwd.close();
         }
 
         file.writeBytes(tag);
@@ -217,13 +222,10 @@ public class PwsFileHeaderV3 implements Serializable
         updateRandHashedBytes(salt);
         updateRandHashedBytes(IV);
 
-        Owner<PwsPassword> passwd = passwdParam.use();
-        try {
-            final byte[] stretchedPassword =
-                    Util.stretchPassphrase(
-                            passwd.get().getBytes(
-                                    PwsFile.getUpdatePasswordEncoding()),
-                            salt, iter);
+        try (Owner<PwsPassword> passwd = passwdParam.use()) {
+            final byte[] stretchedPassword = Util.stretchPassphrase(
+                    passwd.get().getBytes(PwsFile.getUpdatePasswordEncoding()),
+                    salt, iter);
 
             password = SHA256Pws.digest(stretchedPassword);
 
@@ -251,8 +253,6 @@ public class PwsFileHeaderV3 implements Serializable
             file.hasher = new HmacPws(file.decryptedHmacKey);
         } catch (InvalidKeyException e) {
             throw new IOException("Error updating header", e);
-        } finally {
-            passwd.close();
         }
     }
 

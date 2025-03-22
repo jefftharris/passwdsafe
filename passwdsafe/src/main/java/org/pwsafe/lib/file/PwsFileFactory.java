@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -93,11 +93,8 @@ public class PwsFileFactory
                               byte[] stuff)
     {
         try {
-            Owner<PwsPassword> passwd = passwdParam.use();
-            try {
+            try (Owner<PwsPassword> passwd = passwdParam.use()) {
                 return genRandHash(passwd.pass(), null, stuff);
-            } finally {
-                passwd.close();
             }
         } catch (UnsupportedEncodingException e) {
             return new byte[0];
@@ -122,16 +119,13 @@ public class PwsFileFactory
         byte[] digest;
         byte[] tmp;
 
-        Owner<PwsPassword> passwd = passwdParam.use();
-        try {
+        try (Owner<PwsPassword> passwd = passwdParam.use()) {
             byte[] pw = passwd.get().getBytes(charEnc);
             md = new SHA1();
             md.update(stuff, 0, stuff.length);
             md.update(pw, 0, pw.length);
             md.finish();
             digest = md.getDigest();
-        } finally {
-            passwd.close();
         }
 
         try {

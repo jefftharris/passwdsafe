@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -68,6 +68,7 @@ public class PasswdSafeRecordFragment
     /**
      * Create a new instance
      */
+    @NonNull
     public static PasswdSafeRecordFragment newInstance(PasswdLocation location)
     {
         PasswdSafeRecordFragment frag = new PasswdSafeRecordFragment();
@@ -103,10 +104,8 @@ public class PasswdSafeRecordFragment
             public Fragment getItem(int position)
             {
                 switch (position) {
-                case 0:
-                default: {
-                    return PasswdSafeRecordBasicFragment.newInstance(
-                            getLocation());
+                case 0: {
+                    break;
                 }
                 case 1: {
                     return PasswdSafeRecordPasswordFragment.newInstance(
@@ -117,6 +116,8 @@ public class PasswdSafeRecordFragment
                             getLocation());
                 }
                 }
+                return PasswdSafeRecordBasicFragment.newInstance(
+                        getLocation());
             }
 
             @Override
@@ -165,7 +166,7 @@ public class PasswdSafeRecordFragment
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu)
+    public void onPrepareOptionsMenu(@NonNull Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_edit);
         if (item != null) {
@@ -181,7 +182,7 @@ public class PasswdSafeRecordFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_edit) {
@@ -207,7 +208,8 @@ public class PasswdSafeRecordFragment
     }
 
     @Override
-    protected void doOnCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    protected void doOnCreateOptionsMenu(Menu menu,
+                                         @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_passwdsafe_record, menu);
     }

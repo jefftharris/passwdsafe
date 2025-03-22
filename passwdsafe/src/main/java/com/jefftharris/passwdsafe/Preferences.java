@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
@@ -162,7 +163,8 @@ public class Preferences
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static FileTimeoutPref getFileCloseTimeoutPref(SharedPreferences prefs)
+    public static FileTimeoutPref getFileCloseTimeoutPref(
+            @NonNull SharedPreferences prefs)
     {
         try {
             return FileTimeoutPref.prefValueOf(
@@ -173,13 +175,15 @@ public class Preferences
         }
     }
 
-    public static boolean getFileCloseScreenOffPref(SharedPreferences prefs)
+    public static boolean getFileCloseScreenOffPref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_FILE_CLOSE_SCREEN_OFF,
                                 PREF_FILE_CLOSE_SCREEN_OFF_DEF);
     }
 
-    public static FileBackupPref getFileBackupPref(SharedPreferences prefs)
+    public static FileBackupPref getFileBackupPref(
+            @NonNull SharedPreferences prefs)
     {
         try {
             return FileBackupPref.prefValueOf(
@@ -193,7 +197,8 @@ public class Preferences
     /**
      * Get the preference to show help for file backups
      */
-    public static boolean getFileBackupShowHelpPref(SharedPreferences prefs)
+    public static boolean getFileBackupShowHelpPref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_FILE_BACKUP_SHOW_HELP,
                                 PREF_FILE_BACKUP_SHOW_HELP_DEF);
@@ -202,13 +207,15 @@ public class Preferences
     /**
      * Set the preference to show help for file backups
      */
-    public static void setFileBackupShowHelpPref(boolean show,
-                                                 SharedPreferences prefs)
+    public static void setFileBackupShowHelpPref(
+            boolean show,
+            @NonNull SharedPreferences prefs)
     {
         prefs.edit().putBoolean(PREF_FILE_BACKUP_SHOW_HELP, show).apply();
     }
 
-    public static boolean getFileCloseClearClipboardPref(SharedPreferences prefs)
+    public static boolean getFileCloseClearClipboardPref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_FILE_CLOSE_CLEAR_CLIPBOARD,
                                 PREF_FILE_CLOSE_CLEAR_CLIPBOARD_DEF);
@@ -217,7 +224,8 @@ public class Preferences
     /**
      * Get the preference to use YubiKey
      */
-    public static boolean getFileOpenYubikeyPref(SharedPreferences prefs)
+    public static boolean getFileOpenYubikeyPref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_FILE_OPEN_YUBIKEY,
                                 PREF_FILE_OPEN_YUBIKEY_DEF);
@@ -227,7 +235,7 @@ public class Preferences
      * Set the preference to use YubiKey
      */
     public static void setFileOpenYubikeyPref(boolean yubikey,
-                                              SharedPreferences prefs)
+                                              @NonNull SharedPreferences prefs)
     {
         prefs.edit().putBoolean(PREF_FILE_OPEN_YUBIKEY, yubikey).apply();
     }
@@ -236,7 +244,8 @@ public class Preferences
      * Get the preference for whether the user has confirmed the saved
      * password warning
      */
-    public static boolean isFileSavedPasswordConfirm(SharedPreferences prefs)
+    public static boolean isFileSavedPasswordConfirm(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_FILE_SAVED_PASSWORD_CONFIRM,
                                 PREF_FILE_SAVED_PASSWORD_CONFIRM_DEF);
@@ -245,7 +254,8 @@ public class Preferences
     /**
      * Set the preference that user has confirmed the saved password warning
      */
-    public static void setFileSavedPasswordConfirmed(SharedPreferences prefs)
+    public static void setFileSavedPasswordConfirmed(
+            @NonNull SharedPreferences prefs)
     {
         prefs.edit().putBoolean(PREF_FILE_SAVED_PASSWORD_CONFIRM, true)
              // Remove old pref
@@ -253,20 +263,23 @@ public class Preferences
              .apply();
     }
 
-    public static File getFileDirPref(SharedPreferences prefs)
+    @NonNull
+    public static File getFileDirPref(@NonNull SharedPreferences prefs)
     {
         String prefstr = prefs.getString(PREF_FILE_DIR, PREF_FILE_DIR_DEF);
         return new File(Objects.requireNonNull(prefstr));
     }
 
-    public static void setFileDirPref(File dir, SharedPreferences prefs)
+    public static void setFileDirPref(@NonNull File dir,
+                                      @NonNull SharedPreferences prefs)
     {
         SharedPreferences.Editor prefsEdit = prefs.edit();
         prefsEdit.putString(Preferences.PREF_FILE_DIR, dir.toString());
         prefsEdit.apply();
     }
 
-    public static Uri getDefFilePref(SharedPreferences prefs)
+    @Nullable
+    public static Uri getDefFilePref(@NonNull SharedPreferences prefs)
     {
         String defFile = prefs.getString(PREF_DEF_FILE, PREF_DEF_FILE_DEF);
         if (TextUtils.isEmpty(defFile)) {
@@ -275,7 +288,7 @@ public class Preferences
         return Uri.parse(defFile);
     }
 
-    public static void clearDefFilePref(SharedPreferences prefs)
+    public static void clearDefFilePref(@NonNull SharedPreferences prefs)
     {
         prefs.edit().remove(PREF_DEF_FILE).apply();
     }
@@ -288,21 +301,20 @@ public class Preferences
                                 PREF_FILE_LEGACY_FILE_CHOOSER_DEF);
     }
 
-    public static boolean getGroupRecordsPref(SharedPreferences prefs)
+    public static boolean getGroupRecordsPref(@NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_GROUP_RECORDS, PREF_GROUP_RECORDS_DEF);
     }
 
-    public static String getPasswordEncodingPref(SharedPreferences prefs)
+    public static String getPasswordEncodingPref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getString(PREF_PASSWD_ENC, PREF_PASSWD_ENC_DEF);
     }
 
     /** Get the password expiration notification preference */
-    public static PasswdExpiryNotifPref getPasswdExpiryNotifPref
-    (
-         SharedPreferences prefs
-    )
+    public static PasswdExpiryNotifPref getPasswdExpiryNotifPref(
+            @NonNull SharedPreferences prefs)
     {
         try {
             return PasswdExpiryNotifPref.prefValueOf(
@@ -314,7 +326,8 @@ public class Preferences
     }
 
     /** Get the symbols used by default in a password policy */
-    public static String getPasswdDefaultSymbolsPref(SharedPreferences prefs)
+    public static String getPasswdDefaultSymbolsPref(
+            @NonNull SharedPreferences prefs)
     {
         String val = prefs.getString(PREF_PASSWD_DEFAULT_SYMS, null);
         if (TextUtils.isEmpty(val)) {
@@ -324,7 +337,7 @@ public class Preferences
     }
 
     public static PasswdTimeoutPref getPasswdVisibleTimeoutPref(
-            SharedPreferences prefs)
+            @NonNull SharedPreferences prefs)
     {
         try {
             return PasswdTimeoutPref.prefValueOf(
@@ -336,8 +349,10 @@ public class Preferences
     }
 
     /** Get the default password policy preference */
-    public static PasswdPolicy getDefPasswdPolicyPref(SharedPreferences prefs,
-                                                      Context ctx)
+    @NonNull
+    public static PasswdPolicy getDefPasswdPolicyPref(
+            @NonNull SharedPreferences prefs,
+            Context ctx)
     {
         String policyStr = prefs.getString(PREF_DEF_PASSWD_POLICY,
                                            PREF_DEF_PASSWD_POLICY_DEF);
@@ -357,8 +372,8 @@ public class Preferences
     }
 
     /** Set the default password policy preference */
-    public static void setDefPasswdPolicyPref(PasswdPolicy policy,
-                                              SharedPreferences prefs)
+    public static void setDefPasswdPolicyPref(@NonNull PasswdPolicy policy,
+                                              @NonNull SharedPreferences prefs)
     {
         SharedPreferences.Editor prefsEdit = prefs.edit();
         prefsEdit.putString(PREF_DEF_PASSWD_POLICY, policy.toHdrPolicyString());
@@ -366,7 +381,7 @@ public class Preferences
     }
 
     public static RecordSortOrderPref getRecordSortOrderPref(
-            SharedPreferences prefs)
+            @NonNull SharedPreferences prefs)
     {
         try {
             return RecordSortOrderPref.valueOf(
@@ -378,7 +393,7 @@ public class Preferences
     }
 
     public static RecordFieldSortPref getRecordFieldSortPref(
-            SharedPreferences prefs)
+            @NonNull SharedPreferences prefs)
     {
         try {
             return RecordFieldSortPref.valueOf(
@@ -389,18 +404,20 @@ public class Preferences
         }
     }
 
-    public static boolean getSearchCaseSensitivePref(SharedPreferences prefs)
+    public static boolean getSearchCaseSensitivePref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_SEARCH_CASE_SENSITIVE,
                                 PREF_SEARCH_CASE_SENSITIVE_DEF);
     }
 
-    public static boolean getSearchRegexPref(SharedPreferences prefs)
+    public static boolean getSearchRegexPref(@NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_SEARCH_REGEX, PREF_SEARCH_REGEX_DEF);
     }
 
-    public static boolean getShowHiddenFilesPref(SharedPreferences prefs)
+    public static boolean getShowHiddenFilesPref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_SHOW_HIDDEN_FILES,
                                 PREF_SHOW_HIDDEN_FILES_DEF);
@@ -409,12 +426,13 @@ public class Preferences
     /**
      * Get whether to sort ascending
      */
-    public static boolean getSortAscendingPref(SharedPreferences prefs)
+    public static boolean getSortAscendingPref(@NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_SORT_ASCENDING, PREF_SORT_ASCENDING_DEF);
     }
 
-    public static boolean getSortCaseSensitivePref(SharedPreferences prefs)
+    public static boolean getSortCaseSensitivePref(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_SORT_CASE_SENSITIVE,
                                 PREF_SORT_CASE_SENSITIVE_DEF);
@@ -431,7 +449,7 @@ public class Preferences
     /**
      * Get which theme is used
      */
-    public static ThemePref getDisplayTheme(SharedPreferences prefs)
+    public static ThemePref getDisplayTheme(@NonNull SharedPreferences prefs)
     {
         try {
             return ThemePref.valueOf(
@@ -445,7 +463,8 @@ public class Preferences
     /**
      * Get whether to vibrate the keyboard
      */
-    public static boolean getDisplayVibrateKeyboard(SharedPreferences prefs)
+    public static boolean getDisplayVibrateKeyboard(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_DISPLAY_VIBRATE_KEYBOARD,
                                 PREF_DISPLAY_VIBRATE_KEYBOARD_DEF);
@@ -454,7 +473,8 @@ public class Preferences
     /**
      * Get whether the user has confirmed the copy password operation
      */
-    public static boolean isCopyPasswordConfirm(SharedPreferences prefs)
+    public static boolean isCopyPasswordConfirm(
+            @NonNull SharedPreferences prefs)
     {
         return prefs.getBoolean(PREF_COPY_PASSWORD_CONFIRM,
                                 PREF_COPY_PASSWORD_CONFIRM_DEF);
@@ -465,7 +485,7 @@ public class Preferences
      */
     @SuppressWarnings("SameParameterValue")
     public static void setCopyPasswordConfirm(boolean confirm,
-                                              SharedPreferences prefs)
+                                              @NonNull SharedPreferences prefs)
     {
         prefs.edit().putBoolean(PREF_COPY_PASSWORD_CONFIRM, confirm).apply();
     }
@@ -496,7 +516,7 @@ public class Preferences
     }
 
     /** Upgrade the default password policy preference if needed */
-    private static void upgradePasswdPolicy(SharedPreferences prefs,
+    private static void upgradePasswdPolicy(@NonNull SharedPreferences prefs,
                                             Context ctx)
     {
         if (prefs.contains(PREF_DEF_PASSWD_POLICY)) {

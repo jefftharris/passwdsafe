@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,21 +7,24 @@
  */
 package com.jefftharris.passwdsafe.lib.view;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.jefftharris.passwdsafe.lib.R;
+
+import org.jetbrains.annotations.Contract;
 
 /**
  * The GuiUtilsOreo class contains helper GUI methods that are usable on
  * Oreo and higher
  */
 
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public final class GuiUtilsOreo
 {
     private static String NOTIF_CHANNEL_APP = null;
@@ -29,6 +32,8 @@ public final class GuiUtilsOreo
     /**
      * Create a notification builder
      */
+    @NonNull
+    @Contract("_ -> new")
     public static NotificationCompat.Builder createNotificationBuilder(
             Context ctx)
     {
@@ -60,7 +65,7 @@ public final class GuiUtilsOreo
     /**
      * Get the notification manager
      */
-    private static NotificationManager getNotifMgr(Context ctx)
+    private static NotificationManager getNotifMgr(@NonNull Context ctx)
     {
         return (NotificationManager)
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE);

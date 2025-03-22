@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.TypedValue;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.jefftharris.passwdsafe.Preferences;
@@ -27,6 +28,7 @@ import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsRecord;
 
@@ -86,7 +88,7 @@ public final class PasswdFileDataView
     /**
      * Handle when the owning fragment is attached to the context
      */
-    public void onAttach(Context ctx, SharedPreferences prefs)
+    public void onAttach(@NonNull Context ctx, SharedPreferences prefs)
     {
         itsContext = ctx.getApplicationContext();
         itsActContext = new ActContext(ctx);
@@ -219,6 +221,7 @@ public final class PasswdFileDataView
     /**
      * Get records
      */
+    @NonNull
     public synchronized List<PasswdRecordListData> getRecords(
             boolean incRecords,
             boolean incGroups)
@@ -311,6 +314,7 @@ public final class PasswdFileDataView
     /**
      * Get the record filter
      */
+    @Nullable
     public synchronized PasswdRecordFilter getRecordFilter()
     {
         return (itsFilter != null) ? itsFilter.get() : null;
@@ -349,8 +353,10 @@ public final class PasswdFileDataView
     /**
      * Create a record filter which matches records similar to the given one
      */
-    public PasswdRecordFilter createSimilarRecordFilter(String recUuid,
-                                                        PasswdFileData fileData)
+    @Nullable
+    public PasswdRecordFilter createSimilarRecordFilter(
+            String recUuid,
+            @NonNull PasswdFileData fileData)
     {
         PwsRecord rec = fileData.getRecord(recUuid);
         if (rec == null) {
@@ -562,7 +568,9 @@ public final class PasswdFileDataView
     /**
      * Create a record item for a password record
      */
-    private PasswdRecordListData createListData(MatchPwsRecord rec)
+    @NonNull
+    @Contract("_ -> new")
+    private PasswdRecordListData createListData(@NonNull MatchPwsRecord rec)
     {
         String title = rec.itsTitle;
         if (title == null) {
@@ -619,6 +627,7 @@ public final class PasswdFileDataView
         }
 
         /** Get a group */
+        @Nullable
         private GroupNode getGroup(String name)
         {
             if (itsGroups == null) {
@@ -664,7 +673,7 @@ public final class PasswdFileDataView
         private final String itsMatch;
 
         private MatchPwsRecord(PwsRecord rec,
-                               PasswdFileData fileData,
+                               @NonNull PasswdFileData fileData,
                                String match)
         {
             itsTitle = fileData.getTitle(rec);
@@ -692,7 +701,7 @@ public final class PasswdFileDataView
     private static final class StringComparator implements Comparator<String>
     {
         /** Compare the strings */
-        public int compare(String arg0, String arg1)
+        public int compare(@NonNull String arg0, String arg1)
         {
             return arg0.compareTo(arg1);
         }

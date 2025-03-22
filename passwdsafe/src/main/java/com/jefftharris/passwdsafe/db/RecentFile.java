@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -30,6 +30,7 @@ public class RecentFile
     /**
      * Unique id for the record.  The field is a Long for migration as the field
      * is not marked NOT NULL
+     * @noinspection WeakerAccess
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = COL_ID)
@@ -37,6 +38,7 @@ public class RecentFile
 
     /**
      * The title of the recent file
+     * @noinspection WeakerAccess
      */
     @ColumnInfo(name = COL_TITLE)
     @NonNull
@@ -44,6 +46,7 @@ public class RecentFile
 
     /**
      * The file URI
+     * @noinspection WeakerAccess
      */
     @ColumnInfo(name = COL_URI)
     @NonNull

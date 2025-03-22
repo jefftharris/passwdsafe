@@ -1,11 +1,13 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.file;
+
+import androidx.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -80,6 +82,7 @@ public class HeaderPasswdPolicies
     }
 
     /** Get the named password policy */
+    @Nullable
     public PasswdPolicy getPasswdPolicy(String name)
     {
         HeaderPasswdPolicies.HdrPolicy hdrPolicy = itsPolicies.get(name);

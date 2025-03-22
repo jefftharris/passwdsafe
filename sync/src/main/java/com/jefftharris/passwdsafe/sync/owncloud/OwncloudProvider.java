@@ -68,6 +68,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     {
     }
 
+    @Nullable
     @Override
     public NewAccountTask<? extends AbstractSyncTimerProvider>
     finishAccountLink(FragmentActivity activity,
@@ -120,6 +121,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     {
     }
 
+    @Nullable
     @Override
     public SyncConnectivityResult checkSyncConnectivity(Account acct)
     {
@@ -130,7 +132,7 @@ public class OwncloudProvider extends AbstractSyncTimerProvider
     public void sync(Account acct,
                      final DbProvider provider,
                      final SyncConnectivityResult connResult,
-                     final SyncLogRecord logrec) throws Exception
+                     final SyncLogRecord logrec)
     {
     }
 

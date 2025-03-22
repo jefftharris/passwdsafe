@@ -188,6 +188,7 @@ public class PasswdFileData
         return itsPasswdRecords.values();
     }
 
+    @Nullable
     public PwsRecord createRecord()
     {
         if (itsPwsFile != null) {

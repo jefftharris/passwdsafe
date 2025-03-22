@@ -6,6 +6,9 @@
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 
+#include <cstddef>
+#include <array>
+
 #include <jni.h>
 
 #include "org_pwsafe_lib_crypto_SHA256Pws.h"

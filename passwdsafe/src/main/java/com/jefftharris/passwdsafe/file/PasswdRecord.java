@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -9,6 +9,7 @@ package com.jefftharris.passwdsafe.file;
 
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.pwsafe.lib.file.PwsRecord;
 
@@ -37,7 +38,7 @@ public class PasswdRecord
     private PasswdPolicy itsPasswdPolicy;
     private PasswdExpiration itsPasswdExpiry;
 
-    public PasswdRecord(PwsRecord rec, PasswdFileData fileData)
+    public PasswdRecord(PwsRecord rec, @NonNull PasswdFileData fileData)
     {
         itsRecord = rec;
         itsUUID = fileData.getUUID(rec);
@@ -82,7 +83,7 @@ public class PasswdRecord
         return itsRefsToRecord;
     }
 
-    public void passwordChanged(PasswdFileData fileData)
+    public void passwordChanged(@NonNull PasswdFileData fileData)
     {
         PwsRecord ref = null;
         Type type = Type.NORMAL;
@@ -111,6 +112,7 @@ public class PasswdRecord
     /**
      * Get the password for the record
      */
+    @Nullable
     public String getPassword(@NonNull PasswdFileData fileData)
     {
         switch (itsType) {
@@ -126,7 +128,7 @@ public class PasswdRecord
     }
 
     /** Notification that the password policy has changed */
-    public void passwdPolicyChanged(PasswdFileData fileData)
+    public void passwdPolicyChanged(@NonNull PasswdFileData fileData)
     {
         itsPasswdPolicy = fileData.getPasswdPolicy(itsRecord);
     }
@@ -138,7 +140,7 @@ public class PasswdRecord
     }
 
     /** Notification that the password expiration has changed */
-    public void passwdExpiryChanged(PasswdFileData fileData)
+    public void passwdExpiryChanged(@NonNull PasswdFileData fileData)
     {
         itsPasswdExpiry = fileData.getPasswdExpiry(itsRecord);
     }
@@ -150,6 +152,7 @@ public class PasswdRecord
     }
 
     /** Get an identifier for a record from its naming fields */
+    @NonNull
     public static String getRecordId(String group, String title,
                                      String username)
     {
@@ -168,7 +171,8 @@ public class PasswdRecord
         return id.toString();
     }
 
-    public static String uuidToPasswd(String uuid, Type type)
+    @NonNull
+    public static String uuidToPasswd(String uuid, @NonNull Type type)
     {
         StringBuilder sb = new StringBuilder(36);
 
@@ -221,7 +225,7 @@ public class PasswdRecord
         return sb.toString();
     }
 
-    private PwsRecord lookupRef(String passwd, PasswdFileData fileData)
+    private PwsRecord lookupRef(@NonNull String passwd, PasswdFileData fileData)
     {
         PwsRecord ref = null;
 

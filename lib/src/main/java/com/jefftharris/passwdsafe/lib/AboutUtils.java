@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -50,7 +50,7 @@ public class AboutUtils
         String name;
         StringBuilder version = new StringBuilder();
         final PackageInfo pkgInfo = PasswdSafeUtil.getAppPackageInfo(act);
-        if (pkgInfo != null) {
+        if ((pkgInfo != null) && (pkgInfo.applicationInfo != null)) {
             name = act.getString(pkgInfo.applicationInfo.labelRes);
             version.append(pkgInfo.versionName);
         } else {

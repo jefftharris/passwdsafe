@@ -114,6 +114,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
         itsClient.authenticate(getContext());
     }
 
+    @Nullable
     @Override
     public NewAccountTask<? extends AbstractSyncTimerProvider>
     finishAccountLink(FragmentActivity activity,
@@ -303,6 +304,7 @@ public class BoxProvider extends AbstractSyncTimerProvider
     }
 
     /** Convert a Box object to a string for debugging */
+    @Nullable
     public static String boxToString(BoxJsonObject obj)
     {
         return (obj != null) ? obj.toJson() : null;

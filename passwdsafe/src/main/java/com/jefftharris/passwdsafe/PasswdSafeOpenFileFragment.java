@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -384,13 +384,13 @@ public class PasswdSafeOpenFileFragment
 
             MenuItem item;
             switch (data.getYubiSlot()) {
+            case 1: {
+                item = menu.findItem(R.id.menu_slot_1);
+                break;
+            }
             case 2:
             default: {
                 item = menu.findItem(R.id.menu_slot_2);
-                break;
-            }
-            case 1: {
-                item = menu.findItem(R.id.menu_slot_1);
                 break;
             }
             }

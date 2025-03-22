@@ -73,6 +73,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -160,7 +161,7 @@ public class FileListActivityTest
         ensureDrawerClosed();
         setLegacyFileChooser(true);
 
-        onView(withId(android.R.id.list));
+        onView(withId(android.R.id.list)).check(matches(isDisplayed()));
         onTestFile(LEGACY_FILE.getName()).check(matches(anything()));
 
         onView(withId(android.R.id.list))

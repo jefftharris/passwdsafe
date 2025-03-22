@@ -12,6 +12,8 @@
 // Rewritten for C++14 by Jeff Harris
 //-----------------------------------------------------------------------------
 #include <algorithm>
+#include <cstdint>
+#include <array>
 #include <cstring>
 #include "sha256.h"
 

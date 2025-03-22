@@ -190,16 +190,6 @@ public class SyncDb
         doDelete(db, DB_TABLE_PROVIDERS, DB_MATCH_PROVIDERS_ID, idargs);
     }
 
-    /** Update a provider account */
-    public static void updateProviderAccount(long id, String acct,
-                                             SQLiteDatabase db)
-           throws SQLException
-    {
-        ContentValues values = new ContentValues();
-        values.put(DB_COL_PROVIDERS_ACCT, acct);
-        updateProviderFields(id, values, db);
-    }
-
     /** Update a provider display name */
     public static void updateProviderDisplayName(long id, String displayName,
                                                  SQLiteDatabase db)
@@ -705,21 +695,16 @@ public class SyncDb
                            " ADD COLUMN " + DB_COL_FILES_REMOTE_HASH +
                            " TEXT;");
 
-                Cursor cursor = db.query(
+                try (Cursor cursor = db.query(
                         DB_TABLE_PROVIDERS,
-                        new String[] { SyncDb.DB_COL_PROVIDERS_ID },
-                        null, null, null, null, null);
-                if (cursor != null) {
-                    try {
-                        for (boolean more = cursor.moveToFirst();
-                             more; more = cursor.moveToNext()) {
-                            long id = cursor.getLong(0);
-                            for (DbFile file: getFiles(id, db)) {
-                                onUpgradeV4File(file, db);
-                            }
+                        new String[]{SyncDb.DB_COL_PROVIDERS_ID},
+                        null, null, null, null, null)) {
+                    for (boolean more = cursor.moveToFirst(); more;
+                         more = cursor.moveToNext()) {
+                        long id = cursor.getLong(0);
+                        for (DbFile file : getFiles(id, db)) {
+                            onUpgradeV4File(file, db);
                         }
-                    } finally {
-                        cursor.close();
                     }
                 }
             }

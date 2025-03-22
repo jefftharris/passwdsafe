@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -33,6 +33,8 @@ import com.jefftharris.passwdsafe.db.BackupFile;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 
@@ -78,6 +80,8 @@ public class BackupFilesFragment extends Fragment
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static BackupFilesFragment newInstance()
     {
         return new BackupFilesFragment();
@@ -99,7 +103,7 @@ public class BackupFilesFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -171,7 +175,8 @@ public class BackupFilesFragment extends Fragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu,
+                                    @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_backup_files, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -200,7 +205,7 @@ public class BackupFilesFragment extends Fragment
     }
 
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         int id = v.getId();
         if (id == R.id.help_close) {
@@ -297,7 +302,7 @@ public class BackupFilesFragment extends Fragment
     /**
      * Show a confirmation prompt for an action
      */
-    private void showPrompt(ConfirmAction action)
+    private void showPrompt(@NonNull ConfirmAction action)
     {
         String title = null;
         String confirm = null;
@@ -328,7 +333,7 @@ public class BackupFilesFragment extends Fragment
     private class ActionModeCallback implements ActionMode.Callback
     {
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu)
+        public boolean onCreateActionMode(@NonNull ActionMode mode, Menu menu)
         {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.fragment_backup_file, menu);
@@ -336,7 +341,7 @@ public class BackupFilesFragment extends Fragment
         }
 
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+        public boolean onPrepareActionMode(ActionMode mode, @NonNull Menu menu)
         {
             BackupFile backup = getSelectedBackup();
             MenuItem item = menu.findItem(R.id.menu_file_open);
@@ -347,7 +352,8 @@ public class BackupFilesFragment extends Fragment
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+        public boolean onActionItemClicked(ActionMode mode,
+                                           @NonNull MenuItem item)
         {
             final int itemId = item.getItemId();
             if (itemId == R.id.menu_file_open) {
@@ -396,6 +402,7 @@ public class BackupFilesFragment extends Fragment
             super(ItemKeyProvider.SCOPE_CACHED);
         }
 
+        @Nullable
         @Override
         public Long getKey(int position)
         {

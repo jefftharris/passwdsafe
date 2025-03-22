@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -10,6 +10,7 @@ package com.jefftharris.passwdsafe.sync.gdrive;
 import android.content.Context;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About;
@@ -58,7 +59,8 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
     /**
      * Get the account display name
      */
-    public static String getDisplayName(Drive drive) throws IOException
+    @Nullable
+    public static String getDisplayName(@NonNull Drive drive) throws IOException
     {
         About about = drive.about().get()
                            .setFields(GDriveProvider.ABOUT_FIELDS)
@@ -137,7 +139,7 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
      * Check whether any files were renamed/deleted and replaced with a
      * different file in the same location with the same name
      */
-    private void checkRenamedOrDeletedAndReplaced(DbFile dbfile,
+    private void checkRenamedOrDeletedAndReplaced(@NonNull DbFile dbfile,
                                                   SyncRemoteFiles driveFiles)
             throws IOException
     {
@@ -198,7 +200,7 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
     /**
      * Check whether there is a remote file for a new local file
      */
-    private void checkRemoteFileForNew(DbFile dbfile,
+    private void checkRemoteFileForNew(@NonNull DbFile dbfile,
                                        SyncRemoteFiles driveFiles)
             throws IOException
     {
@@ -216,6 +218,7 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
     }
 
     /** List files */
+    @NonNull
     private List<File> listFiles(String query) throws IOException
     {
         ArrayList<File> retfiles = new ArrayList<>();
@@ -246,7 +249,8 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
     }
 
     /** Encode a value used in a query */
-    private static String encodeQueryVal(String str)
+    @NonNull
+    private static String encodeQueryVal(@NonNull String str)
     {
         return str.replace("'", "\\'");
     }
@@ -260,6 +264,7 @@ public class GDriveSyncer extends ProviderSyncer<Drive>
 
 
     /** Get a string form for a remote file */
+    @NonNull
     public static String fileToString(File file)
     {
         if (file == null) {

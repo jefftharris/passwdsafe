@@ -107,6 +107,7 @@ public class PasswdSafeRecordBasicFragment
     /**
      * Create a new instance of the fragment
      */
+    @NonNull
     public static PasswdSafeRecordBasicFragment newInstance(
             PasswdLocation location)
     {
@@ -221,7 +222,7 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu)
+    public void onPrepareOptionsMenu(@NonNull Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_toggle_password);
         if (item != null) {
@@ -245,7 +246,7 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_copy_user) {
@@ -285,7 +286,7 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item)
+    public boolean onContextItemSelected(@NonNull MenuItem item)
     {
         if (item.getGroupId() != PasswdSafe.CONTEXT_GROUP_RECORD_BASIC) {
             return super.onContextItemSelected(item);
@@ -303,7 +304,7 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    public void onClick(View view)
+    public void onClick(@NonNull View view)
     {
         int id = view.getId();
         if ((id == R.id.base_row) || (id == R.id.base_btn)) {
@@ -314,7 +315,7 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    public boolean onLongClick(View v)
+    public boolean onLongClick(@NonNull View v)
     {
         if (v.getId() == R.id.password_subset_btn) {
             Toast.makeText(getContext(), R.string.password_subset,
@@ -325,7 +326,7 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton btn, boolean checked)
+    public void onCheckedChanged(@NonNull CompoundButton btn, boolean checked)
     {
         if (btn.getId() == R.id.password_subset_btn) {
             updatePasswordShown(PasswordVisibilityChange.SHOW_SUBSET, 0,
@@ -334,7 +335,8 @@ public class PasswdSafeRecordBasicFragment
     }
 
     @Override
-    protected void doOnCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    protected void doOnCreateOptionsMenu(Menu menu,
+                                         @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_passwdsafe_record_basic, menu);
     }
@@ -460,7 +462,7 @@ public class PasswdSafeRecordBasicFragment
     /**
      * Update whether the password is shown
      */
-    private void updatePasswordShown(PasswordVisibilityChange change,
+    private void updatePasswordShown(@NonNull PasswordVisibilityChange change,
                                      int progress,
                                      boolean showSubset)
     {

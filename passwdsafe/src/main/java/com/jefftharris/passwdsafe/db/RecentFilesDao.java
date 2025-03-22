@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -12,6 +12,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -66,7 +68,7 @@ public abstract class RecentFilesDao
     /**
      * Update the timestamp for a file
      */
-    public void touchFile(Uri uri)
+    public void touchFile(@NonNull Uri uri)
     {
         updateTimestamp(uri.toString(), System.currentTimeMillis());
     }
@@ -85,25 +87,23 @@ public abstract class RecentFilesDao
     public abstract void deleteAll();
 
     /** Update an opened storage access file */
-    public static void updateOpenedSafFile(Uri uri, int flags, Context ctx)
+    public static void updateOpenedSafFile(Uri uri,
+                                           int flags,
+                                           @NonNull Context ctx)
     {
         ContentResolver cr = ctx.getContentResolver();
         ApiCompat.takePersistableUriPermission(cr, uri, flags);
     }
 
     /** Get the display name of a storage access file */
-    public static String getSafDisplayName(Uri uri, Context ctx)
+    @Nullable
+    public static String getSafDisplayName(Uri uri, @NonNull Context ctx)
     {
         ContentResolver cr = ctx.getContentResolver();
-        Cursor cursor = cr.query(uri, null, null, null, null);
-        try {
+        try (Cursor cursor = cr.query(uri, null, null, null, null)) {
             if ((cursor != null) && (cursor.moveToFirst())) {
                 return cursor.getString(cursor.getColumnIndexOrThrow(
                         OpenableColumns.DISPLAY_NAME));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
         return null;

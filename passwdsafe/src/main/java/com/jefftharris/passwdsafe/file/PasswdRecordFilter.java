@@ -136,7 +136,7 @@ public final class PasswdRecordFilter implements Closeable
      * @noinspection RedundantSuppression
      */
     public String filterRecord(PwsRecord rec,
-                               PasswdFileData fileData,
+                               @NonNull PasswdFileData fileData,
                                Context ctx)
     {
         PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
@@ -253,6 +253,7 @@ public final class PasswdRecordFilter implements Closeable
      * Match a record's group against the filter
      * @return The group if matched; null otherwise
      */
+    @Nullable
     public String matchGroup(PwsRecord rec, PasswdFileData fileData)
     {
         switch (itsType) {

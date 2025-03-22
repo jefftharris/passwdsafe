@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,7 +8,6 @@
 package com.jefftharris.passwdsafe;
 
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -29,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
@@ -52,7 +52,7 @@ import java.util.List;
  *  The StorageFileListFragment fragment allows the user to open files using
  *  the storage access framework on Kitkat and higher
  */
-@TargetApi(19)
+@RequiresApi(19)
 public final class StorageFileListFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
                    View.OnClickListener,
