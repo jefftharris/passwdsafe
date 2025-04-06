@@ -10,6 +10,8 @@ package com.jefftharris.passwdsafe;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.text.TextUtils;
@@ -91,6 +93,16 @@ public final class SavedPasswordsMgr
     public static abstract class User
             extends BiometricPrompt.AuthenticationCallback
     {
+        public enum Warning
+        {
+            KEY_INVALIDATED
+        }
+
+        /** @noinspection SameParameterValue*/
+        protected abstract void onAuthenticationWarning(
+                Warning warning,
+                @NonNull CharSequence errString);
+
         /**
          * Is the user for encryption or decryption
          */
@@ -260,19 +272,30 @@ public final class SavedPasswordsMgr
                 KeyStoreException | UnrecoverableKeyException |
                 NoSuchPaddingException | InvalidKeyException |
                 InvalidAlgorithmParameterException | IOException e) {
-            if (e.getClass().getName().equals(
-                    "android.security.keystore." +
-                    "KeyPermanentlyInvalidatedException")) {
-                removeSavedPassword(fileUri);
-            }
+            var isKeyInvalidated = e.getClass().getName().equals(
+                    "android.security.keystore" +
+                    ".KeyPermanentlyInvalidatedException");
 
-            String msg = itsContext.getString(
-                    R.string.key_error, fileUri.getIdentifier(itsContext, true),
-                    e.getLocalizedMessage());
-            Log.e(TAG, msg, e);
-            user.onAuthenticationError(BiometricPrompt.ERROR_UNABLE_TO_PROCESS,
-                                       msg);
-            return false;
+            if (isKeyInvalidated) {
+                removeSavedPassword(fileUri);
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    var msg = itsContext.getString(
+                            R.string.saved_password_invalid_biometrics_change);
+                    Log.e(TAG, msg, e);
+                    user.onAuthenticationWarning(
+                            User.Warning.KEY_INVALIDATED, msg);
+                });
+                return true;
+            } else {
+                var msg = itsContext.getString(
+                        R.string.key_error,
+                        fileUri.getIdentifier(itsContext, true),
+                        e.getLocalizedMessage());
+                Log.e(TAG, msg, e);
+                user.onAuthenticationError(
+                        BiometricPrompt.ERROR_UNABLE_TO_PROCESS, msg);
+                return false;
+            }
         }
     }
 

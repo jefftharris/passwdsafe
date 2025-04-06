@@ -924,6 +924,10 @@ public class PasswdSafeOpenFileFragment
                     newState = SavedPasswordState.LOADED_SUCCESS;
                     break;
                 }
+                case KEY_INVALIDATED: {
+                    newState = SavedPasswordState.NOT_AVAILABLE;
+                    break;
+                }
                 case ERROR: {
                     newState = SavedPasswordState.LOADED_FAILURE;
                     break;
@@ -948,6 +952,7 @@ public class PasswdSafeOpenFileFragment
                     finishFileOpen(openResult.itsFileData);
                     break;
                 }
+                case KEY_INVALIDATED:
                 case ERROR: {
                     setPhase(Phase.WAITING_PASSWORD);
                     break;
@@ -970,6 +975,7 @@ public class PasswdSafeOpenFileFragment
             textColor = R.attr.textColorGreen;
             break;
         }
+        case KEY_INVALIDATED:
         case ERROR: {
             textColor = R.attr.colorError;
             break;
@@ -1342,6 +1348,8 @@ public class PasswdSafeOpenFileFragment
     {
         /** Success */
         SUCCESS,
+        /** Saved password key was invalidated */
+        KEY_INVALIDATED,
         /** Error */
         ERROR
     }
@@ -1392,6 +1400,22 @@ public class PasswdSafeOpenFileFragment
             }
             }
             finish(SavedPasswordFinish.ERROR, errString, null);
+        }
+
+        @Override
+        public final void onAuthenticationWarning(Warning warning,
+                                                  @NonNull
+                                                  CharSequence errString)
+        {
+            PasswdSafeUtil.dbginfo(itsTag, "warning %s: %s", warning,
+                                   errString);
+            switch (warning) {
+            case KEY_INVALIDATED: {
+                finish(SavedPasswordFinish.KEY_INVALIDATED,
+                       errString, null);
+                break;
+            }
+            }
         }
 
         @Override
