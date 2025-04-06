@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -55,6 +55,7 @@
                 android:gravity="fill_horizontal"
                 android:imeOptions="actionGo"
                 android:inputType="textMultiLine|textPassword"
+                android:minHeight="48dp"
                 android:scrollHorizontally="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
         </com.google.android.material.textfield.TextInputLayout>
