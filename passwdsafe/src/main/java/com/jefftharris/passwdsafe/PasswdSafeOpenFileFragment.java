@@ -1004,6 +1004,7 @@ public class PasswdSafeOpenFileFragment
                             result.itsKeygenError.toString());
                     PasswdSafeUtil.showErrorMsg(msg,
                                                 new ActContext(getContext()));
+                    setPhase(Phase.WAITING_PASSWORD);
                     break;
                 }
 
