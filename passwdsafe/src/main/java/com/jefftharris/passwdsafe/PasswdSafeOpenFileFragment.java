@@ -429,6 +429,9 @@ public class PasswdSafeOpenFileFragment
         } else if (itemId == R.id.menu_nfc_settings) {
             startActivity(Settings.ACTION_NFC_SETTINGS);
             return true;
+        } else if (itemId == R.id.menu_security_settings) {
+            startActivity(Settings.ACTION_SECURITY_SETTINGS);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
