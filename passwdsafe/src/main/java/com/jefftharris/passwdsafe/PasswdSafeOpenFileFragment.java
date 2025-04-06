@@ -1107,7 +1107,7 @@ public class PasswdSafeOpenFileFragment
                       requireView());
     }
 
-   /**
+    /**
      * Update the YubiKey progress message
      *
      * @param hasUsbDevice Non-null if the presence of a USB YubiKey is known
