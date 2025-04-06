@@ -45,6 +45,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ActContext;
+import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -426,12 +427,10 @@ public class PasswdSafeOpenFileFragment
             itsOpenModel.setYubiSlot(2);
             return true;
         } else if (itemId == R.id.menu_nfc_settings) {
-            try {
-                var intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                requireActivity().startActivity(intent);
-            } catch (Exception e) {
-                PasswdSafeUtil.dbginfo(TAG, e, "NFC activity not started");
-            }
+            startActivity(Settings.ACTION_NFC_SETTINGS);
+            return true;
+        } else if (itemId == R.id.menu_security_settings) {
+            startActivity(Settings.ACTION_SECURITY_SETTINGS);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -924,6 +923,10 @@ public class PasswdSafeOpenFileFragment
                     newState = SavedPasswordState.LOADED_SUCCESS;
                     break;
                 }
+                case KEY_INVALIDATED: {
+                    newState = SavedPasswordState.NOT_AVAILABLE;
+                    break;
+                }
                 case ERROR: {
                     newState = SavedPasswordState.LOADED_FAILURE;
                     break;
@@ -948,6 +951,7 @@ public class PasswdSafeOpenFileFragment
                     finishFileOpen(openResult.itsFileData);
                     break;
                 }
+                case KEY_INVALIDATED:
                 case ERROR: {
                     setPhase(Phase.WAITING_PASSWORD);
                     break;
@@ -970,6 +974,7 @@ public class PasswdSafeOpenFileFragment
             textColor = R.attr.textColorGreen;
             break;
         }
+        case KEY_INVALIDATED:
         case ERROR: {
             textColor = R.attr.colorError;
             break;
@@ -999,6 +1004,7 @@ public class PasswdSafeOpenFileFragment
                             result.itsKeygenError.toString());
                     PasswdSafeUtil.showErrorMsg(msg,
                                                 new ActContext(getContext()));
+                    setPhase(Phase.WAITING_PASSWORD);
                     break;
                 }
 
@@ -1101,7 +1107,7 @@ public class PasswdSafeOpenFileFragment
                       requireView());
     }
 
-   /**
+    /**
      * Update the YubiKey progress message
      *
      * @param hasUsbDevice Non-null if the presence of a USB YubiKey is known
@@ -1179,6 +1185,22 @@ public class PasswdSafeOpenFileFragment
                                  boolean fromYubikey)
     {
         itsOpenModel.setOpenPassword(password, fromYubikey);
+    }
+
+    /**
+     * Start an activity for an intent action
+     */
+    private void startActivity(@NonNull String action)
+    {
+        try {
+            var intent = new Intent(action);
+            var act = requireActivity();
+            if (intent.resolveActivity(act.getPackageManager()) != null) {
+                act.startActivity(intent);
+            }
+        } catch (Exception e) {
+            PasswdSafeLog.error(TAG, e, "Activity not started for %s", action);
+        }
     }
 
     /**
@@ -1342,6 +1364,8 @@ public class PasswdSafeOpenFileFragment
     {
         /** Success */
         SUCCESS,
+        /** Saved password key was invalidated */
+        KEY_INVALIDATED,
         /** Error */
         ERROR
     }
@@ -1392,6 +1416,22 @@ public class PasswdSafeOpenFileFragment
             }
             }
             finish(SavedPasswordFinish.ERROR, errString, null);
+        }
+
+        @Override
+        public final void onAuthenticationWarning(Warning warning,
+                                                  @NonNull
+                                                  CharSequence errString)
+        {
+            PasswdSafeUtil.dbginfo(itsTag, "warning %s: %s", warning,
+                                   errString);
+            switch (warning) {
+            case KEY_INVALIDATED: {
+                finish(SavedPasswordFinish.KEY_INVALIDATED,
+                       errString, null);
+                break;
+            }
+            }
         }
 
         @Override
