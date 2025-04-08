@@ -362,7 +362,9 @@
         verloren gehen. Bitte behalten Sie das Passwort im Gedächnis um
         weiterhin Zugriff auf die Datei zu haben.
     </string>
+    <string name="saved_password_invalid_biometrics_change">Das gespeicherte Passwort ist ungültig, weil sich die biometrischen Daten geändert haben. Um das Passwort erneut zu speichern, muss die Datei mit dem Passwort entsperrt werden.</string>
     <string name="saving_file">Speichere %s …</string>
+    <string name="security_settings">Sicherheitseinstellungen</string>
     <string name="search">Suchen</string>
     <string name="search_hint">In PasswdSafe suchen</string>
     <string name="select_accounts">Konto auswählen</string>
@@ -379,6 +381,7 @@
     <string name="shortcut_record">Verknüpfungseintrag</string>
     <string name="shortcut_to_same_record">Verknüpfung zum selben Eintrag</string>
     <string name="show_backup_files">Zeige Sicherungen an</string>
+    <string name="show_on_untrusted_external_displays">Show file on untrusted external displays Zeige Datei auf nicht vertrauenswürdigen externen Bildschirmen an</string>
     <string name="show_password">Passwort anzeigen</string>
     <string name="show_passwords">Passwörter anzeigen</string>
     <string name="similar_to">Ähnlicher Eintrag wie %1$s</string>
@@ -419,6 +422,12 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.25.0&lt;/b&gt; - Mitteilung falls ein gespeicherter
+        Passwortschlüssel ungültig geworden ist hinzugefügt.  Option für die
+        Anzeige auf einem externen Bildschirm hinzugefügt.  Teilen einer
+        schreibgeschützen Datei möglich.  Kompatibilität mit Android 15.
+
+        \n\n
         &lt;b&gt;6.24.0&lt;/b&gt; - Datei speichern auf dem Chromebook und
         UI-Verbesserungen
         \n\n
