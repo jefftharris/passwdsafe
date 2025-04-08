@@ -37,8 +37,11 @@ public final class ManagedRef<T>
     public @Nullable T get()
     {
         T obj = itsRef.get();
-        if ((obj instanceof Fragment) && !((Fragment)obj).isAdded()) {
+        if (obj instanceof Fragment) {
+            var frag = (Fragment)obj;
+            if (!frag.isAdded()) {
                 obj = null;
+            }
         } else if (obj instanceof Activity) {
             var act = (Activity)obj;
             if (act.isDestroyed() || act.isFinishing()) {
