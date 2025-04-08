@@ -422,6 +422,12 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.25.0&lt;/b&gt; - Mitteilung falls ein gespeicherter
+        Passwortschlüssel ungültig geworden ist hinzugefügt.  Option für die
+        Anzeige auf einem externen Bildschirm hinzugefügt.  Teilen einer
+        schreibgeschützen Datei möglich.  Kompatibilität mit Android 15.
+
+        \n\n
         &lt;b&gt;6.24.0&lt;/b&gt; - Datei speichern auf dem Chromebook und
         UI-Verbesserungen
         \n\n

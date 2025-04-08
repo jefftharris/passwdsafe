@@ -416,6 +416,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.25.0&lt;/b&gt; - Add note when saved password key has been
+        invalidated. Add option to show on external displays.  Allow sharing
+        file when not writable. Update for Android 15 compatibility.
+        \n\n
         &lt;b&gt;6.24.0&lt;/b&gt; - Chromebook file saving and UI improvements
         \n\n
         &lt;b&gt;6.23.4&lt;/b&gt; - Fix file close timeout.
