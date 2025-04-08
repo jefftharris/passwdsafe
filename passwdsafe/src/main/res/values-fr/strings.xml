@@ -371,7 +371,9 @@
         où changement d\'empreinte digitale. Souvenez vous bien du mots de
         passe pour vous assurer que le fichier reste déchiffrable.
     </string>
+    <string name="saved_password_invalid_biometrics_change">Le mot de passe enregistré est devenu invalide en raison d\'une modification biométrique. Choisissez de réenregistrer le mot de passe et ouvrez le fichier contenant le mot de passe.</string>
     <string name="saving_file">Enregistrement %s…</string>
+    <string name="security_settings">Paramètres de sécurité</string>
     <string name="search">Rechercher</string>
     <string name="search_hint">Rechercher PasswdSafe</string>
     <string name="select_accounts">Sélectionnez comptes</string>
@@ -388,6 +390,7 @@
     <string name="shortcut_record">Raccourci Entrée </string>
     <string name="shortcut_to_same_record">Raccourci pour la même entrée</string>
     <string name="show_backup_files">Afficher les sauvegardes</string>
+    <string name="show_on_untrusted_external_displays">Affichage du fichier sur les écrans externes non fiables</string>
     <string name="show_password">Afficher mot de passe</string>
     <string name="show_passwords">Afficher mots de passe</string>
     <string name="similar_to">Similaire à %1$s</string>

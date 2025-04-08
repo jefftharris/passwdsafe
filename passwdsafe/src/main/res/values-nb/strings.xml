@@ -328,7 +328,9 @@
         fingeravtrykket endres. Husk passordet for å forsikre deg at filen
         fortsatt kan brukes.
     </string>
+    <string name="saved_password_invalid_biometrics_change">Det lagrede passordet er ugyldig på grunn av en biometrisk endring. Velg å lagre passordet på nytt, og åpne filen med passordet.</string>
     <string name="saving_file">Lagrer %s …</string>
+    <string name="security_settings">Sikkerhetsinnstillinger</string>
     <string name="search">Søk</string>
     <string name="search_hint">Søk PasswdSafe</string>
     <string name="select_accounts">Velg kontoer</string>
@@ -345,6 +347,7 @@
     <string name="shortcut_record">Snarveioppføring</string>
     <string name="shortcut_to_same_record">Snarvei til samme oppføring</string>
     <string name="show_backup_files">Vis sikkerhetskopifiler</string>
+    <string name="show_on_untrusted_external_displays">Vis fil på ekstern skjerm som du ikke stoler på</string>
     <string name="show_password">Vis passord</string>
     <string name="show_passwords">Vis passord</string>
     <string name="similar_to">Lignende som %1$s</string>

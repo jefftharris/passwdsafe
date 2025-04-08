@@ -356,9 +356,9 @@
         \nThe saved password may be lost during an upgrade or fingerprint
         change.  Remember the password to ensure the file remains openable.
     </string>
-    <string name="saved_password_invalid_biometrics_change" tools:ignore="MissingTranslation">The saved password has become invalid due to a biometrics change.  Choose to save the password again, and open the file with the password.</string>
+    <string name="saved_password_invalid_biometrics_change">The saved password has become invalid due to a biometrics change.  Choose to save the password again, and open the file with the password.</string>
     <string name="saving_file">Saving %s…</string>
-    <string name="security_settings" tools:ignore="MissingTranslation">Security Settings</string>
+    <string name="security_settings">Security Settings</string>
     <string name="search">Search</string>
     <string name="search_hint">Search PasswdSafe</string>
     <string name="select_accounts">Select accounts</string>
@@ -375,7 +375,7 @@
     <string name="shortcut_record">Shortcut record</string>
     <string name="shortcut_to_same_record">Shortcut to the same record</string>
     <string name="show_backup_files">Show backup files</string>
-    <string name="show_on_untrusted_external_displays" tools:ignore="MissingTranslation">Show on untrusted external displays</string>
+    <string name="show_on_untrusted_external_displays">Show on untrusted external displays</string>
     <string name="show_password">Show Password</string>
     <string name="show_passwords">Show Passwords</string>
     <string name="similar_to">Similar to %1$s</string>
