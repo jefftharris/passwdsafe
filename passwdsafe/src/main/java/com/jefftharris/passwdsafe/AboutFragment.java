@@ -75,7 +75,6 @@ public class AboutFragment extends Fragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
         View rootView = inflater.inflate(R.layout.fragment_about,
                                          container, false);
 

@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.selection.ItemKeyProvider;
@@ -42,7 +43,8 @@ import java.util.List;
  * A fragment for backup files
  */
 public class BackupFilesFragment extends Fragment
-        implements ConfirmPromptDialog.Listener, View.OnClickListener
+        implements ConfirmPromptDialog.Listener, MenuProvider,
+                   View.OnClickListener
 {
     /**
      * Listener interface for owning activity
@@ -107,7 +109,7 @@ public class BackupFilesFragment extends Fragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
         View rootView =
                 inflater.inflate(R.layout.fragment_backup_files_list, container,
                                  false);
@@ -175,17 +177,14 @@ public class BackupFilesFragment extends Fragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_backup_files, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    public void onPrepareMenu(@NonNull Menu menu)
     {
-        super.onPrepareOptionsMenu(menu);
         MenuItem item = menu.findItem(R.id.menu_delete_all);
         if (item != null) {
             item.setEnabled(itsBackupFilesAdapter.getItemCount() != 0);
@@ -193,15 +192,17 @@ public class BackupFilesFragment extends Fragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_help) {
             GuiUtils.setVisible(itsHelp, true);
+            return true;
         } else if (itemId == R.id.menu_delete_all) {
             showPrompt(ConfirmAction.DELETE_ALL);
+            return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
