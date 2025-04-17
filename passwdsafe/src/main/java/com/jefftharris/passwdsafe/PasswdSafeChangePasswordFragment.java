@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -30,6 +30,7 @@ import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;
 
@@ -63,6 +64,8 @@ public class PasswdSafeChangePasswordFragment
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static PasswdSafeChangePasswordFragment newInstance()
     {
         return new PasswdSafeChangePasswordFragment();
@@ -73,7 +76,7 @@ public class PasswdSafeChangePasswordFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        enableMenu();
         View rootView = inflater.inflate(
                 R.layout.fragment_passwdsafe_change_password, container, false);
         Context ctx = getContext();
@@ -130,9 +133,9 @@ public class PasswdSafeChangePasswordFragment
     }
 
     @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    public void onPrepareMenu(@NonNull Menu menu)
     {
-        super.onPrepareOptionsMenu(menu);
+        super.onPrepareMenu(menu);
 
         MenuItem item = menu.findItem(R.id.menu_save);
         if (item != null) {
@@ -141,17 +144,18 @@ public class PasswdSafeChangePasswordFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_save) {
             save();
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onMenuItemSelected(item);
     }
 
     @Override
-    protected void doOnCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    protected void doOnCreateMenu(@NonNull Menu menu,
+                                  @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_passwdsafe_change_password, menu);
     }
@@ -185,7 +189,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Register a text view with the validator
          */
-        protected void registerTextView(TextView tv)
+        protected void registerTextView(@NonNull TextView tv)
         {
             tv.addTextChangedListener(this);
         }
@@ -193,7 +197,7 @@ public class PasswdSafeChangePasswordFragment
         /**
          * Unregister a text view
          */
-        protected void unregisterTextView(TextView tv)
+        protected void unregisterTextView(@NonNull TextView tv)
         {
             tv.removeTextChangedListener(this);
         }

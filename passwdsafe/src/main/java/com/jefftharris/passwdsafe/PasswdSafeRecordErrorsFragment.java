@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2022 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2022-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -17,12 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.ListFragment;
 
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.PrintWriter;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
  * Fragment showing a list of record errors
  */
 public class PasswdSafeRecordErrorsFragment extends ListFragment
+        implements MenuProvider
 {
     /** Listener interface for owning activity */
     public interface Listener
@@ -53,6 +56,8 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static PasswdSafeRecordErrorsFragment newInstance()
     {
         return new PasswdSafeRecordErrorsFragment();
@@ -66,10 +71,11 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
         View root = inflater.inflate(R.layout.fragment_passwdsafe_record_errors,
                                 container, false);
         itsNote = root.findViewById(R.id.note);
@@ -93,17 +99,15 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
             inflater.inflate(R.menu.fragment_passwdsafe_record_errors, menu);
         }
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int menuId = item.getItemId();
         if (menuId == R.id.menu_save) {
@@ -116,7 +120,7 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
             copyErrorsToClipboard();
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     /**
@@ -175,8 +179,9 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
             itsError = errorToString(rle, ctx);
         }
 
-        protected static String errorToString(RecordLoadException rle,
-                                              Context ctx)
+        @NonNull
+        protected static String errorToString(@NonNull RecordLoadException rle,
+                                              @NonNull Context ctx)
         {
             StringWriter sb = new StringWriter();
             PrintWriter printer = new PrintWriter(sb);

@@ -10,12 +10,15 @@ package com.jefftharris.passwdsafe;
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
 /**
  * Base fragment for accessing password file data
@@ -23,6 +26,7 @@ import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 public abstract class AbstractPasswdSafeFileDataFragment
         <ListenerT extends AbstractPasswdSafeFileDataFragment.Listener>
         extends Fragment
+        implements MenuProvider
 {
     /**
      * Listener interface for owning activity
@@ -55,13 +59,26 @@ public abstract class AbstractPasswdSafeFileDataFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public final void onCreateMenu(@NonNull Menu menu,
+                                   @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
-            doOnCreateOptionsMenu(menu, inflater);
+            doOnCreateMenu(menu, inflater);
         }
-        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(@NonNull MenuItem menuItem)
+    {
+        return false;
+    }
+
+    /**
+     * Enable the options menu for the fragment
+     */
+    protected void enableMenu()
+    {
+        GuiUtils.enableOptionsMenu(this);
     }
 
     /**
@@ -75,8 +92,10 @@ public abstract class AbstractPasswdSafeFileDataFragment
     /**
      * Derived-class create options menu
      */
-    protected abstract void doOnCreateOptionsMenu(Menu menu,
-                                                  MenuInflater inflater);
+    protected void doOnCreateMenu(@NonNull Menu menu,
+                                  @NonNull MenuInflater inflater)
+    {
+    }
 
     /**
      * Use the file data

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -43,6 +43,7 @@ public class PasswdSafeRecordNotesFragment
     /**
      * Create a new instance of the fragment
      */
+    @NonNull
     public static PasswdSafeRecordNotesFragment newInstance(
             PasswdLocation location)
     {
@@ -58,7 +59,7 @@ public class PasswdSafeRecordNotesFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        enableMenu();
         View root = inflater.inflate(R.layout.fragment_passwdsafe_record_notes,
                                      container, false);
         itsNotes = root.findViewById(R.id.notes);
@@ -67,7 +68,7 @@ public class PasswdSafeRecordNotesFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_copy_notes) {
@@ -87,13 +88,13 @@ public class PasswdSafeRecordNotesFragment
             setNotesOptions();
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onMenuItemSelected(item);
     }
 
     /**
      * Set the current view options on the notes field
      */
-    public static void setNotesOptions(TextView notes, Activity act)
+    public static void setNotesOptions(TextView notes, @NonNull Activity act)
     {
         SharedPreferences prefs =
                 act.getPreferences(Context.MODE_PRIVATE);
@@ -103,13 +104,14 @@ public class PasswdSafeRecordNotesFragment
     }
 
     @Override
-    protected void doOnCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    protected void doOnCreateMenu(@NonNull Menu menu,
+                                  @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_passwdsafe_record_notes, menu);
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu)
+    public void onPrepareMenu(@NonNull Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_monospace);
         if (item != null) {
@@ -117,7 +119,7 @@ public class PasswdSafeRecordNotesFragment
             item = menu.findItem(R.id.menu_word_wrap);
             item.setChecked(itsIsWordWrap);
         }
-        super.onPrepareOptionsMenu(menu);
+        super.onPrepareMenu(menu);
     }
 
     @Override
@@ -168,8 +170,10 @@ public class PasswdSafeRecordNotesFragment
     /**
      * Set options for notes
      */
-    private static void setNotesOptions(TextView notes, boolean wordWrap,
-                                        boolean monospace, Context ctx)
+    private static void setNotesOptions(@NonNull TextView notes,
+                                        boolean wordWrap,
+                                        boolean monospace,
+                                        Context ctx)
     {
         notes.setHorizontallyScrolling(!wordWrap);
         TypefaceUtils.enableMonospace(notes, monospace, ctx);
