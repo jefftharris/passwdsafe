@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: Yubico/yubikit-android
-        ref: release/2.8.1
+        ref: d1f58c0e9b7de5e8a9e8bed5411ee5e5654d655a
         path: yubikit
 
     - name: Set up JDK 17
