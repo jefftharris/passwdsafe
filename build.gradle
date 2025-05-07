@@ -28,6 +28,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         maven {
             url = uri("${rootProject.projectDir}/maven-libs")
         }
