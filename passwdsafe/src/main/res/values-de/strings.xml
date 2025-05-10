@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -422,11 +422,13 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.25.1&lt;/b&gt; - Nutzung von einigen Yubikey NEO Schlüssel
+        via NFC repariert
+        \n\n
         &lt;b&gt;6.25.0&lt;/b&gt; - Mitteilung falls ein gespeicherter
         Passwortschlüssel ungültig geworden ist hinzugefügt.  Option für die
         Anzeige auf einem externen Bildschirm hinzugefügt.  Teilen einer
         schreibgeschützen Datei möglich.  Kompatibilität mit Android 15.
-
         \n\n
         &lt;b&gt;6.24.0&lt;/b&gt; - Datei speichern auf dem Chromebook und
         UI-Verbesserungen

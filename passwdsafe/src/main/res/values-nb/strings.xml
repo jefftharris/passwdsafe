@@ -1,4 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!--
+  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+  ~ All rights reserved. Use of the code is allowed under the
+  ~ Artistic License 2.0 terms, as specified in the LICENSE file
+  ~ distributed with this code, or available from
+  ~ http://www.opensource.org/licenses/artistic-license-2.0.php
+  -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="add">Legg til</string>
     <string name="add_policy">Legg til regel</string>
@@ -388,6 +395,9 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.25.1&lt;/b&gt; - Rettet bruk av noen Yubikey NEO nøkler
+        via NFC
+        \n\n
         &lt;b&gt;6.25.0&lt;/b&gt; - La til merknad når lagret passordnøkkel har
         blitt ugyldig. La til valg for å vise på eksterne skjermer. Tillat
         deling av fil når den ikke er skrivbar. Oppdatert for Android 15
