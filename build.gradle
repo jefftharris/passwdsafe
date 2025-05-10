@@ -14,7 +14,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.9.1'
+        classpath 'com.android.tools.build:gradle:8.10.0'
 
         // From https://github.com/google/secrets-gradle-plugin
         classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
@@ -28,6 +28,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         maven {
             url = uri("${rootProject.projectDir}/maven-libs")
         }
