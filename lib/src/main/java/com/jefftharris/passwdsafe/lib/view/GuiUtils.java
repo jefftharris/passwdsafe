@@ -32,6 +32,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
@@ -152,7 +153,8 @@ public final class GuiUtils
             @NonNull T frag)
     {
         frag.requireActivity().addMenuProvider(frag,
-                                               frag.getViewLifecycleOwner());
+                                               frag.getViewLifecycleOwner(),
+                                               Lifecycle.State.RESUMED);
     }
 
     /** Set whether a menu item is enabled */
