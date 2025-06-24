@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -116,21 +116,15 @@ public class YubikeyViewModel extends AndroidViewModel
             return YubiState.ENABLED;
         }
 
-        switch (itsNfcState) {
-        case UNAVAILABLE: {
-            return itsHasUsb ? YubiState.USB_ENABLED_NFC_UNAVAILABLE :
-                   YubiState.UNAVAILABLE;
-        }
-        case DISABLED: {
-            return itsHasUsb ? YubiState.USB_ENABLED_NFC_DISABLED :
-                   YubiState.USB_DISABLED_NFC_DISABLED;
-        }
-        case ENABLED: {
-            return itsHasUsb ? YubiState.ENABLED :
-                   YubiState.USB_DISABLED_NFC_ENABLED;
-        }
-        }
-        return YubiState.UNAVAILABLE;
+        return switch (itsNfcState) {
+            case UNAVAILABLE ->
+                    itsHasUsb ? YubiState.USB_ENABLED_NFC_UNAVAILABLE :
+                    YubiState.UNAVAILABLE;
+            case DISABLED -> itsHasUsb ? YubiState.USB_ENABLED_NFC_DISABLED :
+                             YubiState.USB_DISABLED_NFC_DISABLED;
+            case ENABLED -> itsHasUsb ? YubiState.ENABLED :
+                            YubiState.USB_DISABLED_NFC_ENABLED;
+        };
     }
 
     /**

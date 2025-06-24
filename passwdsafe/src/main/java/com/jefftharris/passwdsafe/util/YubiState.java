@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2014 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2014-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -35,20 +35,15 @@ public enum YubiState
      */
     public boolean isEnabled()
     {
-        switch (this) {
-        case USB_DISABLED_NFC_ENABLED:
-        case USB_ENABLED_NFC_UNAVAILABLE:
-        case USB_ENABLED_NFC_DISABLED:
-        case ENABLED: {
-            return true;
-        }
-        case UNKNOWN:
-        case UNAVAILABLE:
-        case USB_DISABLED_NFC_DISABLED: {
-            return false;
-        }
-        }
-        return false;
+        return switch (this) {
+            case USB_DISABLED_NFC_ENABLED,
+                 USB_ENABLED_NFC_UNAVAILABLE,
+                 USB_ENABLED_NFC_DISABLED,
+                 ENABLED -> true;
+            case UNKNOWN,
+                 UNAVAILABLE,
+                 USB_DISABLED_NFC_DISABLED -> false;
+        };
     }
 
     /**
@@ -56,19 +51,14 @@ public enum YubiState
      */
     public boolean isUsbEnabled()
     {
-        switch (this) {
-        case USB_ENABLED_NFC_UNAVAILABLE:
-        case USB_ENABLED_NFC_DISABLED:
-        case ENABLED: {
-            return true;
-        }
-        case UNKNOWN:
-        case UNAVAILABLE:
-        case USB_DISABLED_NFC_ENABLED:
-        case USB_DISABLED_NFC_DISABLED: {
-            return false;
-        }
-        }
-        return false;
+        return switch (this) {
+            case USB_ENABLED_NFC_UNAVAILABLE,
+                 USB_ENABLED_NFC_DISABLED,
+                 ENABLED -> true;
+            case UNKNOWN,
+                 UNAVAILABLE,
+                 USB_DISABLED_NFC_ENABLED,
+                 USB_DISABLED_NFC_DISABLED -> false;
+        };
     }
 }

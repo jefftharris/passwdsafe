@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -280,16 +280,11 @@ public final class PasswdRecordFilter implements Closeable
      */
     public boolean isQueryType()
     {
-        switch (itsType) {
-        case QUERY: {
-            return true;
-        }
-        case EXPIRATION:
-        case SIMILAR: {
-            return false;
-        }
-        }
-        return false;
+        return switch (itsType) {
+            case QUERY -> true;
+            case EXPIRATION,
+                 SIMILAR -> false;
+        };
     }
 
     /** Convert the filter to a string */
@@ -303,27 +298,19 @@ public final class PasswdRecordFilter implements Closeable
             break;
         }
         case EXPIRATION: {
-            switch (itsExpiryFilter) {
-            case EXPIRED: {
-                return ctx.getString(R.string.password_expired);
-            }
-            case TODAY: {
-                return ctx.getString(R.string.password_expires_today);
-            }
-            case IN_A_WEEK:
-            case IN_TWO_WEEKS:
-            case IN_A_MONTH:
-            case IN_A_YEAR:
-            case CUSTOM: {
-                return ctx.getString(
-                    R.string.password_expires_before,
-                    Utils.formatDate(itsExpiryAtMillis, ctx,
-                                     true, true, false));
-            }
-            case ANY: {
-                return ctx.getString(R.string.password_with_expiration);
-            }
-            }
+            return switch (itsExpiryFilter) {
+                case EXPIRED -> ctx.getString(R.string.password_expired);
+                case TODAY -> ctx.getString(R.string.password_expires_today);
+                case IN_A_WEEK,
+                     IN_TWO_WEEKS,
+                     IN_A_MONTH,
+                     IN_A_YEAR,
+                     CUSTOM -> ctx.getString(R.string.password_expires_before,
+                                             Utils.formatDate(itsExpiryAtMillis,
+                                                              ctx, true, true,
+                                                              false));
+                case ANY -> ctx.getString(R.string.password_with_expiration);
+            };
         }
         case SIMILAR: {
             return ctx.getString(R.string.similar_to,

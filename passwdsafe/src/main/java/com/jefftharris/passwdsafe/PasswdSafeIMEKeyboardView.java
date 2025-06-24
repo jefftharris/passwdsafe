@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +11,8 @@ import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.util.AttributeSet;
+
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
@@ -40,18 +42,16 @@ public class PasswdSafeIMEKeyboardView extends KeyboardView
     }
 
     @Override
-    protected boolean onLongPress(Keyboard.Key key)
+    protected boolean onLongPress(@NonNull Keyboard.Key key)
     {
-        switch (key.codes[0]) {
-        case PasswdSafeIME.KEYBOARD_NEXT_KEY:
-        case PasswdSafeIME.KEYBOARD_CHOOSE_KEY: {
-            getOnKeyboardActionListener().onKey(
-                    PasswdSafeIME.KEYBOARD_CHOOSE_KEY, null);
-            return true;
-        }
-        default: {
-            return super.onLongPress(key);
-        }
-        }
+        return switch (key.codes[0]) {
+            case PasswdSafeIME.KEYBOARD_NEXT_KEY,
+                 PasswdSafeIME.KEYBOARD_CHOOSE_KEY -> {
+                getOnKeyboardActionListener().onKey(
+                        PasswdSafeIME.KEYBOARD_CHOOSE_KEY, null);
+                yield true;
+            }
+            default -> super.onLongPress(key);
+        };
     }
 }

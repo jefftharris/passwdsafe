@@ -79,8 +79,8 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
          *
          * @param file the file the data should be read from.
          */
-        protected Item(PwsFile file) throws EndOfFileException,
-                                            IOException
+        protected Item(@NonNull PwsFile file) throws EndOfFileException,
+                                                     IOException
         {
             rawData = file.readBlock();
             length = Util.getIntFromByteArray(rawData, 0);
@@ -127,7 +127,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
                 // range.
                 //
                 // TODOlib This needs to be reviewed if the format ever
-		    // changes to
+                    // changes to
                 // unicode
 
                 return new String(data, 0, length, DEFAULT_CHARSET);
@@ -379,21 +379,17 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param file the file to read the record from.
      * @return The record that was read.
      */
-    public static PwsRecord read(PwsFile file)
+    @NonNull
+    public static PwsRecord read(@NonNull PwsFile file)
             throws EndOfFileException, IOException,
                    UnsupportedFileVersionException, RecordLoadException
     {
-        switch (file.getFileVersionMajor()) {
-        case PwsFileV1.VERSION:
-            return new PwsRecordV1(file);
-
-        case PwsFileV2.VERSION:
-            return new PwsRecordV2(file);
-
-        case PwsFileV3.VERSION:
-            return new PwsRecordV3(file);
-        }
-        throw new UnsupportedFileVersionException();
+        return switch (file.getFileVersionMajor()) {
+            case PwsFileV1.VERSION -> new PwsRecordV1(file);
+            case PwsFileV2.VERSION -> new PwsRecordV2(file);
+            case PwsFileV3.VERSION -> new PwsRecordV3(file);
+            default -> throw new UnsupportedFileVersionException();
+        };
     }
 
     /**
@@ -419,7 +415,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @throws IllegalArgumentException if value is not the correct type
      * for the file.
      */
-    public void setField(PwsField value)
+    public void setField(@NonNull PwsField value)
     {
         int theType;
 
@@ -504,7 +500,9 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param aType the type to write to the file instead of <code>field
      *                     .getType()</code>
      */
-    protected void writeField(PwsFile file, PwsField field, int aType)
+    protected void writeField(@NonNull PwsFile file,
+                              @NonNull PwsField field,
+                              int aType)
             throws IOException
     {
         byte[] lenBlock;

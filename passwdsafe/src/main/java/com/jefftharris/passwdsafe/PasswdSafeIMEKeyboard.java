@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -89,6 +89,7 @@ public final class PasswdSafeIMEKeyboard extends Keyboard
                                        R.xml.keyboard_popup_password);
     }
 
+    @NonNull
     @Override
     protected Key createKeyFromXml(@NonNull Resources res,
                                    @NonNull Row parent,
@@ -151,22 +152,20 @@ public final class PasswdSafeIMEKeyboard extends Keyboard
         @Override
         public int[] getCurrentDrawableState()
         {
-            switch (codes[0]) {
-            case Keyboard.KEYCODE_DELETE:
-            case Keyboard.KEYCODE_MODE_CHANGE:
-            case PasswdSafeIME.ENTER_KEY:
-            case PasswdSafeIME.KEYBOARD_CHOOSE_KEY:
-            case PasswdSafeIME.KEYBOARD_NEXT_KEY:
-            case PasswdSafeIME.PASSWDSAFE_KEY: {
-                if (pressed) {
-                    return ACTION_KEY_PRESSED;
+            return switch (codes[0]) {
+                case Keyboard.KEYCODE_DELETE,
+                     Keyboard.KEYCODE_MODE_CHANGE,
+                     PasswdSafeIME.ENTER_KEY,
+                     PasswdSafeIME.KEYBOARD_CHOOSE_KEY,
+                     PasswdSafeIME.KEYBOARD_NEXT_KEY,
+                     PasswdSafeIME.PASSWDSAFE_KEY -> {
+                    if (pressed) {
+                        yield ACTION_KEY_PRESSED;
+                    }
+                    yield ACTION_KEY_NORMAL;
                 }
-                return ACTION_KEY_NORMAL;
-            }
-            default: {
-                return super.getCurrentDrawableState();
-            }
-            }
+                default -> super.getCurrentDrawableState();
+            };
         }
     }
 }

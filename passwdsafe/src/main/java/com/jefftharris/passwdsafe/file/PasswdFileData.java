@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2009-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2009-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -1133,18 +1133,11 @@ public class PasswdFileData
     @Nullable
     private static PwsField doGetField(PwsRecord rec, int fieldId)
     {
-        switch (fieldId)
-        {
-        case FIELD_UNSUPPORTED:
-        case FIELD_NOT_PRESENT:
-        {
-            return null;
-        }
-        default:
-        {
-            return rec.getField(fieldId);
-        }
-        }
+        return switch (fieldId) {
+            case FIELD_UNSUPPORTED,
+                 FIELD_NOT_PRESENT -> null;
+            default -> rec.getField(fieldId);
+        };
     }
 
     private void setField(Object val, PwsRecord rec, int fieldId)

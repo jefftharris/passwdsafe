@@ -129,18 +129,12 @@ public class PasswdSafeRecordFragment
             @Override
             public CharSequence getPageTitle(int position)
             {
-                switch (position) {
-                case 0: {
-                    return getString(R.string.basic);
-                }
-                case 1: {
-                    return getString(R.string.password);
-                }
-                case 2: {
-                    return getString(R.string.notes);
-                }
-                }
-                return null;
+                return switch (position) {
+                    case 0 -> getString(R.string.basic);
+                    case 1 -> getString(R.string.password);
+                    case 2 -> getString(R.string.notes);
+                    default -> null;
+                };
             }
         });
         viewPager.setCurrentItem(itsLastSelectedTab);

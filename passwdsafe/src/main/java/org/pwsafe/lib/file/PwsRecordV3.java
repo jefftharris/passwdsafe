@@ -634,7 +634,9 @@ public class PwsRecordV3 extends PwsRecord
      *              <code>field.getType()</code>
      */
     @Override
-    protected void writeField(PwsFile file, PwsField field, int type)
+    protected void writeField(@NonNull PwsFile file,
+                              @NonNull PwsField field,
+                              int type)
             throws IOException
     {
         byte[] lenBlock = new byte[5];

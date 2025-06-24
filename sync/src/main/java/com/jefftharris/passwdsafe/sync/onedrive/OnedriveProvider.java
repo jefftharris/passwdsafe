@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -408,16 +408,10 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                 return false;
             }
 
-            switch (check) {
-            case PRESENT: {
-                return true;
-            }
-            case AUTHORIZED: {
-                return itsAccountTokenOk;
-            }
-            }
-
-            return false;
+            return switch (check) {
+                case PRESENT -> true;
+                case AUTHORIZED -> itsAccountTokenOk;
+            };
         }
     }
 

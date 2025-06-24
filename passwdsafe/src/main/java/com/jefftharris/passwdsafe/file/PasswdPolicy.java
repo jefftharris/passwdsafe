@@ -599,21 +599,15 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         if (policy == null) {
             return null;
         }
-        switch (policy.getLocation()) {
-        case DEFAULT: {
-            return null;
-        }
-        case HEADER:
-        case RECORD_NAME: {
-            return new RecordPolicyStrs(policy.getName(), null, null);
-        }
-        case RECORD: {
-            return new RecordPolicyStrs(null,
-                                        policy.flagsAndLengthsToString(),
-                                        policy.getSpecialSymbols());
-        }
-        }
-        return null;
+        return switch (policy.getLocation()) {
+            case DEFAULT -> null;
+            case HEADER,
+                 RECORD_NAME ->
+                    new RecordPolicyStrs(policy.getName(), null, null);
+            case RECORD ->
+                    new RecordPolicyStrs(null, policy.flagsAndLengthsToString(),
+                                         policy.getSpecialSymbols());
+        };
     }
 
     /** Set the default symbols from user preferences */
