@@ -58,8 +58,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     productFlavors {
     }
@@ -81,7 +81,7 @@ android {
 
 
 dependencies {
-    def room_version = "2.6.1"
+    def room_version = "2.7.1"
     def yubikey_version = "2.8.1-SNAPSHOT"
     def espresso_version = "3.6.1"
 
@@ -89,7 +89,7 @@ dependencies {
     implementation project(':lib')
 
     implementation 'androidx.biometric:biometric:1.1.0'
-    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview-selection:1.2.0'
     implementation "androidx.room:room-runtime:$room_version"
 
     implementation "com.yubico.yubikit:yubiotp:$yubikey_version"
