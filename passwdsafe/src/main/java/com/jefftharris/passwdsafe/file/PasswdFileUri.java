@@ -538,10 +538,9 @@ public class PasswdFileUri
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof PasswdFileUri)) {
+        if (!(o instanceof PasswdFileUri uri)) {
             return false;
         }
-        PasswdFileUri uri = (PasswdFileUri)o;
         return itsUri.equals(uri.itsUri);
     }
 

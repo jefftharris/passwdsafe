@@ -221,9 +221,8 @@ public class YubikeyViewModel extends AndroidViewModel
     {
         if (device == null) {
             return "(null)";
-        } else if (device instanceof UsbYubiKeyDevice) {
+        } else if (device instanceof UsbYubiKeyDevice usbdevice) {
             // The default USB device toString is too verbose
-            var usbdevice = (UsbYubiKeyDevice)device;
             var dev = usbdevice.getUsbDevice();
             var pid = usbdevice.getPid();
             return "UsbYubiKeyDevice{" + "usbDevice=[UsbDevice[name=" +

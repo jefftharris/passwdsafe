@@ -1159,8 +1159,7 @@ public class PasswdSafeEditRecordFragment
             }
         }
 
-        if (v instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup)v;
+        if (v instanceof ViewGroup group) {
             for (int i = 0; i < group.getChildCount(); ++i) {
                 initProtViews(group.getChildAt(i));
             }
@@ -1759,8 +1758,7 @@ public class PasswdSafeEditRecordFragment
         @Override
         public final boolean equals(Object o)
         {
-            if (o instanceof RecordKey) {
-                RecordKey key = (RecordKey)o;
+            if (o instanceof RecordKey key) {
                 return itsTitle.equals(key.itsTitle) &&
                     itsGroup.equals(key.itsGroup) &&
                     itsUser.equals(key.itsUser);

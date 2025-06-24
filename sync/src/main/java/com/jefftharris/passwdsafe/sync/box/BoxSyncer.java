@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -168,8 +168,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
     @Override
     protected Exception updateSyncException(Exception e)
     {
-        if (e instanceof BoxException) {
-            BoxException boxExcept = (BoxException)e;
+        if (e instanceof BoxException boxExcept) {
             // Massage server exceptions to get the error
             BoxError serverError = boxExcept.getAsBoxError();
             if (serverError != null) {
@@ -204,8 +203,7 @@ public class BoxSyncer extends ProviderSyncer<BoxSession>
             BoxIteratorItems items = req.send();
             for (BoxItem item: items) {
                 PasswdSafeUtil.dbginfo(TAG, "item %s", boxToString(item));
-                if (item instanceof BoxFile) {
-                    BoxFile file = (BoxFile)item;
+                if (item instanceof BoxFile file) {
                     if (file.getName().endsWith(".psafe3")) {
                         boxfiles.addRemoteFile(new BoxProviderFile(file));
                     }

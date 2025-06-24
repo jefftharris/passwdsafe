@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2013-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2013-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -64,8 +64,7 @@ public class PasswdCursorLoader extends CursorLoader
     /** Check the result of the load and show an error if needed */
     public static boolean checkResult(Loader<Cursor> loader, Activity activity)
     {
-        if (loader instanceof PasswdCursorLoader) {
-            PasswdCursorLoader pwloader = (PasswdCursorLoader)loader;
+        if (loader instanceof PasswdCursorLoader pwloader) {
             if (pwloader.itsLoadException != null) {
                 Exception e = pwloader.itsLoadException;
                 pwloader.itsLoadException = null;

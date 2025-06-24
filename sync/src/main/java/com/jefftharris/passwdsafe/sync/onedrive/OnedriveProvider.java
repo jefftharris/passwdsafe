@@ -568,8 +568,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @Nullable
     private static String getAccountId(@Nullable IAccount acct)
     {
-        if (acct instanceof com.microsoft.identity.client.Account) {
-            var account = (com.microsoft.identity.client.Account)acct;
+        if (acct instanceof com.microsoft.identity.client.Account account) {
             return account.getHomeAccountId();
         }
         return (acct != null) ? acct.getId() : null;
