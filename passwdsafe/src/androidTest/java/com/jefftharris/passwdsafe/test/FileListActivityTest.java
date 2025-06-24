@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.view.Gravity;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
@@ -389,6 +390,7 @@ public class FileListActivityTest
     /**
      * Match with a FileData entry matching title text
      */
+    @NonNull
     private static Matcher<Object> withFileData(String expectedText)
     {
         // use preconditions to fail fast when a test is creating an
@@ -400,6 +402,7 @@ public class FileListActivityTest
     /**
      * Match with a FileData entry matching a title
      */
+    @NonNull
     private static Matcher<Object> withFileData(
             final Matcher<String> titleMatcher)
     {

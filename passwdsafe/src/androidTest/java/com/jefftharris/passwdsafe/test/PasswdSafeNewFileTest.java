@@ -13,12 +13,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.espresso.intent.rule.IntentsRule;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.jefftharris.passwdsafe.PasswdSafe;
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
@@ -26,6 +27,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.test.util.TestModeRule;
 
 import org.hamcrest.Matcher;
+import org.jetbrains.annotations.Contract;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,8 +36,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -84,8 +86,7 @@ public class PasswdSafeNewFileTest
     public TestModeRule itsTestMode = new TestModeRule();
 
     @Rule(order=2)
-    public final IntentsTestRule<PasswdSafe> itsActivityRule =
-            new IntentsTestRule<>(PasswdSafe.class, false, false);
+    public IntentsRule itsIntentsRule = new IntentsRule();
 
     @Before
     public void setup()
@@ -104,42 +105,85 @@ public class PasswdSafeNewFileTest
     }
 
     @Test
-    public void testNewFile()
+    public void testNewFile() throws Exception
     {
         if (!ApiCompat.supportsExternalFilesDirs()) {
             return;
         }
-        itsActivityRule.launchActivity(
-                PasswdSafeUtil.createNewFileIntent(
-                            Uri.fromFile(FileListActivityTest.DIR)));
-        fillNewFileForm();
-        clickButton(R.id.ok);
-        validateNewFile();
+
+        doTestNewFile(Uri.fromFile(FileListActivityTest.DIR), null);
     }
 
     @Test
-    public void testNewFileSaf() throws IOException
+    public void testNewFileSaf() throws Exception
     {
-        itsActivityRule.launchActivity(
-                PasswdSafeUtil.createNewFileIntent(null));
-        fillNewFileForm();
+        doTestNewFile(null, () -> {
+            Uri fileUri = Uri.fromFile(FILE);
+            Intent newResponse = new Intent()
+                    .setData(fileUri)
+                    .putExtra("__test_display_name", FILE.getName());
+            intending(allOf(hasAction(
+                                    equalTo(DocumentsContractCompat.INTENT_ACTION_CREATE_DOCUMENT)),
+                            hasCategories(Collections.singleton(
+                                    Intent.CATEGORY_OPENABLE)),
+                            hasType("application/psafe3"),
+                            hasExtra(Intent.EXTRA_TITLE,
+                                     FILE.getName()))).respondWith(
+                    new Instrumentation.ActivityResult(Activity.RESULT_OK,
+                                                       newResponse));
+            Assert.assertTrue(FILE.createNewFile());
+            return null;
+        });
+    }
 
-        Uri fileUri = Uri.fromFile(FILE);
-        Intent newResponse =
-                 new Intent().setData(fileUri)
-                             .putExtra("__test_display_name", FILE.getName());
-        intending(allOf(
-                hasAction(equalTo(
-                        DocumentsContractCompat.INTENT_ACTION_CREATE_DOCUMENT)),
-                hasCategories(
-                        Collections.singleton(Intent.CATEGORY_OPENABLE)),
-                hasType("application/psafe3"),
-                hasExtra(Intent.EXTRA_TITLE, FILE.getName())))
-                .respondWith(new Instrumentation.ActivityResult(
-                        Activity.RESULT_OK, newResponse));
-        Assert.assertTrue(FILE.createNewFile());
-        clickButton(R.id.ok);
-        validateNewFile();
+    /**
+     * Test creating and opening a new file
+     */
+    private static void doTestNewFile(Uri newFileDir,
+                                      Callable<Void> setupNewFile)
+            throws Exception
+    {
+        try {
+            try (var scenario = ActivityScenario.launchActivityForResult(
+                    PasswdSafeUtil.createNewFileIntent(newFileDir))) {
+                fillNewFileForm();
+
+                if (setupNewFile != null) {
+                    setupNewFile.call();
+                }
+
+                clickButton(R.id.ok);
+                Assert.assertTrue(FILE.exists());
+
+                // Verify new file UI
+                validateOpenedEmptyFile(true);
+                closeFile(scenario);
+            }
+
+            Intents.release();
+            Intents.init();
+            Intent openIntent =
+                    PasswdSafeUtil.createOpenIntent(Uri.fromFile(FILE), null);
+
+            try (var scenario =
+                         ActivityScenario.launchActivityForResult(openIntent)) {
+                scenario.onActivity(
+                        activity -> Assert.assertFalse(activity.isFinishing()));
+
+                // Open file
+                onView(withId(R.id.file))
+                        .check(matches(withText("Open " + FILE.getName())));
+                onView(withId(R.id.passwd_edit))
+                        .perform(replaceText("test123"));
+                clickButton(R.id.open);
+
+                // Verify open file UI
+                validateOpenedEmptyFile(false);
+                closeFile(scenario);
+            }
+        } finally {
+            Assert.assertTrue(FILE.delete());
+        }
     }
 
     /**
@@ -162,51 +206,18 @@ public class PasswdSafeNewFileTest
     {
         onView(withId(buttonId))
                 .perform(closeSoftKeyboard(), scrollTo(), click());
-
-    }
-
-    /**
-     * Validate a created new file
-     */
-    private void validateNewFile()
-    {
-        try {
-            Assert.assertTrue(FILE.exists());
-
-            // Verify new file UI
-            validateOpenedEmptyFile(true);
-            closeFile();
-
-            Intents.release();
-            Intent openIntent =
-                    PasswdSafeUtil.createOpenIntent(Uri.fromFile(FILE), null);
-            itsActivityRule.launchActivity(openIntent);
-            Assert.assertFalse(itsActivityRule.getActivity().isFinishing());
-
-            // Open file
-            onView(withId(R.id.file))
-                    .check(matches(withText("Open " + FILE.getName())));
-            onView(withId(R.id.passwd_edit))
-                    .perform(replaceText("test123"));
-            clickButton(R.id.open);
-
-            // Verify open file UI
-            validateOpenedEmptyFile(false);
-            closeFile();
-        } finally {
-            Assert.assertTrue(FILE.delete());
-        }
     }
 
     /**
      * Close an open file
      */
-    private void closeFile()
+    private static void closeFile(@NonNull ActivityScenario<Activity> scenario)
     {
         onView(withId(R.id.menu_close))
                 .check(matches(isEnabled()))
                 .perform(click());
-        Assert.assertTrue(itsActivityRule.getActivity().isFinishing());
+        Assert.assertEquals(Activity.RESULT_CANCELED,
+                            scenario.getResult().getResultCode());
     }
 
     /**
@@ -321,6 +332,8 @@ public class PasswdSafeNewFileTest
     /**
      * Get a matcher for the writable switch
      */
+    @NonNull
+    @Contract(" -> new")
     private static Matcher<View> withWritableSw()
     {
         return allOf(
