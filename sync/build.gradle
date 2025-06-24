@@ -60,8 +60,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.7'
-    implementation('androidx.work:work-runtime:2.10.0') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.9.1'
+    implementation('androidx.work:work-runtime:2.10.2') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
