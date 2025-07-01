@@ -115,16 +115,11 @@ public class PasswdRecord
     @Nullable
     public String getPassword(@NonNull PasswdFileData fileData)
     {
-        switch (itsType) {
-        case NORMAL: {
-            return fileData.getPassword(itsRecord);
-        }
-        case ALIAS:
-        case SHORTCUT: {
-            return fileData.getPassword(itsRef);
-        }
-        }
-        return null;
+        return switch (itsType) {
+            case NORMAL -> fileData.getPassword(itsRecord);
+            case ALIAS,
+                 SHORTCUT -> fileData.getPassword(itsRef);
+        };
     }
 
     /** Notification that the password policy has changed */

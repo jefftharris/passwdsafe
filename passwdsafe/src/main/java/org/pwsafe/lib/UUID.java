@@ -1,7 +1,6 @@
 /*
- * $Id: UUID.java 376 2009-04-21 23:30:19Z roxon $
- *
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +10,7 @@ package org.pwsafe.lib;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -24,6 +24,7 @@ import java.util.TimeZone;
  */
 public class UUID implements Comparable<Object>, Serializable
 {
+    @Serial
     private static final long serialVersionUID = 1L;
     private final byte[] TheUUID = new byte[16];
 
@@ -67,7 +68,7 @@ public class UUID implements Comparable<Object>, Serializable
      *
      * @param uuid the 16 bytes to use as the UUID.
      */
-    public UUID(byte[] uuid)
+    public UUID(@NonNull byte[] uuid)
     {
         if (uuid.length != TheUUID.length) {
             throw new IllegalArgumentException();
@@ -202,7 +203,8 @@ public class UUID implements Comparable<Object>, Serializable
      * @return A <code>String</code> representation of this
      * <code>UUID</code>.
      */
-    private static String toString(byte[] uuid)
+    @NonNull
+    private static String toString(@NonNull byte[] uuid)
     {
         if (uuid.length != 16) {
             throw new IllegalArgumentException();

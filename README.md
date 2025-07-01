@@ -64,10 +64,10 @@ without using the system clipboard.  The process of enabling the keyboard on
 Android 8 is given below.  Other versions are similar.
 
 1. Open the device's settings
-1. Locate the Languages and Input settings
-1. Under Keyboard and Inputs, select Virtual keyboard
-1. Click Manage keyboards
-1. Enable the PasswdSafe option
+2. Locate the Languages and Input settings
+3. Under Keyboard and Inputs, select Virtual keyboard
+4. Click Manage keyboards
+5. Enable the PasswdSafe option
 
 To switch between the default Google keyboard and the PasswdSafe keyboard, look
 for a keyboard icon in the bottom button bar, the top notification area, or on
@@ -89,12 +89,12 @@ To use a YubiKey, follow these steps:
 
 1. If using a NFC-enabled YubiKey (e.g. a NEO), enable NFC support in the device
    settings
-1. Enter the user password to the file
-1. Choose which slot on the YubiKey has the challenge-response key. Usually slot
+2. Enter the user password to the file
+3. Choose which slot on the YubiKey has the challenge-response key. Usually slot
    2 is used for Password Safe.
-1. Check the YubiKey option
-1. Click OK
-1. Within 30 seconds, activate the YubiKey
+4. Check the YubiKey option
+5. Click OK
+6. Within 30 seconds, activate the YubiKey
     * For NFC, press the YubiKey to the back of the phone or tablet.  There will
       be sounds as the key is being read.  If the device doesn't respond with a
       rising tone, try moving the key around.  A bit of trial-and-error is
@@ -105,7 +105,7 @@ To use a YubiKey, follow these steps:
       configuration of the YubiKey, the button may need to be pressed after
       clicking OK.  The indicator on the button should blink if a press is
       required.
-1. Once the key is found and activated, it will be used to authenticate with
+7. Once the key is found and activated, it will be used to authenticate with
    your password.  The file will open automatically.
 
 ## Saving Passwords

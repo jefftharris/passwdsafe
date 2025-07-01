@@ -28,25 +28,13 @@ public class GenericProviderNaming
     @NonNull
     public static String getEnabledName(@NonNull ProviderType type)
     {
-        switch (type) {
-        case BOX: {
-            return "Cloud One";
-        }
-        case DROPBOX: {
-            return "Cloud Two";
-        }
-        case GDRIVE: {
-            return "Cloud Three";
-        }
-        case ONEDRIVE: {
-            return "Cloud Four";
-        }
-        case OWNCLOUD: {
-            return "Cloud Five";
-        }
-        }
-
-        return "Cloud One";
+        return switch (type) {
+            case BOX -> "Cloud One";
+            case DROPBOX -> "Cloud Two";
+            case GDRIVE -> "Cloud Three";
+            case ONEDRIVE -> "Cloud Four";
+            case OWNCLOUD -> "Cloud Five";
+        };
     }
 
     public static void setAddProviderMenuItem(Menu menu,

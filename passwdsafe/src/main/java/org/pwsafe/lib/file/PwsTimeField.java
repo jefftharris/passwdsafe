@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.Util;
 
+import java.io.Serial;
 import java.util.Date;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Date;
  */
 public class PwsTimeField extends PwsField
 {
+    @Serial
     private static final long serialVersionUID = -3091539688166386331L;
 
     /**

@@ -281,17 +281,17 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
     @SuppressLint("DefaultLocale")
     public String toString()
     {
-        return String.format("{\nresolved: %s, retries: %d" +
-                             "\nyubi state: %s, slot: %d, selected: %b, " +
-                             "error: %s" +
-                             "\nsaved passwd: %s, loaded passwd: %b, loaded " +
-                             "msg: %s" +
-                             "\nopen passwd %b, open yubikey %b}",
-                             itsResolveData, itsRetries,
-                             itsYubiState, itsYubiSlot, itsIsYubikeySelected,
-                             itsYubikeyError, itsSavedPasswordState,
-                             (itsLoadedPassword != null), itsLoadedPasswordMsg,
-                             (itsOpenPassword != null), itsIsOpenYubikey);
+        return String.format("""
+                             {
+                             resolved: %s, retries: %d
+                             yubi state: %s, slot: %d, selected: %b, error: %s
+                             saved passwd: %s, loaded passwd: %b, loaded msg: %s
+                             open passwd %b, open yubikey %b}""",
+                             itsResolveData, itsRetries, itsYubiState,
+                             itsYubiSlot, itsIsYubikeySelected, itsYubikeyError,
+                             itsSavedPasswordState, (itsLoadedPassword != null),
+                             itsLoadedPasswordMsg, (itsOpenPassword != null),
+                             itsIsOpenYubikey);
     }
 
     /**

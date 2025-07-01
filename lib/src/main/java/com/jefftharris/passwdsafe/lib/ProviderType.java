@@ -1,7 +1,8 @@
 /*
- * Copyright (©) 2013-2014 Jeff Harris <jefftharris@gmail.com> All rights reserved.
- * Use of the code is allowed under the Artistic License 2.0 terms, as specified
- * in the LICENSE file distributed with this code, or available from
+ * Copyright (©) 2013-2025 Jeff Harris <jefftharris@gmail.com>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package com.jefftharris.passwdsafe.lib;
@@ -45,27 +46,18 @@ public enum ProviderType
             return GenericProviderNaming.GENERIC_CLOUD_DRAWABLE;
         }
 
-        switch (this) {
-        case GDRIVE: {
-            return R.drawable.google_drive;
-        }
-        case DROPBOX: {
-            if (forMenu) {
-                return R.drawable.dropbox_trace;
+        return switch (this) {
+            case GDRIVE -> R.drawable.google_drive;
+            case DROPBOX -> {
+                if (forMenu) {
+                    yield R.drawable.dropbox_trace;
+                }
+                yield R.drawable.dropbox;
             }
-            return R.drawable.dropbox;
-        }
-        case BOX: {
-            return R.drawable.box;
-        }
-        case ONEDRIVE: {
-            return R.drawable.onedrive;
-        }
-        case OWNCLOUD: {
-            return R.drawable.owncloud;
-        }
-        }
-        return 0;
+            case BOX -> R.drawable.box;
+            case ONEDRIVE -> R.drawable.onedrive;
+            case OWNCLOUD -> R.drawable.owncloud;
+        };
     }
 
     /** Set the TextView to the name of the provider type */
@@ -75,31 +67,20 @@ public enum ProviderType
     }
 
     /** Get the name of the provider */
-    @Nullable
+    @NonNull
     public String getName(Context context)
     {
         if (GenericProviderNaming.ENABLED) {
             return GenericProviderNaming.getEnabledName(this);
         }
 
-        switch (this) {
-        case GDRIVE: {
-            return context.getString(R.string.google_drive);
-        }
-        case DROPBOX: {
-            return context.getString(R.string.dropbox);
-        }
-        case BOX: {
-            return context.getString(R.string.box);
-        }
-        case ONEDRIVE: {
-            return context.getString(R.string.onedrive);
-        }
-        case OWNCLOUD: {
-            return context.getString(R.string.owncloud);
-        }
-        }
-        return null;
+        return switch (this) {
+            case GDRIVE -> context.getString(R.string.google_drive);
+            case DROPBOX -> context.getString(R.string.dropbox);
+            case BOX -> context.getString(R.string.box);
+            case ONEDRIVE -> context.getString(R.string.onedrive);
+            case OWNCLOUD -> context.getString(R.string.owncloud);
+        };
     }
 
     /** Convert the string name to the ProviderType */

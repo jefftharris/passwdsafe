@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -115,8 +115,7 @@ public class DropboxCoreProviderFile implements ProviderRemoteFile
         String rev;
         String modified;
         String clientModified;
-        if (entry instanceof FileMetadata) {
-            FileMetadata file = (FileMetadata)entry;
+        if (entry instanceof FileMetadata file) {
             isDir = false;
             deleted = false;
             rev = file.getRev();

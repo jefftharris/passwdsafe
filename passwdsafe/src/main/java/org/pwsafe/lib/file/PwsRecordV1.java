@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
- * Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2024-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -14,6 +14,7 @@ import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
@@ -24,6 +25,7 @@ import java.util.Collections;
  */
 public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final int DEFAULT_TYPE = 0;
@@ -165,7 +167,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      * <code>other</code>.
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    private int compareTo(PwsRecordV1 other)
+    private int compareTo(@NonNull PwsRecordV1 other)
     {
         int retCode;
 
@@ -207,7 +209,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      * <code>false</code> if
      * they're unequal.
      */
-    private boolean equals(PwsRecordV1 other)
+    private boolean equals(@NonNull PwsRecordV1 other)
     {
         return (getField(NOTES).equals(other.getField(NOTES))
                 && getField(PASSWORD).equals(other.getField(PASSWORD))
@@ -324,6 +326,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     /**
      * Get a w
      */
+    @NonNull
     private static String getDefaultString(byte[] bytes)
     {
         try {

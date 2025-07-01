@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -670,24 +670,14 @@ public class MainActivity extends AppCompatActivity
     @Nullable
     private Provider getProvider(@NonNull ProviderType type)
     {
-        switch (type) {
-        case GDRIVE: {
-            return getGDrivePlayProvider();
-        }
-        case DROPBOX: {
-            return getDbxProvider();
-        }
-        case BOX: {
-            return getBoxProvider();
-        }
-        case ONEDRIVE: {
-            return getOnedriveProvider();
-        }
-        case OWNCLOUD: {
-            return ProviderFactory.getProvider(ProviderType.OWNCLOUD, this);
-        }
-        }
-        return null;
+        return switch (type) {
+            case GDRIVE -> getGDrivePlayProvider();
+            case DROPBOX -> getDbxProvider();
+            case BOX -> getBoxProvider();
+            case ONEDRIVE -> getOnedriveProvider();
+            case OWNCLOUD ->
+                    ProviderFactory.getProvider(ProviderType.OWNCLOUD, this);
+        };
     }
 
     /** Update a menu item based on the presence of a provider */

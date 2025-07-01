@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -20,6 +20,8 @@ import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +79,7 @@ public class PasswdHistory
     // Sorted with newest entry first
     private final List<Entry> itsPasswds = new ArrayList<>();
 
-    public PasswdHistory(String historyStr)
+    public PasswdHistory(@NonNull String historyStr)
         throws IllegalArgumentException
     {
         int historyLen = historyStr.length();
@@ -225,10 +227,9 @@ public class PasswdHistory
     {
         if (super.equals(o)) {
             return true;
-        } else if (!(o instanceof PasswdHistory)) {
+        } else if (!(o instanceof PasswdHistory hist)) {
             return false;
         } else {
-            PasswdHistory hist = (PasswdHistory)o;
             if ((itsIsEnabled != hist.itsIsEnabled) ||
                 (itsMaxSize != hist.itsMaxSize) ||
                 (itsPasswds.size() != hist.itsPasswds.size())) {
@@ -264,7 +265,9 @@ public class PasswdHistory
     /**
      * Create a list adapter to show a history
      */
-    public static ListAdapter createAdapter(PasswdHistory history,
+    @NonNull
+    @Contract("_, _, _, _ -> new")
+    public static ListAdapter createAdapter(@NonNull PasswdHistory history,
                                             boolean enabled,
                                             boolean hasContextMenu,
                                             Context ctx)
@@ -333,7 +336,7 @@ public class PasswdHistory
             /**
              * Constructor
              */
-            protected ViewHolder(View view,
+            protected ViewHolder(@NonNull View view,
                                  boolean enabled,
                                  boolean hasContextMenu,
                                  Context ctx)
@@ -358,14 +361,14 @@ public class PasswdHistory
             /**
              * Update the layout fields with values from the entry
              */
-            protected void update(Entry entry, Context ctx)
+            protected void update(@NonNull Entry entry, Context ctx)
             {
                 itsPassword.setText(entry.getPasswd());
                 itsDate.setText(Utils.formatDate(entry.getDate(), ctx));
             }
 
             @Override
-            public void onClick(View v)
+            public void onClick(@NonNull View v)
             {
                 v.showContextMenu();
             }

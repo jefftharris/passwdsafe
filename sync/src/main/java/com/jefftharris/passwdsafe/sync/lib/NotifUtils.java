@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,7 +13,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
@@ -129,42 +128,27 @@ public final class NotifUtils
     /**
      * Get the title of a notification type
      */
-    @Nullable
+    @NonNull
     public static String getTitle(@NonNull Type type, Context ctx)
     {
-        switch (type) {
-        case DROPBOX_MIGRATED: {
-            return ctx.getString(R.string.dropbox_service_updated);
-        }
-        case BOX_MIGRATGED: {
-            return ctx.getString(R.string.box_service_updated);
-        }
-        case SYNC_PROGRESS: {
-            return ctx.getString(R.string.syncing);
-        }
-        case SYNC_RESULTS: {
-            return ctx.getString(R.string.sync_results);
-        }
-        case SYNC_CONFLICT: {
-            return ctx.getString(R.string.sync_conflict);
-        }
-        case SYNC_REPEAT_FAILURES: {
-            return ctx.getString(R.string.repeated_sync_failures);
-        }
-        case DRIVE_REAUTH_REQUIRED: {
-            return ctx.getString(R.string.gdrive_reauth_required);
-        }
-        case ONEDRIVE_MIGRATED: {
-            return ctx.getString(R.string.onedrive_service_updated);
-        }
-        case DRIVE_FILE_MIGRATION: {
-            return ctx.getString(R.string.gdrive_file_auth_changed);
-        }
-        case OWNCLOUD_DISABLED: {
-            return ctx.getString(R.string.owncloud_sync_disabled);
-        }
-        }
-        return null;
+        return switch (type) {
+            case DROPBOX_MIGRATED ->
+                    ctx.getString(R.string.dropbox_service_updated);
+            case BOX_MIGRATGED -> ctx.getString(R.string.box_service_updated);
+            case SYNC_PROGRESS -> ctx.getString(R.string.syncing);
+            case SYNC_RESULTS -> ctx.getString(R.string.sync_results);
+            case SYNC_CONFLICT -> ctx.getString(R.string.sync_conflict);
+            case SYNC_REPEAT_FAILURES ->
+                    ctx.getString(R.string.repeated_sync_failures);
+            case DRIVE_REAUTH_REQUIRED ->
+                    ctx.getString(R.string.gdrive_reauth_required);
+            case ONEDRIVE_MIGRATED ->
+                    ctx.getString(R.string.onedrive_service_updated);
+            case DRIVE_FILE_MIGRATION ->
+                    ctx.getString(R.string.gdrive_file_auth_changed);
+            case OWNCLOUD_DISABLED ->
+                    ctx.getString(R.string.owncloud_sync_disabled);
+        };
     }
 
     /**

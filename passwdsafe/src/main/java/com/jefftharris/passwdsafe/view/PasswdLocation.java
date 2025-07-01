@@ -178,10 +178,9 @@ public class PasswdLocation implements Parcelable
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof PasswdLocation)) {
+        if (!(o instanceof PasswdLocation location)) {
             return false;
         }
-        PasswdLocation location = (PasswdLocation)o;
         return equalGroups(location) &&
                TextUtils.equals(itsRecord, location.itsRecord);
     }

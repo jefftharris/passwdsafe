@@ -1,4 +1,5 @@
 /*
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller
  * <roxon@users.sourceforge.net>. All rights reserved. Use of the code is
  * allowed under the Artistic License 2.0 terms, as specified in the LICENSE
@@ -16,6 +17,7 @@ import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,6 +32,7 @@ import java.util.Objects;
 @SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
 public class PwsRecordV3 extends PwsRecord
 {
+    @Serial
     private static final long serialVersionUID = -3160317668375599155L;
 
     private static final Log LOG = Log.getInstance(Objects.requireNonNull(
@@ -430,7 +433,8 @@ public class PwsRecordV3 extends PwsRecord
 
     protected static class ItemV3 extends Item
     {
-        public ItemV3(PwsFileV3 file) throws EndOfFileException, IOException
+        public ItemV3(@NonNull PwsFileV3 file)
+                throws EndOfFileException, IOException
         {
             super();
             try {
@@ -634,7 +638,9 @@ public class PwsRecordV3 extends PwsRecord
      *              <code>field.getType()</code>
      */
     @Override
-    protected void writeField(PwsFile file, PwsField field, int type)
+    protected void writeField(@NonNull PwsFile file,
+                              @NonNull PwsField field,
+                              int type)
             throws IOException
     {
         byte[] lenBlock = new byte[5];

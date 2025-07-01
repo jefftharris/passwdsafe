@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -408,16 +408,10 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
                 return false;
             }
 
-            switch (check) {
-            case PRESENT: {
-                return true;
-            }
-            case AUTHORIZED: {
-                return itsAccountTokenOk;
-            }
-            }
-
-            return false;
+            return switch (check) {
+                case PRESENT -> true;
+                case AUTHORIZED -> itsAccountTokenOk;
+            };
         }
     }
 
@@ -574,8 +568,7 @@ public class OnedriveProvider extends AbstractSyncTimerProvider
     @Nullable
     private static String getAccountId(@Nullable IAccount acct)
     {
-        if (acct instanceof com.microsoft.identity.client.Account) {
-            var account = (com.microsoft.identity.client.Account)acct;
+        if (acct instanceof com.microsoft.identity.client.Account account) {
             return account.getHomeAccountId();
         }
         return (acct != null) ? acct.getId() : null;

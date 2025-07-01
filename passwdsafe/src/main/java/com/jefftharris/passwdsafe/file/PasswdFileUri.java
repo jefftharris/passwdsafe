@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -427,22 +427,12 @@ public class PasswdFileUri
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean exists()
     {
-        switch (itsType) {
-        case FILE: {
-            return (itsFile != null) && itsFile.exists();
-        }
-        case SYNC_PROVIDER: {
-            return (itsSyncType != null);
-        }
-        case EMAIL:
-        case GENERIC_PROVIDER: {
-            return true;
-        }
-        case BACKUP: {
-            return (itsBackupFile != null);
-        }
-        }
-        return false;
+        return switch (itsType) {
+            case FILE -> (itsFile != null) && itsFile.exists();
+            case SYNC_PROVIDER -> (itsSyncType != null);
+            case EMAIL, GENERIC_PROVIDER -> true;
+            case BACKUP -> (itsBackupFile != null);
+        };
     }
 
 
@@ -490,25 +480,18 @@ public class PasswdFileUri
      */
     public @Nullable String getFileName()
     {
-        switch (itsType) {
-        case FILE: {
-            return itsFile.getName();
-        }
-        case SYNC_PROVIDER:
-        case GENERIC_PROVIDER: {
-            return itsTitle;
-        }
-        case BACKUP: {
-            if (itsBackupFile != null) {
-                return "backup - " + itsBackupFile.title;
+        return switch (itsType) {
+            case FILE -> itsFile.getName();
+            case SYNC_PROVIDER,
+                 GENERIC_PROVIDER -> itsTitle;
+            case BACKUP -> {
+                if (itsBackupFile != null) {
+                    yield "backup - " + itsBackupFile.title;
+                }
+                yield "backup.psafe3";
             }
-            return "backup.psafe3";
-        }
-        case EMAIL: {
-            return null;
-        }
-        }
-        return null;
+            case EMAIL -> null;
+        };
     }
 
     /** Get an identifier for the URI */
@@ -555,10 +538,9 @@ public class PasswdFileUri
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof PasswdFileUri)) {
+        if (!(o instanceof PasswdFileUri uri)) {
             return false;
         }
-        PasswdFileUri uri = (PasswdFileUri)o;
         return itsUri.equals(uri.itsUri);
     }
 

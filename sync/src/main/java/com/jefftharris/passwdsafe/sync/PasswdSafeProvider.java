@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -197,36 +197,26 @@ public class PasswdSafeProvider extends ContentProvider
     @Override
     public String getType(@NonNull Uri uri)
     {
-        switch (PasswdSafeContract.MATCHER.match(uri)) {
-        case PasswdSafeContract.MATCH_PROVIDERS: {
-            return PasswdSafeContract.Providers.CONTENT_TYPE;
-        }
-        case PasswdSafeContract.MATCH_PROVIDER: {
-            return PasswdSafeContract.Providers.CONTENT_ITEM_TYPE;
-        }
-        case PasswdSafeContract.MATCH_PROVIDER_FILES: {
-            return PasswdSafeContract.Files.CONTENT_TYPE;
-        }
-        case PasswdSafeContract.MATCH_PROVIDER_FILE: {
-            return PasswdSafeContract.Files.CONTENT_ITEM_TYPE;
-        }
-        case PasswdSafeContract.MATCH_SYNC_LOGS: {
-            return PasswdSafeContract.SyncLogs.CONTENT_TYPE;
-        }
-        case PasswdSafeContract.MATCH_METHODS: {
-            return PasswdSafeContract.Methods.CONTENT_TYPE;
-        }
-        case PasswdSafeContract.MATCH_PROVIDER_REMOTE_FILES: {
-            return PasswdSafeContract.RemoteFiles.CONTENT_TYPE;
-        }
-        case PasswdSafeContract.MATCH_PROVIDER_REMOTE_FILE: {
-            return PasswdSafeContract.RemoteFiles.CONTENT_ITEM_TYPE;
-        }
-        default: {
-            throw new IllegalArgumentException(
+        return switch (PasswdSafeContract.MATCHER.match(uri)) {
+            case PasswdSafeContract.MATCH_PROVIDERS ->
+                    PasswdSafeContract.Providers.CONTENT_TYPE;
+            case PasswdSafeContract.MATCH_PROVIDER ->
+                    PasswdSafeContract.Providers.CONTENT_ITEM_TYPE;
+            case PasswdSafeContract.MATCH_PROVIDER_FILES ->
+                    PasswdSafeContract.Files.CONTENT_TYPE;
+            case PasswdSafeContract.MATCH_PROVIDER_FILE ->
+                    PasswdSafeContract.Files.CONTENT_ITEM_TYPE;
+            case PasswdSafeContract.MATCH_SYNC_LOGS ->
+                    PasswdSafeContract.SyncLogs.CONTENT_TYPE;
+            case PasswdSafeContract.MATCH_METHODS ->
+                    PasswdSafeContract.Methods.CONTENT_TYPE;
+            case PasswdSafeContract.MATCH_PROVIDER_REMOTE_FILES ->
+                    PasswdSafeContract.RemoteFiles.CONTENT_TYPE;
+            case PasswdSafeContract.MATCH_PROVIDER_REMOTE_FILE ->
+                    PasswdSafeContract.RemoteFiles.CONTENT_ITEM_TYPE;
+            default -> throw new IllegalArgumentException(
                     "type unknown match for uri: " + uri);
-        }
-        }
+        };
     }
 
     /* (non-Javadoc)
