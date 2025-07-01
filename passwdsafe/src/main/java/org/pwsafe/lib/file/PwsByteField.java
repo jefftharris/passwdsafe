@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,6 +8,8 @@
 package org.pwsafe.lib.file;
 
 import androidx.annotation.NonNull;
+
+import java.io.Serial;
 
 /**
  * Provides a wrapper for fields that hold a byte value. Byte values
@@ -18,6 +20,7 @@ import androidx.annotation.NonNull;
  */
 public class PwsByteField extends PwsField
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -28,7 +31,7 @@ public class PwsByteField extends PwsField
      * @param value the byte array holding the byte value.
      * @throws IndexOutOfBoundsException If <code>value.length</code> &lt; 1.
      */
-    public PwsByteField(int type, byte[] value)
+    public PwsByteField(int type, @NonNull byte[] value)
     {
         super(type, value[0]);
     }

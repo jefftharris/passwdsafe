@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2009-2010 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2009-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -10,8 +10,10 @@ package org.pwsafe.lib.file;
 import androidx.annotation.NonNull;
 
 import org.bouncycastle.crypto.RuntimeCryptoException;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
@@ -23,13 +25,14 @@ import javax.crypto.SealedObject;
 
 public abstract class AbstractPwsPasswdField extends PwsField
 {
+    @Serial
     private static final long serialVersionUID = -5633832199601878672L;
 
     private final Cipher itsReadCipher;
     private final String itsStrEncoding;
 
     protected AbstractPwsPasswdField(
-            int type, byte[] value, PwsFile file,
+            int type, byte[] value, @NonNull PwsFile file,
             @SuppressWarnings("SameParameterValue") String encoding)
     {
         super(type, sealValue(value, encoding, file.getWriteCipher()));
@@ -39,7 +42,9 @@ public abstract class AbstractPwsPasswdField extends PwsField
     }
 
 
-    protected AbstractPwsPasswdField(int type, String value, PwsFile file,
+    protected AbstractPwsPasswdField(int type,
+                                     String value,
+                                     @NonNull PwsFile file,
                                      String encoding)
     {
         super(type, sealValue(value, file.getWriteCipher()));
@@ -114,6 +119,7 @@ public abstract class AbstractPwsPasswdField extends PwsField
     }
 
 
+    @NonNull
     private static SealedObject sealValue(byte[] value, String encoding,
                                           Cipher cipher)
     {
@@ -125,6 +131,8 @@ public abstract class AbstractPwsPasswdField extends PwsField
     }
 
 
+    @NonNull
+    @Contract("_, _ -> new")
     private static SealedObject sealValue(String value, Cipher cipher)
     {
         try {

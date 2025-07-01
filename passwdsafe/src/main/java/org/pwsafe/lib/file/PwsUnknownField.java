@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.Util;
 
+import java.io.Serial;
+
 /**
  * Bit bucket for fields we are not interested in processing but must
  * preserve in the output.
@@ -19,6 +22,7 @@ import org.pwsafe.lib.Util;
  */
 public class PwsUnknownField extends PwsField
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

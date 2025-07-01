@@ -15,6 +15,8 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.NonNull;
+
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.crypto.HmacPws;
 import org.pwsafe.lib.crypto.SHA256Pws;
@@ -22,6 +24,7 @@ import org.pwsafe.lib.crypto.TwofishPws;
 import org.pwsafe.lib.exception.EndOfFileException;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.security.InvalidKeyException;
 
@@ -52,6 +55,7 @@ import java.security.InvalidKeyException;
  */
 public class PwsFileHeaderV3 implements Serializable
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private byte[] tag = new byte[4];
@@ -86,7 +90,7 @@ public class PwsFileHeaderV3 implements Serializable
      * @throws EndOfFileException If end of file is reached before reading
      * all the data.
      */
-    public PwsFileHeaderV3(PwsFile file)
+    public PwsFileHeaderV3(@NonNull PwsFile file)
             throws IOException, EndOfFileException
     {
         file.readBytes(tag);
@@ -187,7 +191,7 @@ public class PwsFileHeaderV3 implements Serializable
      *
      * @param file the file to write the header to.
      */
-    public void save(PwsFile file)
+    public void save(@NonNull PwsFile file)
             throws IOException
     {
         try (Owner<PwsPassword> passwd = file.getPassphrase()) {
@@ -212,7 +216,8 @@ public class PwsFileHeaderV3 implements Serializable
      *
      * @param passwdParam the passphrase to be used to encrypt the database.
      */
-    private void update(Owner<PwsPassword>.Param passwdParam, PwsFileV3 file)
+    private void update(@NonNull Owner<PwsPassword>.Param passwdParam,
+                        @NonNull PwsFileV3 file)
             throws IOException
     {
         // According to the spec, salt is just random data. I don't think

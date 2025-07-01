@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -15,6 +16,7 @@ import org.pwsafe.lib.exception.RecordLoadException;
 import org.pwsafe.lib.exception.UnimplementedConversionException;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -24,6 +26,7 @@ import java.util.Iterator;
 @SuppressWarnings("WeakerAccess")
 public class PwsRecordV2 extends PwsRecord
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

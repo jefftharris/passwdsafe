@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2009-2010 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2009-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.Util;
 
+import java.io.Serial;
+
 /**
  * Provides a wrapper for fields that hold an short integer value. Short values
  * are stored in the database in little-endian order and are converted to and
@@ -20,6 +22,7 @@ import org.pwsafe.lib.Util;
  */
 public class PwsShortField extends PwsField
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

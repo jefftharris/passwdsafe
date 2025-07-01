@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2022 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2022-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.file.PwsRecord;
 
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ import java.util.List;
  */
 public class RecordLoadException extends Exception
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public final @NonNull PwsRecord itsRecord;

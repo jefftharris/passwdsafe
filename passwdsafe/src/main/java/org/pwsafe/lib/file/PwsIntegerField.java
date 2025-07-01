@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.Util;
 
+import java.io.Serial;
+
 /**
  * Provides a wrapper for fields that hold an integer value such as the date
  * and time fields.  Integer values are stored in the database in little-endian
@@ -20,6 +23,7 @@ import org.pwsafe.lib.Util;
  */
 public class PwsIntegerField extends PwsField
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
