@@ -322,7 +322,7 @@
     <string name="record_sort_order">Record sort order</string>
     <string name="record_type">Record type</string>
     <string name="read_only_about">Read-only</string>
-    <string name="read_only_media">File is located on read-only media.  This situation can occur with Kitkat and higher on removable SD cards.</string>
+    <string name="read_only_media" tools:ignore="Typos">File is located on read-only media.  This situation can occur with Kitkat and higher on removable SD cards.</string>
     <string name="read_only_provider">
         The provider of the file doesn\'t support writes or hasn\'t granted
         write permission
