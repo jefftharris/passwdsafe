@@ -523,7 +523,6 @@ public abstract class PwsFile
     void readAll() throws IOException, UnsupportedFileVersionException
     {
         try {
-            //noinspection InfiniteLoopStatement
             for (; ; ) {
                 try {
                     final PwsRecord rec = PwsRecord.read(this);
