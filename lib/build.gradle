@@ -46,8 +46,8 @@ dependencies {
     api 'androidx.gridlayout:gridlayout:1.1.0'
     api 'androidx.legacy:legacy-preference-v14:1.0.0'
     api 'androidx.legacy:legacy-support-v4:1.0.0'
-    api 'androidx.lifecycle:lifecycle-viewmodel:2.9.1'
-    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1'
+    api 'androidx.lifecycle:lifecycle-viewmodel:2.9.2'
+    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2'
     api 'androidx.preference:preference:1.2.1'
     api 'androidx.recyclerview:recyclerview:1.4.0'
     api 'com.google.android.material:material:1.11.0'
@@ -56,5 +56,5 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
 
     // Extra IDE annotations from Jetbrains, e.g @PrintFormat
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.jetbrains:annotations:26.0.2'
 }
