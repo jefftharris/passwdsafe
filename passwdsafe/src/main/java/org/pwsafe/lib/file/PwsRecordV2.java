@@ -30,113 +30,37 @@ public class PwsRecordV2 extends PwsRecord
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constant for the version 2 ID string field.
-     */
-    public static final int V2_ID_STRING = 0;
-
-    /**
-     * Constant for the Universally Unique ID (UUID) field.
-     */
-    public static final int UUID = 1;
-
-    /**
-     * Constant for the group field.
-     */
-    public static final int GROUP = 2;
-
-    /**
-     * Constant for the title field.
-     */
-    public static final int TITLE = 3;
-
-    /**
-     * Constant for the username field.
-     */
-    public static final int USERNAME = 4;
-
-    /**
-     * Constant for the notes field.
-     */
-    public static final int NOTES = 5;
-
-    /**
-     * Constant for the passphrase field.
-     */
-    public static final int PASSWORD = 6;
-
-    /**
-     * Constant for the creation date field.
-     */
-    public static final int CREATION_TIME = 7;
-
-    /**
-     * Constant for the passphrase modification time field.
-     */
-    public static final int PASSWORD_MOD_TIME = 8;
-
-    /**
-     * Constant for the last access time field.
-     */
-    public static final int LAST_ACCESS_TIME = 9;
-
-    /**
-     * Constant for the passphrase lifetime field.
-     */
-    public static final int PASSWORD_LIFETIME = 10;
-
-    /**
-     * Constant for the passphrase policy field.
-     */
-    public static final int PASSWORD_POLICY = 11;
-
-    /**
-     * Constant for the last time any field in the record was changed.
-     */
-    public static final int LAST_MOD_TIME = 12;
-
-    /**
-     * Constant for the url field
-     */
-    public static final int URL = 13;
-
-    /**
-     * Constant for the end of record marker field.
-     */
-    public static final int END_OF_RECORD = 255;
-
-    /**
      * All the valid type codes.
      */
-    private static final Object[] VALID_TYPES = new Object[] {
-            new Object[]{V2_ID_STRING, "V2_ID_STRING",
-                         PwsStringField.class},
-            new Object[]{UUID, "UUID",
-                         PwsUUIDField.class},
-            new Object[]{GROUP, "GROUP",
-                         PwsStringField.class},
-            new Object[]{TITLE, "TITLE",
-                         PwsStringField.class},
-            new Object[]{USERNAME, "USERNAME",
-                         PwsStringField.class},
-            new Object[]{NOTES, "NOTES",
-                         PwsStringField.class},
-            new Object[]{PASSWORD, "PASSWORD",
-                         PwsPasswdField.class},
-            new Object[]{CREATION_TIME,
-                         "CREATION_TIME", PwsTimeField.class},
-            new Object[]{PASSWORD_MOD_TIME,
-                         "PASSWORD_MOD_TIME", PwsTimeField.class},
-            new Object[]{LAST_ACCESS_TIME,
-                         "LAST_ACCESS_TIME", PwsTimeField.class},
-            new Object[]{PASSWORD_LIFETIME,
-                         "PASSWORD_LIFETIME", PwsIntegerField.class},
-            new Object[]{PASSWORD_POLICY,
-                         "PASSWORD_POLICY", PwsStringField.class},
-            new Object[]{LAST_MOD_TIME,
-                         "LAST_MOD_TIME", PwsTimeField.class},
-            new Object[]{URL, "URL",
-                         PwsStringField.class},
-            };
+    private static final Object[] VALID_TYPES;
+
+    static {
+        var types = new ArrayList<Object[]>(PwsFieldTypeV2.values().length);
+        for (var type : PwsFieldTypeV2.values()) {
+            switch (type) {
+            case V2_ID_STRING,
+                 GROUP,
+                 TITLE,
+                 USERNAME,
+                 NOTES,
+                 PASSWORD_POLICY,
+                 URL -> addValidType(types, type, PwsStringField.class);
+            case UUID -> addValidType(types, type, PwsUUIDField.class);
+            case PASSWORD -> addValidType(types, type, PwsPasswdField.class);
+            case CREATION_TIME,
+                 PASSWORD_MOD_TIME,
+                 LAST_ACCESS_TIME,
+                 LAST_MOD_TIME -> addValidType(types, type, PwsTimeField.class);
+            case PASSWORD_LIFETIME ->
+                    addValidType(types, type, PwsIntegerField.class);
+            case END_OF_RECORD,
+                 UNKNOWN -> {
+            }
+            }
+        }
+
+        VALID_TYPES = types.toArray(new Object[0]);
+    }
 
     /**
      * Create a new record with all mandatory fields given their default value.
@@ -231,15 +155,16 @@ public class PwsRecordV2 extends PwsRecord
         for (; ; ) {
             try {
                 Item item = new Item(file);
-                if (item.getType() == END_OF_RECORD) {
+                if (item.getType() == PwsFieldTypeV2.END_OF_RECORD.getId()) {
                     break; // out of the for loop
                 }
 
                 PwsField itemVal = null;
-                switch (item.getType()) {
+                boolean nullIsError = true;
+                var type = PwsFieldTypeV2.fromType(item.getType());
+                switch (type) {
                 case UUID:
-                    itemVal = new PwsUUIDField(item.getType(),
-                                               item.getByteData());
+                    itemVal = new PwsUUIDField(type, item.getByteData());
                     break;
 
                 case V2_ID_STRING:
@@ -272,13 +197,15 @@ public class PwsRecordV2 extends PwsRecord
                     break;
 
                 case PASSWORD_POLICY:
+                case END_OF_RECORD:
+                case UNKNOWN:
+                    nullIsError = false;
                     break;
-
-                default:
-                    throw new UnimplementedConversionException();
                 }
                 if (itemVal != null) {
                     setField(itemVal);
+                } else if (nullIsError) {
+                    throw new UnimplementedConversionException();
                 }
             } catch (EndOfFileException eof) {
                 if (itemErrors != null) {
@@ -318,7 +245,7 @@ public class PwsRecordV2 extends PwsRecord
 
             writeField(file, value);
         }
-        writeField(file, new PwsStringField(END_OF_RECORD, ""));
+        writeField(file, new PwsStringField(PwsFieldTypeV2.END_OF_RECORD, ""));
     }
 
     /**
@@ -347,10 +274,34 @@ public class PwsRecordV2 extends PwsRecord
             }
             first = false;
 
-            Object[] type = (Object[])VALID_TYPES[key];
-            sb.append(type[1]);
+            boolean showValue = true;
+            if (key < VALID_TYPES.length) {
+                Object[] type = (Object[])VALID_TYPES[key];
+                sb.append(type[1]);
+                switch (PwsFieldTypeV2.fromType((Integer)type[0])) {
+                case PASSWORD -> showValue = false;
+                case V2_ID_STRING,
+                     UUID,
+                     GROUP,
+                     TITLE,
+                     USERNAME,
+                     NOTES,
+                     CREATION_TIME,
+                     PASSWORD_MOD_TIME,
+                     LAST_ACCESS_TIME,
+                     PASSWORD_LIFETIME,
+                     PASSWORD_POLICY,
+                     LAST_MOD_TIME,
+                     URL,
+                     END_OF_RECORD,
+                     UNKNOWN -> {
+                }
+                }
+            } else {
+                sb.append(key);
+            }
             sb.append("=");
-            if ((Integer)type[0] != PASSWORD) {
+            if (showValue) {
                 sb.append(value);
             }
         }

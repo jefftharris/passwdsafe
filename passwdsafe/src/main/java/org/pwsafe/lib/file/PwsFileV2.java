@@ -35,9 +35,9 @@ public class PwsFileV2 extends PwsFileV1V2
      */
     public static boolean isV2Header(@NonNull PwsRecordV1 header)
     {
-        PwsField title = header.getField(PwsRecordV1.TITLE);
+        PwsField title = header.getField(PwsFieldTypeV1.TITLE);
         return (title != null) &&
-               title.equals(new PwsStringField(PwsRecordV1.TITLE,
+               title.equals(new PwsStringField(PwsFieldTypeV1.TITLE,
                                                PwsFileV2.ID_STRING));
     }
 
@@ -122,8 +122,8 @@ public class PwsFileV2 extends PwsFileV1V2
         hdr = new PwsRecordV1();
 
         hdr.setField(
-                new PwsStringField(PwsRecordV1.TITLE, PwsFileV2.ID_STRING));
-        hdr.setField(new PwsPasswdField(PwsRecordV1.PASSWORD, "2.0", this));
+                new PwsStringField(PwsFieldTypeV1.TITLE, PwsFileV2.ID_STRING));
+        hdr.setField(new PwsPasswdField(PwsFieldTypeV1.PASSWORD, "2.0", this));
 
         hdr.saveRecord(file);
     }

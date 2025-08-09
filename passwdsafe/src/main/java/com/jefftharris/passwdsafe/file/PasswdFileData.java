@@ -32,6 +32,7 @@ import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsByteField;
 import org.pwsafe.lib.file.PwsField;
+import org.pwsafe.lib.file.PwsFieldTypeV1;
 import org.pwsafe.lib.file.PwsFieldTypeV2;
 import org.pwsafe.lib.file.PwsFieldTypeV3;
 import org.pwsafe.lib.file.PwsFile;
@@ -43,8 +44,6 @@ import org.pwsafe.lib.file.PwsPasswdField;
 import org.pwsafe.lib.file.PwsPasswdUnicodeField;
 import org.pwsafe.lib.file.PwsPassword;
 import org.pwsafe.lib.file.PwsRecord;
-import org.pwsafe.lib.file.PwsRecordV1;
-import org.pwsafe.lib.file.PwsRecordV2;
 import org.pwsafe.lib.file.PwsRecordV3;
 import org.pwsafe.lib.file.PwsStorage;
 import org.pwsafe.lib.file.PwsStringField;
@@ -835,113 +834,82 @@ public class PasswdFileData
         }
         case V2: {
             versionSupported = true;
+            PwsFieldTypeV2 v2Field = null;
             switch (field) {
-            case GROUP: {
-                fieldId = PwsRecordV2.GROUP;
-                break;
+            case GROUP -> v2Field = PwsFieldTypeV2.GROUP;
+            case NOTES -> v2Field = PwsFieldTypeV2.NOTES;
+            case PASSWORD -> v2Field = PwsFieldTypeV2.PASSWORD;
+            case PASSWORD_LIFETIME ->
+                    v2Field = PwsFieldTypeV2.PASSWORD_LIFETIME;
+            case TITLE -> v2Field = PwsFieldTypeV2.TITLE;
+            case USERNAME -> v2Field = PwsFieldTypeV2.USERNAME;
+            case UUID -> v2Field = PwsFieldTypeV2.UUID;
+            case URL -> v2Field = PwsFieldTypeV2.URL;
+            case EMAIL,
+                 PASSWORD_HISTORY,
+                 PROTECTED_ENTRY,
+                 OWN_PASSWORD_SYMBOLS,
+                 PASSWORD_POLICY_NAME,
+                 CREATION_TIME,
+                 PASSWORD_MOD_TIME,
+                 LAST_MOD_TIME,
+                 PASSWORD_EXPIRY_INTERVAL,
+                 V3_ID_STRING,
+                 LAST_ACCESS_TIME,
+                 PASSWORD_POLICY_DEPRECATED,
+                 AUTOTYPE,
+                 PASSWORD_POLICY,
+                 RUN_COMMAND,
+                 DOUBLE_CLICK_ACTION,
+                 SHIFT_DOUBLE_CLICK_ACTION,
+                 ENTRY_KEYBOARD_SHORTCUT,
+                 END_OF_RECORD,
+                 UNKNOWN -> {
             }
-            case NOTES: {
-                fieldId = PwsRecordV2.NOTES;
-                break;
             }
-            case PASSWORD: {
-                fieldId = PwsRecordV2.PASSWORD;
-                break;
-            }
-            case PASSWORD_LIFETIME: {
-                fieldId = PwsRecordV2.PASSWORD_LIFETIME;
-                break;
-            }
-            case TITLE: {
-                fieldId = PwsRecordV2.TITLE;
-                break;
-            }
-            case USERNAME: {
-                fieldId = PwsRecordV2.USERNAME;
-                break;
-            }
-            case UUID: {
-                fieldId = PwsRecordV2.UUID;
-                break;
-            }
-            case URL: {
-                fieldId = PwsRecordV2.URL;
-                break;
-            }
-            case EMAIL:
-            case PASSWORD_HISTORY:
-            case PROTECTED_ENTRY:
-            case OWN_PASSWORD_SYMBOLS:
-            case PASSWORD_POLICY_NAME:
-            case CREATION_TIME:
-            case PASSWORD_MOD_TIME:
-            case LAST_MOD_TIME:
-            case PASSWORD_EXPIRY_INTERVAL:
-            case V3_ID_STRING:
-            case LAST_ACCESS_TIME:
-            case PASSWORD_POLICY_DEPRECATED:
-            case AUTOTYPE:
-            case PASSWORD_POLICY:
-            case RUN_COMMAND:
-            case DOUBLE_CLICK_ACTION:
-            case SHIFT_DOUBLE_CLICK_ACTION:
-            case ENTRY_KEYBOARD_SHORTCUT:
-            case END_OF_RECORD:
-            case UNKNOWN: {
-                break;
-            }
+            if (v2Field != null) {
+                fieldId = v2Field.getId();
             }
             break;
         }
         case V1: {
             versionSupported = true;
+            PwsFieldTypeV1 v1Field = null;
             switch (field) {
-            case NOTES: {
-                fieldId = PwsRecordV1.NOTES;
-                break;
+            case NOTES -> v1Field = PwsFieldTypeV1.NOTES;
+            case PASSWORD -> v1Field = PwsFieldTypeV1.PASSWORD;
+            case TITLE -> v1Field = PwsFieldTypeV1.TITLE;
+            case USERNAME -> v1Field = PwsFieldTypeV1.USERNAME;
+            case UUID ->
+                    // No real UUID field for V1, so just use the phantom one
+                    v1Field = PwsFieldTypeV1.UUID;
+            case EMAIL,
+                 GROUP,
+                 PASSWORD_LIFETIME,
+                 URL,
+                 PASSWORD_HISTORY,
+                 PROTECTED_ENTRY,
+                 OWN_PASSWORD_SYMBOLS,
+                 PASSWORD_POLICY_NAME,
+                 CREATION_TIME,
+                 PASSWORD_MOD_TIME,
+                 LAST_MOD_TIME,
+                 PASSWORD_EXPIRY_INTERVAL,
+                 V3_ID_STRING,
+                 LAST_ACCESS_TIME,
+                 PASSWORD_POLICY_DEPRECATED,
+                 AUTOTYPE,
+                 PASSWORD_POLICY,
+                 RUN_COMMAND,
+                 DOUBLE_CLICK_ACTION,
+                 SHIFT_DOUBLE_CLICK_ACTION,
+                 ENTRY_KEYBOARD_SHORTCUT,
+                 END_OF_RECORD,
+                 UNKNOWN -> {
             }
-            case PASSWORD: {
-                fieldId = PwsRecordV1.PASSWORD;
-                break;
             }
-            case TITLE: {
-                fieldId = PwsRecordV1.TITLE;
-                break;
-            }
-            case USERNAME: {
-                fieldId = PwsRecordV1.USERNAME;
-                break;
-            }
-            case UUID: {
-                // No real UUID field for V1, so just use the phantom one
-                fieldId = PwsRecordV1.UUID;
-                break;
-            }
-            case EMAIL:
-            case GROUP:
-            case PASSWORD_LIFETIME:
-            case URL:
-            case PASSWORD_HISTORY:
-            case PROTECTED_ENTRY:
-            case OWN_PASSWORD_SYMBOLS:
-            case PASSWORD_POLICY_NAME:
-            case CREATION_TIME:
-            case PASSWORD_MOD_TIME:
-            case LAST_MOD_TIME:
-            case PASSWORD_EXPIRY_INTERVAL:
-            case V3_ID_STRING:
-            case LAST_ACCESS_TIME:
-            case PASSWORD_POLICY_DEPRECATED:
-            case AUTOTYPE:
-            case PASSWORD_POLICY:
-            case RUN_COMMAND:
-            case DOUBLE_CLICK_ACTION:
-            case SHIFT_DOUBLE_CLICK_ACTION:
-            case ENTRY_KEYBOARD_SHORTCUT:
-            case END_OF_RECORD:
-            case UNKNOWN: {
-                break;
-            }
+            if (v1Field != null) {
+                fieldId = v1Field.getId();
             }
             break;
         }
