@@ -216,9 +216,10 @@ public class PwsRecordV3 extends PwsRecord
     public boolean equals(Object that)
     {
         if (that instanceof PwsRecordV3) {
-            var uuidId = PwsFieldTypeV3.UUID.getId();
-            UUID thisUUID = (UUID)getField(uuidId).getValue();
-            UUID thatUUID = (UUID)((PwsRecord)that).getField(uuidId).getValue();
+            UUID thisUUID = (UUID)getField(PwsFieldTypeV3.UUID).getValue();
+            UUID thatUUID = (UUID)((PwsRecord)that)
+                    .getField(PwsFieldTypeV3.UUID)
+                    .getValue();
             return thisUUID.equals(thatUUID);
         } else {
             return false;
@@ -236,13 +237,13 @@ public class PwsRecordV3 extends PwsRecord
     @Override
     protected boolean isValid()
     {
-        PwsField idField = getField(PwsFieldTypeV3.V3_ID_STRING.getId());
+        PwsField idField = getField(PwsFieldTypeV3.V3_ID_STRING);
         return idField == null;
     }
 
     protected boolean isHeaderRecord()
     {
-        PwsField idField = getField(PwsFieldTypeV3.V3_ID_STRING.getId());
+        PwsField idField = getField(PwsFieldTypeV3.V3_ID_STRING);
         return idField != null;
     }
 

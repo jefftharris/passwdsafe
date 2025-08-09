@@ -347,6 +347,18 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param aType the field to get.
      * @return The value of the field.
      */
+    public final PwsField getField(@NonNull PwsFieldType aType)
+    {
+        return getField(aType.getId());
+    }
+
+    /**
+     * Gets the value of a field. See the subclass documentation for valid
+     * values for <code>type</code>.
+     *
+     * @param aType the field to get.
+     * @return The value of the field.
+     */
     protected final PwsField getField(Integer aType)
     {
         return attributes.get(aType);

@@ -171,10 +171,12 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     {
         int retCode;
 
-        if ((retCode = getField(TITLE).compareTo(other.getField(TITLE))) == 0) {
-            if ((retCode = getField(USERNAME)
-                    .compareTo(other.getField(USERNAME))) == 0) {
-                return getField(NOTES).compareTo(other.getField(NOTES));
+        if ((retCode = getField(PwsFieldTypeV1.TITLE).compareTo(
+                other.getField(PwsFieldTypeV1.TITLE))) == 0) {
+            if ((retCode = getField(PwsFieldTypeV1.USERNAME).compareTo(
+                    other.getField(PwsFieldTypeV1.USERNAME))) == 0) {
+                return getField(PwsFieldTypeV1.NOTES).compareTo(
+                        other.getField(PwsFieldTypeV1.NOTES));
             }
         }
         return retCode;
@@ -211,10 +213,14 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      */
     private boolean equals(@NonNull PwsRecordV1 other)
     {
-        return (getField(NOTES).equals(other.getField(NOTES))
-                && getField(PASSWORD).equals(other.getField(PASSWORD))
-                && getField(TITLE).equals(other.getField(TITLE))
-                && getField(USERNAME).equals(other.getField(USERNAME)));
+        return (getField(PwsFieldTypeV1.NOTES).equals(
+                other.getField(PwsFieldTypeV1.NOTES)) &&
+                getField(PwsFieldTypeV1.PASSWORD).equals(
+                        other.getField(PwsFieldTypeV1.PASSWORD)) &&
+                getField(PwsFieldTypeV1.TITLE).equals(
+                        other.getField(PwsFieldTypeV1.TITLE)) &&
+                getField(PwsFieldTypeV1.USERNAME).equals(
+                        other.getField(PwsFieldTypeV1.USERNAME)));
     }
 
     /**
@@ -297,12 +303,12 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     {
         PwsField title;
 
-        if (getField(USERNAME).toString().trim().isEmpty()) {
-            title = getField(TITLE);
+        if (getField(PwsFieldTypeV1.USERNAME).toString().trim().isEmpty()) {
+            title = getField(PwsFieldTypeV1.TITLE);
         } else {
-            title = new PwsStringField(TITLE, getField(TITLE).toString() +
-                                              SplitString +
-                                              getField(USERNAME).toString());
+            title = new PwsStringField(PwsFieldTypeV1.TITLE, getField(
+                    PwsFieldTypeV1.TITLE).toString() + SplitString + getField(
+                    PwsFieldTypeV1.USERNAME).toString());
         }
 
         writeField(file, title, DEFAULT_TYPE);
@@ -319,8 +325,8 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     @NonNull
     public String toString()
     {
-        return "{ \"" + getField(TITLE) + "\", \"" +
-               getField(USERNAME) + "\" }";
+        return "{ \"" + getField(PwsFieldTypeV1.TITLE) + "\", \"" +
+               getField(PwsFieldTypeV1.USERNAME) + "\" }";
     }
 
     /**
