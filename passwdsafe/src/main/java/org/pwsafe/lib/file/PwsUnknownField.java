@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -32,6 +32,18 @@ public class PwsUnknownField extends PwsField
      * @param value the field's value.
      */
     public PwsUnknownField(int type, byte[] value)
+    {
+        super(type, value);
+    }
+
+
+    /**
+     * Constructor
+     *
+     * @param type  the field's type.
+     * @param value the field's value.
+     */
+    public PwsUnknownField(PwsFieldType type, byte[] value)
     {
         super(type, value);
     }

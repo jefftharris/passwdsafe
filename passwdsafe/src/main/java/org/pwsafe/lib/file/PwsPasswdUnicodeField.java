@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2009-2010 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2009-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,6 +8,8 @@
 package org.pwsafe.lib.file;
 
 
+import androidx.annotation.NonNull;
+
 public class PwsPasswdUnicodeField extends AbstractPwsPasswdField
 {
     private static final String ENCODING = "UTF-8";
@@ -15,7 +17,7 @@ public class PwsPasswdUnicodeField extends AbstractPwsPasswdField
     /**
      * Constructor from binary value
      */
-    public PwsPasswdUnicodeField(int type, byte[] value, PwsFile file)
+    public PwsPasswdUnicodeField(PwsFieldType type, byte[] value, PwsFile file)
     {
         super(type, value, file, ENCODING);
     }
@@ -23,9 +25,11 @@ public class PwsPasswdUnicodeField extends AbstractPwsPasswdField
     /**
      * Constructor from string
      */
-    public PwsPasswdUnicodeField(int type, String value, PwsFile file)
+    public PwsPasswdUnicodeField(@NonNull PwsFieldType type,
+                                 String value,
+                                 PwsFile file)
     {
-        super(type, value, file, ENCODING);
+        super(type.getId(), value, file, ENCODING);
     }
 
     /**

@@ -1,9 +1,9 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
- * Copyright (c) 2008-2009 David Muller
- * <roxon@users.sourceforge.net>. All rights reserved. Use of the code is
- * allowed under the Artistic License 2.0 terms, as specified in the LICENSE
- * file distributed with this code, or available from
+ * Copyright (©) 2025-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>
+ * All rights reserved. Use of the code is allowed under the
+ * Artistic License 2.0 terms, as specified in the LICENSE file
+ * distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package org.pwsafe.lib.file;
@@ -35,13 +35,8 @@ public class PwsRecordV3 extends PwsRecord
     @Serial
     private static final long serialVersionUID = -3160317668375599155L;
 
-    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
-            PwsRecordV3.class.getPackage()).getName());
-
-    /**
-     * Constant for the version 3 ID string field.
-     */
-    public static final int V3_ID_STRING = 0;
+    private static final Log LOG = Log.getInstance(
+            Objects.requireNonNull(PwsRecordV3.class.getPackage()).getName());
 
     /**
      * Minor version for PasswordSafe 3.25 with protected entry support
@@ -64,239 +59,60 @@ public class PwsRecordV3 extends PwsRecord
     public static final byte DB_FMT_MINOR_VERSION = DB_FMT_MINOR_3_30;
 
     /**
-     * Constant for the Universally Unique ID (UUID) field.
-     */
-    public static final int UUID = 1;
-
-    /**
-     * Constant for the group field.
-     */
-    public static final int GROUP = 2;
-
-    /**
-     * Constant for the title field.
-     */
-    public static final int TITLE = 3;
-
-    /**
-     * Constant for the username field.
-     */
-    public static final int USERNAME = 4;
-
-    /**
-     * Constant for the notes field.
-     */
-    public static final int NOTES = 5;
-
-    /**
-     * Constant for the passphrase field.
-     */
-    public static final int PASSWORD = 6;
-
-    /**
-     * Constant for the creation date field.
-     */
-    public static final int CREATION_TIME = 7;
-
-    /**
-     * Constant for the passphrase modification time field.
-     */
-    public static final int PASSWORD_MOD_TIME = 8;
-
-    /**
-     * Constant for the last access time field.
-     */
-    public static final int LAST_ACCESS_TIME = 9;
-
-    /**
-     * Constant for the passphrase lifetime field.
-     */
-    public static final int PASSWORD_LIFETIME = 10;
-
-    /**
-     * Constant for the passphrase policy field.
-     */
-    public static final int PASSWORD_POLICY_DEPRECATED = 11;
-
-    /**
-     * Constant for the last modification time field.
-     */
-    public static final int LAST_MOD_TIME = 12;
-
-    /**
-     * Constant for URL related to this entry.
-     */
-    public static final int URL = 13;
-
-    /**
-     * Constant for Autotype information related to this entry.
-     */
-    public static final int AUTOTYPE = 14;
-
-    /**
-     * History of recently used passwords.
-     */
-    public static final int PASSWORD_HISTORY = 15;
-
-    /**
-     * Constant for the password policy field.
-     */
-    public static final int PASSWORD_POLICY = 16;
-
-    /**
-     * Password expiration interval
-     */
-    public static final int PASSWORD_EXPIRY_INTERVAL = 17;
-
-    /**
-     * Run Command
-     */
-    public static final int RUN_COMMAND = 18;
-
-    /**
-     * Double-Click action
-     */
-    public static final int DOUBLE_CLICK_ACTION = 19;
-
-    /**
-     * Email
-     */
-    public static final int EMAIL = 20;
-
-    /**
-     * Protected entry
-     */
-    public static final int PROTECTED_ENTRY = 21;
-
-    /**
-     * Own symbols for password
-     */
-    public static final int OWN_PASSWORD_SYMBOLS = 22;
-
-    /**
-     * Shift double-click action
-     */
-    public static final int SHIFT_DOUBLE_CLICK_ACTION = 23;
-
-    /**
-     * Password policy name
-     */
-    public static final int PASSWORD_POLICY_NAME = 24;
-
-    /**
-     * Entry keyboard shortcut
-     */
-    public static final int ENTRY_KEYBOARD_SHORTCUT = 25;
-
-    /**
-     * Header database version
-     */
-    public static final int HEADER_VERSION = 0;
-
-    /**
-     * Header UUID
-     */
-    public static final int HEADER_UUID = 1;
-
-    /**
-     * Header last save timestamp
-     */
-    public static final int HEADER_LAST_SAVE_TIME = 4;
-
-    /**
-     * Header last saved by who (deprecated in db)
-     */
-    public static final int HEADER_LAST_SAVE_WHO = 5;
-
-    /**
-     * Header last saved app
-     */
-    public static final int HEADER_LAST_SAVE_WHAT = 6;
-
-    /**
-     * Header last saved by user
-     */
-    public static final int HEADER_LAST_SAVE_USER = 7;
-
-    /**
-     * Header last saved on host
-     */
-    public static final int HEADER_LAST_SAVE_HOST = 8;
-
-    /**
-     * Header named password policies
-     */
-    public static final int HEADER_NAMED_PASSWORD_POLICIES = 16;
-
-    /**
-     * Header for Yubico
-     */
-    @SuppressWarnings("unused")
-    public static final int HEADER_YUBICO = 0x12;
-
-    /**
-     * Constant for the end of record marker field.
-     */
-    public static final int END_OF_RECORD = 255;
-
-    /**
      * All the valid type codes.
      */
-    private static final Object[] VALID_TYPES = new Object[] {
-            new Object[]{V3_ID_STRING,
-                         "V3_ID_STRING", PwsVersionField.class},
-            new Object[]{UUID,
-                         "UUID", PwsUUIDField.class},
-            new Object[]{GROUP,
-                         "GROUP", PwsStringUnicodeField.class},
-            new Object[]{TITLE,
-                         "TITLE", PwsStringUnicodeField.class},
-            new Object[]{USERNAME,
-                         "USERNAME", PwsStringUnicodeField.class},
-            new Object[]{NOTES,
-                         "NOTES", PwsStringUnicodeField.class},
-            new Object[]{PASSWORD,
-                         "PASSWORD", PwsPasswdUnicodeField.class},
-            new Object[]{CREATION_TIME,
-                         "CREATION_TIME", PwsTimeField.class},
-            new Object[]{PASSWORD_MOD_TIME,
-                         "PASSWORD_MOD_TIME", PwsTimeField.class},
-            new Object[]{LAST_ACCESS_TIME,
-                         "LAST_ACCESS_TIME", PwsTimeField.class},
-            new Object[]{PASSWORD_LIFETIME,
-                         "PASSWORD_LIFETIME", PwsTimeField.class},
-            new Object[]{PASSWORD_POLICY_DEPRECATED,
-                         "PASSWORD_POLICY_OLD",
-                         PwsStringUnicodeField.class},
-            new Object[]{LAST_MOD_TIME,
-                         "LAST_MOD_TIME", PwsTimeField.class},
-            new Object[]{URL,
-                         "URL", PwsStringUnicodeField.class},
-            new Object[]{AUTOTYPE,
-                         "AUTOTYPE", PwsStringUnicodeField.class},
-            new Object[]{PASSWORD_HISTORY,
-                         "PASSWORD_HISTORY", PwsStringUnicodeField.class},
-            new Object[]{PASSWORD_POLICY,
-                         "PASSWORD_POLICY", PwsStringUnicodeField.class},
-            new Object[]{PASSWORD_EXPIRY_INTERVAL,
-                         "PASSWORD_EXPIRY_INTERVAL", PwsIntegerField.class},
-            new Object[]{RUN_COMMAND,
-                         "RUN_COMMAND", PwsStringUnicodeField.class},
-            new Object[]{DOUBLE_CLICK_ACTION,
-                         "DOUBLE_CLICK_ACTION", PwsShortField.class},
-            new Object[]{EMAIL,
-                         "EMAIL", PwsStringUnicodeField.class},
-            new Object[]{PROTECTED_ENTRY,
-                         "PROTECTED_ENTRY", PwsByteField.class},
-            new Object[]{OWN_PASSWORD_SYMBOLS,
-                         "OWN_PASSWORD_SYMBOLS", PwsStringUnicodeField.class},
-            new Object[]{SHIFT_DOUBLE_CLICK_ACTION,
-                         "SHIFT_DOUBLE_CLICK_ACTION", PwsShortField.class},
-            new Object[]{PASSWORD_POLICY_NAME,
-                         "PASSWORD_POLICY_NAME", PwsStringUnicodeField.class},
-            new Object[]{ENTRY_KEYBOARD_SHORTCUT,
-                         "ENTRY_KEYBOARD_SHORTCUT", PwsIntegerField.class},
-            };
+    private static final Object[] VALID_TYPES;
+
+    static {
+        var types = new ArrayList<Object[]>(PwsFieldTypeV3.values().length);
+        for (var type : PwsFieldTypeV3.values()) {
+            var typeId = Integer.valueOf(type.getId());
+            switch (type) {
+            case V3_ID_STRING -> types.add(new Object[]{typeId, type.toString(),
+                                                        PwsVersionField.class});
+            case UUID -> types.add(
+                    new Object[]{typeId, type.toString(), PwsUUIDField.class});
+            case GROUP,
+                 TITLE,
+                 USERNAME,
+                 NOTES,
+                 PASSWORD_POLICY_DEPRECATED,
+                 URL,
+                 AUTOTYPE,
+                 PASSWORD_HISTORY,
+                 PASSWORD_POLICY,
+                 RUN_COMMAND,
+                 EMAIL,
+                 OWN_PASSWORD_SYMBOLS,
+                 PASSWORD_POLICY_NAME -> types.add(
+                    new Object[]{typeId, type.toString(),
+                                 PwsStringUnicodeField.class});
+            case PASSWORD -> types.add(new Object[]{typeId, type.toString(),
+                                                    PwsPasswdUnicodeField.class});
+            case CREATION_TIME,
+                 PASSWORD_MOD_TIME,
+                 LAST_ACCESS_TIME,
+                 PASSWORD_LIFETIME,
+                 LAST_MOD_TIME -> types.add(
+                    new Object[]{typeId, type.toString(), PwsTimeField.class});
+
+            case PASSWORD_EXPIRY_INTERVAL,
+                 ENTRY_KEYBOARD_SHORTCUT -> types.add(
+                    new Object[]{typeId, type.toString(),
+                                 PwsIntegerField.class});
+            case DOUBLE_CLICK_ACTION,
+                 SHIFT_DOUBLE_CLICK_ACTION -> types.add(
+                    new Object[]{typeId, type.toString(), PwsShortField.class});
+            case PROTECTED_ENTRY -> types.add(
+                    new Object[]{typeId, type.toString(), PwsByteField.class});
+            case END_OF_RECORD,
+                 UNKNOWN -> {
+            }
+            }
+        }
+
+        VALID_TYPES = types.toArray(new Object[0]);
+    }
 
     /**
      * Create a new record with all mandatory fields given their default value.
@@ -314,23 +130,24 @@ public class PwsRecordV3 extends PwsRecord
     /**
      * A special version for header records
      *
-     * @param isHeader Marker for header record
+     * @param ignoredIsHeader Marker for header record
+     * @noinspection SameParameterValue
      */
-    PwsRecordV3(@SuppressWarnings({"UnusedParameters",
-                                   "SameParameterValue"}) boolean isHeader)
+    PwsRecordV3(boolean ignoredIsHeader)
     {
         super(VALID_TYPES, true);
-        setField(new PwsVersionField(HEADER_VERSION,
+        setField(new PwsVersionField(PwsHeaderTypeV3.VERSION,
                                      new byte[]{DB_FMT_MINOR_VERSION, 3}));
-        setField(new PwsUUIDField(HEADER_UUID, new UUID()));
+        setField(new PwsUUIDField(PwsHeaderTypeV3.UUID, new UUID()));
     }
 
     /**
      * Create a new record by reading it from <code>file</code>.
      *
      * @param file the file to read data from.
+     *
      * @throws EndOfFileException If end of file is reached
-     * @throws IOException        If a read error occurs.
+     * @throws IOException If a read error occurs.
      */
     PwsRecordV3(PwsFile file)
             throws EndOfFileException, IOException, RecordLoadException
@@ -342,15 +159,16 @@ public class PwsRecordV3 extends PwsRecord
      * A special version which reads and ignores all headers since they have
      * different ids to standard types.
      *
-     * @param file       the file to read data from.
-     * @param ignoreFieldTypes true if all fields types should be ignored,
-     *                         false otherwise
+     * @param file the file to read data from.
+     * @param ignoreFieldTypes true if all fields types should be ignored, false
+     * otherwise
+     *
      * @throws EndOfFileException If end of file is reached
-     * @throws IOException        If a read error occurs.
+     * @throws IOException If a read error occurs.
      */
     PwsRecordV3(PwsFile file,
                 @SuppressWarnings("SameParameterValue")
-                        boolean ignoreFieldTypes)
+                boolean ignoreFieldTypes)
             throws EndOfFileException, IOException, RecordLoadException
     {
         super(file, VALID_TYPES, ignoreFieldTypes);
@@ -375,9 +193,11 @@ public class PwsRecordV3 extends PwsRecord
      * <code>other</code>.
      *
      * @param other the record to compare this record to.
+     *
      * @return A value &lt; zero if this record is "less than"
      * <code>other</code> , zero if they're equal and &gt; zero if this record
      * is "greater than" <code>other</code>.
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -391,17 +211,20 @@ public class PwsRecordV3 extends PwsRecord
      * equal and <code>false</code> if they're unequal.
      *
      * @param that the record this one is compared to.
+     *
      * @return <code>true</code> if the records are equal, <code>false</code> if
      * they're unequal.
+     *
      * @throws ClassCastException if <code>that</code> is not a
-     *                            <code>PwsRecordV1</code>.
+     * <code>PwsRecordV1</code>.
      */
     @Override
     public boolean equals(Object that)
     {
         if (that instanceof PwsRecordV3) {
-            UUID thisUUID = (UUID)getField(UUID).getValue();
-            UUID thatUUID = (UUID)((PwsRecord)that).getField(UUID).getValue();
+            var uuidId = PwsFieldTypeV3.UUID.getId();
+            UUID thisUUID = (UUID)getField(uuidId).getValue();
+            UUID thatUUID = (UUID)((PwsRecord)that).getField(uuidId).getValue();
             return thisUUID.equals(thatUUID);
         } else {
             return false;
@@ -419,13 +242,13 @@ public class PwsRecordV3 extends PwsRecord
     @Override
     protected boolean isValid()
     {
-        PwsField idField = getField(V3_ID_STRING);
+        PwsField idField = getField(PwsFieldTypeV3.V3_ID_STRING.getId());
         return idField == null;
     }
 
     protected boolean isHeaderRecord()
     {
-        PwsField idField = getField(V3_ID_STRING);
+        PwsField idField = getField(PwsFieldTypeV3.V3_ID_STRING.getId());
         return idField != null;
     }
 
@@ -506,28 +329,26 @@ public class PwsRecordV3 extends PwsRecord
         for (; ; ) {
             try {
                 Item item = new ItemV3((PwsFileV3)file);
-
-                if (item.getType() == END_OF_RECORD) {
+                int itemType = item.getType();
+                if (itemType == PwsFieldTypeV3.END_OF_RECORD.getId()) {
                     break; // out of the for loop
                 }
 
-                PwsField itemVal;
+                PwsField itemVal = null;
                 if (ignoreFieldTypes) {
                     // header record has no valid types...
-                    itemVal = new PwsUnknownField(item.getType(),
+                    itemVal = new PwsUnknownField(itemType,
                                                   item.getByteData());
                     attributes.put(item.getType(), itemVal);
                 } else {
-
-                    switch (item.getType()) {
+                    var type = PwsFieldTypeV3.fromType(itemType);
+                    switch (type) {
                     case V3_ID_STRING:
-                        itemVal = new PwsVersionField(item.getType(),
-                                                      item.getByteData());
+                        itemVal = new PwsVersionField(type, item.getByteData());
                         break;
 
                     case UUID:
-                        itemVal = new PwsUUIDField(item.getType(),
-                                                   item.getByteData());
+                        itemVal = new PwsUUIDField(type, item.getByteData());
                         break;
 
                     case GROUP:
@@ -542,12 +363,12 @@ public class PwsRecordV3 extends PwsRecord
                     case EMAIL:
                     case OWN_PASSWORD_SYMBOLS:
                     case PASSWORD_POLICY_NAME:
-                        itemVal = new PwsStringUnicodeField(item.getType(),
+                        itemVal = new PwsStringUnicodeField(type,
                                                             item.getByteData());
                         break;
 
                     case PASSWORD:
-                        itemVal = new PwsPasswdUnicodeField(item.getType(),
+                        itemVal = new PwsPasswdUnicodeField(type,
                                                             item.getByteData(),
                                                             file);
                         item.clear();
@@ -558,31 +379,30 @@ public class PwsRecordV3 extends PwsRecord
                     case LAST_ACCESS_TIME:
                     case LAST_MOD_TIME:
                     case PASSWORD_LIFETIME:
-                        itemVal = new PwsTimeField(item.getType(),
-                                                   item.getByteData());
+                        itemVal = new PwsTimeField(type, item.getByteData());
                         break;
 
                     case PASSWORD_EXPIRY_INTERVAL:
                     case ENTRY_KEYBOARD_SHORTCUT:
-                        itemVal = new PwsIntegerField(item.getType(),
-                                                      item.getByteData());
+                        itemVal = new PwsIntegerField(type, item.getByteData());
                         break;
 
                     case DOUBLE_CLICK_ACTION:
                     case SHIFT_DOUBLE_CLICK_ACTION:
-                        itemVal = new PwsShortField(item.getType(),
-                                                    item.getByteData());
+                        itemVal = new PwsShortField(type, item.getByteData());
                         break;
 
                     case PROTECTED_ENTRY:
-                        itemVal = new PwsByteField(item.getType(),
-                                                   item.getByteData());
+                        itemVal = new PwsByteField(type, item.getByteData());
                         break;
 
-                    default:
-                        itemVal = new PwsUnknownField(item.getType(),
-                                                      item.getByteData());
+                    case PASSWORD_POLICY_DEPRECATED:
+                    case END_OF_RECORD:
+                    case UNKNOWN:
                         break;
+                    }
+                    if (itemVal == null) {
+                        itemVal = new PwsUnknownField(type, item.getByteData());
                     }
                     setField(itemVal);
                 }
@@ -608,6 +428,7 @@ public class PwsRecordV3 extends PwsRecord
      * Saves this record to <code>file</code>.
      *
      * @param file the file that the record will be written to.
+     *
      * @throws IOException if a write error occurs.
      * @see org.pwsafe.lib.file.PwsRecord#saveRecord(org.pwsafe.lib.file.PwsFile)
      */
@@ -626,22 +447,21 @@ public class PwsRecordV3 extends PwsRecord
             PwsFileV3 fileV3 = (PwsFileV3)file;
             fileV3.hasher.digest(value.getBytes());
         }
-        writeField(file, new PwsStringField(END_OF_RECORD, ""));
+        writeField(file, new PwsStringField(PwsFieldTypeV3.END_OF_RECORD, ""));
     }
 
     /**
      * Writes a single field to the file.
      *
-     * @param file  the file to write the field to.
+     * @param file the file to write the field to.
      * @param field the field to be written.
-     * @param type  the type to write to the file instead of
-     *              <code>field.getType()</code>
+     * @param type the type to write to the file instead of
+     * <code>field.getType()</code>
      */
     @Override
     protected void writeField(@NonNull PwsFile file,
                               @NonNull PwsField field,
-                              int type)
-            throws IOException
+                              int type) throws IOException
     {
         byte[] lenBlock = new byte[5];
         byte[] dataBlock = field.getBytes();
@@ -654,8 +474,8 @@ public class PwsRecordV3 extends PwsRecord
 
         int firstBlockLen = Math.min(dataBlock.length, 11);
         System.arraycopy(lenBlock, 0, nextBlock, 0, lenBlock.length);
-        System.arraycopy(dataBlock, 0,
-                         nextBlock, lenBlock.length, firstBlockLen);
+        System.arraycopy(dataBlock, 0, nextBlock, lenBlock.length,
+                         firstBlockLen);
         file.writeEncryptedBytes(nextBlock);
 
         int bytesToWrite = dataBlock.length - 11;
@@ -709,9 +529,42 @@ public class PwsRecordV3 extends PwsRecord
                 Object[] type = (Object[])VALID_TYPES[key];
                 sb.append(type[1]);
                 int typeVal = (Integer)type[0];
-                showValue = (typeVal != PASSWORD) && (typeVal != NOTES);
-            }
-            else {
+                switch (PwsFieldTypeV3.fromType(typeVal)) {
+                case PASSWORD:
+                case NOTES: {
+                    showValue = false;
+                    break;
+                }
+                case V3_ID_STRING:
+                case UUID:
+                case GROUP:
+                case TITLE:
+                case USERNAME:
+                case CREATION_TIME:
+                case PASSWORD_MOD_TIME:
+                case LAST_ACCESS_TIME:
+                case PASSWORD_LIFETIME:
+                case PASSWORD_POLICY_DEPRECATED:
+                case LAST_MOD_TIME:
+                case URL:
+                case AUTOTYPE:
+                case PASSWORD_HISTORY:
+                case PASSWORD_POLICY:
+                case PASSWORD_EXPIRY_INTERVAL:
+                case RUN_COMMAND:
+                case DOUBLE_CLICK_ACTION:
+                case EMAIL:
+                case PROTECTED_ENTRY:
+                case OWN_PASSWORD_SYMBOLS:
+                case SHIFT_DOUBLE_CLICK_ACTION:
+                case PASSWORD_POLICY_NAME:
+                case ENTRY_KEYBOARD_SHORTCUT:
+                case END_OF_RECORD:
+                case UNKNOWN: {
+                    break;
+                }
+                }
+            } else {
                 sb.append(key);
             }
             sb.append("=");

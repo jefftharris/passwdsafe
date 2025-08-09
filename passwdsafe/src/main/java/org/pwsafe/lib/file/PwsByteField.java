@@ -31,7 +31,7 @@ public class PwsByteField extends PwsField
      * @param value the byte array holding the byte value.
      * @throws IndexOutOfBoundsException If <code>value.length</code> &lt; 1.
      */
-    public PwsByteField(int type, @NonNull byte[] value)
+    public PwsByteField(PwsFieldType type, @NonNull byte[] value)
     {
         super(type, value[0]);
     }
@@ -43,7 +43,7 @@ public class PwsByteField extends PwsField
      *              being read.
      * @param value the byte value.
      */
-    public PwsByteField(int type, byte value)
+    public PwsByteField(PwsFieldType type, byte value)
     {
         super(type, value);
     }

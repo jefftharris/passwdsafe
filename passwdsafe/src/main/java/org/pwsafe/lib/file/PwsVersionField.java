@@ -1,4 +1,5 @@
 /*
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -7,6 +8,8 @@
  */
 package org.pwsafe.lib.file;
 
+
+import androidx.annotation.NonNull;
 
 /**
  * Provides a wrapper for fields that holds the password safe file version.
@@ -25,7 +28,7 @@ public class PwsVersionField extends PwsIntegerField
      * @param value the byte array holding the integer value.
      * @throws IndexOutOfBoundsException If <code>value.length</code> &lt; 4.
      */
-    public PwsVersionField(int type, byte[] value)
+    public PwsVersionField(PwsFieldType type, @NonNull byte[] value)
     {
         super(type, new byte[]{0, 0, value.length > 0 ? value[0] : 0,
                                value.length > 1 ? value[1] : 0});

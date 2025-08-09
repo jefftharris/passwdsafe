@@ -32,7 +32,7 @@ public abstract class AbstractPwsPasswdField extends PwsField
     private final String itsStrEncoding;
 
     protected AbstractPwsPasswdField(
-            int type, byte[] value, @NonNull PwsFile file,
+            PwsFieldType type, byte[] value, @NonNull PwsFile file,
             @SuppressWarnings("SameParameterValue") String encoding)
     {
         super(type, sealValue(value, encoding, file.getWriteCipher()));

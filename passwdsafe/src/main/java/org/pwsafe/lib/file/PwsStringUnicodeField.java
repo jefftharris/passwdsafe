@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -27,23 +27,12 @@ public class PwsStringUnicodeField extends PwsField
      * @param type  the field's type.
      * @param value the field's value.
      */
-    public PwsStringUnicodeField(int type, byte[] value)
+    public PwsStringUnicodeField(PwsFieldType type, byte[] value)
             throws UnsupportedEncodingException
     {
 
         //noinspection CharsetObjectCanBeUsed
         super(type, new String(value, "UTF-8"));
-    }
-
-    /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param value the field's value.
-     */
-    public PwsStringUnicodeField(int type, String value)
-    {
-        super(type, value);
     }
 
     /**
