@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
- * Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2024-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -20,12 +20,6 @@ import java.io.IOException;
  */
 public class PwsFileV1 extends PwsFileV1V2
 {
-
-    /**
-     * The PasswordSafe database version number that this class supports.
-     */
-    public static final int VERSION = 1;
-
     /**
      * Use of this constructor to load a PasswordSafe database is STRONGLY
      * discouraged since it's use ties the caller to a particular file version.
@@ -52,9 +46,9 @@ public class PwsFileV1 extends PwsFileV1V2
      * @return The file's major version number.
      */
     @Override
-    public int getFileVersionMajor()
+    public PwsFileVersion getFileVersionMajor()
     {
-        return VERSION;
+        return PwsFileVersion.V1;
     }
 
     /**

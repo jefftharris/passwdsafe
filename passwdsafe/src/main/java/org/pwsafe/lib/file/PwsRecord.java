@@ -387,12 +387,19 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
             throws EndOfFileException, IOException,
                    UnsupportedFileVersionException, RecordLoadException
     {
-        return switch (file.getFileVersionMajor()) {
-            case PwsFileV1.VERSION -> new PwsRecordV1(file);
-            case PwsFileV2.VERSION -> new PwsRecordV2(file);
-            case PwsFileV3.VERSION -> new PwsRecordV3(file);
-            default -> throw new UnsupportedFileVersionException();
-        };
+        switch (file.getFileVersionMajor()) {
+        case V1 -> {
+            return new PwsRecordV1(file);
+        }
+        case V2 -> {
+            return new PwsRecordV2(file);
+        }
+        case V3 -> {
+            return new PwsRecordV3(file);
+        }
+        }
+
+        throw new UnsupportedFileVersionException();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,6 +7,9 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.crypto.BlowfishPws;
@@ -86,8 +89,10 @@ public abstract class PwsFileV1V2 extends PwsFile
      * @param encoding    the passphrase encoding (if known)
      * @return A properly initialised {@link BlowfishPws} object.
      */
-    private BlowfishPws makeBlowfish(Owner<PwsPassword>.Param passwdParam,
-                                     String encoding)
+    @NonNull
+    @Contract("_, _ -> new")
+    private BlowfishPws makeBlowfish(
+            @NonNull Owner<PwsPassword>.Param passwdParam, String encoding)
             throws UnsupportedEncodingException
     {
         SHA1 sha1;
@@ -149,7 +154,7 @@ public abstract class PwsFileV1V2 extends PwsFile
      * an integral multiple of <code>BLOCK_LENGTH</code>.
      */
     @Override
-    public void readDecryptedBytes(byte[] buff)
+    public void readDecryptedBytes(@NonNull byte[] buff)
             throws EndOfFileException, IOException
     {
         if ((buff.length == 0) || ((buff.length % getBlockSize()) != 0)) {
@@ -210,7 +215,7 @@ public abstract class PwsFileV1V2 extends PwsFile
      * @param buff the data to be written.
      */
     @Override
-    public void writeEncryptedBytes(byte[] buff)
+    public void writeEncryptedBytes(@NonNull byte[] buff)
             throws IOException
     {
         if ((buff.length == 0) || ((buff.length % getBlockSize()) != 0)) {

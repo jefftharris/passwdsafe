@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2024-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2024-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -40,12 +40,6 @@ import javax.crypto.SealedObject;
  */
 public final class PwsFileV3 extends PwsFile
 {
-
-    /**
-     * The PasswordSafe database version number that this class supports.
-     */
-    public static final int VERSION = 3;
-
     /**
      * The string that identifies a database as V3 rather than V2 or V1
      */
@@ -267,9 +261,9 @@ public final class PwsFileV3 extends PwsFile
      * @return The major version number for the file.
      */
     @Override
-    public int getFileVersionMajor()
+    public PwsFileVersion getFileVersionMajor()
     {
-        return VERSION;
+        return PwsFileVersion.V3;
     }
 
     /**

@@ -1,4 +1,5 @@
 /*
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -6,6 +7,8 @@
  * http://www.opensource.org/licenses/artistic-license-2.0.php
  */
 package org.pwsafe.lib.file;
+
+import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.RecordLoadException;
@@ -21,11 +24,6 @@ import java.io.IOException;
 public class PwsFileV2 extends PwsFileV1V2
 {
     /**
-     * The PasswordSafe database version number that this class supports.
-     */
-    public static final int VERSION = 2;
-
-    /**
      * The string that identifies a database as V2 rather than V1
      */
     public static final String ID_STRING =
@@ -35,7 +33,7 @@ public class PwsFileV2 extends PwsFileV1V2
     /**
      * Return whether the record header represents a V2 file format header
      */
-    public static boolean isV2Header(PwsRecordV1 header)
+    public static boolean isV2Header(@NonNull PwsRecordV1 header)
     {
         PwsField title = header.getField(PwsRecordV1.TITLE);
         return (title != null) &&
@@ -69,9 +67,9 @@ public class PwsFileV2 extends PwsFileV1V2
      * @return The major version number for the file.
      */
     @Override
-    public int getFileVersionMajor()
+    public PwsFileVersion getFileVersionMajor()
     {
-        return VERSION;
+        return PwsFileVersion.V2;
     }
 
     /**

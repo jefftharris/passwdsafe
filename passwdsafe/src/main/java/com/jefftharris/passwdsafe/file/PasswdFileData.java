@@ -36,8 +36,6 @@ import org.pwsafe.lib.file.PwsFieldTypeV2;
 import org.pwsafe.lib.file.PwsFieldTypeV3;
 import org.pwsafe.lib.file.PwsFile;
 import org.pwsafe.lib.file.PwsFileStorage;
-import org.pwsafe.lib.file.PwsFileV1;
-import org.pwsafe.lib.file.PwsFileV2;
 import org.pwsafe.lib.file.PwsFileV3;
 import org.pwsafe.lib.file.PwsHeaderTypeV3;
 import org.pwsafe.lib.file.PwsIntegerField;
@@ -277,10 +275,18 @@ public class PasswdFileData
 
     public final boolean canEdit()
     {
-        return isWritable() &&
-               (itsPwsFile != null) &&
-               ((itsPwsFile.getFileVersionMajor() == PwsFileV3.VERSION) ||
-                (itsPwsFile.getFileVersionMajor() == PwsFileV2.VERSION));
+        if (!isWritable() || (itsPwsFile == null)) {
+            return false;
+        }
+        switch (itsPwsFile.getFileVersionMajor()) {
+        case V2,
+             V3 -> {
+            return true;
+        }
+        case V1 -> {
+        }
+        }
+        return false;
     }
 
     public final boolean canDelete()
@@ -290,14 +296,34 @@ public class PasswdFileData
 
     public final boolean isV3()
     {
-        return (itsPwsFile != null) &&
-            (itsPwsFile.getFileVersionMajor() == PwsFileV3.VERSION);
+        if (itsPwsFile == null) {
+            return false;
+        }
+        switch (itsPwsFile.getFileVersionMajor()) {
+        case V3 -> {
+            return true;
+        }
+        case V2,
+             V1 -> {
+        }
+        }
+        return false;
     }
 
     private boolean isV2()
     {
-        return (itsPwsFile != null) &&
-            (itsPwsFile.getFileVersionMajor() == PwsFileV2.VERSION);
+        if (itsPwsFile == null) {
+            return false;
+        }
+        switch (itsPwsFile.getFileVersionMajor()) {
+        case V2 -> {
+            return true;
+        }
+        case V3,
+             V1 -> {
+        }
+        }
+        return false;
     }
 
     @Nullable
@@ -800,12 +826,15 @@ public class PasswdFileData
         }
 
         int fieldId = FIELD_NOT_PRESENT;
+        boolean versionSupported = false;
         switch (itsPwsFile.getFileVersionMajor()) {
-        case PwsFileV3.VERSION: {
+        case V3: {
+            versionSupported = true;
             fieldId = field.getId();
             break;
         }
-        case PwsFileV2.VERSION: {
+        case V2: {
+            versionSupported = true;
             switch (field) {
             case GROUP: {
                 fieldId = PwsRecordV2.GROUP;
@@ -864,7 +893,8 @@ public class PasswdFileData
             }
             break;
         }
-        case PwsFileV1.VERSION: {
+        case V1: {
+            versionSupported = true;
             switch (field) {
             case NOTES: {
                 fieldId = PwsRecordV1.NOTES;
@@ -915,12 +945,11 @@ public class PasswdFileData
             }
             break;
         }
-        default: {
-            fieldId = FIELD_UNSUPPORTED;
-            break;
-        }
         }
 
+        if (!versionSupported) {
+            return FIELD_UNSUPPORTED;
+        }
         return fieldId;
     }
 
@@ -932,15 +961,15 @@ public class PasswdFileData
             return "";
         }
 
+        boolean headerSupported = false;
         switch (itsPwsFile.getFileVersionMajor()) {
-        case PwsFileV3.VERSION: {
-            break;
+        case V3 -> headerSupported = true;
+        case V1,
+             V2 -> {
         }
-        case PwsFileV2.VERSION:
-        case PwsFileV1.VERSION:
-        default: {
+        }
+        if (!headerSupported) {
             return null;
-        }
         }
 
         if (isV3()) {
@@ -1130,8 +1159,10 @@ public class PasswdFileData
                           boolean updateModTime)
     {
         PwsField field = null;
+        boolean versionSupported = false;
         switch (itsPwsFile.getFileVersionMajor()) {
-        case PwsFileV3.VERSION: {
+        case V3: {
+            versionSupported = true;
             switch (fieldId) {
             case EMAIL:
             case GROUP:
@@ -1197,7 +1228,8 @@ public class PasswdFileData
             }
             break;
         }
-        case PwsFileV2.VERSION: {
+        case V2: {
+            versionSupported = true;
             switch (fieldId) {
             case GROUP:
             case NOTES:
@@ -1245,13 +1277,12 @@ public class PasswdFileData
             }
             break;
         }
-        default: {
-            fieldId = null;
+        case V1: {
             break;
         }
         }
 
-        if (fieldId != null) {
+        if (versionSupported && (fieldId != null)) {
             setOrRemoveField(field, fieldId.getId(), rec);
             if (updateModTime && isV3() && itsPasswdRecords.containsKey(rec)) {
                 var modFieldId = (fieldId == PwsFieldTypeV3.PASSWORD) ?
