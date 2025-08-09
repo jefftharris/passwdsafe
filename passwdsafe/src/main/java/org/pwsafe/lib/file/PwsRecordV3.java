@@ -520,43 +520,38 @@ public class PwsRecordV3 extends PwsRecord
             first = false;
 
             boolean showValue = true;
-            if (key <= VALID_TYPES.length) {
+            if (key < VALID_TYPES.length) {
                 Object[] type = (Object[])VALID_TYPES[key];
                 sb.append(type[1]);
-                int typeVal = (Integer)type[0];
-                switch (PwsFieldTypeV3.fromType(typeVal)) {
-                case PASSWORD:
-                case NOTES: {
-                    showValue = false;
-                    break;
-                }
-                case V3_ID_STRING:
-                case UUID:
-                case GROUP:
-                case TITLE:
-                case USERNAME:
-                case CREATION_TIME:
-                case PASSWORD_MOD_TIME:
-                case LAST_ACCESS_TIME:
-                case PASSWORD_LIFETIME:
-                case PASSWORD_POLICY_DEPRECATED:
-                case LAST_MOD_TIME:
-                case URL:
-                case AUTOTYPE:
-                case PASSWORD_HISTORY:
-                case PASSWORD_POLICY:
-                case PASSWORD_EXPIRY_INTERVAL:
-                case RUN_COMMAND:
-                case DOUBLE_CLICK_ACTION:
-                case EMAIL:
-                case PROTECTED_ENTRY:
-                case OWN_PASSWORD_SYMBOLS:
-                case SHIFT_DOUBLE_CLICK_ACTION:
-                case PASSWORD_POLICY_NAME:
-                case ENTRY_KEYBOARD_SHORTCUT:
-                case END_OF_RECORD:
-                case UNKNOWN: {
-                    break;
+                switch (PwsFieldTypeV3.fromType((Integer)type[0])) {
+                case PASSWORD,
+                     NOTES -> showValue = false;
+                case V3_ID_STRING,
+                     UUID,
+                     GROUP,
+                     TITLE,
+                     USERNAME,
+                     CREATION_TIME,
+                     PASSWORD_MOD_TIME,
+                     LAST_ACCESS_TIME,
+                     PASSWORD_LIFETIME,
+                     PASSWORD_POLICY_DEPRECATED,
+                     LAST_MOD_TIME,
+                     URL,
+                     AUTOTYPE,
+                     PASSWORD_HISTORY,
+                     PASSWORD_POLICY,
+                     PASSWORD_EXPIRY_INTERVAL,
+                     RUN_COMMAND,
+                     DOUBLE_CLICK_ACTION,
+                     EMAIL,
+                     PROTECTED_ENTRY,
+                     OWN_PASSWORD_SYMBOLS,
+                     SHIFT_DOUBLE_CLICK_ACTION,
+                     PASSWORD_POLICY_NAME,
+                     ENTRY_KEYBOARD_SHORTCUT,
+                     END_OF_RECORD,
+                     UNKNOWN -> {
                 }
                 }
             } else {
