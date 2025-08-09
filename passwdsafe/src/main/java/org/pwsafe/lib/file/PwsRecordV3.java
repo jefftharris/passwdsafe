@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -66,12 +66,10 @@ public class PwsRecordV3 extends PwsRecord
     static {
         var types = new ArrayList<Object[]>(PwsFieldTypeV3.values().length);
         for (var type : PwsFieldTypeV3.values()) {
-            var typeId = Integer.valueOf(type.getId());
             switch (type) {
-            case V3_ID_STRING -> types.add(new Object[]{typeId, type.toString(),
-                                                        PwsVersionField.class});
-            case UUID -> types.add(
-                    new Object[]{typeId, type.toString(), PwsUUIDField.class});
+            case V3_ID_STRING ->
+                    addValidType(types, type, PwsVersionField.class);
+            case UUID -> addValidType(types, type, PwsUUIDField.class);
             case GROUP,
                  TITLE,
                  USERNAME,
@@ -84,27 +82,23 @@ public class PwsRecordV3 extends PwsRecord
                  RUN_COMMAND,
                  EMAIL,
                  OWN_PASSWORD_SYMBOLS,
-                 PASSWORD_POLICY_NAME -> types.add(
-                    new Object[]{typeId, type.toString(),
-                                 PwsStringUnicodeField.class});
-            case PASSWORD -> types.add(new Object[]{typeId, type.toString(),
-                                                    PwsPasswdUnicodeField.class});
+                 PASSWORD_POLICY_NAME ->
+                    addValidType(types, type, PwsStringUnicodeField.class);
+            case PASSWORD ->
+                    addValidType(types, type, PwsPasswdUnicodeField.class);
             case CREATION_TIME,
                  PASSWORD_MOD_TIME,
                  LAST_ACCESS_TIME,
                  PASSWORD_LIFETIME,
-                 LAST_MOD_TIME -> types.add(
-                    new Object[]{typeId, type.toString(), PwsTimeField.class});
-
+                 LAST_MOD_TIME -> addValidType(types, type, PwsTimeField.class);
             case PASSWORD_EXPIRY_INTERVAL,
-                 ENTRY_KEYBOARD_SHORTCUT -> types.add(
-                    new Object[]{typeId, type.toString(),
-                                 PwsIntegerField.class});
+                 ENTRY_KEYBOARD_SHORTCUT ->
+                    addValidType(types, type, PwsIntegerField.class);
             case DOUBLE_CLICK_ACTION,
-                 SHIFT_DOUBLE_CLICK_ACTION -> types.add(
-                    new Object[]{typeId, type.toString(), PwsShortField.class});
-            case PROTECTED_ENTRY -> types.add(
-                    new Object[]{typeId, type.toString(), PwsByteField.class});
+                 SHIFT_DOUBLE_CLICK_ACTION ->
+                    addValidType(types, type, PwsShortField.class);
+            case PROTECTED_ENTRY ->
+                    addValidType(types, type, PwsByteField.class);
             case END_OF_RECORD,
                  UNKNOWN -> {
             }

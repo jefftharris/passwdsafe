@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -541,5 +542,16 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     protected void writeField(PwsFile file, PwsField field) throws IOException
     {
         writeField(file, field, field.getType());
+    }
+
+    /**
+     * Add a valid type of field to the list.  The types eventually become the
+     * VALID_TYPES list.
+     */
+    protected static void addValidType(@NonNull ArrayList<Object[]> types,
+                                       @NonNull PwsFieldType type,
+                                       Class<? extends PwsField> clazz)
+    {
+        types.add(new Object[]{type.getId(), type.toString(), clazz});
     }
 }
