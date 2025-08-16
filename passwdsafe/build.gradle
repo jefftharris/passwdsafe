@@ -9,17 +9,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.jefftharris.passwdsafe'
-    compileSdk 35
+    namespace = 'com.jefftharris.passwdsafe'
+    compileSdk = 35
     defaultConfig {
-        applicationId "com.jefftharris.passwdsafe"
+        applicationId = "com.jefftharris.passwdsafe"
         minSdkVersion 21
         resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 35
         // <major><minor><bugfix><beta/extra>
-        versionCode 6250100
-        versionName "6.25.1"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionCode = 6250100
+        versionName = "6.25.1"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
         javaCompileOptions {
@@ -31,11 +31,11 @@ android {
         }
     }
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     buildTypes {
         debug {
-            debuggable true
+            debuggable = true
             proguardFiles += getDefaultProguardFile(
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
@@ -44,38 +44,38 @@ android {
                     'proguard-android-optimize.txt')
             testProguardFiles += 'proguard-rules-test.pro'
             ndk {
-                debugSymbolLevel "FULL"
+                debugSymbolLevel = "FULL"
             }
         }
         release {
-            minifyEnabled true
+            minifyEnabled = true
             proguardFiles += getDefaultProguardFile(
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
             ndk {
-                debugSymbolLevel "FULL"
+                debugSymbolLevel = "FULL"
             }
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     productFlavors {
     }
     externalNativeBuild {
         cmake {
-            path 'src/main/cpp/CMakeLists.txt'
+            path = 'src/main/cpp/CMakeLists.txt'
         }
     }
     ndkVersion = '28.0.13004108'
     packagingOptions {
         jniLibs {
-            useLegacyPackaging false
+            useLegacyPackaging = false
         }
     }
     testOptions {
-        animationsDisabled true
+        animationsDisabled = true
     }
 }
 
