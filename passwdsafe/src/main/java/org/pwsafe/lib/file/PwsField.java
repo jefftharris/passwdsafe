@@ -1,6 +1,5 @@
 /*
- * $Id: PwsField.java 400 2009-09-07 21:37:16Z roxon $
- *
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -53,7 +52,7 @@ public abstract class PwsField implements Comparable<Object>, Serializable
      * @param type  the field type.
      * @param value the field value.
      */
-    protected PwsField(PwsFieldType type, Object value)
+    protected PwsField(@NonNull PwsFieldType type, Object value)
     {
         super();
 

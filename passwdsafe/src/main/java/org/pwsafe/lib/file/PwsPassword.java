@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -10,7 +10,9 @@ package org.pwsafe.lib.file;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Util;
 
 import java.io.Closeable;
@@ -39,7 +41,10 @@ public class PwsPassword implements Closeable
     /**
      * Create from a character sequence
      */
-    public static @CheckResult Owner<PwsPassword> create(CharSequence chars)
+    @NonNull
+    @CheckResult
+    public static Owner<PwsPassword> create(
+            @NonNull CharSequence chars)
     {
         int len = chars.length();
         char[] passwd = new char[len];
@@ -52,7 +57,9 @@ public class PwsPassword implements Closeable
     /**
      * Create from an EditText
      */
-    public static @CheckResult Owner<PwsPassword> create(EditText tv)
+    @NonNull
+    @CheckResult
+    public static Owner<PwsPassword> create(@NonNull EditText tv)
     {
         return create(tv.getText());
     }
@@ -60,7 +67,9 @@ public class PwsPassword implements Closeable
     /**
      * Create from a char array.  The passed characters are cleared.
      */
-    public static @CheckResult Owner<PwsPassword> create(char[] chars)
+    @NonNull
+    @CheckResult
+    public static Owner<PwsPassword> create(char[] chars)
     {
         try {
             return createOwner(Arrays.copyOf(chars, chars.length));
@@ -73,8 +82,9 @@ public class PwsPassword implements Closeable
     /**
      * Create from a byte array.  The passwd bytes are cleared.
      */
-    public static @CheckResult Owner<PwsPassword> create(byte[] bytes,
-                                                         String charsetStr)
+    @NonNull
+    @CheckResult
+    public static Owner<PwsPassword> create(byte[] bytes, String charsetStr)
             throws UnsupportedEncodingException
     {
         try {
@@ -135,7 +145,7 @@ public class PwsPassword implements Closeable
     /**
      * Set the password into a text view
      */
-    public void setInto(TextView tv)
+    public void setInto(@NonNull TextView tv)
     {
         tv.setText(itsPasswd, 0, itsPasswd.length);
     }
@@ -152,7 +162,8 @@ public class PwsPassword implements Closeable
     /**
      * Unseal a password
      */
-    public static PwsPassword unseal(SealedObject obj, Cipher cipher)
+    @NonNull
+    public static PwsPassword unseal(@NonNull SealedObject obj, Cipher cipher)
             throws ClassNotFoundException, BadPaddingException,
                    IllegalBlockSizeException, IOException
     {
@@ -205,7 +216,10 @@ public class PwsPassword implements Closeable
     /**
      * Create an owned PwsPassword
      */
-    private static @CheckResult Owner<PwsPassword> createOwner(char[] chars)
+    @NonNull
+    @Contract("_ -> new")
+    @CheckResult
+    private static Owner<PwsPassword> createOwner(char[] chars)
     {
         return new Owner<>(new PwsPassword(chars));
     }

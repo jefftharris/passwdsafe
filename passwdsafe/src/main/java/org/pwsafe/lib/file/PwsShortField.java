@@ -33,7 +33,7 @@ public class PwsShortField extends PwsField
      * @param value the byte array holding the integer value.
      * @throws IndexOutOfBoundsException If <code>value.length</code> &lt; 2.
      */
-    public PwsShortField(int type, byte[] value)
+    public PwsShortField(PwsFieldType type, byte[] value)
     {
         super(type, Util.getShortFromByteArray(value, 0));
     }

@@ -1,6 +1,5 @@
 /*
- * $Id: PwsFieldTypeV2.java 401 2009-09-07 21:41:10Z roxon $
- *
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -9,7 +8,12 @@
  */
 package org.pwsafe.lib.file;
 
-@SuppressWarnings({"unused", "RedundantSuppression"})
+import android.util.SparseArray;
+import androidx.annotation.NonNull;
+
+/**
+ * ENumeration of V2 record field types
+ */
 public enum PwsFieldTypeV2 implements PwsFieldType
 {
     V2_ID_STRING(0),
@@ -25,9 +29,20 @@ public enum PwsFieldTypeV2 implements PwsFieldType
     PASSWORD_LIFETIME(10),
     PASSWORD_POLICY(11),
     LAST_MOD_TIME(12),
-    END_OF_RECORD(255);
+    URL(13),
+    END_OF_RECORD(255),
+
+    UNKNOWN(-1);
 
     private final int id;
+
+    private static final SparseArray<PwsFieldTypeV2> itsTypesById =
+            new SparseArray<>(PwsFieldTypeV2.values().length);
+    static {
+        for (var type: PwsFieldTypeV2.values()) {
+            itsTypesById.append(type.id, type);
+        }
+    }
 
     PwsFieldTypeV2(int anId)
     {
@@ -37,5 +52,10 @@ public enum PwsFieldTypeV2 implements PwsFieldType
     public int getId()
     {
         return id;
+    }
+
+    public static @NonNull PwsFieldTypeV2 fromType(int type)
+    {
+        return itsTypesById.get(type, UNKNOWN);
     }
 }

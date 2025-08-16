@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -346,6 +347,18 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      * @param aType the field to get.
      * @return The value of the field.
      */
+    public final PwsField getField(@NonNull PwsFieldType aType)
+    {
+        return getField(aType.getId());
+    }
+
+    /**
+     * Gets the value of a field. See the subclass documentation for valid
+     * values for <code>type</code>.
+     *
+     * @param aType the field to get.
+     * @return The value of the field.
+     */
     protected final PwsField getField(Integer aType)
     {
         return attributes.get(aType);
@@ -387,12 +400,19 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
             throws EndOfFileException, IOException,
                    UnsupportedFileVersionException, RecordLoadException
     {
-        return switch (file.getFileVersionMajor()) {
-            case PwsFileV1.VERSION -> new PwsRecordV1(file);
-            case PwsFileV2.VERSION -> new PwsRecordV2(file);
-            case PwsFileV3.VERSION -> new PwsRecordV3(file);
-            default -> throw new UnsupportedFileVersionException();
-        };
+        switch (file.getFileVersionMajor()) {
+        case V1 -> {
+            return new PwsRecordV1(file);
+        }
+        case V2 -> {
+            return new PwsRecordV2(file);
+        }
+        case V3 -> {
+            return new PwsRecordV3(file);
+        }
+        }
+
+        throw new UnsupportedFileVersionException();
     }
 
     /**
@@ -534,5 +554,16 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     protected void writeField(PwsFile file, PwsField field) throws IOException
     {
         writeField(file, field, field.getType());
+    }
+
+    /**
+     * Add a valid type of field to the list.  The types eventually become the
+     * VALID_TYPES list.
+     */
+    protected static void addValidType(@NonNull ArrayList<Object[]> types,
+                                       @NonNull PwsFieldType type,
+                                       Class<? extends PwsField> clazz)
+    {
+        types.add(new Object[]{type.getId(), type.toString(), clazz});
     }
 }

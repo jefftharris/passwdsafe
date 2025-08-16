@@ -1,6 +1,5 @@
 /*
- * $Id: PwsFieldTypeV1.java 401 2009-09-07 21:41:10Z roxon $
- *
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -9,14 +8,19 @@
  */
 package org.pwsafe.lib.file;
 
+/**
+ * Enumeration of V1 record field types
+ */
 public enum PwsFieldTypeV1 implements PwsFieldType
 {
-    // --Commented out for Inspection suppression:DEFAULT(0),
+    DEFAULT(0),
     TITLE(3),
     USERNAME(4),
     NOTES(5),
     PASSWORD(6),
-    UUID(7);
+    UUID(7),
+
+    UNKNOWN(-1);
 
     private final int id;
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -40,14 +40,6 @@ public class PwsIntegerField extends PwsField
     }
 
     /**
-     * Constructor
-     */
-    public PwsIntegerField(int type, Integer value)
-    {
-        super(type, value);
-    }
-
-    /**
      * Constructs the object
      *
      * @param type  the field type.  Values depend on the version of the
@@ -59,6 +51,14 @@ public class PwsIntegerField extends PwsField
     public PwsIntegerField(PwsFieldType type, byte[] value)
     {
         super(type, Util.getIntFromByteArray(value, 0));
+    }
+
+    /**
+     * Constructor
+     */
+    public PwsIntegerField(PwsFieldType type, Integer value)
+    {
+        super(type, value);
     }
 
     /**

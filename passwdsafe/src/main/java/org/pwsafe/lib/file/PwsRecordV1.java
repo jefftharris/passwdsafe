@@ -16,6 +16,7 @@ import org.pwsafe.lib.exception.RecordLoadException;
 import java.io.IOException;
 import java.io.Serial;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -27,8 +28,6 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
 {
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private static final int DEFAULT_TYPE = 0;
 
     /**
      * The string that, if present in the title, indicates that the
@@ -49,47 +48,27 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     private static final String SplitString;
 
     /**
-     * Constant for the title field.
-     */
-    public static final int TITLE = 3;
-
-    /**
-     * Constant for the username field.
-     */
-    public static final int USERNAME = 4;
-
-    /**
-     * Constant for the notes field.
-     */
-    public static final int NOTES = 5;
-
-    /**
-     * Constant for the passphrase field.
-     */
-    public static final int PASSWORD = 6;
-
-    /**
-     * Constant for the phantom UUID field comprised of the TITLE and
-     * USERNAME
-     */
-    public static final int UUID = 7;
-
-    /**
      * All the valid type codes.
      */
-    private static final Object[] VALID_TYPES = new Object[]
-            {
-                    new Object[]{TITLE, "TITLE",
-                                 PwsStringField.class},
-                    new Object[]{USERNAME, "USERNAME",
-                                 PwsStringField.class},
-                    new Object[]{NOTES, "NOTES",
-                                 PwsStringField.class},
-                    new Object[]{PASSWORD, "PASSWORD",
-                                 PwsPasswdField.class},
-                    new Object[]{UUID, "UUID",
-                                 PwsStringField.class}
-            };
+    private static final Object[] VALID_TYPES;
+
+    static {
+        var types = new ArrayList<Object[]>(PwsFieldTypeV1.values().length);
+        for (var type : PwsFieldTypeV1.values()) {
+            switch (type) {
+            case TITLE,
+                 USERNAME,
+                 NOTES,
+                 UUID -> addValidType(types, type, PwsStringField.class);
+            case PASSWORD -> addValidType(types, type, PwsPasswdField.class);
+            case DEFAULT,
+                 UNKNOWN -> {
+            }
+            }
+        }
+
+        VALID_TYPES = types.toArray(new Object[0]);
+    }
 
     static {
         // Must be done here as they could theoretically throw an
@@ -171,10 +150,12 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     {
         int retCode;
 
-        if ((retCode = getField(TITLE).compareTo(other.getField(TITLE))) == 0) {
-            if ((retCode = getField(USERNAME)
-                    .compareTo(other.getField(USERNAME))) == 0) {
-                return getField(NOTES).compareTo(other.getField(NOTES));
+        if ((retCode = getField(PwsFieldTypeV1.TITLE).compareTo(
+                other.getField(PwsFieldTypeV1.TITLE))) == 0) {
+            if ((retCode = getField(PwsFieldTypeV1.USERNAME).compareTo(
+                    other.getField(PwsFieldTypeV1.USERNAME))) == 0) {
+                return getField(PwsFieldTypeV1.NOTES).compareTo(
+                        other.getField(PwsFieldTypeV1.NOTES));
             }
         }
         return retCode;
@@ -211,10 +192,14 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      */
     private boolean equals(@NonNull PwsRecordV1 other)
     {
-        return (getField(NOTES).equals(other.getField(NOTES))
-                && getField(PASSWORD).equals(other.getField(PASSWORD))
-                && getField(TITLE).equals(other.getField(TITLE))
-                && getField(USERNAME).equals(other.getField(USERNAME)));
+        return (getField(PwsFieldTypeV1.NOTES).equals(
+                other.getField(PwsFieldTypeV1.NOTES)) &&
+                getField(PwsFieldTypeV1.PASSWORD).equals(
+                        other.getField(PwsFieldTypeV1.PASSWORD)) &&
+                getField(PwsFieldTypeV1.TITLE).equals(
+                        other.getField(PwsFieldTypeV1.TITLE)) &&
+                getField(PwsFieldTypeV1.USERNAME).equals(
+                        other.getField(PwsFieldTypeV1.USERNAME)));
     }
 
     /**
@@ -264,12 +249,14 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
                 title = str.substring(0, pos).trim();
                 username = str.substring(pos + 1).trim();
             }
-            setField(new PwsStringField(TITLE, title));
-            setField(new PwsStringField(USERNAME, username));
+            setField(new PwsStringField(PwsFieldTypeV1.TITLE, title));
+            setField(new PwsStringField(PwsFieldTypeV1.USERNAME, username));
             Item item = new Item(file);
-            setField(new PwsPasswdField(PASSWORD, item.getData(), file));
+            setField(new PwsPasswdField(PwsFieldTypeV1.PASSWORD, item.getData(),
+                                        file));
             item.clear();
-            setField(new PwsStringField(NOTES, new Item(file).getData()));
+            setField(new PwsStringField(PwsFieldTypeV1.NOTES,
+                                        new Item(file).getData()));
 
             String uuid;
             if (username.trim().isEmpty()) {
@@ -277,7 +264,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
             } else {
                 uuid = title + SplitString + username;
             }
-            setField(new PwsStringField(UUID, uuid));
+            setField(new PwsStringField(PwsFieldTypeV1.UUID, uuid));
         } catch (EndOfFileException eof) {
             throw eof;
         } catch (Throwable t) {
@@ -297,17 +284,18 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     {
         PwsField title;
 
-        if (getField(USERNAME).toString().trim().isEmpty()) {
-            title = getField(TITLE);
+        if (getField(PwsFieldTypeV1.USERNAME).toString().trim().isEmpty()) {
+            title = getField(PwsFieldTypeV1.TITLE);
         } else {
-            title = new PwsStringField(TITLE, getField(TITLE).toString() +
-                                              SplitString +
-                                              getField(USERNAME).toString());
+            title = new PwsStringField(PwsFieldTypeV1.TITLE, getField(
+                    PwsFieldTypeV1.TITLE).toString() + SplitString + getField(
+                    PwsFieldTypeV1.USERNAME).toString());
         }
 
-        writeField(file, title, DEFAULT_TYPE);
-        writeField(file, getField(PASSWORD), DEFAULT_TYPE);
-        writeField(file, getField(NOTES), DEFAULT_TYPE);
+        int defaultType = PwsFieldTypeV1.DEFAULT.getId();
+        writeField(file, title, defaultType);
+        writeField(file, getField(PwsFieldTypeV1.PASSWORD), defaultType);
+        writeField(file, getField(PwsFieldTypeV1.NOTES), defaultType);
     }
 
     /**
@@ -319,8 +307,8 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     @NonNull
     public String toString()
     {
-        return "{ \"" + getField(TITLE) + "\", \"" +
-               getField(USERNAME) + "\" }";
+        return "{ \"" + getField(PwsFieldTypeV1.TITLE) + "\", \"" +
+               getField(PwsFieldTypeV1.USERNAME) + "\" }";
     }
 
     /**

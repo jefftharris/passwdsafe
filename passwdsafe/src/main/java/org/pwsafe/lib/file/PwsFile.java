@@ -408,7 +408,7 @@ public abstract class PwsFile
      *
      * @return The major version number for the file.
      */
-    public abstract int getFileVersionMajor();
+    public abstract PwsFileVersion getFileVersionMajor();
 
 
     /**
