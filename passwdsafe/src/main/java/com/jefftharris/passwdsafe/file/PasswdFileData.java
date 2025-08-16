@@ -221,6 +221,7 @@ public class PasswdFileData
 
     public final void changePasswd(Owner<PwsPassword>.Param passwd)
     {
+        setHdrLastPasswordChange(new Date());
         itsPwsFile.setPassphrase(passwd);
     }
 
@@ -665,6 +666,17 @@ public class PasswdFileData
         setHdrField(PwsHeaderTypeV3.LAST_SAVE_TIME, date);
     }
 
+    public final String getHdrLastPasswordChange()
+    {
+        return getHdrField(PwsHeaderTypeV3.LAST_PASSWORD_CHANGE);
+    }
+
+    private void setHdrLastPasswordChange(Date date)
+    {
+        setHdrField(PwsHeaderTypeV3.LAST_PASSWORD_CHANGE, date);
+        updateFormatVersion(PwsRecordV3.DB_FMT_MINOR_3_47);
+    }
+
 
     /** Get the named password policies from the file header */
     public HeaderPasswdPolicies getHdrPasswdPolicies()
@@ -947,7 +959,8 @@ public class PasswdFileData
                 return String.format(Locale.US, "%d.%02d", 3,
                                      getHdrMinorVersion(rec));
             }
-            case LAST_SAVE_TIME: {
+            case LAST_SAVE_TIME:
+            case LAST_PASSWORD_CHANGE: {
                 PwsField time = doGetHeaderField(rec, fieldId);
                 if (time == null) {
                     return null;
@@ -1007,7 +1020,8 @@ public class PasswdFileData
         if (isV3()) {
             PwsRecord rec = ((PwsFileV3)itsPwsFile).getHeaderRecord();
             switch (fieldId) {
-            case LAST_SAVE_TIME: {
+            case LAST_SAVE_TIME:
+            case LAST_PASSWORD_CHANGE: {
                 long timeVal = ((Date)value).getTime();
                 byte[] newbytes;
                 int minor = getHdrMinorVersion(rec);
