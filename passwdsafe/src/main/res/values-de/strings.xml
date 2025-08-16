@@ -190,6 +190,7 @@
         SD-Karten schreiben. Wenn sich die Datei dort befindet,
         wird sie in den internen Speicher kopiert.
     </string>
+    <string name="last_password_change">Last password change</string>
     <string name="last_save_app">Letzte App</string>
     <string name="last_save_by">Gespeichert von</string>
     <string name="last_save_time">Gespeichert am</string>

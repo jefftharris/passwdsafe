@@ -197,6 +197,7 @@
         d\'écrire sur des cartes SD amovibles. Si le fichier est situé sur
         une carte, il devra être déplacé vers la mémoire interne.
     </string>
+    <string name="last_password_change">Last password change</string>
     <string name="last_save_app">Application utilisée</string>
     <string name="last_save_by">Dernier enregistrement par</string>
     <string name="last_save_time">Dernier enregistrement le</string>
