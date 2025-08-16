@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -19,6 +19,8 @@ import androidx.fragment.app.Fragment;
 
 import com.jefftharris.passwdsafe.lib.AboutUtils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.Locale;
 
@@ -49,10 +51,13 @@ public class AboutFragment extends Fragment
     private TextView itsLastSaveBy;
     private TextView itsLastSaveApp;
     private TextView itsLastSaveTime;
+    private TextView itsLastPasswordChange;
 
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static AboutFragment newInstance()
     {
         return new AboutFragment();
@@ -90,6 +95,8 @@ public class AboutFragment extends Fragment
         itsLastSaveBy = rootView.findViewById(R.id.last_save_by);
         itsLastSaveApp = rootView.findViewById(R.id.last_save_app);
         itsLastSaveTime = rootView.findViewById(R.id.last_save_time);
+        itsLastPasswordChange =
+                rootView.findViewById(R.id.last_password_change);
         return rootView;
     }
 
@@ -130,11 +137,14 @@ public class AboutFragment extends Fragment
                                 fileData.getHdrLastSaveApp());
                         itsLastSaveTime.setText(
                                 fileData.getHdrLastSaveTime());
+                        itsLastPasswordChange.setText(
+                                fileData.getHdrLastPasswordChange());
                     } else {
                         itsDatabaseVer.setText(null);
                         itsLastSaveBy.setText(null);
                         itsLastSaveApp.setText(null);
                         itsLastSaveTime.setText(null);
+                        itsLastPasswordChange.setText(null);
                     }
                     return true;
                 });

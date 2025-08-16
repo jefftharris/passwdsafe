@@ -188,6 +188,7 @@
         removable SD cards.  If the file is located on a card, it will have to
         be moved to the internal storage.
     </string>
+    <string name="last_password_change">Last password change</string>
     <string name="last_save_app">Last saved app</string>
     <string name="last_save_by">Last saved by</string>
     <string name="last_save_time">Last save time</string>

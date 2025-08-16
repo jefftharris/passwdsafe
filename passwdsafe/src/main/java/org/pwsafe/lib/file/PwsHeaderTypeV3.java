@@ -21,6 +21,7 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
     LAST_SAVE_HOST(0x08),
     NAMED_PASSWORD_POLICIES(0x10),
     YUBICO(0x12),
+    LAST_PASSWORD_CHANGE(0x13),
     END_OF_RECORD(255);
 
     private final int itsId;

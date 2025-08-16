@@ -665,6 +665,11 @@ public class PasswdFileData
         setHdrField(PwsHeaderTypeV3.LAST_SAVE_TIME, date);
     }
 
+    public final String getHdrLastPasswordChange()
+    {
+        return getHdrField(PwsHeaderTypeV3.LAST_PASSWORD_CHANGE);
+    }
+
 
     /** Get the named password policies from the file header */
     public HeaderPasswdPolicies getHdrPasswdPolicies()
@@ -947,7 +952,8 @@ public class PasswdFileData
                 return String.format(Locale.US, "%d.%02d", 3,
                                      getHdrMinorVersion(rec));
             }
-            case LAST_SAVE_TIME: {
+            case LAST_SAVE_TIME:
+            case LAST_PASSWORD_CHANGE: {
                 PwsField time = doGetHeaderField(rec, fieldId);
                 if (time == null) {
                     return null;

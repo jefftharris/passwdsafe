@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -96,6 +96,14 @@
 
             <TextView
                 android:id="@+id/last_save_time"
+                style="@style/GridField.W3"/>
+
+            <TextView
+                style="@style/GridLabel"
+                android:text="@string/last_password_change"/>
+
+            <TextView
+                android:id="@+id/last_password_change"
                 style="@style/GridField.W3"/>
 
         </androidx.gridlayout.widget.GridLayout>
