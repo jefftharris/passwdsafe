@@ -9,24 +9,24 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 
 android {
-    namespace 'com.jefftharris.passwdsafe.sync'
-    compileSdk 35
+    namespace = 'com.jefftharris.passwdsafe.sync'
+    compileSdk = 35
     defaultConfig {
-        applicationId "com.jefftharris.passwdsafe.sync"
+        applicationId = "com.jefftharris.passwdsafe.sync"
         minSdkVersion 26
         resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 35
         // <major><minor><bugfix><beta/extra>
-        versionCode 3120001
-        versionName "3.12.0"
+        versionCode = 3120001
+        versionName = "3.12.0"
         vectorDrawables.useSupportLibrary = true
     }
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     buildTypes {
         debug {
-            debuggable true
+            debuggable = true
             // Uncomment below option to minify during debug development
             // minifyEnabled true
             proguardFiles += getDefaultProguardFile(
@@ -35,7 +35,7 @@ android {
             proguardFiles += 'proguard-google-api-client.pro'
         }
         release {
-            minifyEnabled true
+            minifyEnabled = true
             proguardFiles += getDefaultProguardFile(
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
@@ -50,8 +50,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     productFlavors {
     }

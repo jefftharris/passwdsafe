@@ -16,8 +16,8 @@ static def buildTime() {
 }
 
 android {
-    namespace 'com.jefftharris.passwdsafe.lib'
-    compileSdk 35
+    namespace = 'com.jefftharris.passwdsafe.lib'
+    compileSdk = 35
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 35
@@ -26,11 +26,11 @@ android {
         buildConfigField 'String', 'BUILD_DATE', "\"${buildTime()}\""
     }
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     productFlavors {
     }
