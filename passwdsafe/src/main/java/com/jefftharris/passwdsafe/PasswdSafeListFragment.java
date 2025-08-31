@@ -245,6 +245,13 @@ public class PasswdSafeListFragment extends ListFragment
                         PasswdSafe.CONTEXT_GROUP_LIST;
             menu.add(group, R.id.menu_copy_user, 0, R.string.copy_user);
             menu.add(group, R.id.menu_copy_password, 0, R.string.copy_password);
+
+            if (!TextUtils.isEmpty(listItem.itsFields.itsUrl)) {
+                menu.add(group, R.id.menu_copy_url, 0, R.string.copy_url);
+            }
+            if (!TextUtils.isEmpty(listItem.itsFields.itsEmail)) {
+                menu.add(group, R.id.menu_copy_email, 0, R.string.copy_email);
+            }
         }
     }
 
@@ -263,6 +270,12 @@ public class PasswdSafeListFragment extends ListFragment
             return true;
         } else if (itemId == R.id.menu_copy_user) {
             copyContextMenuRecordField(item, CopyField.USER_NAME);
+            return true;
+        } else if (itemId == R.id.menu_copy_email) {
+            copyContextMenuRecordField(item, CopyField.EMAIL);
+            return true;
+        } else if (itemId == R.id.menu_copy_url) {
+            copyContextMenuRecordField(item, CopyField.URL);
             return true;
         }
         return super.onContextItemSelected(item);

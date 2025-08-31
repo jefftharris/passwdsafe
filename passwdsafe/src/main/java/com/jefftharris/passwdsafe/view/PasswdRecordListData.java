@@ -28,6 +28,10 @@ public class PasswdRecordListData
     {
         public final String itsUuid;
 
+        public final String itsEmail;
+
+        public final String itsUrl;
+
         public final Date itsCreationTime;
 
         public final Date itsModTime;
@@ -41,6 +45,8 @@ public class PasswdRecordListData
         {
             itsUuid = fileData.getUUID(rec);
             itsCreationTime = fileData.getCreationTime(rec);
+            itsEmail = fileData.getEmail(rec, PasswdFileData.EmailStyle.FULL);
+            itsUrl = fileData.getURL(rec, PasswdFileData.UrlStyle.FULL);
             Date modTime = fileData.getLastModTime(rec);
             Date passwdModTime = fileData.getPasswdLastModTime(rec);
             if ((modTime != null) && (passwdModTime != null)) {
@@ -58,6 +64,8 @@ public class PasswdRecordListData
         private RecordFields()
         {
             itsUuid = null;
+            itsEmail = null;
+            itsUrl = null;
             itsCreationTime = null;
             itsModTime = null;
             itsMatch = null;
