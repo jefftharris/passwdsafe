@@ -209,6 +209,8 @@ public class PasswdSafeRecordBasicFragment
 
         registerForContextMenu(itsUserRow);
         registerForContextMenu(itsPasswordRow);
+        registerForContextMenu(itsUrlRow);
+        registerForContextMenu(itsEmailRow);
         updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
 
         return root;
@@ -282,6 +284,12 @@ public class PasswdSafeRecordBasicFragment
         } else if (id == R.id.password_row) {
             menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
                      R.id.menu_copy_password, 0, R.string.copy_password);
+        } else if (id == R.id.url_row) {
+            menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
+                     R.id.menu_copy_url, 0, R.string.copy_url);
+        } else if (id == R.id.email_row) {
+            menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
+                     R.id.menu_copy_email, 0, R.string.copy_email);
         }
     }
 
@@ -298,6 +306,12 @@ public class PasswdSafeRecordBasicFragment
             return true;
         } else if (itemId == R.id.menu_copy_user) {
             copyUser();
+            return true;
+        } else if (itemId == R.id.menu_copy_url) {
+            copyUrl();
+            return true;
+        } else if (itemId == R.id.menu_copy_email) {
+            copyEmail();
             return true;
         }
         return super.onContextItemSelected(item);

@@ -35,7 +35,6 @@ import org.pwsafe.lib.file.PwsRecord;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -244,9 +243,9 @@ public final class PasswdFileDataView
                     String str = res.getQuantityString(R.plurals.group_items,
                                                        items, items);
 
-                    records.add(new PasswdRecordListData(
-                            entry.getKey(), str, null, null, null,
-                            null, itsFolderIcon, false));
+                    records.add(
+                            new PasswdRecordListData(entry.getKey(), str, null,
+                                                     itsFolderIcon, false));
                 }
             }
         }
@@ -560,7 +559,7 @@ public final class PasswdFileDataView
         List<MatchPwsRecord> childRecords = node.getRecords();
         if (childRecords != null) {
             for (MatchPwsRecord matchRec : childRecords) {
-                visitor.visitRecord(matchRec.itsUuid);
+                visitor.visitRecord(matchRec.itsFields.itsUuid);
             }
         }
     }
@@ -581,9 +580,8 @@ public final class PasswdFileDataView
             user = "[" + user + "]";
         }
 
-        return new PasswdRecordListData(title, user, rec.itsUuid,
-                                        rec.itsCreationTime, rec.itsModTime,
-                                        rec.itsMatch, itsRecordIcon, true);
+        return new PasswdRecordListData(title, user, rec.itsFields,
+                                        itsRecordIcon, true);
     }
 
 
@@ -667,10 +665,7 @@ public final class PasswdFileDataView
     {
         private final String itsTitle;
         private final String itsUsername;
-        private final String itsUuid;
-        private final Date itsCreationTime;
-        private final Date itsModTime;
-        private final String itsMatch;
+        private final PasswdRecordListData.RecordFields itsFields;
 
         private MatchPwsRecord(PwsRecord rec,
                                @NonNull PasswdFileData fileData,
@@ -678,19 +673,8 @@ public final class PasswdFileDataView
         {
             itsTitle = fileData.getTitle(rec);
             itsUsername = fileData.getUsername(rec);
-            itsUuid = fileData.getUUID(rec);
-            itsCreationTime = fileData.getCreationTime(rec);
-            Date modTime = fileData.getLastModTime(rec);
-            Date passwdModTime = fileData.getPasswdLastModTime(rec);
-            if ((modTime != null) && (passwdModTime != null)) {
-                if (passwdModTime.compareTo(modTime) > 0) {
-                    modTime = passwdModTime;
-                }
-            } else if (modTime == null) {
-                modTime = passwdModTime;
-            }
-            itsModTime = modTime;
-            itsMatch = match;
+            itsFields = new PasswdRecordListData.RecordFields(rec, fileData,
+                                                              match);
         }
     }
 
