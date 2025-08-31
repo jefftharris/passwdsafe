@@ -7,6 +7,13 @@
  */
 package com.jefftharris.passwdsafe.view;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.jefftharris.passwdsafe.file.PasswdFileData;
+
+import org.pwsafe.lib.file.PwsRecord;
+
 import java.util.Date;
 
 /**
@@ -14,33 +21,72 @@ import java.util.Date;
  */
 public class PasswdRecordListData
 {
+    /**
+     * Fields associated with a record list entry, as compared to a group
+     */
+    public static class RecordFields
+    {
+        public final String itsUuid;
+
+        public final Date itsCreationTime;
+
+        public final Date itsModTime;
+
+        public final String itsMatch;
+
+        /** Constructor */
+        public RecordFields(PwsRecord rec,
+                            @NonNull PasswdFileData fileData,
+                            String match)
+        {
+            itsUuid = fileData.getUUID(rec);
+            itsCreationTime = fileData.getCreationTime(rec);
+            Date modTime = fileData.getLastModTime(rec);
+            Date passwdModTime = fileData.getPasswdLastModTime(rec);
+            if ((modTime != null) && (passwdModTime != null)) {
+                if (passwdModTime.compareTo(modTime) > 0) {
+                    modTime = passwdModTime;
+                }
+            } else if (modTime == null) {
+                modTime = passwdModTime;
+            }
+            itsModTime = modTime;
+            itsMatch = match;
+        }
+
+        /** Group entry constructor */
+        private RecordFields()
+        {
+            itsUuid = null;
+            itsCreationTime = null;
+            itsModTime = null;
+            itsMatch = null;
+        }
+    }
+
+    ///  Fields to use for a group entry
+    private static final RecordFields GROUP_FIELDS = new RecordFields();
+
     public final String itsTitle;
 
     public final String itsUser;
 
-    public final String itsUuid;
-
-    public final Date itsCreationTime;
-
-    public final Date itsModTime;
-
-    public final String itsMatch;
+    public final @NonNull RecordFields itsFields;
 
     public final int itsIcon;
 
     public final boolean itsIsRecord;
 
     /** Constructor */
-    public PasswdRecordListData(String title, String user, String uuid,
-                                Date creationTime, Date modTime,
-                                String match, int icon, boolean isRecord)
+    public PasswdRecordListData(String title,
+                                String user,
+                                @Nullable RecordFields fields,
+                                int icon,
+                                boolean isRecord)
     {
         itsTitle = title;
         itsUser = user;
-        itsUuid = uuid;
-        itsCreationTime = creationTime;
-        itsModTime = modTime;
-        itsMatch = match;
+        itsFields = (fields != null) ? fields : GROUP_FIELDS;
         itsIcon = icon;
         itsIsRecord = isRecord;
     }

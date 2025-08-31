@@ -70,17 +70,20 @@ public final class PasswdRecordListDataComparator
             break;
         }
         case CREATION_DATE: {
-            rc = compareDateField(arg0.itsCreationTime, arg1.itsCreationTime);
+            rc = compareDateField(arg0.itsFields.itsCreationTime,
+                                  arg1.itsFields.itsCreationTime);
             if (rc != 0) {
                 return rc;
             }
             break;
         }
         case MOD_DATE: {
-            Date date0 = (arg0.itsModTime != null) ?
-                         arg0.itsModTime : arg0.itsCreationTime;
-            Date date1 = (arg1.itsModTime != null) ?
-                         arg1.itsModTime : arg1.itsCreationTime;
+            Date date0 = (arg0.itsFields.itsModTime != null) ?
+                         arg0.itsFields.itsModTime :
+                         arg0.itsFields.itsCreationTime;
+            Date date1 = (arg1.itsFields.itsModTime != null) ?
+                         arg1.itsFields.itsModTime :
+                         arg1.itsFields.itsCreationTime;
             rc = compareDateField(date0, date1);
             if (rc != 0) {
                 return rc;

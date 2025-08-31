@@ -265,11 +265,11 @@ public class PasswdSafeListFragment extends ListFragment
             final PasswdRecordListData listItem =
                     (info != null) ? itsAdapter.getItem(info.position) : null;
             if ((listItem != null) && listItem.itsIsRecord) {
-                itsSelectedRecord = listItem.itsUuid;
+                itsSelectedRecord = listItem.itsFields.itsUuid;
                 itsListener.copyField(
                         (item.getItemId() == R.id.menu_copy_password) ?
                         CopyField.PASSWORD : CopyField.USER_NAME,
-                        listItem.itsUuid);
+                        listItem.itsFields.itsUuid);
             }
 
             return true;
@@ -291,9 +291,10 @@ public class PasswdSafeListFragment extends ListFragment
             return;
         }
         if (item.itsIsRecord) {
-            itsSelectedRecord = item.itsUuid;
+            itsSelectedRecord = item.itsFields.itsUuid;
             itsSelectedPos = position;
-            itsListener.changeLocation(itsLocation.selectRecord(item.itsUuid));
+            itsListener.changeLocation(
+                    itsLocation.selectRecord(item.itsFields.itsUuid));
         } else {
             itsListener.changeLocation(itsLocation.selectGroup(item.itsTitle));
         }
@@ -487,7 +488,8 @@ public class PasswdSafeListFragment extends ListFragment
                     }
 
                     if ((selectedRecord != null) &&
-                        TextUtils.equals(item.itsUuid, selectedRecord)) {
+                        TextUtils.equals(item.itsFields.itsUuid,
+                                         selectedRecord)) {
                         selectedPos = idx;
                     }
                     ++idx;
@@ -612,7 +614,7 @@ public class PasswdSafeListFragment extends ListFragment
             {
                 setText(itsTitle, item.itsTitle);
                 setText(itsUser, item.itsUser);
-                setText(itsMatch, item.itsMatch);
+                setText(itsMatch, item.itsFields.itsMatch);
                 if (itsLastIconImage != item.itsIcon) {
                     itsIcon.setImageResource(item.itsIcon);
                     itsLastIconImage = item.itsIcon;
