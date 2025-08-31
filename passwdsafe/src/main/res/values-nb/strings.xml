@@ -48,8 +48,6 @@
     <string name="confirm">Bekreft</string>
     <string name="cannot_delete_record">Klarte ikke slette oppføring - %1$s</string>
     <string name="content_file">Innholdsfil</string>
-    <string name="continue_str">Fortsett</string>
-    <string name="continue_p">Fortsett?</string>
     <string name="copy_email">Kopier e-post</string>
     <string name="copy_notes">Kopier notater</string>
     <string name="copy_password">Kopier passord</string>

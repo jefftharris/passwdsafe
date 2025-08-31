@@ -49,8 +49,6 @@
     <string name="confirm">Bestätigen</string>
     <string name="cannot_delete_record">Eintrag kann nicht gelöscht werden - %1$s</string>
     <string name="content_file">Inhaltsdatei</string>
-    <string name="continue_str">Weiter</string>
-    <string name="continue_p">Fortsetzen?</string>
     <string name="copy_email">E-Mail kopieren</string>
     <string name="copy_notes">Notizen kopieren</string>
     <string name="copy_password">Passwort kopieren</string>
