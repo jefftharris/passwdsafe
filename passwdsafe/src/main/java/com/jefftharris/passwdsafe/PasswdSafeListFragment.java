@@ -258,20 +258,11 @@ public class PasswdSafeListFragment extends ListFragment
         }
 
         int itemId = item.getItemId();
-        if ((itemId == R.id.menu_copy_password) ||
-            (itemId == R.id.menu_copy_user)) {
-            AdapterView.AdapterContextMenuInfo info =
-                    (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-            final PasswdRecordListData listItem =
-                    (info != null) ? itsAdapter.getItem(info.position) : null;
-            if ((listItem != null) && listItem.itsIsRecord) {
-                itsSelectedRecord = listItem.itsFields.itsUuid;
-                itsListener.copyField(
-                        (item.getItemId() == R.id.menu_copy_password) ?
-                        CopyField.PASSWORD : CopyField.USER_NAME,
-                        listItem.itsFields.itsUuid);
-            }
-
+        if (itemId == R.id.menu_copy_password) {
+            copyContextMenuRecordField(item, CopyField.PASSWORD);
+            return true;
+        } else if (itemId == R.id.menu_copy_user) {
+            copyContextMenuRecordField(item, CopyField.USER_NAME);
             return true;
         }
         return super.onContextItemSelected(item);
@@ -442,6 +433,20 @@ public class PasswdSafeListFragment extends ListFragment
             @NonNull Loader<List<PasswdRecordListData>> loader)
     {
         onLoadFinished(loader, null);
+    }
+
+
+    /** Copy a record field from the selected context menu item */
+    private void copyContextMenuRecordField(@NonNull MenuItem item,
+                                            CopyField field)
+    {
+        final var info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        final var listItem =
+                (info != null) ? itsAdapter.getItem(info.position) : null;
+        if ((listItem != null) && listItem.itsIsRecord) {
+            itsSelectedRecord = listItem.itsFields.itsUuid;
+            itsListener.copyField(field, listItem.itsFields.itsUuid);
+        }
     }
 
 
