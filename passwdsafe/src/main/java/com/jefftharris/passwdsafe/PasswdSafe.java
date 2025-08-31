@@ -1747,10 +1747,10 @@ public class PasswdSafe extends AppCompatActivity
                 navRun.run();
             };
             new AlertDialog.Builder(this)
-                    .setTitle(R.string.continue_p)
+                    .setTitle(R.string.discard_unsaged_changes_p)
                     .setMessage(R.string.any_changes_will_be_lost)
-                    .setPositiveButton(R.string.continue_str, listener)
-                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.discard, listener)
+                    .setNegativeButton(R.string.keep_editing, null)
                     .show();
         } else {
             navRun.run();

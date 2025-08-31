@@ -50,8 +50,6 @@
     <string name="confirm">Confirmer</string>
     <string name="cannot_delete_record">Impossible de supprimer l\'entrée - %1$s"</string>
     <string name="content_file">Contenu du fichier</string>
-    <string name="continue_str">Continuer</string>
-    <string name="continue_p">Continuer?</string>
     <string name="copy_email">Copier Email</string>
     <string name="copy_notes">Copier les notes</string>
     <string name="copy_password">Copier le mot de passe</string>

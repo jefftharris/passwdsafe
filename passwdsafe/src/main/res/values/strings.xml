@@ -47,8 +47,6 @@
     <string name="confirm">Confirm</string>
     <string name="cannot_delete_record">Cannot delete record - %1$s</string>
     <string name="content_file">Content File</string>
-    <string name="continue_str">Continue</string>
-    <string name="continue_p">Continue?</string>
     <string name="copy_email">Copy Email</string>
     <string name="copy_notes">Copy Notes</string>
     <string name="copy_password">Copy Password</string>
@@ -81,6 +79,8 @@
     <string name="delete_policy_msg">Delete policy \"%1$s\"?</string>
     <string name="delete_record_msg">Delete record \"%1$s\"?</string>
     <string name="directory_for_files">Directory for files</string>
+    <string name="discard" tools:ignore="MissingTranslation">Discard</string>
+    <string name="discard_unsaged_changes_p" tools:ignore="MissingTranslation">Discard unsaved changes?</string>
     <string name="display">Display</string>
     <string name="done">Done</string>
     <string name="duplicate_entry">Duplicate entry</string>
@@ -180,6 +180,7 @@
     <string name="invalid_length">Invalid length</string>
     <string name="invalid_option_length">Invalid option length</string>
     <string name="invalid_password">Invalid password</string>
+    <string name="keep_editing" tools:ignore="MissingTranslation">Keep editing</string>
     <string name="key_error">Key error for %1$s: %2$s</string>
     <string name="key_not_found">Key not found for %1$s</string>
     <string name="kitkat_sdcard_warning">
