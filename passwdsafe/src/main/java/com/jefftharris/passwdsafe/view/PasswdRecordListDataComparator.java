@@ -7,6 +7,10 @@
  */
 package com.jefftharris.passwdsafe.view;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
+
 import java.util.Comparator;
 import java.util.Date;
 
@@ -138,8 +142,9 @@ public final class PasswdRecordListDataComparator
     /**
      * Compare whether the item is a group or not
      */
-    private int compareIsGroup(PasswdRecordListData arg0,
-                               PasswdRecordListData arg1)
+    @Contract(pure = true)
+    private int compareIsGroup(@NonNull PasswdRecordListData arg0,
+                               @NonNull PasswdRecordListData arg1)
     {
         if (!arg0.itsIsRecord && arg1.itsIsRecord) {
             return -1;

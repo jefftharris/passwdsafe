@@ -99,6 +99,7 @@ public class PasswdSafeListFragment extends ListFragment
     private int itsSelectedPos = -1;
 
     /** Create a new instance */
+    @NonNull
     public static PasswdSafeListFragment newInstance(
             PasswdLocation location,
             @SuppressWarnings("SameParameterValue") boolean isContents)
@@ -140,7 +141,7 @@ public class PasswdSafeListFragment extends ListFragment
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
@@ -218,7 +219,7 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_sort) {
             if (itsListener != null) {
@@ -256,7 +257,7 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item)
+    public boolean onContextItemSelected(@NonNull MenuItem item)
     {
         int group = itsIsContents ? PasswdSafe.CONTEXT_GROUP_LIST_CONTENTS :
                     PasswdSafe.CONTEXT_GROUP_LIST;
@@ -306,7 +307,7 @@ public class PasswdSafeListFragment extends ListFragment
 
 
     @Override
-    public void onClick(View v)
+    public void onClick(@NonNull View v)
     {
         if (v.getId() == R.id.current_group_panel) {
             itsListener.changeLocation(itsLocation.popGroup());
@@ -325,7 +326,7 @@ public class PasswdSafeListFragment extends ListFragment
     /**
      * Update the record which is selected by the list
      */
-    public void updateSelection(PasswdLocation location)
+    public void updateSelection(@NonNull PasswdLocation location)
     {
         if (location.isRecord()) {
             itsSelectedPos = -1;
@@ -615,7 +616,7 @@ public class PasswdSafeListFragment extends ListFragment
             private int itsLastIconImage;
 
             /** Constructor */
-            protected ViewHolder(View view)
+            protected ViewHolder(@NonNull View view)
             {
                 itsTitle = view.findViewById(android.R.id.text1);
                 itsUser = view.findViewById(android.R.id.text2);
@@ -626,7 +627,7 @@ public class PasswdSafeListFragment extends ListFragment
             }
 
             /** Update the fields for a list item */
-            protected void update(PasswdRecordListData item,
+            protected void update(@NonNull PasswdRecordListData item,
                                   boolean selected,
                                   boolean isLeftListRecord)
             {
@@ -654,7 +655,7 @@ public class PasswdSafeListFragment extends ListFragment
             }
 
             /** Set text in a field */
-            private static void setText(TextView tv, String text)
+            private static void setText(@NonNull TextView tv, String text)
             {
                 tv.setText((text == null) ? "" : text);
             }
