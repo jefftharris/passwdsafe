@@ -50,7 +50,7 @@ dependencies {
     api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3'
     api 'androidx.preference:preference:1.2.1'
     api 'androidx.recyclerview:recyclerview:1.4.0'
-    api 'com.google.android.material:material:1.11.0'
+    api 'com.google.android.material:material:1.13.0'
 
     // Fix Duplicate classes with kotlin-stdlib jdk-7 and jdk-8
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
