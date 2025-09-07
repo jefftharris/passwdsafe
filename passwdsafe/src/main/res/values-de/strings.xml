@@ -82,6 +82,8 @@
     <string name="delete_policy_msg">Regel \"%1$s\" löschen?</string>
     <string name="delete_record_msg">Eintrag \"%1$s\" löschen?</string>
     <string name="directory_for_files">Standardordner</string>
+    <string name="discard">Verwerfen</string>
+    <string name="discard_unsaged_changes_p">Nicht gespeicherte Änderungen verwerfen?</string>
     <string name="display">Display</string>
     <string name="done">Fertig</string>
     <string name="duplicate_entry">Eintrag schon vorhanden</string>
@@ -180,6 +182,7 @@
     <string name="invalid_length">Ungültige Länge</string>
     <string name="invalid_option_length">Ungültige Optionslänge</string>
     <string name="invalid_password">Ungültiges Passwort</string>
+    <string name="keep_editing">Weiter Bearbeiten</string>
     <string name="key_error">Schlüsselfehler für %1$s: %2$s</string>
     <string name="key_not_found">Schlüssel nicht gefunden: %1$s</string>
     <string name="kitkat_sdcard_warning">
@@ -188,7 +191,7 @@
         SD-Karten schreiben. Wenn sich die Datei dort befindet,
         wird sie in den internen Speicher kopiert.
     </string>
-    <string name="last_password_change">Last password change</string>
+    <string name="last_password_change">Letzte Passwort-Änderung</string>
     <string name="last_save_app">Letzte App</string>
     <string name="last_save_by">Gespeichert von</string>
     <string name="last_save_time">Gespeichert am</string>
