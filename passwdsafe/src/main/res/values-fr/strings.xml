@@ -83,6 +83,8 @@
     <string name="delete_policy_msg">Supprimer la stratégie \"%1$s\"?</string>
     <string name="delete_record_msg">Supprimer l\'entrée \"%1$s\"?</string>
     <string name="directory_for_files">Répertoire des fichiers</string>
+    <string name="discard">Ignorer</string>
+    <string name="discard_unsaged_changes_p">Ignorer les modifications non enregistrées?</string>
     <string name="display">Affichage</string>
     <string name="done">Valider</string>
     <string name="duplicate_entry">Dupliquer l\'entrée</string>
@@ -187,6 +189,7 @@
     <string name="invalid_length">Longueur invalide</string>
     <string name="invalid_option_length">Longueur d\'option invalide</string>
     <string name="invalid_password">"Mot de passe incorrect"</string>
+    <string name="keep_editing">Continuer les modifications</string>
     <string name="key_error">Erreur clé pour %1$s: %2$s</string>
     <string name="key_not_found">Clé non trouvée pour %1$s</string>
     <string name="kitkat_sdcard_warning">
@@ -195,7 +198,7 @@
         d\'écrire sur des cartes SD amovibles. Si le fichier est situé sur
         une carte, il devra être déplacé vers la mémoire interne.
     </string>
-    <string name="last_password_change">Last password change</string>
+    <string name="last_password_change">Dernière modification du mot de passe</string>
     <string name="last_save_app">Application utilisée</string>
     <string name="last_save_by">Dernier enregistrement par</string>
     <string name="last_save_time">Dernier enregistrement le</string>
