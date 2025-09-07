@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -63,6 +63,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     /**
      * Create a new instance
      */
+    @NonNull
     public static ConfirmPromptDialog newInstance(String title,
                                                   String prompt,
                                                   String confirm,
@@ -74,6 +75,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     /**
      * Create a new instance with a neutral option
      */
+    @NonNull
     public static ConfirmPromptDialog newInstance(String title,
                                                   String prompt,
                                                   String confirm,
@@ -176,7 +178,8 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+    public void onCheckedChanged(@NonNull CompoundButton buttonView,
+                                 boolean isChecked)
     {
         validate();
     }
