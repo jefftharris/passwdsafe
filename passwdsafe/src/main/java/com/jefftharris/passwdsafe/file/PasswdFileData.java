@@ -23,6 +23,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.UUID;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
@@ -846,39 +847,7 @@ public class PasswdFileData
         }
         case V2: {
             versionSupported = true;
-            PwsFieldTypeV2 v2Field = null;
-            switch (field) {
-            case GROUP -> v2Field = PwsFieldTypeV2.GROUP;
-            case NOTES -> v2Field = PwsFieldTypeV2.NOTES;
-            case PASSWORD -> v2Field = PwsFieldTypeV2.PASSWORD;
-            case PASSWORD_LIFETIME ->
-                    v2Field = PwsFieldTypeV2.PASSWORD_LIFETIME;
-            case TITLE -> v2Field = PwsFieldTypeV2.TITLE;
-            case USERNAME -> v2Field = PwsFieldTypeV2.USERNAME;
-            case UUID -> v2Field = PwsFieldTypeV2.UUID;
-            case URL -> v2Field = PwsFieldTypeV2.URL;
-            case EMAIL,
-                 PASSWORD_HISTORY,
-                 PROTECTED_ENTRY,
-                 OWN_PASSWORD_SYMBOLS,
-                 PASSWORD_POLICY_NAME,
-                 CREATION_TIME,
-                 PASSWORD_MOD_TIME,
-                 LAST_MOD_TIME,
-                 PASSWORD_EXPIRY_INTERVAL,
-                 V3_ID_STRING,
-                 LAST_ACCESS_TIME,
-                 PASSWORD_POLICY_DEPRECATED,
-                 AUTOTYPE,
-                 PASSWORD_POLICY,
-                 RUN_COMMAND,
-                 DOUBLE_CLICK_ACTION,
-                 SHIFT_DOUBLE_CLICK_ACTION,
-                 ENTRY_KEYBOARD_SHORTCUT,
-                 END_OF_RECORD,
-                 UNKNOWN -> {
-            }
-            }
+            PwsFieldTypeV2 v2Field = getVersionFieldIdV2(field);
             if (v2Field != null) {
                 fieldId = v2Field.getId();
             }
@@ -886,40 +855,7 @@ public class PasswdFileData
         }
         case V1: {
             versionSupported = true;
-            PwsFieldTypeV1 v1Field = null;
-            switch (field) {
-            case NOTES -> v1Field = PwsFieldTypeV1.NOTES;
-            case PASSWORD -> v1Field = PwsFieldTypeV1.PASSWORD;
-            case TITLE -> v1Field = PwsFieldTypeV1.TITLE;
-            case USERNAME -> v1Field = PwsFieldTypeV1.USERNAME;
-            case UUID ->
-                    // No real UUID field for V1, so just use the phantom one
-                    v1Field = PwsFieldTypeV1.UUID;
-            case EMAIL,
-                 GROUP,
-                 PASSWORD_LIFETIME,
-                 URL,
-                 PASSWORD_HISTORY,
-                 PROTECTED_ENTRY,
-                 OWN_PASSWORD_SYMBOLS,
-                 PASSWORD_POLICY_NAME,
-                 CREATION_TIME,
-                 PASSWORD_MOD_TIME,
-                 LAST_MOD_TIME,
-                 PASSWORD_EXPIRY_INTERVAL,
-                 V3_ID_STRING,
-                 LAST_ACCESS_TIME,
-                 PASSWORD_POLICY_DEPRECATED,
-                 AUTOTYPE,
-                 PASSWORD_POLICY,
-                 RUN_COMMAND,
-                 DOUBLE_CLICK_ACTION,
-                 SHIFT_DOUBLE_CLICK_ACTION,
-                 ENTRY_KEYBOARD_SHORTCUT,
-                 END_OF_RECORD,
-                 UNKNOWN -> {
-            }
-            }
+            PwsFieldTypeV1 v1Field = getVersionFieldIdV1(field);
             if (v1Field != null) {
                 fieldId = v1Field.getId();
             }
@@ -931,6 +867,113 @@ public class PasswdFileData
             return FIELD_UNSUPPORTED;
         }
         return fieldId;
+    }
+
+    @Contract(pure = true)
+    @Nullable
+    private static PwsFieldTypeV2 getVersionFieldIdV2(
+            @NonNull PwsFieldTypeV3 field)
+    {
+        switch (field) {
+        case GROUP -> {
+            return PwsFieldTypeV2.GROUP;
+        }
+        case NOTES -> {
+            return PwsFieldTypeV2.NOTES;
+        }
+        case PASSWORD -> {
+            return PwsFieldTypeV2.PASSWORD;
+        }
+        case PASSWORD_LIFETIME -> {
+            return PwsFieldTypeV2.PASSWORD_LIFETIME;
+        }
+        case TITLE -> {
+            return PwsFieldTypeV2.TITLE;
+        }
+        case USERNAME -> {
+            return PwsFieldTypeV2.USERNAME;
+        }
+        case UUID -> {
+            return PwsFieldTypeV2.UUID;
+        }
+        case URL -> {
+            return PwsFieldTypeV2.URL;
+        }
+        case EMAIL,
+             PASSWORD_HISTORY,
+             PROTECTED_ENTRY,
+             OWN_PASSWORD_SYMBOLS,
+             PASSWORD_POLICY_NAME,
+             CREATION_TIME,
+             PASSWORD_MOD_TIME,
+             LAST_MOD_TIME,
+             PASSWORD_EXPIRY_INTERVAL,
+             V3_ID_STRING,
+             LAST_ACCESS_TIME,
+             PASSWORD_POLICY_DEPRECATED,
+             AUTOTYPE,
+             PASSWORD_POLICY,
+             RUN_COMMAND,
+             DOUBLE_CLICK_ACTION,
+             SHIFT_DOUBLE_CLICK_ACTION,
+             ENTRY_KEYBOARD_SHORTCUT,
+             END_OF_RECORD,
+             UNKNOWN -> {
+            return null;
+        }
+        }
+        return null;
+    }
+
+    @Contract(pure = true)
+    @Nullable
+    private static PwsFieldTypeV1 getVersionFieldIdV1(
+            @NonNull PwsFieldTypeV3 field)
+    {
+        switch (field) {
+        case NOTES -> {
+            return PwsFieldTypeV1.NOTES;
+        }
+        case PASSWORD -> {
+            return PwsFieldTypeV1.PASSWORD;
+        }
+        case TITLE -> {
+            return PwsFieldTypeV1.TITLE;
+        }
+        case USERNAME -> {
+            return PwsFieldTypeV1.USERNAME;
+        }
+        case UUID -> {
+            // No real UUID field for V1, so just use the phantom one
+            return PwsFieldTypeV1.UUID;
+        }
+        case EMAIL,
+             GROUP,
+             PASSWORD_LIFETIME,
+             URL,
+             PASSWORD_HISTORY,
+             PROTECTED_ENTRY,
+             OWN_PASSWORD_SYMBOLS,
+             PASSWORD_POLICY_NAME,
+             CREATION_TIME,
+             PASSWORD_MOD_TIME,
+             LAST_MOD_TIME,
+             PASSWORD_EXPIRY_INTERVAL,
+             V3_ID_STRING,
+             LAST_ACCESS_TIME,
+             PASSWORD_POLICY_DEPRECATED,
+             AUTOTYPE,
+             PASSWORD_POLICY,
+             RUN_COMMAND,
+             DOUBLE_CLICK_ACTION,
+             SHIFT_DOUBLE_CLICK_ACTION,
+             ENTRY_KEYBOARD_SHORTCUT,
+             END_OF_RECORD,
+             UNKNOWN -> {
+            return null;
+        }
+        }
+        return null;
     }
 
 
