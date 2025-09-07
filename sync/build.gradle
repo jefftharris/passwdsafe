@@ -10,12 +10,12 @@ apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 
 android {
     namespace = 'com.jefftharris.passwdsafe.sync'
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.jefftharris.passwdsafe.sync"
         minSdkVersion 26
         resourceConfigurations += ['de', 'fr', 'nb']
-        targetSdkVersion 35
+        targetSdkVersion 36
         // <major><minor><bugfix><beta/extra>
         versionCode = 3120001
         versionName = "3.12.0"
@@ -60,14 +60,14 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.9.2'
-    implementation('androidx.work:work-runtime:2.10.2') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.9.3'
+    implementation('androidx.work:work-runtime:2.10.3') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
-    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+    implementation 'com.google.android.gms:play-services-auth:21.4.0'
     // Google Drive
-    implementation('com.google.api-client:google-api-client-android:2.8.0') {
+    implementation('com.google.api-client:google-api-client-android:2.8.1') {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation('com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0') {
@@ -81,10 +81,10 @@ dependencies {
         exclude group: 'com.google.guava'
     }
     // OneDrive
-    implementation ('com.microsoft.identity.client:msal:6.2.0') {
+    implementation ('com.microsoft.identity.client:msal:7.0.3') {
         exclude group: 'com.microsoft.device.display'
     }
-    implementation 'com.microsoft.graph:microsoft-graph:6.46.0'
+    implementation 'com.microsoft.graph:microsoft-graph:6.51.0'
 }
 
 secrets {

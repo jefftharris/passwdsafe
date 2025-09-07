@@ -17,10 +17,10 @@ static def buildTime() {
 
 android {
     namespace = 'com.jefftharris.passwdsafe.lib'
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 36
         vectorDrawables.useSupportLibrary = true
         buildConfigField 'String', 'BUILD_ID', "\"${buildId()}\""
         buildConfigField 'String', 'BUILD_DATE', "\"${buildTime()}\""
@@ -41,13 +41,13 @@ dependencies {
     api 'androidx.appcompat:appcompat:1.7.1'
     api 'androidx.cardview:cardview:1.0.0'
     api 'androidx.constraintlayout:constraintlayout:2.2.1'
-    api 'androidx.core:core:1.16.0'
-    api 'androidx.fragment:fragment:1.8.8'
+    api 'androidx.core:core:1.17.0'
+    api 'androidx.fragment:fragment:1.8.9'
     api 'androidx.gridlayout:gridlayout:1.1.0'
     api 'androidx.legacy:legacy-preference-v14:1.0.0'
     api 'androidx.legacy:legacy-support-v4:1.0.0'
-    api 'androidx.lifecycle:lifecycle-viewmodel:2.9.2'
-    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2'
+    api 'androidx.lifecycle:lifecycle-viewmodel:2.9.3'
+    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3'
     api 'androidx.preference:preference:1.2.1'
     api 'androidx.recyclerview:recyclerview:1.4.0'
     api 'com.google.android.material:material:1.11.0'
@@ -56,5 +56,5 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
 
     // Extra IDE annotations from Jetbrains, e.g @PrintFormat
-    implementation 'org.jetbrains:annotations:26.0.2'
+    implementation 'org.jetbrains:annotations:26.0.2-1'
 }
