@@ -75,6 +75,8 @@
     <string name="delete_policy_msg">Slett regler \"%1$s\"?</string>
     <string name="delete_record_msg">Slett oppføring \"%1$s\"?</string>
     <string name="directory_for_files">Mappe for filer</string>
+    <string name="discard">Forkast</string>
+    <string name="discard_unsaged_changes_p">Forkast ulagrede endringer?</string>
     <string name="display">Visning</string>
     <string name="done">Ferdig</string>
     <string name="duplicate_entry">Duplikat oppføring</string>
@@ -175,10 +177,11 @@
     <string name="invalid_length">Ugyldig lengde</string>
     <string name="invalid_option_length">Ugyldig valglengde</string>
     <string name="invalid_password">Ugyldig passord</string>
+    <string name="keep_editing">Fortsett å redigere</string>
     <string name="key_error">Nøkkelfeil for %1$s: %2$s</string>
     <string name="key_not_found">Nøkkel ikke funnet for %1$s</string>
     <string name="kitkat_sdcard_warning">%1$s \n\nPå Android KitKat og nyere er apper forhindret fra å skrive til fjernbare SD-kort. Hvis filen er lokalisert på et slikt kort, den må flyttes til intern lagring.</string>
-    <string name="last_password_change">Last password change</string>
+    <string name="last_password_change">Siste passordendring</string>
     <string name="last_save_app">Siste lagrede app</string>
     <string name="last_save_by">Sist lagret av</string>
     <string name="last_save_time">Siste lagringstidspunkt</string>
