@@ -75,6 +75,11 @@
 -keep class com.box.androidsdk.content.models.** { *; }
 
 #
+# MSAL
+#
+-dontwarn net.jcip.annotations.*
+
+#
 # OneDrive
 #
 # OneDrive MSAL library has its own proguard rules file.  MS graph needs
