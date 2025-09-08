@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -26,6 +26,8 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
+import org.jetbrains.annotations.Contract;
+
 /**
  * Dialog to select a new group
  */
@@ -42,6 +44,8 @@ public class NewGroupDialog extends DialogFragment
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static NewGroupDialog newInstance()
     {
         return new NewGroupDialog();
@@ -54,7 +58,7 @@ public class NewGroupDialog extends DialogFragment
     public @NonNull
     Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        LayoutInflater factory = LayoutInflater.from(getContext());
+        LayoutInflater factory = getLayoutInflater();
         @SuppressLint("InflateParams")
         final View view = factory.inflate(R.layout.new_group, null);
         AbstractDialogClickListener dlgClick =
