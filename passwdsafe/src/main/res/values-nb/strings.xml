@@ -397,6 +397,10 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.26.0&lt;/b&gt; - Støtte for tidsstempel for siste
+        passordendring.  Lagt til langt trykk menyer for å kopiere e-post og
+        nettadresse.  Oppdatert Android 16 kompatibilitet.
+        \n\n
         &lt;b&gt;6.25.1&lt;/b&gt; - Rettet bruk av noen Yubikey NEO nøkler
         via NFC
         \n\n

@@ -17,8 +17,8 @@ android {
         resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 36
         // <major><minor><bugfix><beta/extra>
-        versionCode = 6250100
-        versionName = "6.25.1"
+        versionCode = 6260000
+        versionName = "6.26.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
