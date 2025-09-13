@@ -435,6 +435,11 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.26.0&lt;/b&gt; - Prise en charge de l\'horodatage de la
+        dernière modification du mot de passe. Ajout de menus à appui long pour
+        copier l\'adresse e-mail et l\'URL. Mise à jour pour la compatibilité
+        avec Android 16.
+        \n\n
         &lt;b&gt;6.25.1&lt;/b&gt; - Correction de l\'utilisation de certaines
         clés Yubikey NEO via NFC
         \n\n

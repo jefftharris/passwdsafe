@@ -424,6 +424,10 @@
     <string name="yubikey_slot_2">YubiKey Slot 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.26.0&lt;/b&gt; - Zeitpunkt der letzten Passwort-Änderung.
+        Langdrück-Menüs zum kopieren von E-Mail-Adresse und URL. Kompatibilität
+        für Android 16.
+        \n\n
         &lt;b&gt;6.25.1&lt;/b&gt; - Nutzung von einigen Yubikey NEO Schlüssel
         via NFC repariert
         \n\n
