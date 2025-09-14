@@ -196,10 +196,12 @@ public class PwsRecordV2 extends PwsRecord
                                                   item.getByteData());
                     break;
 
-                case PASSWORD_POLICY:
+                case PASSWORD_POLICY: {
+                    nullIsError = false;
+                    break;
+                }
                 case END_OF_RECORD:
                 case UNKNOWN:
-                    nullIsError = false;
                     break;
                 }
                 if (itemVal != null) {

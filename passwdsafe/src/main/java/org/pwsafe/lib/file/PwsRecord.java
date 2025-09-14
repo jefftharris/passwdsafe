@@ -451,7 +451,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
         }
 
         // try a shortcut first
-        if (theType < ValidTypes.length) {
+        if ((theType >= 0) && (theType < ValidTypes.length)) {
             if ((Integer)((Object[])ValidTypes[theType])[0] == theType) {
                 Class<? extends PwsField> cl = value.getClass();
 
