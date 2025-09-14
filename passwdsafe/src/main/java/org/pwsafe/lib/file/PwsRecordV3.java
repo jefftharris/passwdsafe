@@ -402,7 +402,8 @@ public class PwsRecordV3 extends PwsRecord
                         break;
                     }
                     if (itemVal == null) {
-                        itemVal = new PwsUnknownField(type, item.getByteData());
+                        itemVal = new PwsUnknownField(itemType,
+                                                      item.getByteData());
                     }
                     setField(itemVal);
                 }
