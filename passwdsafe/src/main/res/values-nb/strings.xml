@@ -397,6 +397,8 @@
     <string name="yubikey_slot_2">YubiKey plass 2</string>
 
     <string name="release_notes">
+        &lt;b&gt;6.26.1&lt;/b&gt; - Feilrettinger
+        \n\n
         &lt;b&gt;6.26.0&lt;/b&gt; - Støtte for tidsstempel for siste
         passordendring.  Lagt til langt trykk menyer for å kopiere e-post og
         nettadresse.  Oppdatert Android 16 kompatibilitet.
@@ -424,7 +426,7 @@
         YubiKey-nøkler. Merk: Chromebook tillater ikke tilgang til USB-enheter,
         så nøklene er ikke støttet.
         \n\n
-       &lt;b&gt;6.22.1, 6.22.2&lt;/b&gt; - Feilrettinger
+        &lt;b&gt;6.22.1, 6.22.2&lt;/b&gt; - Feilrettinger
         \n\n
         &lt;b&gt;6.22.0&lt;/b&gt; - Forbedret behandling av filer med feil.
         Oppføringer med feil blir listet opp, og filen kan lagres uten dem.
