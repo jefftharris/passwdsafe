@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.ListFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
@@ -35,6 +36,7 @@ import androidx.loader.content.Loader;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.util.FileComparator;
 
 import java.io.File;
@@ -49,7 +51,7 @@ import java.util.Map;
  * The FileListFragment allows the user to choose which file to open
  */
 public final class FileListFragment extends ListFragment
-        implements LoaderCallbacks<List<Map<String, Object>>>,
+        implements LoaderCallbacks<List<Map<String, Object>>>, MenuProvider,
                    View.OnClickListener,
                    View.OnLongClickListener
 {
@@ -91,7 +93,7 @@ public final class FileListFragment extends ListFragment
         }
 
         /** Constructor for a null file */
-        private FileData(Context ctx)
+        private FileData(@NonNull Context ctx)
         {
             itsFile = null;
             itsName = ctx.getString(R.string.none_paren);
@@ -139,7 +141,7 @@ public final class FileListFragment extends ListFragment
                              Bundle savedInstanceState)
     {
         if (itsListener.activityHasMenu()) {
-            setHasOptionsMenu(true);
+            GuiUtils.enableOptionsMenu(this);
         }
         View view = inflater.inflate(R.layout.fragment_file_list,
                                      container, false);
@@ -181,26 +183,23 @@ public final class FileListFragment extends ListFragment
      * @see android.support.v4.app.Fragment#onCreateOptionsMenu(android.view.Menu, android.view.MenuInflater)
      */
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_file_list, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    public void onPrepareMenu(@NonNull Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_file_new);
         item.setEnabled(itsListener.appHasFilePermission());
-        super.onPrepareOptionsMenu(menu);
     }
 
     /* (non-Javadoc)
      * @see android.support.v4.app.Fragment#onOptionsItemSelected(android.view.MenuItem)
      */
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int menuId = item.getItemId();
         if (menuId == R.id.menu_file_new) {
@@ -208,9 +207,8 @@ public final class FileListFragment extends ListFragment
                 itsListener.createNewFile(Uri.fromFile(itsDir));
             }
             return true;
-        } else {
-            return super.onOptionsItemSelected(item);
         }
+        return false;
     }
 
 

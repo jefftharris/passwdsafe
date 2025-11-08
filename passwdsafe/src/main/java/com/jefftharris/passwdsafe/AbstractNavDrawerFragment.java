@@ -24,6 +24,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuProvider;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -31,12 +32,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationView;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
 /**
  * Abstract fragment for the navigation drawer of an activity
  */
 public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
-        implements NavigationView.OnNavigationItemSelectedListener
+        implements NavigationView.OnNavigationItemSelectedListener,
+                   MenuProvider
 {
     /** Per the design guidelines, you should show the drawer on launch until
      * the user manually expands it. This shared preference tracks this. */
@@ -81,7 +84,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     public void onViewCreated(@NonNull View viewFrag, Bundle savedInstanceState)
     {
         super.onViewCreated(viewFrag, savedInstanceState);
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
 
         ViewCompat.setOnApplyWindowInsetsListener(
                 viewFrag,
@@ -120,8 +123,7 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         // If the drawer is open, show the global app actions in the action bar
         if (itsDrawerLayout != null && isDrawerOpen()) {
@@ -130,14 +132,12 @@ public abstract class AbstractNavDrawerFragment<ListenerT> extends Fragment
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setTitle(R.string.app_name);
         }
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
-        return itsDrawerToggle.onOptionsItemSelected(item) ||
-               super.onOptionsItemSelected(item);
+        return itsDrawerToggle.onOptionsItemSelected(item);
     }
 
     /**

@@ -81,7 +81,7 @@ public class PasswdSafeRecordFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        enableMenu();
         View root = inflater.inflate(R.layout.fragment_passwdsafe_record,
                                      container, false);
 
@@ -160,7 +160,7 @@ public class PasswdSafeRecordFragment
     }
 
     @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    public void onPrepareMenu(@NonNull Menu menu)
     {
         MenuItem item = menu.findItem(R.id.menu_edit);
         if (item != null) {
@@ -172,11 +172,11 @@ public class PasswdSafeRecordFragment
             item.setVisible(itsCanDelete);
         }
 
-        super.onPrepareOptionsMenu(menu);
+        super.onPrepareMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_edit) {
@@ -198,12 +198,12 @@ public class PasswdSafeRecordFragment
             }
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onMenuItemSelected(item);
     }
 
     @Override
-    protected void doOnCreateOptionsMenu(Menu menu,
-                                         @NonNull MenuInflater inflater)
+    protected void doOnCreateMenu(@NonNull Menu menu,
+                                  @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_passwdsafe_record, menu);
     }

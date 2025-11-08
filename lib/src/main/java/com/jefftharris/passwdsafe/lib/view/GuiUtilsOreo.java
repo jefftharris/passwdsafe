@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib.view;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Contract;
  * Oreo and higher
  */
 
+@SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.O)
 public final class GuiUtilsOreo
 {

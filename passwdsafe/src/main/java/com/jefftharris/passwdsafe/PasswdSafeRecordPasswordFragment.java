@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -10,8 +10,6 @@ package com.jefftharris.passwdsafe;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -92,11 +90,6 @@ public class PasswdSafeRecordPasswordFragment
         itsHistory = root.findViewById(R.id.history);
         itsHistory.setEnabled(false);
         return root;
-    }
-
-    @Override
-    protected void doOnCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
     }
 
     /** @noinspection RedundantSuppression*/

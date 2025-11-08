@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -30,6 +30,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
@@ -141,6 +144,17 @@ public final class GuiUtils
     public static void setVisible(@NonNull View view, boolean visible)
     {
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Enable the options menu on a fragment implementing MenuProvider
+     */
+    public static <T extends Fragment & MenuProvider> void enableOptionsMenu(
+            @NonNull T frag)
+    {
+        frag.requireActivity().addMenuProvider(frag,
+                                               frag.getViewLifecycleOwner(),
+                                               Lifecycle.State.RESUMED);
     }
 
     /** Set whether a menu item is enabled */

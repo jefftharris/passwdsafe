@@ -7,6 +7,7 @@
  */
 package com.jefftharris.passwdsafe.lib;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.ClipData;
 import android.os.Build;
@@ -17,6 +18,7 @@ import androidx.annotation.RequiresApi;
 /**
  * The ApiCompatM class contains helper methods that are usable on N and higher
  */
+@SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.N)
 public class ApiCompatN
 {

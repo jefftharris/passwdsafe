@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -9,8 +9,6 @@ package com.jefftharris.passwdsafe;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +24,8 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -61,6 +61,8 @@ public class PasswdSafeExpirationsFragment
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static PasswdSafeExpirationsFragment newInstance()
     {
         return new PasswdSafeExpirationsFragment();
@@ -121,7 +123,8 @@ public class PasswdSafeExpirationsFragment
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton button, boolean isChecked)
+    public void onCheckedChanged(@NonNull CompoundButton button,
+                                 boolean isChecked)
     {
         PasswdSafeUtil.dbginfo(TAG, "onCheckedChanged checked %b", isChecked);
         if (button.getId() == R.id.enable_expiry_notifs) {
@@ -163,11 +166,6 @@ public class PasswdSafeExpirationsFragment
     public void promptCanceled()
     {
         refresh();
-    }
-
-    @Override
-    protected void doOnCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
     }
 
     /**

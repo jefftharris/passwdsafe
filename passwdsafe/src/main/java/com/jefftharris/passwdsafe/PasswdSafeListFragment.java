@@ -25,6 +25,7 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.ListFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
@@ -44,6 +45,7 @@ import java.util.Objects;
  */
 public class PasswdSafeListFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<List<PasswdRecordListData>>,
+                   MenuProvider,
                    View.OnClickListener
 {
     /** Mode for which items are shown from the file */
@@ -145,7 +147,7 @@ public class PasswdSafeListFragment extends ListFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
         View root = inflater.inflate(R.layout.fragment_passwdsafe_list,
                                      container, false);
 
@@ -208,18 +210,16 @@ public class PasswdSafeListFragment extends ListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         if (itsIsContents && (itsListener != null) &&
             itsListener.activityHasMenu() && itsListener.isNavDrawerClosed()) {
             inflater.inflate(R.menu.fragment_passwdsafe_list, menu);
         }
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_sort) {
             if (itsListener != null) {
@@ -227,7 +227,7 @@ public class PasswdSafeListFragment extends ListFragment
             }
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override

@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.biometric.BiometricPrompt;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -75,7 +76,7 @@ import javax.crypto.IllegalBlockSizeException;
  */
 public class PasswdSafeOpenFileFragment
         extends AbstractPasswdSafeOpenNewFileFragment
-        implements ConfirmPromptDialog.Listener,
+        implements ConfirmPromptDialog.Listener, MenuProvider,
                    View.OnClickListener, CompoundButton.OnCheckedChangeListener
 {
     /**
@@ -217,7 +218,7 @@ public class PasswdSafeOpenFileFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
 
         View rootView = inflater.inflate(R.layout.fragment_passwdsafe_open_file,
                                          container, false);
@@ -350,8 +351,7 @@ public class PasswdSafeOpenFileFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
             inflater.inflate(R.menu.fragment_passwdsafe_open_file, menu);
@@ -400,12 +400,10 @@ public class PasswdSafeOpenFileFragment
             item = menu.findItem(R.id.menu_nfc_settings);
             item.setVisible(yubiNfcAvailable);
         }
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_file_open_help) {
@@ -433,7 +431,7 @@ public class PasswdSafeOpenFileFragment
             startActivity(Settings.ACTION_SECURITY_SETTINGS);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
