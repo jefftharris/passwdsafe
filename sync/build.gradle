@@ -60,8 +60,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.9.3'
-    implementation('androidx.work:work-runtime:2.10.3') {
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.9.4'
+    implementation('androidx.work:work-runtime:2.11.0') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
@@ -81,10 +81,10 @@ dependencies {
         exclude group: 'com.google.guava'
     }
     // OneDrive
-    implementation ('com.microsoft.identity.client:msal:7.0.3') {
+    implementation ('com.microsoft.identity.client:msal:8.0.2') {
         exclude group: 'com.microsoft.device.display'
     }
-    implementation 'com.microsoft.graph:microsoft-graph:6.51.0'
+    implementation 'com.microsoft.graph:microsoft-graph:6.56.0'
 }
 
 secrets {

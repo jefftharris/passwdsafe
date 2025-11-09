@@ -78,6 +78,7 @@
 # MSAL
 #
 -dontwarn net.jcip.annotations.*
+-dontwarn io.micrometer.context.ContextAccessor
 
 #
 # OneDrive
@@ -114,6 +115,7 @@
 #
 -keepattributes Signature
 -keepattributes *Annotation*
+# noinspection ExpensiveKeepRuleInspection
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
 -dontwarn okhttp3.**
