@@ -70,6 +70,9 @@
     <string name="updating_account">Oppdaterer konto …</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.13.0&lt;/b&gt; - Forbedret Android 16 kompatibilitet.
+        Oppdaterte OneDrive-biblioteket.
+        \n\n
         &lt;b&gt;3.12.0&lt;/b&gt; - Forbedret Android 15 kompatibilitet.
         Oppdaterte OneDrive-biblioteket.
         \n\n

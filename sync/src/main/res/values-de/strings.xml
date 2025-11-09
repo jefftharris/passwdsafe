@@ -76,6 +76,9 @@
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.13.0&lt;/b&gt; - Update für Android 16-Kompatibilität.
+        OneDrive-Unterstützung aktualisiert.
+        \n\n
         &lt;b&gt;3.12.0&lt;/b&gt; - Update für Android 15-Kompatibilität.
         OneDrive-Unterstützung aktualisiert.
         \n\n

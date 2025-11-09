@@ -77,6 +77,9 @@
     <string name="updating_account">Mise à jour compte&#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.13.0&lt;/b&gt; - Mise à jour pour la compatibilité
+        Android 16.  Maj librairie OneDrive.
+        \n\n
         &lt;b&gt;3.12.0&lt;/b&gt; - Mise à jour pour la compatibilité
         Android 15.  Maj librairie OneDrive.
         \n\n
