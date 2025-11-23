@@ -9,6 +9,7 @@
 package org.pwsafe.lib.file;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,7 +54,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     private boolean modified = false;
     private boolean isLoaded = false;
     protected final Map<Integer, PwsField> attributes = new TreeMap<>();
-    private final Object[] ValidTypes;
 
     protected boolean ignoreFieldTypes = false;
 
@@ -187,14 +186,10 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
 
     /**
      * Simple constructor. Used when creating a new record to add to a file.
-     *
-     * @param validTypes an array of valid field types.
      */
-    PwsRecord(Object[] validTypes)
+    PwsRecord()
     {
         super();
-
-        ValidTypes = validTypes;
     }
 
     /**
@@ -203,14 +198,11 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *
      * @param owner      the file that data is to be read from and which
      *                   "owns" this record.
-     * @param validTypes an array of valid field types.
      */
-    PwsRecord(PwsFile owner, Object[] validTypes)
+    PwsRecord(PwsFile owner)
             throws EndOfFileException, IOException, RecordLoadException
     {
         super();
-
-        ValidTypes = validTypes;
 
         loadRecord(owner);
 
@@ -222,19 +214,14 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *
      * @param owner            the file that data is to be read from and
      *                         which "owns" this record.
-     * @param validTypes       an array of valid field types.
      * @param ignoreFieldTypes true if all fields types should be ignored,
      *                                false otherwise
      */
-    protected PwsRecord(
-            PwsFile owner,
-            @SuppressWarnings("SameParameterValue") Object[] validTypes,
-            boolean ignoreFieldTypes)
+    protected PwsRecord(PwsFile owner, boolean ignoreFieldTypes)
             throws EndOfFileException, IOException, RecordLoadException
     {
         super();
 
-        ValidTypes = validTypes;
         this.ignoreFieldTypes = ignoreFieldTypes;
 
         loadRecord(owner);
@@ -246,17 +233,14 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     /**
      * Special constructor for use when ignoring field types.
      *
-     * @param validTypes       an array of valid field types.
      * @param ignoreFieldTypes true if all fields types should be ignored,
      *                         false otherwise
      */
     protected PwsRecord(
-            @SuppressWarnings("SameParameterValue") Object[] validTypes,
             @SuppressWarnings("SameParameterValue") boolean ignoreFieldTypes)
     {
         super();
 
-        ValidTypes = validTypes;
         this.ignoreFieldTypes = ignoreFieldTypes;
     }
 
@@ -372,7 +356,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *
      * @return An <code>Iterator</code> over the stored field codes.
      */
-    protected Iterator<Integer> getFields()
+    public Iterator<Integer> getFields()
     {
         return attributes.keySet().iterator();
     }
@@ -440,54 +424,36 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      */
     public void setField(@NonNull PwsField value)
     {
-        int theType;
-
-        theType = value.getType();
+        int typeId = value.getTypeId();
 
         if (ignoreFieldTypes) {
-            attributes.put(theType, value);
+            attributes.put(typeId, value);
             setModified();
             return;
         }
 
-        // try a shortcut first
-        if ((theType >= 0) && (theType < ValidTypes.length)) {
-            if ((Integer)((Object[])ValidTypes[theType])[0] == theType) {
-                Class<? extends PwsField> cl = value.getClass();
+        var fieldType = getFieldType(typeId);
+        if (fieldType != null) {
+            Class<? extends PwsField> cl = value.getClass();
+            var fieldClass = fieldType.getFieldClass();
 
-                if (cl == (((Object[])ValidTypes[theType])[2])) {
-                    attributes.put(theType, value);
-                    setModified();
-                    return;
-                }
+            if (cl == fieldClass) {
+                attributes.put(typeId, value);
+                setModified();
+                return;
             }
         }
-        // no chance, iterate over all values
-        for (Object ValidType : ValidTypes) {
-            int vType;
 
-            vType = (Integer)((Object[])ValidType)[0];
-
-            if (vType == theType) {
-                Class<? extends PwsField> cl = value.getClass();
-
-                if (cl == (((Object[])ValidType)[2])) {
-                    attributes.put(theType, value);
-                    setModified();
-                    return;
-                }
-            }
-        }
         // before giving up, check if unknown fields are allowed
         if (allowUnknownFieldTypes()) {
-            LOG.warn("Adding unknown field of type " + theType +
+            LOG.warn("Adding unknown field of type " + typeId +
                      ", class " + value.getClass() +
                      " - maybe a new version is needed?");
-            attributes.put(theType, value);
+            attributes.put(typeId, value);
             setModified();
         } else {
             throw new IllegalArgumentException(
-                    "Invalid type: " + theType);
+                    "Invalid type: " + typeId);
         }
     }
 
@@ -514,6 +480,11 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
             modified = true;
         }
     }
+
+    /**
+     * Get the PwsFieldType for the given type ID
+     */
+    protected abstract @Nullable PwsFieldType getFieldType(int typeId);
 
     /**
      * Writes a single field to the file.
@@ -553,17 +524,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      */
     protected void writeField(PwsFile file, PwsField field) throws IOException
     {
-        writeField(file, field, field.getType());
-    }
-
-    /**
-     * Add a valid type of field to the list.  The types eventually become the
-     * VALID_TYPES list.
-     */
-    protected static void addValidType(@NonNull ArrayList<Object[]> types,
-                                       @NonNull PwsFieldType type,
-                                       Class<? extends PwsField> clazz)
-    {
-        types.add(new Object[]{type.getId(), type.toString(), clazz});
+        writeField(file, field, field.getTypeId());
     }
 }

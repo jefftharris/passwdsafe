@@ -16,19 +16,11 @@ public class PwsPasswdField extends AbstractPwsPasswdField
     /**
      * Constructor from value
      */
-    public PwsPasswdField(int type, String value, PwsFile file)
-    {
-        super(type, value, file, ENCODING);
-    }
-
-    /**
-     * Constructor from value
-     */
     public PwsPasswdField(@NonNull PwsFieldType type,
                           String value,
                           PwsFile file)
     {
-        super(type.getId(), value, file, ENCODING);
+        super(type, value, file, ENCODING);
     }
 
     /**

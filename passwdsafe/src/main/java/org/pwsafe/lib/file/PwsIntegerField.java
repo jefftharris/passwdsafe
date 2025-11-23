@@ -29,19 +29,6 @@ public class PwsIntegerField extends PwsField
     /**
      * Constructs the object
      *
-     * @param type  the field type.  Values depend on the version of the file
-     *              being read.
-     * @param value the byte array holding the integer value.
-     * @throws IndexOutOfBoundsException If <code>value.length</code> &lt; 4.
-     */
-    public PwsIntegerField(int type, byte[] value)
-    {
-        super(type, Util.getIntFromByteArray(value, 0));
-    }
-
-    /**
-     * Constructs the object
-     *
      * @param type  the field type.  Values depend on the version of the
      *                     file being read.
      * @param value the byte array holding the integer value.
