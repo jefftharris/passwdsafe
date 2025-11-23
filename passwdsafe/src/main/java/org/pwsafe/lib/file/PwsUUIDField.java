@@ -28,17 +28,6 @@ public class PwsUUIDField extends PwsField
      * @param type  the field's type.
      * @param value the field's value.
      */
-    public PwsUUIDField(int type, byte[] value)
-    {
-        super(type, new UUID(value));
-    }
-
-    /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param value the field's value.
-     */
     public PwsUUIDField(PwsFieldType type, byte[] value)
     {
         super(type, new UUID(value));

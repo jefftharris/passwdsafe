@@ -29,17 +29,6 @@ public class PwsTimeField extends PwsField
      * @param type  the field's type.
      * @param value the field's value.
      */
-    public PwsTimeField(int type, byte[] value)
-    {
-        super(type, new Date(Util.getMillisFromByteArray(value, 0)));
-    }
-
-    /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param value the field's value.
-     */
     public PwsTimeField(PwsFieldType type, byte[] value)
     {
         super(type, new Date(Util.getMillisFromByteArray(value, 0)));

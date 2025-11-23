@@ -64,61 +64,11 @@ public class PwsRecordV3 extends PwsRecord
     public static final byte DB_FMT_MINOR_VERSION = DB_FMT_MINOR_3_30;
 
     /**
-     * All the valid type codes.
-     */
-    private static final Object[] VALID_TYPES;
-
-    static {
-        var types = new ArrayList<Object[]>(PwsFieldTypeV3.values().length);
-        for (var type : PwsFieldTypeV3.values()) {
-            switch (type) {
-            case V3_ID_STRING ->
-                    addValidType(types, type, PwsVersionField.class);
-            case UUID -> addValidType(types, type, PwsUUIDField.class);
-            case GROUP,
-                 TITLE,
-                 USERNAME,
-                 NOTES,
-                 PASSWORD_POLICY_DEPRECATED,
-                 URL,
-                 AUTOTYPE,
-                 PASSWORD_HISTORY,
-                 PASSWORD_POLICY,
-                 RUN_COMMAND,
-                 EMAIL,
-                 OWN_PASSWORD_SYMBOLS,
-                 PASSWORD_POLICY_NAME ->
-                    addValidType(types, type, PwsStringUnicodeField.class);
-            case PASSWORD ->
-                    addValidType(types, type, PwsPasswdUnicodeField.class);
-            case CREATION_TIME,
-                 PASSWORD_MOD_TIME,
-                 LAST_ACCESS_TIME,
-                 PASSWORD_LIFETIME,
-                 LAST_MOD_TIME -> addValidType(types, type, PwsTimeField.class);
-            case PASSWORD_EXPIRY_INTERVAL,
-                 ENTRY_KEYBOARD_SHORTCUT ->
-                    addValidType(types, type, PwsIntegerField.class);
-            case DOUBLE_CLICK_ACTION,
-                 SHIFT_DOUBLE_CLICK_ACTION ->
-                    addValidType(types, type, PwsShortField.class);
-            case PROTECTED_ENTRY ->
-                    addValidType(types, type, PwsByteField.class);
-            case END_OF_RECORD,
-                 UNKNOWN -> {
-            }
-            }
-        }
-
-        VALID_TYPES = types.toArray(new Object[0]);
-    }
-
-    /**
      * Create a new record with all mandatory fields given their default value.
      */
     PwsRecordV3()
     {
-        super(VALID_TYPES);
+        super();
 
         setField(new PwsUUIDField(PwsFieldTypeV3.UUID, new UUID()));
         setField(new PwsStringUnicodeField(PwsFieldTypeV3.TITLE, ""));
@@ -134,7 +84,7 @@ public class PwsRecordV3 extends PwsRecord
      */
     PwsRecordV3(boolean ignoredIsHeader)
     {
-        super(VALID_TYPES, true);
+        super(true);
         setField(new PwsVersionField(PwsHeaderTypeV3.VERSION,
                                      new byte[]{DB_FMT_MINOR_VERSION, 3}));
         setField(new PwsUUIDField(PwsHeaderTypeV3.UUID, new UUID()));
@@ -151,7 +101,7 @@ public class PwsRecordV3 extends PwsRecord
     PwsRecordV3(PwsFile file)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super(file, VALID_TYPES);
+        super(file);
     }
 
     /**
@@ -170,7 +120,7 @@ public class PwsRecordV3 extends PwsRecord
                 boolean ignoreFieldTypes)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super(file, VALID_TYPES, ignoreFieldTypes);
+        super(file, ignoreFieldTypes);
     }
 
     /**
@@ -338,6 +288,7 @@ public class PwsRecordV3 extends PwsRecord
                 if (ignoreFieldTypes) {
                     // header record has no valid types...
                     itemVal = new PwsUnknownField(itemType,
+                                                  PwsHeaderTypeV3.UNKNOWN,
                                                   item.getByteData());
                     attributes.put(item.getType(), itemVal);
                 } else {
@@ -403,6 +354,7 @@ public class PwsRecordV3 extends PwsRecord
                     }
                     if (itemVal == null) {
                         itemVal = new PwsUnknownField(itemType,
+                                                      PwsFieldTypeV3.UNKNOWN,
                                                       item.getByteData());
                     }
                     setField(itemVal);
@@ -449,6 +401,12 @@ public class PwsRecordV3 extends PwsRecord
             fileV3.hasher.digest(value.getBytes());
         }
         writeField(file, new PwsStringField(PwsFieldTypeV3.END_OF_RECORD, ""));
+    }
+
+    @Override
+    protected PwsFieldType getFieldType(int typeId)
+    {
+        return PwsFieldTypeV3.fromType(typeId);
     }
 
     /**
@@ -525,13 +483,16 @@ public class PwsRecordV3 extends PwsRecord
             }
             first = false;
 
-            boolean showValue = true;
-            if (key < VALID_TYPES.length) {
-                Object[] type = (Object[])VALID_TYPES[key];
-                sb.append(type[1]);
-                switch (PwsFieldTypeV3.fromType((Integer)type[0])) {
+            sb.append(key);
+            sb.append("=");
+            var fieldType = getFieldType(key);
+            if (fieldType instanceof PwsFieldTypeV3) {
+                switch ((PwsFieldTypeV3)fieldType) {
                 case PASSWORD,
-                     NOTES -> showValue = false;
+                     NOTES,
+                     END_OF_RECORD,
+                     UNKNOWN -> {
+                }
                 case V3_ID_STRING,
                      UUID,
                      GROUP,
@@ -555,17 +516,8 @@ public class PwsRecordV3 extends PwsRecord
                      OWN_PASSWORD_SYMBOLS,
                      SHIFT_DOUBLE_CLICK_ACTION,
                      PASSWORD_POLICY_NAME,
-                     ENTRY_KEYBOARD_SHORTCUT,
-                     END_OF_RECORD,
-                     UNKNOWN -> {
+                     ENTRY_KEYBOARD_SHORTCUT -> sb.append(value);
                 }
-                }
-            } else {
-                sb.append(key);
-            }
-            sb.append("=");
-            if (showValue) {
-                sb.append(value);
             }
         }
         sb.append(" }");

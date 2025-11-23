@@ -30,21 +30,7 @@ import java.io.Serializable;
 public abstract class PwsField implements Comparable<Object>, Serializable
 {
     private final Object Value;
-    private final int Type;
-
-    /**
-     * Creates the field object.
-     *
-     * @param type  the field type.
-     * @param value the field value.
-     */
-    protected PwsField(int type, Object value)
-    {
-        super();
-
-        Type = type;
-        Value = value;
-    }
+    private final PwsFieldType Type;
 
     /**
      * Creates the field object.
@@ -54,9 +40,7 @@ public abstract class PwsField implements Comparable<Object>, Serializable
      */
     protected PwsField(@NonNull PwsFieldType type, Object value)
     {
-        super();
-
-        Type = type.getId();
+        Type = type;
         Value = value;
     }
 
@@ -75,9 +59,9 @@ public abstract class PwsField implements Comparable<Object>, Serializable
      *
      * @return the field type.
      */
-    public int getType()
+    public int getTypeId()
     {
-        return Type;
+        return Type.getId();
     }
 
     /**

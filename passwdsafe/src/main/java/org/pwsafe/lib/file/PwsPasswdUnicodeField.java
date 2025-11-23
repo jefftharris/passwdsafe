@@ -29,7 +29,7 @@ public class PwsPasswdUnicodeField extends AbstractPwsPasswdField
                                  String value,
                                  PwsFile file)
     {
-        super(type.getId(), value, file, ENCODING);
+        super(type, value, file, ENCODING);
     }
 
     /**

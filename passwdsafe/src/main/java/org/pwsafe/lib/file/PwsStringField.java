@@ -27,17 +27,6 @@ public class PwsStringField extends PwsField
      * @param type  the field's type.
      * @param value the field's value.
      */
-    public PwsStringField(int type, String value)
-    {
-        super(type, value);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param value the field's value.
-     */
     @SuppressWarnings("SameParameterValue")
     public PwsStringField(PwsFieldType type, String value)
     {
