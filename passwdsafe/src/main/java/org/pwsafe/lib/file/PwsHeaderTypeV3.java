@@ -24,7 +24,9 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
     NAMED_PASSWORD_POLICIES(0x10, PwsStringUnicodeField.class),
     YUBICO(0x12, PwsStringUnicodeField.class),
     LAST_PASSWORD_CHANGE(0x13, PwsTimeField.class),
-    END_OF_RECORD(255, null);
+    END_OF_RECORD(255, null),
+
+    UNKNOWN(-1, null);
 
     private final int itsId;
     private final Class<? extends PwsField> itsFieldClass;
