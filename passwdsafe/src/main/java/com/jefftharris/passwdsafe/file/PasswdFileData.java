@@ -1046,7 +1046,8 @@ public class PasswdFileData
             }
             case UUID:
             case YUBICO:
-            case END_OF_RECORD: {
+            case END_OF_RECORD:
+            case UNKNOWN: {
                 return null;
             }
             }
@@ -1112,7 +1113,8 @@ public class PasswdFileData
             case UUID:
             case LAST_SAVE_WHO:
             case YUBICO:
-            case END_OF_RECORD: {
+            case END_OF_RECORD:
+            case UNKNOWN: {
                 break;
             }
             }
