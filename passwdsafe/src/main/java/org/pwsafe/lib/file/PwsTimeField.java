@@ -9,6 +9,7 @@
 package org.pwsafe.lib.file;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.pwsafe.lib.Util;
 
@@ -22,17 +23,6 @@ public class PwsTimeField extends PwsField
 {
     @Serial
     private static final long serialVersionUID = -3091539688166386331L;
-
-    /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param value the field's value.
-     */
-    public PwsTimeField(int type, byte[] value)
-    {
-        super(type, new Date(Util.getMillisFromByteArray(value, 0)));
-    }
 
     /**
      * Constructor
@@ -54,7 +44,7 @@ public class PwsTimeField extends PwsField
     @SuppressWarnings("SameParameterValue")
     public PwsTimeField(PwsFieldType type, Date aDate)
     {
-        super(type, aDate);
+        super(type, normalizeDate(aDate));
     }
 
     /**
@@ -112,4 +102,18 @@ public class PwsTimeField extends PwsField
         throw new ClassCastException();
     }
 
+    /**
+     * Normalize a date to remove microseconds as if it had been loaded from
+     * a file
+     */
+    @Nullable
+    private static Date normalizeDate(Date date)
+    {
+        if (date == null) {
+            return null;
+        }
+        long value = date.getTime();
+        value -= (value % 1000);
+        return new Date(value);
+    }
 }

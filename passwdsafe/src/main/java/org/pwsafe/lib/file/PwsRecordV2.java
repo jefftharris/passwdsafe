@@ -30,44 +30,11 @@ public class PwsRecordV2 extends PwsRecord
     private static final long serialVersionUID = 1L;
 
     /**
-     * All the valid type codes.
-     */
-    private static final Object[] VALID_TYPES;
-
-    static {
-        var types = new ArrayList<Object[]>(PwsFieldTypeV2.values().length);
-        for (var type : PwsFieldTypeV2.values()) {
-            switch (type) {
-            case V2_ID_STRING,
-                 GROUP,
-                 TITLE,
-                 USERNAME,
-                 NOTES,
-                 PASSWORD_POLICY,
-                 URL -> addValidType(types, type, PwsStringField.class);
-            case UUID -> addValidType(types, type, PwsUUIDField.class);
-            case PASSWORD -> addValidType(types, type, PwsPasswdField.class);
-            case CREATION_TIME,
-                 PASSWORD_MOD_TIME,
-                 LAST_ACCESS_TIME,
-                 LAST_MOD_TIME -> addValidType(types, type, PwsTimeField.class);
-            case PASSWORD_LIFETIME ->
-                    addValidType(types, type, PwsIntegerField.class);
-            case END_OF_RECORD,
-                 UNKNOWN -> {
-            }
-            }
-        }
-
-        VALID_TYPES = types.toArray(new Object[0]);
-    }
-
-    /**
      * Create a new record with all mandatory fields given their default value.
      */
     PwsRecordV2()
     {
-        super(VALID_TYPES);
+        super();
 
         setField(new PwsUUIDField(PwsFieldTypeV2.UUID, new UUID()));
         setField(new PwsStringField(PwsFieldTypeV2.TITLE, ""));
@@ -84,7 +51,7 @@ public class PwsRecordV2 extends PwsRecord
     PwsRecordV2(PwsFile file)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super(file, VALID_TYPES);
+        super(file);
     }
 
     /**
@@ -173,13 +140,11 @@ public class PwsRecordV2 extends PwsRecord
                 case USERNAME:
                 case NOTES:
                 case URL:
-                    itemVal =
-                            new PwsStringField(item.getType(), item.getData());
+                    itemVal = new PwsStringField(type, item.getData());
                     break;
 
                 case PASSWORD:
-                    itemVal = new PwsPasswdField(item.getType(), item.getData(),
-                                                 file);
+                    itemVal = new PwsPasswdField(type, item.getData(), file);
                     item.clear();
                     break;
 
@@ -187,13 +152,11 @@ public class PwsRecordV2 extends PwsRecord
                 case PASSWORD_MOD_TIME:
                 case LAST_ACCESS_TIME:
                 case LAST_MOD_TIME:
-                    itemVal = new PwsTimeField(item.getType(),
-                                               item.getByteData());
+                    itemVal = new PwsTimeField(type, item.getByteData());
                     break;
 
                 case PASSWORD_LIFETIME:
-                    itemVal = new PwsIntegerField(item.getType(),
-                                                  item.getByteData());
+                    itemVal = new PwsIntegerField(type, item.getByteData());
                     break;
 
                 case PASSWORD_POLICY: {
@@ -250,6 +213,12 @@ public class PwsRecordV2 extends PwsRecord
         writeField(file, new PwsStringField(PwsFieldTypeV2.END_OF_RECORD, ""));
     }
 
+    @Override
+    protected PwsFieldType getFieldType(int typeId)
+    {
+        return PwsFieldTypeV2.fromType(typeId);
+    }
+
     /**
      * Returns a string representation of this record.
      *
@@ -276,12 +245,15 @@ public class PwsRecordV2 extends PwsRecord
             }
             first = false;
 
-            boolean showValue = true;
-            if (key < VALID_TYPES.length) {
-                Object[] type = (Object[])VALID_TYPES[key];
-                sb.append(type[1]);
-                switch (PwsFieldTypeV2.fromType((Integer)type[0])) {
-                case PASSWORD -> showValue = false;
+            sb.append(key);
+            sb.append("=");
+            var fieldType = getFieldType(key);
+            if (fieldType instanceof PwsFieldTypeV2) {
+                switch ((PwsFieldTypeV2)fieldType) {
+                case PASSWORD,
+                     END_OF_RECORD,
+                     UNKNOWN -> {
+                }
                 case V2_ID_STRING,
                      UUID,
                      GROUP,
@@ -294,17 +266,8 @@ public class PwsRecordV2 extends PwsRecord
                      PASSWORD_LIFETIME,
                      PASSWORD_POLICY,
                      LAST_MOD_TIME,
-                     URL,
-                     END_OF_RECORD,
-                     UNKNOWN -> {
+                     URL -> sb.append(value);
                 }
-                }
-            } else {
-                sb.append(key);
-            }
-            sb.append("=");
-            if (showValue) {
-                sb.append(value);
             }
         }
         sb.append(" }");

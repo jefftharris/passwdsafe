@@ -8,29 +8,54 @@
  */
 package org.pwsafe.lib.file;
 
+import android.util.SparseArray;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Enumeration of V1 record field types
  */
 public enum PwsFieldTypeV1 implements PwsFieldType
 {
-    DEFAULT(0),
-    TITLE(3),
-    USERNAME(4),
-    NOTES(5),
-    PASSWORD(6),
-    UUID(7),
+    DEFAULT(0, null),
+    TITLE(3, PwsStringField.class),
+    USERNAME(4, PwsStringField.class),
+    NOTES(5, PwsStringField.class),
+    PASSWORD(6, PwsPasswdField.class),
+    UUID(7, PwsStringField.class),
 
-    UNKNOWN(-1);
+    UNKNOWN(-1, null);
 
-    private final int id;
+    private final int itsId;
+    private final Class<? extends PwsField> itsFieldClass;
 
-    PwsFieldTypeV1(int anId)
+    private static final SparseArray<PwsFieldTypeV1> itsTypesById =
+            new SparseArray<>(PwsFieldTypeV1.values().length);
+    static {
+        for (var type: PwsFieldTypeV1.values()) {
+            itsTypesById.append(type.itsId, type);
+        }
+    }
+
+    PwsFieldTypeV1(int anId, Class<? extends PwsField> clazz)
     {
-        id = anId;
+        itsId = anId;
+        itsFieldClass = clazz;
     }
 
     public int getId()
     {
-        return id;
+        return itsId;
+    }
+
+    @Nullable
+    public Class<? extends PwsField> getFieldClass()
+    {
+        return itsFieldClass;
+    }
+
+    public static @NonNull PwsFieldTypeV1 fromType(int type)
+    {
+        return itsTypesById.get(type, UNKNOWN);
     }
 }

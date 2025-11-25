@@ -42,7 +42,7 @@ public abstract class AbstractPwsPasswdField extends PwsField
     }
 
 
-    protected AbstractPwsPasswdField(int type,
+    protected AbstractPwsPasswdField(PwsFieldType type,
                                      String value,
                                      @NonNull PwsFile file,
                                      String encoding)

@@ -10,60 +10,69 @@ package org.pwsafe.lib.file;
 
 import android.util.SparseArray;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Enumeration of V3 record field types
  */
 public enum PwsFieldTypeV3 implements PwsFieldType
 {
-    V3_ID_STRING(0x00),
-    UUID(0x01),
-    GROUP(0x02),
-    TITLE(0x03),
-    USERNAME(0x04),
-    NOTES(0x05),
-    PASSWORD(0x06),
-    CREATION_TIME(0x07),
-    PASSWORD_MOD_TIME(0x08),
-    LAST_ACCESS_TIME(0x09),
-    PASSWORD_LIFETIME(0x0a),
-    PASSWORD_POLICY_DEPRECATED(0x0b),
-    LAST_MOD_TIME(0x0c),
-    URL(0x0d),
-    AUTOTYPE(0x0e),
-    PASSWORD_HISTORY(0x0f),
-    PASSWORD_POLICY(0x10),
-    PASSWORD_EXPIRY_INTERVAL(0x11),
-    RUN_COMMAND(0x12),
-    DOUBLE_CLICK_ACTION(0x13),
-    EMAIL(0x14),
-    PROTECTED_ENTRY(0x15),
-    OWN_PASSWORD_SYMBOLS(0x16),
-    SHIFT_DOUBLE_CLICK_ACTION(0x17),
-    PASSWORD_POLICY_NAME(0x18),
-    ENTRY_KEYBOARD_SHORTCUT(0x19),
-    END_OF_RECORD(255),
+    V3_ID_STRING(0x00, PwsVersionField.class),
+    UUID(0x01, PwsUUIDField.class),
+    GROUP(0x02, PwsStringUnicodeField.class),
+    TITLE(0x03, PwsStringUnicodeField.class),
+    USERNAME(0x04, PwsStringUnicodeField.class),
+    NOTES(0x05, PwsStringUnicodeField.class),
+    PASSWORD(0x06, PwsPasswdUnicodeField.class),
+    CREATION_TIME(0x07, PwsTimeField.class),
+    PASSWORD_MOD_TIME(0x08, PwsTimeField.class),
+    LAST_ACCESS_TIME(0x09, PwsTimeField.class),
+    PASSWORD_LIFETIME(0x0a, PwsTimeField.class),
+    PASSWORD_POLICY_DEPRECATED(0x0b, PwsStringUnicodeField.class),
+    LAST_MOD_TIME(0x0c, PwsTimeField.class),
+    URL(0x0d, PwsStringUnicodeField.class),
+    AUTOTYPE(0x0e, PwsStringUnicodeField.class),
+    PASSWORD_HISTORY(0x0f, PwsStringUnicodeField.class),
+    PASSWORD_POLICY(0x10, PwsStringUnicodeField.class),
+    PASSWORD_EXPIRY_INTERVAL(0x11, PwsIntegerField.class),
+    RUN_COMMAND(0x12, PwsStringUnicodeField.class),
+    DOUBLE_CLICK_ACTION(0x13, PwsShortField.class),
+    EMAIL(0x14, PwsStringUnicodeField.class),
+    PROTECTED_ENTRY(0x15, PwsByteField.class),
+    OWN_PASSWORD_SYMBOLS(0x16, PwsStringUnicodeField.class),
+    SHIFT_DOUBLE_CLICK_ACTION(0x17, PwsShortField.class),
+    PASSWORD_POLICY_NAME(0x18, PwsStringUnicodeField.class),
+    ENTRY_KEYBOARD_SHORTCUT(0x19, PwsIntegerField.class),
+    END_OF_RECORD(255, null),
 
-    UNKNOWN(-1);
+    UNKNOWN(-1, null);
 
-    private final int id;
+    private final int itsId;
+    private final Class<? extends PwsField> itsFieldClass;
 
     private static final SparseArray<PwsFieldTypeV3> itsTypesById =
             new SparseArray<>(PwsFieldTypeV3.values().length);
     static {
         for (var type: PwsFieldTypeV3.values()) {
-            itsTypesById.append(type.id, type);
+            itsTypesById.append(type.itsId, type);
         }
     }
 
-    PwsFieldTypeV3(int anId)
+    PwsFieldTypeV3(int anId, Class<? extends PwsField> clazz)
     {
-        id = anId;
+        itsId = anId;
+        itsFieldClass = clazz;
     }
 
     public int getId()
     {
-        return id;
+        return itsId;
+    }
+
+    @Nullable
+    public Class<? extends PwsField> getFieldClass()
+    {
+        return itsFieldClass;
     }
 
     public static @NonNull PwsFieldTypeV3 fromType(int type)

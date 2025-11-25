@@ -16,7 +16,6 @@ import org.pwsafe.lib.exception.RecordLoadException;
 import java.io.IOException;
 import java.io.Serial;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -47,29 +46,6 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      */
     private static final String SplitString;
 
-    /**
-     * All the valid type codes.
-     */
-    private static final Object[] VALID_TYPES;
-
-    static {
-        var types = new ArrayList<Object[]>(PwsFieldTypeV1.values().length);
-        for (var type : PwsFieldTypeV1.values()) {
-            switch (type) {
-            case TITLE,
-                 USERNAME,
-                 NOTES,
-                 UUID -> addValidType(types, type, PwsStringField.class);
-            case PASSWORD -> addValidType(types, type, PwsPasswdField.class);
-            case DEFAULT,
-                 UNKNOWN -> {
-            }
-            }
-        }
-
-        VALID_TYPES = types.toArray(new Object[0]);
-    }
-
     static {
         // Must be done here as they could theoretically throw an
         // exception, though in practice they won't unless the JVM
@@ -85,7 +61,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      */
     PwsRecordV1()
     {
-        super(VALID_TYPES);
+        super();
 
         // Set default values
         setField(new PwsStringField(PwsFieldTypeV1.TITLE, ""));
@@ -105,7 +81,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     PwsRecordV1(PwsFile file)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super(file, VALID_TYPES);
+        super(file);
     }
 
     /**
@@ -296,6 +272,12 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
         writeField(file, title, defaultType);
         writeField(file, getField(PwsFieldTypeV1.PASSWORD), defaultType);
         writeField(file, getField(PwsFieldTypeV1.NOTES), defaultType);
+    }
+
+    @Override
+    protected PwsFieldType getFieldType(int typeId)
+    {
+        return PwsFieldTypeV1.fromType(typeId);
     }
 
     /**

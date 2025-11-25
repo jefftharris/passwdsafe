@@ -1046,7 +1046,8 @@ public class PasswdFileData
             }
             case UUID:
             case YUBICO:
-            case END_OF_RECORD: {
+            case END_OF_RECORD:
+            case UNKNOWN: {
                 return null;
             }
             }
@@ -1076,7 +1077,9 @@ public class PasswdFileData
                     String str = String.format("%08x", secs);
                     newbytes = str.getBytes();
                 }
-                rec.setField(new PwsUnknownField(fieldId, newbytes));
+                rec.setField(new PwsUnknownField(fieldId.getId(),
+                                                 PwsHeaderTypeV3.UNKNOWN,
+                                                 newbytes));
                 break;
             }
             case LAST_SAVE_WHAT:
@@ -1112,7 +1115,8 @@ public class PasswdFileData
             case UUID:
             case LAST_SAVE_WHO:
             case YUBICO:
-            case END_OF_RECORD: {
+            case END_OF_RECORD:
+            case UNKNOWN: {
                 break;
             }
             }
@@ -1141,7 +1145,9 @@ public class PasswdFileData
             PwsField field = null;
             if (val != null) {
                 //noinspection CharsetObjectCanBeUsed
-                field = new PwsUnknownField(fieldId, val.getBytes("UTF-8"));
+                field = new PwsUnknownField(fieldId.getId(),
+                                            PwsHeaderTypeV3.UNKNOWN,
+                                            val.getBytes("UTF-8"));
             }
             setOrRemoveField(field, fieldId.getId(), rec);
         }
@@ -1503,8 +1509,9 @@ public class PasswdFileData
         byte[] newbytes = new byte[bytes.length];
         System.arraycopy(bytes, 0, newbytes, 0, bytes.length);
         newbytes[0] = minor;
-        PwsField newVer =
-                new PwsUnknownField(PwsHeaderTypeV3.VERSION, newbytes);
+        PwsField newVer = new PwsUnknownField(PwsHeaderTypeV3.VERSION.getId(),
+                                              PwsHeaderTypeV3.UNKNOWN,
+                                              newbytes);
         rec.setField(newVer);
     }
 

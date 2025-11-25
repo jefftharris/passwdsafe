@@ -25,27 +25,21 @@ public class PwsUnknownField extends PwsField
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param value the field's value.
-     */
-    public PwsUnknownField(int type, byte[] value)
-    {
-        super(type, value);
-    }
-
+    private final int itsUnknownType;
 
     /**
      * Constructor
      *
-     * @param type  the field's type.
+     * @param unknownType  The field's actual type ID
+     * @param unknownFieldType The UNKNOWN PwsFieldType for the file version
      * @param value the field's value.
      */
-    public PwsUnknownField(PwsFieldType type, byte[] value)
+    public PwsUnknownField(int unknownType,
+                           PwsFieldType unknownFieldType,
+                           byte[] value)
     {
-        super(type, value);
+        super(unknownFieldType, value);
+        itsUnknownType = unknownType;
     }
 
 
@@ -59,6 +53,12 @@ public class PwsUnknownField extends PwsField
     public byte[] getBytes()
     {
         return ((byte[])super.getValue());
+    }
+
+    @Override
+    public int getTypeId()
+    {
+        return itsUnknownType;
     }
 
     /**
