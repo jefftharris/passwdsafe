@@ -9,6 +9,7 @@
 package org.pwsafe.lib.file;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.pwsafe.lib.Util;
 
@@ -43,7 +44,7 @@ public class PwsTimeField extends PwsField
     @SuppressWarnings("SameParameterValue")
     public PwsTimeField(PwsFieldType type, Date aDate)
     {
-        super(type, aDate);
+        super(type, normalizeDate(aDate));
     }
 
     /**
@@ -101,4 +102,18 @@ public class PwsTimeField extends PwsField
         throw new ClassCastException();
     }
 
+    /**
+     * Normalize a date to remove microseconds as if it had been loaded from
+     * a file
+     */
+    @Nullable
+    private static Date normalizeDate(Date date)
+    {
+        if (date == null) {
+            return null;
+        }
+        long value = date.getTime();
+        value -= (value % 1000);
+        return new Date(value);
+    }
 }
