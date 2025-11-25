@@ -34,7 +34,7 @@ public class PwsRecordV2 extends PwsRecord
      */
     PwsRecordV2()
     {
-        super();
+        super(Type.RECORD);
 
         setField(new PwsUUIDField(PwsFieldTypeV2.UUID, new UUID()));
         setField(new PwsStringField(PwsFieldTypeV2.TITLE, ""));
@@ -51,7 +51,7 @@ public class PwsRecordV2 extends PwsRecord
     PwsRecordV2(PwsFile file)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super(file);
+        super(file, Type.RECORD);
     }
 
     /**

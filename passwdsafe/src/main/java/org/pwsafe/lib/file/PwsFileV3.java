@@ -68,7 +68,7 @@ public final class PwsFileV3 extends PwsFile
     {
         super();
         setHeaderV3(new PwsFileHeaderV3());
-        headerRecord = new PwsRecordV3(true);
+        headerRecord = new PwsRecordV3(PwsRecord.Type.HEADER);
     }
 
     /**
@@ -278,7 +278,7 @@ public final class PwsFileV3 extends PwsFile
     @Override
     public PwsRecord newRecord()
     {
-        return new PwsRecordV3();
+        return new PwsRecordV3(PwsRecord.Type.RECORD);
     }
 
     public PwsRecord getHeaderRecord()
@@ -297,8 +297,7 @@ public final class PwsFileV3 extends PwsFile
     protected void readExtraHeader()
             throws EndOfFileException, IOException, RecordLoadException
     {
-        //headerRecord = (PwsRecordV3) readRecord();
-        headerRecord = new PwsRecordV3(this, true);
+        headerRecord = new PwsRecordV3(this, PwsRecord.Type.HEADER);
     }
 
     /**
