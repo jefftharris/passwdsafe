@@ -27,23 +27,11 @@ public abstract class AbstractPasswdSafeLocationFragment
     /**
      * Wrapper class for record information
      */
-    protected static class RecordInfo
+    protected record RecordInfo(
+            PwsRecord rec,
+            PasswdRecord passwdRec,
+            PasswdFileData fileData)
     {
-        protected final PwsRecord itsRec;
-        protected final PasswdRecord itsPasswdRec;
-        protected final PasswdFileData itsFileData;
-
-        /**
-         * Constructor
-         */
-        protected RecordInfo(@NonNull PwsRecord rec,
-                             @NonNull PasswdRecord passwdRec,
-                             @NonNull PasswdFileData fileData)
-        {
-            itsRec = rec;
-            itsPasswdRec = passwdRec;
-            itsFileData = fileData;
-        }
     }
 
     /**
