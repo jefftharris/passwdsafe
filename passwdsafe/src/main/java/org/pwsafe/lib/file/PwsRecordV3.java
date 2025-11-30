@@ -267,11 +267,32 @@ public class PwsRecordV3 extends PwsRecord
                 PwsField itemVal = null;
                 switch (itsType) {
                 case HEADER -> {
-                    // header record has no valid types...
-                    itemVal = new PwsUnknownField(itemType,
-                                                  PwsHeaderTypeV3.UNKNOWN,
-                                                  item.getByteData());
-                    attributes.put(item.getType(), itemVal);
+                    var type = PwsHeaderTypeV3.fromType(itemType);
+                    switch (type) {
+                    case VERSION -> itemVal =
+                            new PwsVersionField(type, item.getByteData());
+                    case UUID -> itemVal =
+                            new PwsUUIDField(type, item.getByteData());
+                    case LAST_SAVE_TIME,
+                         LAST_PASSWORD_CHANGE -> itemVal =
+                            new PwsTimeField(type, item.getByteData());
+                    case LAST_SAVE_WHO,
+                         LAST_SAVE_WHAT,
+                         LAST_SAVE_USER,
+                         LAST_SAVE_HOST,
+                         NAMED_PASSWORD_POLICIES,
+                         YUBICO -> itemVal =
+                            new PwsStringUnicodeField(type, item.getByteData());
+                    case END_OF_RECORD,
+                         UNKNOWN -> {
+                    }
+                    }
+                    if (itemVal == null) {
+                        itemVal = new PwsUnknownField(itemType,
+                                                      PwsHeaderTypeV3.UNKNOWN,
+                                                      item.getByteData());
+                    }
+                    setField(itemVal);
                 }
                 case RECORD -> {
                     var type = PwsFieldTypeV3.fromType(itemType);
@@ -389,7 +410,15 @@ public class PwsRecordV3 extends PwsRecord
     @Override
     protected PwsFieldType getFieldType(int typeId)
     {
-        return PwsFieldTypeV3.fromType(typeId);
+        switch (itsType) {
+        case HEADER -> {
+            return PwsHeaderTypeV3.fromType(typeId);
+        }
+        case RECORD -> {
+            return PwsFieldTypeV3.fromType(typeId);
+        }
+        }
+        return null;
     }
 
     /**

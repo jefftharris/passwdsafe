@@ -7,6 +7,8 @@
  */
 package org.pwsafe.lib.file;
 
+import android.util.SparseArray;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -31,6 +33,14 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
     private final int itsId;
     private final Class<? extends PwsField> itsFieldClass;
 
+    private static final SparseArray<PwsHeaderTypeV3> itsTypesById =
+            new SparseArray<>(PwsHeaderTypeV3.values().length);
+    static {
+        for (var type: PwsHeaderTypeV3.values()) {
+            itsTypesById.append(type.itsId, type);
+        }
+    }
+
     PwsHeaderTypeV3(int id, Class<? extends PwsField> clazz)
     {
         itsId = id;
@@ -46,5 +56,10 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
     public Class<? extends PwsField> getFieldClass()
     {
         return itsFieldClass;
+    }
+
+    public static @NonNull PwsHeaderTypeV3 fromType(int type)
+    {
+        return itsTypesById.get(type, UNKNOWN);
     }
 }

@@ -62,7 +62,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
 
     private boolean modified = false;
     private boolean isLoaded = false;
-    protected final Map<Integer, PwsField> attributes = new TreeMap<>();
+    private final Map<Integer, PwsField> attributes = new TreeMap<>();
     protected final Type itsType;
 
     /**
@@ -402,35 +402,26 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     public void setField(@NonNull PwsField value)
     {
         int typeId = value.getTypeId();
-        switch (itsType) {
-        case HEADER -> {
-            attributes.put(typeId, value);
-            setModified();
-        }
-        case RECORD -> {
-            var fieldType = getFieldType(typeId);
-            if (fieldType != null) {
-                Class<? extends PwsField> cl = value.getClass();
-                var fieldClass = fieldType.getFieldClass();
+        var fieldType = getFieldType(typeId);
+        if (fieldType != null) {
+            Class<? extends PwsField> cl = value.getClass();
+            var fieldClass = fieldType.getFieldClass();
 
-                if (cl == fieldClass) {
-                    attributes.put(typeId, value);
-                    setModified();
-                    return;
-                }
-            }
-
-            // before giving up, check if unknown fields are allowed
-            if (allowUnknownFieldTypes()) {
-                LOG.warn("Adding unknown field of type " + typeId + ", class " +
-                         value.getClass() +
-                         " - maybe a new version is needed?");
+            if (cl == fieldClass) {
                 attributes.put(typeId, value);
                 setModified();
-            } else {
-                throw new IllegalArgumentException("Invalid type: " + typeId);
+                return;
             }
         }
+
+        // before giving up, check if unknown fields are allowed
+        if (allowUnknownFieldTypes()) {
+            LOG.warn("Adding unknown field of type " + typeId + ", class " +
+                     value.getClass() + " - maybe a new version is needed?");
+            attributes.put(typeId, value);
+            setModified();
+        } else {
+            throw new IllegalArgumentException("Invalid type: " + typeId);
         }
     }
 

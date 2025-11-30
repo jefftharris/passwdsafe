@@ -25,7 +25,6 @@ import com.jefftharris.passwdsafe.util.Pair;
 
 import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.UUID;
-import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
 import org.pwsafe.lib.exception.InvalidPassphraseException;
 import org.pwsafe.lib.exception.RecordLoadException;
@@ -51,11 +50,10 @@ import org.pwsafe.lib.file.PwsStringField;
 import org.pwsafe.lib.file.PwsStringUnicodeField;
 import org.pwsafe.lib.file.PwsTimeField;
 import org.pwsafe.lib.file.PwsUUIDField;
-import org.pwsafe.lib.file.PwsUnknownField;
+import org.pwsafe.lib.file.PwsVersionField;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -730,16 +728,6 @@ public class PasswdFileData
         return itsPwsFile.getLoadErrors();
     }
 
-    private static int hexBytesToInt(byte[] bytes, int pos, int len)
-    {
-        int i = 0;
-        for (int idx = pos; idx < (pos + len); ++idx) {
-            i <<= 4;
-            i |= Character.digit(bytes[idx], 16);
-        }
-        return i;
-    }
-
     /** Add an observer for file changes */
     public static void addObserver(PasswdFileDataObserver observer)
     {
@@ -1005,19 +993,12 @@ public class PasswdFileData
             case LAST_SAVE_TIME:
             case LAST_PASSWORD_CHANGE: {
                 PwsField time = doGetHeaderField(rec, fieldId);
-                if (time == null) {
+                if ((time instanceof PwsTimeField) &&
+                    (time.getValue() instanceof Date d)) {
+                    return d.toString();
+                } else {
                     return null;
                 }
-                byte[] bytes = time.getBytes();
-                if (bytes.length == 8) {
-                    byte[] binbytes = new byte[4];
-                    Util.putIntToByteArray(binbytes, hexBytesToInt(bytes, 0,
-                                                                   bytes.length),
-                                           0);
-                    bytes = binbytes;
-                }
-                Date d = new Date(Util.getMillisFromByteArray(bytes, 0));
-                return d.toString();
             }
             case LAST_SAVE_USER: {
                 PwsField field = doGetHeaderField(rec, fieldId);
@@ -1066,20 +1047,10 @@ public class PasswdFileData
             switch (fieldId) {
             case LAST_SAVE_TIME:
             case LAST_PASSWORD_CHANGE: {
-                long timeVal = ((Date)value).getTime();
-                byte[] newbytes;
                 int minor = getHdrMinorVersion(rec);
-                if (minor >= 2) {
-                    newbytes = new byte[4];
-                    Util.putMillisToByteArray(newbytes, timeVal, 0);
-                } else {
-                    int secs = (int)(timeVal / 1000);
-                    String str = String.format("%08x", secs);
-                    newbytes = str.getBytes();
-                }
-                rec.setField(new PwsUnknownField(fieldId.getId(),
-                                                 PwsHeaderTypeV3.UNKNOWN,
-                                                 newbytes));
+                var format = (minor >= 2) ? PwsTimeField.Format.DEFAULT :
+                             PwsTimeField.Format.HEADER_ASCII;
+                rec.setField(new PwsTimeField(fieldId, format, (Date)value));
                 break;
             }
             case LAST_SAVE_WHAT:
@@ -1127,33 +1098,22 @@ public class PasswdFileData
     @Nullable
     private static String doHdrFieldToString(@NonNull PwsField field)
     {
-        try {
-            //noinspection CharsetObjectCanBeUsed
-            return new String(field.getBytes(), "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
+        if ((field instanceof PwsStringUnicodeField) &&
+            (field.getValue() instanceof String str)) {
+            return str;
+        } else {
             return null;
         }
     }
 
 
     private static void doSetHdrFieldString(PwsRecord rec,
-                                            PwsHeaderTypeV3 fieldId,
+                                            @NonNull PwsHeaderTypeV3 fieldId,
                                             String val)
     {
-        try {
-            PwsField field = null;
-            if (val != null) {
-                //noinspection CharsetObjectCanBeUsed
-                field = new PwsUnknownField(fieldId.getId(),
-                                            PwsHeaderTypeV3.UNKNOWN,
-                                            val.getBytes("UTF-8"));
-            }
-            setOrRemoveField(field, fieldId.getId(), rec);
-        }
-        catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Invalid encoding", e);
-        }
+        var field = (val != null) ? new PwsStringUnicodeField(fieldId, val) :
+                    null;
+        setOrRemoveField(field, fieldId.getId(), rec);
     }
 
     /** Get a non-header record's field after translating its field
@@ -1487,35 +1447,17 @@ public class PasswdFileData
 
     private static int getHdrMinorVersion(PwsRecord rec)
     {
-        PwsField ver = doGetHeaderField(rec, PwsHeaderTypeV3.VERSION);
-        if (ver == null) {
-            return -1;
-        }
-        byte[] bytes = ver.getBytes();
-        if ((bytes == null) || (bytes.length == 0)) {
-            return -1;
-        }
-        return bytes[0];
+        PwsField field = doGetHeaderField(rec, PwsHeaderTypeV3.VERSION);
+        return (field instanceof PwsVersionField ver) ? ver.getMinor() : -1;
     }
 
     private static void setHdrMinorVersion(PwsRecord rec, byte minor)
     {
-        PwsField ver = doGetHeaderField(rec, PwsHeaderTypeV3.VERSION);
-        if (ver == null) {
-            return;
+        PwsField field = doGetHeaderField(rec, PwsHeaderTypeV3.VERSION);
+        if (field instanceof PwsVersionField ver) {
+            rec.setField(new PwsVersionField(PwsHeaderTypeV3.VERSION,
+                                             ver.getMajor(), minor));
         }
-        byte[] bytes = ver.getBytes();
-        if ((bytes == null) || (bytes.length == 0)) {
-            return;
-        }
-
-        byte[] newbytes = new byte[bytes.length];
-        System.arraycopy(bytes, 0, newbytes, 0, bytes.length);
-        newbytes[0] = minor;
-        PwsField newVer = new PwsUnknownField(PwsHeaderTypeV3.VERSION.getId(),
-                                              PwsHeaderTypeV3.UNKNOWN,
-                                              newbytes);
-        rec.setField(newVer);
     }
 
     @Nullable
