@@ -130,7 +130,7 @@ public class PwsTimeField extends PwsField
      * a file
      */
     @Nullable
-    private static Date normalizeDate(Date date)
+    public static Date normalizeDate(Date date)
     {
         if (date == null) {
             return null;

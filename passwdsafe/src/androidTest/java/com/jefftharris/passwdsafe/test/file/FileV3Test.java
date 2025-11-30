@@ -39,17 +39,37 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+// TODO: Add header tests using 8byte times for last save and password change,
+// or perhaps just generic PwsTimeField tests
+
 /**
  * Low-level tests for V3 files
  */
 public class FileV3Test
 {
-    // TODO: Verify file header fields
-
-    private interface LoadSaveTester
+    private abstract static class LoadSaveTester
     {
-        void populate(PwsFile file);
-        void verify(PwsFile file);
+        protected V3FileInfo itsFileInfo;
+
+        public final void parseNewFileInfo(PwsFile file)
+        {
+            itsFileInfo = new V3FileInfo(file);
+            itsFileInfo.populateHeader();
+        }
+
+        public abstract void populate(PwsFile file);
+
+        public final void verify(@NonNull PwsFile file)
+        {
+            assertTrue(file instanceof PwsFileV3);
+            assertFalse(file.isReadOnly());
+
+            itsFileInfo.verifyFileHeader(file);
+
+            doVerify(file);
+        }
+
+        protected abstract void doVerify(PwsFile file);
     }
 
     private static class RecInfo
@@ -79,7 +99,7 @@ public class FileV3Test
         public static UUID getUuid(@NonNull PwsRecord rec)
         {
             var uuid = rec.getField(PwsFieldTypeV3.UUID);
-            assertNotNull(uuid);
+            assertTrue(uuid instanceof PwsUUIDField);
             return (UUID)uuid.getValue();
         }
     }
@@ -95,7 +115,7 @@ public class FileV3Test
             }
 
             @Override
-            public void verify(PwsFile file)
+            public void doVerify(PwsFile file)
             {
                 verifyEmpty(file);
             }
@@ -117,11 +137,8 @@ public class FileV3Test
             }
 
             @Override
-            public void verify(PwsFile file)
+            public void doVerify(PwsFile file)
             {
-                assertTrue(file instanceof PwsFileV3);
-                assertFalse(file.isReadOnly());
-
                 assertEquals(1, file.getRecordCount());
                 int idx = 0;
                 var recIter = file.getRecords();
@@ -154,11 +171,8 @@ public class FileV3Test
             }
 
             @Override
-            public void verify(PwsFile file)
+            public void doVerify(PwsFile file)
             {
-                assertTrue(file instanceof PwsFileV3);
-                assertFalse(file.isReadOnly());
-
                 assertEquals(100, file.getRecordCount());
                 int idx = 0;
                 TreeSet<UUID> verifyUuids = new TreeSet<>();
@@ -207,15 +221,16 @@ public class FileV3Test
                                             PwsFieldTypeV3.UNKNOWN,
                                             itsRec1.itsUnknownValue2));
 
+                itsFileInfo.populateUnknownHeader(0xe0,
+                                                  itsRec1.itsUnknownValue1,
+                                                  0xe1,
+                                                  itsRec1.itsUnknownValue2);
                 file.add(itsRec1.itsRec);
             }
 
             @Override
-            public void verify(PwsFile file)
+            public void doVerify(PwsFile file)
             {
-                assertTrue(file instanceof PwsFileV3);
-                assertFalse(file.isReadOnly());
-
                 assertEquals(1, file.getRecordCount());
                 int idx = 0;
                 var recIter = file.getRecords();
@@ -238,6 +253,7 @@ public class FileV3Test
                 var file = createFile(saveFile);
                 try {
                     file.setPassphrase(PASSWD.pass());
+                    tester.parseNewFileInfo(file);
                     verifyEmpty(file);
                     tester.populate(file);
                     tester.verify(file);
