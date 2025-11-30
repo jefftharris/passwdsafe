@@ -1228,7 +1228,8 @@ public class PasswdFileData
             case PASSWORD_LIFETIME: {
                 Date d = (Date)val;
                 if ((d != null) && (d.getTime() != 0)) {
-                    field = new PwsTimeField(fieldId, d);
+                    field = new PwsTimeField(fieldId,
+                                             PwsTimeField.Format.DEFAULT, d);
                 }
                 break;
             }
@@ -1319,7 +1320,9 @@ public class PasswdFileData
                 var modFieldId = (fieldId == PwsFieldTypeV3.PASSWORD) ?
                                  PwsFieldTypeV3.PASSWORD_MOD_TIME :
                                  PwsFieldTypeV3.LAST_MOD_TIME;
-                rec.setField(new PwsTimeField(modFieldId, new Date()));
+                rec.setField(new PwsTimeField(modFieldId,
+                                              PwsTimeField.Format.DEFAULT,
+                                              new Date()));
             }
         }
     }

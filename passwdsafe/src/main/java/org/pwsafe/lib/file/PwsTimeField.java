@@ -11,6 +11,7 @@ package org.pwsafe.lib.file;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Util;
 
 import java.io.Serial;
@@ -24,6 +25,16 @@ public class PwsTimeField extends PwsField
     @Serial
     private static final long serialVersionUID = -3091539688166386331L;
 
+    public enum Format
+    {
+        /// 32-bit, little-endian seconds since epoch
+        DEFAULT,
+        /// Early 8 byte hex string of seconds since epoch for header fields
+        HEADER_ASCII
+    }
+
+    private final Format itsFormat;
+
     /**
      * Constructor
      *
@@ -32,7 +43,8 @@ public class PwsTimeField extends PwsField
      */
     public PwsTimeField(PwsFieldType type, byte[] value)
     {
-        super(type, new Date(Util.getMillisFromByteArray(value, 0)));
+        super(type, createDateFromBytes(value));
+        itsFormat = formatFromBytes(value);
     }
 
     /**
@@ -42,9 +54,10 @@ public class PwsTimeField extends PwsField
      * @param aDate the field's value.
      */
     @SuppressWarnings("SameParameterValue")
-    public PwsTimeField(PwsFieldType type, Date aDate)
+    public PwsTimeField(PwsFieldType type, Format format, Date aDate)
     {
         super(type, normalizeDate(aDate));
+        itsFormat = format;
     }
 
     /**
@@ -57,6 +70,16 @@ public class PwsTimeField extends PwsField
     public byte[] getBytes()
     {
         long value = ((Date)getValue()).getTime();
+
+        switch (itsFormat) {
+        case DEFAULT -> {
+        }
+        case HEADER_ASCII -> {
+            int secs = (int)(value / 1000);
+            String str = String.format("%08x", secs);
+            return str.getBytes();
+        }
+        }
 
         // Force a size of 4, otherwise it would be set to a size of
         // blocklength
@@ -115,5 +138,49 @@ public class PwsTimeField extends PwsField
         long value = date.getTime();
         value -= (value % 1000);
         return new Date(value);
+    }
+
+    /**
+     * Get the time format from its bytes value
+     */
+    @NonNull
+    private static Format formatFromBytes(@NonNull byte[] value)
+    {
+        if (value.length == 8) {
+            return Format.HEADER_ASCII;
+        }
+        return Format.DEFAULT;
+    }
+
+    /**
+     * Create a date value from its bytes value
+     */
+    @Contract("_ -> new")
+    @NonNull
+    private static Date createDateFromBytes(@NonNull byte[] value)
+    {
+        switch (formatFromBytes(value)) {
+        case DEFAULT -> {
+        }
+        case HEADER_ASCII -> {
+            byte[] binbytes = new byte[4];
+            Util.putIntToByteArray(binbytes, hexBytesToInt(value), 0);
+            value = binbytes;
+        }
+        }
+        return new Date(Util.getMillisFromByteArray(value, 0));
+    }
+
+    /**
+     * Convert hex bytes to an integer
+     */
+    private static int hexBytesToInt(@NonNull byte[] bytes)
+    {
+        int i = 0;
+        for (byte aByte : bytes) {
+            i <<= 4;
+            i |= Character.digit(aByte, 16);
+        }
+        return i;
     }
 }
