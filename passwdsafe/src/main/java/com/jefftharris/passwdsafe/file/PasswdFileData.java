@@ -1016,6 +1016,8 @@ public class PasswdFileData
 
                 return getHdrLastSaveWhoField(rec, false);
             }
+            case NON_DEFAULT_PREFS:
+            case TREE_DISPLAY_STATUS:
             case LAST_SAVE_WHO:
             case LAST_SAVE_WHAT:
             case NAMED_PASSWORD_POLICIES: {
@@ -1084,6 +1086,8 @@ public class PasswdFileData
             }
             case VERSION:
             case UUID:
+            case NON_DEFAULT_PREFS:
+            case TREE_DISPLAY_STATUS:
             case LAST_SAVE_WHO:
             case YUBICO:
             case END_OF_RECORD:

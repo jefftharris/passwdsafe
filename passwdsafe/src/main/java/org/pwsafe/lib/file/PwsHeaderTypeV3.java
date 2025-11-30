@@ -18,6 +18,8 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
 {
     VERSION(0x00, PwsVersionField.class),
     UUID(0x01, PwsUUIDField.class),
+    NON_DEFAULT_PREFS(0x02, PwsStringUnicodeField.class),
+    TREE_DISPLAY_STATUS(0x03, PwsStringUnicodeField.class),
     LAST_SAVE_TIME(0x04, PwsTimeField.class),
     LAST_SAVE_WHO(0x05, PwsStringUnicodeField.class),
     LAST_SAVE_WHAT(0x06, PwsStringUnicodeField.class),

@@ -39,6 +39,8 @@ class V3FileInfo
     private final PwsRecord itsHeaderRec;
     private final int itsVersion;
     private final UUID itsUuid;
+    private String itsNonDefaultPrefs;
+    private String itsTreeDisplayStatus;
     private Date itsLastSaveTime;
     private final String itsLastSaveWho;
     private String itsLastSaveWhat;
@@ -68,6 +70,9 @@ class V3FileInfo
 
         itsUuid = getUuid(itsHeaderRec);
 
+        itsNonDefaultPrefs = getHeaderStr(PwsHeaderTypeV3.NON_DEFAULT_PREFS);
+        itsTreeDisplayStatus =
+                getHeaderStr(PwsHeaderTypeV3.TREE_DISPLAY_STATUS);
         itsLastSaveTime = getHeaderTime(PwsHeaderTypeV3.LAST_SAVE_TIME);
         itsLastSaveWho = getHeaderStr(PwsHeaderTypeV3.LAST_SAVE_WHO);
         itsLastSaveWhat = getHeaderStr(PwsHeaderTypeV3.LAST_SAVE_WHAT);
@@ -82,6 +87,18 @@ class V3FileInfo
 
     public void populateHeader()
     {
+        assertNull(itsNonDefaultPrefs);
+        itsNonDefaultPrefs = String.format("I 11 2 S 12 %s", itsUuid);
+        itsHeaderRec.setField(
+                new PwsStringUnicodeField(PwsHeaderTypeV3.NON_DEFAULT_PREFS,
+                                          itsNonDefaultPrefs));
+
+        assertNull(itsTreeDisplayStatus);
+        itsTreeDisplayStatus = "10100001101";
+        itsHeaderRec.setField(
+                new PwsStringUnicodeField(PwsHeaderTypeV3.TREE_DISPLAY_STATUS,
+                                          itsTreeDisplayStatus));
+
         assertNull(itsLastSaveTime);
         itsLastSaveTime = PwsTimeField.normalizeDate(new Date());
         itsHeaderRec.setField(new PwsTimeField(PwsHeaderTypeV3.LAST_SAVE_TIME,
@@ -148,6 +165,10 @@ class V3FileInfo
         assertNotNull(itsUuid);
         assertEquals(itsUuid, fileInfo.itsUuid);
         assertEquals(itsVersion, fileInfo.itsVersion);
+        assertNotNull(itsNonDefaultPrefs);
+        assertEquals(itsNonDefaultPrefs, fileInfo.itsNonDefaultPrefs);
+        assertNotNull(itsTreeDisplayStatus);
+        assertEquals(itsTreeDisplayStatus, fileInfo.itsTreeDisplayStatus);
         assertNotNull(itsLastSaveTime);
         assertEquals(itsLastSaveTime, fileInfo.itsLastSaveTime);
         assertNull(itsLastSaveWho);
@@ -175,9 +196,16 @@ class V3FileInfo
             switch (PwsHeaderTypeV3.fromType(headerFieldId)) {
             case VERSION,
                  UUID,
-                 LAST_SAVE_TIME, LAST_SAVE_WHO, LAST_SAVE_WHAT,
-                 LAST_SAVE_USER, LAST_SAVE_HOST, NAMED_PASSWORD_POLICIES,
-                 YUBICO, LAST_PASSWORD_CHANGE -> {
+                 NON_DEFAULT_PREFS,
+                 TREE_DISPLAY_STATUS,
+                 LAST_SAVE_TIME,
+                 LAST_SAVE_WHO,
+                 LAST_SAVE_WHAT,
+                 LAST_SAVE_USER,
+                 LAST_SAVE_HOST,
+                 NAMED_PASSWORD_POLICIES,
+                 YUBICO,
+                 LAST_PASSWORD_CHANGE -> {
             }
             case END_OF_RECORD -> fail();
             case UNKNOWN -> {

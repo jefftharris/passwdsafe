@@ -276,7 +276,9 @@ public class PwsRecordV3 extends PwsRecord
                     case LAST_SAVE_TIME,
                          LAST_PASSWORD_CHANGE -> itemVal =
                             new PwsTimeField(type, item.getByteData());
-                    case LAST_SAVE_WHO,
+                    case NON_DEFAULT_PREFS,
+                         TREE_DISPLAY_STATUS,
+                         LAST_SAVE_WHO,
                          LAST_SAVE_WHAT,
                          LAST_SAVE_USER,
                          LAST_SAVE_HOST,
