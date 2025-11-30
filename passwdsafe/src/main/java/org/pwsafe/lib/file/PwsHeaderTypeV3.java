@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  */
 public enum PwsHeaderTypeV3 implements PwsFieldType
 {
-    VERSION(0x00, PwsShortField.class),
+    VERSION(0x00, PwsVersionField.class),
     UUID(0x01, PwsUUIDField.class),
     LAST_SAVE_TIME(0x04, PwsTimeField.class),
     LAST_SAVE_WHO(0x05, PwsStringUnicodeField.class),
