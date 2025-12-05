@@ -37,6 +37,7 @@ import static org.junit.Assert.fail;
 class V3FileInfo
 {
     private final PwsRecord itsHeaderRec;
+    private final PwsTimeField.Format itsHdrTimeFormat;
     private final int itsVersion;
     private final UUID itsUuid;
     private String itsNonDefaultPrefs;
@@ -54,9 +55,10 @@ class V3FileInfo
     private int itsUnknownField2 = -1;
     private byte[] itsUnknownValue2 = null;
 
-    public V3FileInfo(PwsFile file)
+    public V3FileInfo(PwsFile file, PwsTimeField.Format hdrTimeFormat)
     {
         itsHeaderRec = getHeaderRec(file);
+        itsHdrTimeFormat = hdrTimeFormat;
 
         var version = itsHeaderRec.getField(PwsHeaderTypeV3.VERSION);
         assertTrue(version instanceof PwsVersionField);
@@ -102,7 +104,7 @@ class V3FileInfo
         assertNull(itsLastSaveTime);
         itsLastSaveTime = PwsTimeField.normalizeDate(new Date());
         itsHeaderRec.setField(new PwsTimeField(PwsHeaderTypeV3.LAST_SAVE_TIME,
-                                               PwsTimeField.Format.DEFAULT,
+                                               itsHdrTimeFormat,
                                                itsLastSaveTime));
 
         assertNull(itsLastSaveWhat);
@@ -139,8 +141,7 @@ class V3FileInfo
         itsLastPasswordChange = PwsTimeField.normalizeDate(new Date());
         itsHeaderRec.setField(
                 new PwsTimeField(PwsHeaderTypeV3.LAST_PASSWORD_CHANGE,
-                                 PwsTimeField.Format.DEFAULT,
-                                 itsLastPasswordChange));
+                                 itsHdrTimeFormat, itsLastPasswordChange));
     }
 
     public void populateUnknownHeader(int field1, byte[] value1,
@@ -161,7 +162,7 @@ class V3FileInfo
 
     public void verifyFileHeader(@NonNull PwsFile file)
     {
-        V3FileInfo fileInfo = new V3FileInfo(file);
+        V3FileInfo fileInfo = new V3FileInfo(file, itsHdrTimeFormat);
         assertNotNull(itsUuid);
         assertEquals(itsUuid, fileInfo.itsUuid);
         assertEquals(itsVersion, fileInfo.itsVersion);
@@ -190,22 +191,37 @@ class V3FileInfo
 
         boolean unknown1Verified = false;
         boolean unknown2Verified = false;
+        boolean lastSaveTimeVerified = false;
+        boolean lastPasswordChangeVerified = false;
         for(var headerFieldIter = fileInfo.itsHeaderRec.getFields();
             headerFieldIter.hasNext(); ) {
             var headerFieldId = headerFieldIter.next();
-            switch (PwsHeaderTypeV3.fromType(headerFieldId)) {
+            var headerType = PwsHeaderTypeV3.fromType(headerFieldId);
+            switch (headerType) {
             case VERSION,
                  UUID,
                  NON_DEFAULT_PREFS,
                  TREE_DISPLAY_STATUS,
-                 LAST_SAVE_TIME,
                  LAST_SAVE_WHO,
                  LAST_SAVE_WHAT,
                  LAST_SAVE_USER,
                  LAST_SAVE_HOST,
                  NAMED_PASSWORD_POLICIES,
-                 YUBICO,
-                 LAST_PASSWORD_CHANGE -> {
+                 YUBICO -> {
+            }
+            case LAST_SAVE_TIME, LAST_PASSWORD_CHANGE -> {
+                var headerField = fileInfo.itsHeaderRec.getField(headerFieldId);
+                var bytes = headerField.getBytes();
+                switch (itsHdrTimeFormat) {
+                case DEFAULT -> assertEquals(4, bytes.length);
+                case HEADER_ASCII -> assertEquals(8, bytes.length);
+                }
+
+                switch (headerType) {
+                case LAST_SAVE_TIME -> lastSaveTimeVerified = true;
+                case LAST_PASSWORD_CHANGE -> lastPasswordChangeVerified =
+                        true;
+                }
             }
             case END_OF_RECORD -> fail();
             case UNKNOWN -> {
@@ -237,6 +253,8 @@ class V3FileInfo
 
         assertEquals(itsUnknownField1 != -1, unknown1Verified);
         assertEquals(itsUnknownField2 != -1, unknown2Verified);
+        assertTrue(lastSaveTimeVerified);
+        assertTrue(lastPasswordChangeVerified);
     }
 
     private static PwsRecord getHeaderRec(@NonNull PwsFile file)

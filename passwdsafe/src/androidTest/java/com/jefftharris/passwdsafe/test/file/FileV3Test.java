@@ -39,9 +39,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-// TODO: Add header tests using 8byte times for last save and password change,
-// or perhaps just generic PwsTimeField tests
-
 /**
  * Low-level tests for V3 files
  */
@@ -53,10 +50,14 @@ public class FileV3Test
 
         public final void parseNewFileInfo(PwsFile file)
         {
-            itsFileInfo = new V3FileInfo(file);
+            itsFileInfo = new V3FileInfo(file, getHdrTimeFormat());
             itsFileInfo.populateHeader();
         }
 
+        public PwsTimeField.Format getHdrTimeFormat()
+        {
+            return PwsTimeField.Format.DEFAULT;
+        }
         public abstract void populate(PwsFile file);
 
         public final void verify(@NonNull PwsFile file)
@@ -239,6 +240,30 @@ public class FileV3Test
                     var rec = recIter.next();
                     verifyFields(rec, itsRec1);
                 }
+            }
+        });
+    }
+
+    @Test
+    public void testHdrAsciiTime() throws Exception
+    {
+        doTestLoadSave(new LoadSaveTester()
+        {
+            @Override
+            public PwsTimeField.Format getHdrTimeFormat()
+            {
+                return PwsTimeField.Format.HEADER_ASCII;
+            }
+
+            @Override
+            public void populate(PwsFile file)
+            {
+            }
+
+            @Override
+            public void doVerify(PwsFile file)
+            {
+                verifyEmpty(file);
             }
         });
     }
