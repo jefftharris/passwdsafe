@@ -65,62 +65,42 @@ public class PwsRecordV3 extends PwsRecord
 
     /**
      * Create a new record with all mandatory fields given their default value.
-     */
-    PwsRecordV3()
-    {
-        super();
-
-        setField(new PwsUUIDField(PwsFieldTypeV3.UUID, new UUID()));
-        setField(new PwsStringUnicodeField(PwsFieldTypeV3.TITLE, ""));
-        setField(new PwsPasswdUnicodeField(PwsFieldTypeV3.PASSWORD));
-        setField(new PwsTimeField(PwsFieldTypeV3.CREATION_TIME, new Date()));
-    }
-
-    /**
-     * A special version for header records
      *
-     * @param ignoredIsHeader Marker for header record
-     * @noinspection SameParameterValue
+     * @param type The type of record
      */
-    PwsRecordV3(boolean ignoredIsHeader)
+    PwsRecordV3(@NonNull Type type)
     {
-        super(true);
-        setField(new PwsVersionField(PwsHeaderTypeV3.VERSION,
-                                     new byte[]{DB_FMT_MINOR_VERSION, 3}));
-        setField(new PwsUUIDField(PwsHeaderTypeV3.UUID, new UUID()));
+        super(type);
+
+        switch (type) {
+        case HEADER -> {
+            setField(new PwsUUIDField(PwsHeaderTypeV3.UUID, new UUID()));
+            setField(new PwsVersionField(PwsHeaderTypeV3.VERSION,
+                                         new byte[]{DB_FMT_MINOR_VERSION, 3}));
+        }
+        case RECORD -> {
+            setField(new PwsUUIDField(PwsFieldTypeV3.UUID, new UUID()));
+            setField(new PwsStringUnicodeField(PwsFieldTypeV3.TITLE, ""));
+            setField(new PwsPasswdUnicodeField(PwsFieldTypeV3.PASSWORD));
+            setField(new PwsTimeField(PwsFieldTypeV3.CREATION_TIME,
+                                      PwsTimeField.Format.DEFAULT, new Date()));
+        }
+        }
     }
 
     /**
      * Create a new record by reading it from <code>file</code>.
      *
      * @param file the file to read data from.
+     * @param type The type of record
      *
      * @throws EndOfFileException If end of file is reached
      * @throws IOException If a read error occurs.
      */
-    PwsRecordV3(PwsFile file)
+    PwsRecordV3(PwsFile file, @NonNull Type type)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super(file);
-    }
-
-    /**
-     * A special version which reads and ignores all headers since they have
-     * different ids to standard types.
-     *
-     * @param file the file to read data from.
-     * @param ignoreFieldTypes true if all fields types should be ignored, false
-     * otherwise
-     *
-     * @throws EndOfFileException If end of file is reached
-     * @throws IOException If a read error occurs.
-     */
-    PwsRecordV3(PwsFile file,
-                @SuppressWarnings("SameParameterValue")
-                boolean ignoreFieldTypes)
-            throws EndOfFileException, IOException, RecordLoadException
-    {
-        super(file, ignoreFieldTypes);
+        super(file, type);
     }
 
     /**
@@ -285,13 +265,38 @@ public class PwsRecordV3 extends PwsRecord
                 }
 
                 PwsField itemVal = null;
-                if (ignoreFieldTypes) {
-                    // header record has no valid types...
-                    itemVal = new PwsUnknownField(itemType,
-                                                  PwsHeaderTypeV3.UNKNOWN,
-                                                  item.getByteData());
-                    attributes.put(item.getType(), itemVal);
-                } else {
+                switch (itsType) {
+                case HEADER -> {
+                    var type = PwsHeaderTypeV3.fromType(itemType);
+                    switch (type) {
+                    case VERSION -> itemVal =
+                            new PwsVersionField(type, item.getByteData());
+                    case UUID -> itemVal =
+                            new PwsUUIDField(type, item.getByteData());
+                    case LAST_SAVE_TIME,
+                         LAST_PASSWORD_CHANGE -> itemVal =
+                            new PwsTimeField(type, item.getByteData());
+                    case NON_DEFAULT_PREFS,
+                         TREE_DISPLAY_STATUS,
+                         LAST_SAVE_WHO,
+                         LAST_SAVE_WHAT,
+                         LAST_SAVE_USER,
+                         LAST_SAVE_HOST,
+                         NAMED_PASSWORD_POLICIES,
+                         YUBICO -> itemVal =
+                            new PwsStringUnicodeField(type, item.getByteData());
+                    case END_OF_RECORD,
+                         UNKNOWN -> {
+                    }
+                    }
+                    if (itemVal == null) {
+                        itemVal = new PwsUnknownField(itemType,
+                                                      PwsHeaderTypeV3.UNKNOWN,
+                                                      item.getByteData());
+                    }
+                    setField(itemVal);
+                }
+                case RECORD -> {
                     var type = PwsFieldTypeV3.fromType(itemType);
                     switch (type) {
                     case V3_ID_STRING:
@@ -359,6 +364,7 @@ public class PwsRecordV3 extends PwsRecord
                     }
                     setField(itemVal);
                 }
+                }
             } catch (EndOfFileException eof) {
                 if (itemErrors != null) {
                     throw new RecordLoadException(this, itemErrors);
@@ -406,7 +412,15 @@ public class PwsRecordV3 extends PwsRecord
     @Override
     protected PwsFieldType getFieldType(int typeId)
     {
-        return PwsFieldTypeV3.fromType(typeId);
+        switch (itsType) {
+        case HEADER -> {
+            return PwsHeaderTypeV3.fromType(typeId);
+        }
+        case RECORD -> {
+            return PwsFieldTypeV3.fromType(typeId);
+        }
+        }
+        return null;
     }
 
     /**

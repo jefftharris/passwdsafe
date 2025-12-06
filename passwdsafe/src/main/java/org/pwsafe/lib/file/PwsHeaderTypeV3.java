@@ -7,6 +7,8 @@
  */
 package org.pwsafe.lib.file;
 
+import android.util.SparseArray;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -14,8 +16,10 @@ import androidx.annotation.Nullable;
  */
 public enum PwsHeaderTypeV3 implements PwsFieldType
 {
-    VERSION(0x00, PwsShortField.class),
+    VERSION(0x00, PwsVersionField.class),
     UUID(0x01, PwsUUIDField.class),
+    NON_DEFAULT_PREFS(0x02, PwsStringUnicodeField.class),
+    TREE_DISPLAY_STATUS(0x03, PwsStringUnicodeField.class),
     LAST_SAVE_TIME(0x04, PwsTimeField.class),
     LAST_SAVE_WHO(0x05, PwsStringUnicodeField.class),
     LAST_SAVE_WHAT(0x06, PwsStringUnicodeField.class),
@@ -30,6 +34,14 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
 
     private final int itsId;
     private final Class<? extends PwsField> itsFieldClass;
+
+    private static final SparseArray<PwsHeaderTypeV3> itsTypesById =
+            new SparseArray<>(PwsHeaderTypeV3.values().length);
+    static {
+        for (var type: PwsHeaderTypeV3.values()) {
+            itsTypesById.append(type.itsId, type);
+        }
+    }
 
     PwsHeaderTypeV3(int id, Class<? extends PwsField> clazz)
     {
@@ -46,5 +58,10 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
     public Class<? extends PwsField> getFieldClass()
     {
         return itsFieldClass;
+    }
+
+    public static @NonNull PwsHeaderTypeV3 fromType(int type)
+    {
+        return itsTypesById.get(type, UNKNOWN);
     }
 }

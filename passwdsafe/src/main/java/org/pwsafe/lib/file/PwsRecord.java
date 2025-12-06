@@ -46,6 +46,15 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
             PwsRecord.class.getPackage()).getName());
 
     /**
+     * Type of record - header or normal record
+     */
+    public enum Type
+    {
+        HEADER,
+        RECORD
+    }
+
+    /**
      * The default character set used for <code>byte[]</code> to
      * <code>String</code> conversions.
      */
@@ -53,9 +62,8 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
 
     private boolean modified = false;
     private boolean isLoaded = false;
-    protected final Map<Integer, PwsField> attributes = new TreeMap<>();
-
-    protected boolean ignoreFieldTypes = false;
+    private final Map<Integer, PwsField> attributes = new TreeMap<>();
+    protected final Type itsType;
 
     /**
      * A holder class for all the data about a single field. It holds the
@@ -186,10 +194,13 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
 
     /**
      * Simple constructor. Used when creating a new record to add to a file.
+     *
+     * @param type The type of record
      */
-    PwsRecord()
+    PwsRecord(@NonNull Type type)
     {
         super();
+        itsType = type;
     }
 
     /**
@@ -198,50 +209,16 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
      *
      * @param owner      the file that data is to be read from and which
      *                   "owns" this record.
+     * @param type The type of record
      */
-    PwsRecord(PwsFile owner)
+    PwsRecord(PwsFile owner, @NonNull Type type)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super();
+        this(type);
 
         loadRecord(owner);
 
         isLoaded = true;
-    }
-
-    /**
-     * Special constructor for use when ignoring field types.
-     *
-     * @param owner            the file that data is to be read from and
-     *                         which "owns" this record.
-     * @param ignoreFieldTypes true if all fields types should be ignored,
-     *                                false otherwise
-     */
-    protected PwsRecord(PwsFile owner, boolean ignoreFieldTypes)
-            throws EndOfFileException, IOException, RecordLoadException
-    {
-        super();
-
-        this.ignoreFieldTypes = ignoreFieldTypes;
-
-        loadRecord(owner);
-
-        isLoaded = true;
-
-    }
-
-    /**
-     * Special constructor for use when ignoring field types.
-     *
-     * @param ignoreFieldTypes true if all fields types should be ignored,
-     *                         false otherwise
-     */
-    protected PwsRecord(
-            @SuppressWarnings("SameParameterValue") boolean ignoreFieldTypes)
-    {
-        super();
-
-        this.ignoreFieldTypes = ignoreFieldTypes;
     }
 
     // *************************************************************************
@@ -392,7 +369,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
             return new PwsRecordV2(file);
         }
         case V3 -> {
-            return new PwsRecordV3(file);
+            return new PwsRecordV3(file, Type.RECORD);
         }
         }
 
@@ -425,13 +402,6 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
     public void setField(@NonNull PwsField value)
     {
         int typeId = value.getTypeId();
-
-        if (ignoreFieldTypes) {
-            attributes.put(typeId, value);
-            setModified();
-            return;
-        }
-
         var fieldType = getFieldType(typeId);
         if (fieldType != null) {
             Class<? extends PwsField> cl = value.getClass();
@@ -446,14 +416,12 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
 
         // before giving up, check if unknown fields are allowed
         if (allowUnknownFieldTypes()) {
-            LOG.warn("Adding unknown field of type " + typeId +
-                     ", class " + value.getClass() +
-                     " - maybe a new version is needed?");
+            LOG.warn("Adding unknown field of type " + typeId + ", class " +
+                     value.getClass() + " - maybe a new version is needed?");
             attributes.put(typeId, value);
             setModified();
         } else {
-            throw new IllegalArgumentException(
-                    "Invalid type: " + typeId);
+            throw new IllegalArgumentException("Invalid type: " + typeId);
         }
     }
 

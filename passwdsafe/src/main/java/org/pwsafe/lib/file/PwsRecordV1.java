@@ -61,7 +61,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
      */
     PwsRecordV1()
     {
-        super();
+        super(Type.RECORD);
 
         // Set default values
         setField(new PwsStringField(PwsFieldTypeV1.TITLE, ""));
@@ -81,7 +81,7 @@ public class PwsRecordV1 extends PwsRecord implements Comparable<Object>
     PwsRecordV1(PwsFile file)
             throws EndOfFileException, IOException, RecordLoadException
     {
-        super(file);
+        super(file, Type.RECORD);
     }
 
     /**

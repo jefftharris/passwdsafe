@@ -35,6 +35,30 @@ public class PwsVersionField extends PwsIntegerField
     }
 
     /**
+     * Constructor
+     */
+    public PwsVersionField(PwsFieldType type, int major, int minor)
+    {
+        super(type, new byte[]{0, 0, (byte)minor, (byte)major});
+    }
+
+    /**
+     * Get the major version number
+     */
+    public int getMajor()
+    {
+        return (getValue() instanceof Integer i) ? ((i >> 24) & 0xff) : -1;
+    }
+
+    /**
+     * Get the minor version number
+     */
+    public int getMinor()
+    {
+        return (getValue() instanceof Integer i) ? ((i >> 16) & 0xff) : -1;
+    }
+
+    /**
      * Returns this integer as an array of bytes.  The returned array will
      * have
      * a length of PwsFile.BLOCK_LENGTH and is thus suitable to be written
