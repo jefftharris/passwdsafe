@@ -850,15 +850,9 @@ public class PasswdFileUri
     /**
      * Resolved file permissions
      */
-    private static class FilePerms
+    private record FilePerms(
+            boolean isWritable,
+            boolean isDeletable)
     {
-        protected final boolean isWritable;
-        protected final boolean isDeletable;
-
-        protected FilePerms(boolean writable, boolean deletable)
-        {
-            isWritable = writable;
-            isDeletable = deletable;
-        }
     }
 }
