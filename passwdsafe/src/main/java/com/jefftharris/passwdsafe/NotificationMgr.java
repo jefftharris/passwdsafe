@@ -634,6 +634,7 @@ public class NotificationMgr implements PasswdFileDataObserver
 
 
     /** The ExpiryEntry class represents an expiration entry for notifications */
+    @SuppressWarnings("ClassCanBeRecord")
     private static final class ExpiryEntry implements Comparable<ExpiryEntry>
     {
         private final String itsUuid;

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2011-2012, 2014 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2011-2012, 2014-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -19,16 +19,18 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 
 public class PasswordVisibilityMenuHandler
 {
-    public static void set(Context ctx, TextView... views)
+    public static void set(Context ctx, @NonNull TextView... views)
     {
         for (TextView tv : views) {
             tv.setOnCreateContextMenuListener(new MenuListener(ctx, tv, views));
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static class MenuListener
         implements OnCreateContextMenuListener, OnMenuItemClickListener
     {
@@ -45,7 +47,7 @@ public class PasswordVisibilityMenuHandler
             itsView = view;
         }
 
-        public void onCreateContextMenu(ContextMenu menu,
+        public void onCreateContextMenu(@NonNull ContextMenu menu,
                                         View v,
                                         ContextMenuInfo menuInfo)
         {
@@ -70,7 +72,7 @@ public class PasswordVisibilityMenuHandler
             mi.setOnMenuItemClickListener(this);
         }
 
-        public boolean onMenuItemClick(MenuItem item)
+        public boolean onMenuItemClick(@NonNull MenuItem item)
         {
             boolean rc = true;
             switch (item.getItemId()) {

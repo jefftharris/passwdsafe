@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2013-2024 Jeff Harris <jefftharris@gmail.com> All rights reserved.
+ * Copyright (©) 2013-2025 Jeff Harris <jefftharris@gmail.com> All rights reserved.
  * Use of the code is allowed under the Artistic License 2.0 terms, as specified
  * in the LICENSE file distributed with this code, or available from
  * http://www.opensource.org/licenses/artistic-license-2.0.php
@@ -309,6 +309,7 @@ public class PasswdClientProvider extends ContentProvider
     /**
      * PasswdFileData user for search suggestions
      */
+    @SuppressWarnings("ClassCanBeRecord")
     private static class SuggestionsUser implements PasswdFileDataUser<Cursor>
     {
         private final PasswdRecordFilter itsFilter;
@@ -420,6 +421,7 @@ public class PasswdClientProvider extends ContentProvider
     /**
      * Comparator for RecordMatch objects
      */
+    @SuppressWarnings("ClassCanBeRecord")
     private static class MatchComparator implements Comparator<RecordMatch>
     {
         private final boolean itsIsAscending;

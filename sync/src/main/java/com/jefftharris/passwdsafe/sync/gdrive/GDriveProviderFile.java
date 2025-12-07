@@ -13,6 +13,7 @@ import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
 /**
  * Abstraction of a Google Drive remote file
  */
+@SuppressWarnings("ClassCanBeRecord")
 public class GDriveProviderFile implements ProviderRemoteFile
 {
     private final File itsFile;

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.db.BackupFilesDao;
@@ -29,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** A PwsStorage save helper for files */
+@SuppressWarnings("ClassCanBeRecord")
 public class PasswdFileSaveHelper implements PwsStorage.SaveHelper
 {
     private final Context itsContext;
@@ -50,7 +53,7 @@ public class PasswdFileSaveHelper implements PwsStorage.SaveHelper
     }
 
     @Override
-    public String getSaveFileName(File file, boolean isV3)
+    public String getSaveFileName(@NonNull File file, boolean isV3)
     {
         String name = file.getName();
         Pattern pat = Pattern.compile("^(.*)_\\d{8}_\\d{6}\\.ibak$");

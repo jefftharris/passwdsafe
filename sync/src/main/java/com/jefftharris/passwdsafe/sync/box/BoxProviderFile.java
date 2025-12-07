@@ -13,6 +13,7 @@ import com.jefftharris.passwdsafe.sync.lib.ProviderRemoteFile;
 /**
  * Abstraction of a Box remote file
  */
+@SuppressWarnings("ClassCanBeRecord")
 class BoxProviderFile implements ProviderRemoteFile
 {
     private final BoxFile itsFile;

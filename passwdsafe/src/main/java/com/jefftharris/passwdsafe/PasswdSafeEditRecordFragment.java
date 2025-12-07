@@ -1742,6 +1742,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Unique key fields for a record
      */
+    @SuppressWarnings("ClassCanBeRecord")
     private static class RecordKey
     {
         private final String itsTitle;

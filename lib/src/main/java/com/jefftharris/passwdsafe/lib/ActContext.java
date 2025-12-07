@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
  * Wrapper for a context that must be an Activity.  Used to ensure UI elements
  * created from a context are backed by an activity.
  */
+@SuppressWarnings("ClassCanBeRecord")
 public final class ActContext
 {
     private final ManagedRef<Context> itsContext;

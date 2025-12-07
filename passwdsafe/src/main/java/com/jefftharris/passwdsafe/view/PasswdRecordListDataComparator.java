@@ -17,6 +17,7 @@ import java.util.Date;
 /**
  * Comparator for records
  */
+@SuppressWarnings("ClassCanBeRecord")
 public final class PasswdRecordListDataComparator
         implements Comparator<PasswdRecordListData>
 {
