@@ -441,10 +441,10 @@ public class PasswdFileData
 
         PasswdExpiration expiry = getPasswdExpiry(rec);
         Date expTime = null;
-        if ((expiry != null) && expiry.itsIsRecurring &&
-            (expiry.itsInterval > 0)) {
+        if ((expiry != null) && expiry.isRecurring() &&
+            (expiry.interval() > 0)) {
             long exp = System.currentTimeMillis();
-            exp += (long)expiry.itsInterval * DateUtils.DAY_IN_MILLIS;
+            exp += (long)expiry.interval() * DateUtils.DAY_IN_MILLIS;
             expTime = new Date(exp);
         }
         setField(expTime, rec, PwsFieldTypeV3.PASSWORD_LIFETIME, false);
@@ -487,9 +487,9 @@ public class PasswdFileData
         Date expDate = null;
         int expInterval = 0;
         if (expiry != null) {
-            expDate = expiry.itsExpiration;
-            if (expiry.itsIsRecurring) {
-                expInterval = expiry.itsInterval;
+            expDate = expiry.expiration();
+            if (expiry.isRecurring()) {
+                expInterval = expiry.interval();
             }
         }
         setField(expDate, rec, PwsFieldTypeV3.PASSWORD_LIFETIME);

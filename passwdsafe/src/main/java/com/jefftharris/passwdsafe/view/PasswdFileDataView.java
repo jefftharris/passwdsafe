@@ -503,7 +503,7 @@ public final class PasswdFileDataView
             for (PasswdRecord rec : fileData.getPasswdRecords()) {
                 PasswdExpiration expiry = rec.getPasswdExpiry();
                 if ((expiry != null) &&
-                    (expiry.itsExpiration.getTime() <= expiration)) {
+                    (expiry.expiration().getTime() <= expiration)) {
                     ++itsNumExpired;
                 }
             }

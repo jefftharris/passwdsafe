@@ -143,8 +143,8 @@ public class PasswdSafeRecordPasswordFragment
         }
 
         String expiryIntStr = null;
-        if ((passwdExpiry != null) && passwdExpiry.itsIsRecurring) {
-            int val = passwdExpiry.itsInterval;
+        if ((passwdExpiry != null) && passwdExpiry.isRecurring()) {
+            int val = passwdExpiry.interval();
             if (val != 0) {
                 expiryIntStr = getResources().getQuantityString(
                         R.plurals.interval_days, val, val);
@@ -158,8 +158,7 @@ public class PasswdSafeRecordPasswordFragment
         GuiUtils.setVisible(itsPolicyRow, policy != null);
 
         setFieldDate(itsExpirationTime, itsExpirationTimeRow,
-                     (passwdExpiry != null) ?
-                             passwdExpiry.itsExpiration : null);
+                     (passwdExpiry != null) ? passwdExpiry.expiration() : null);
         setFieldText(itsExpirationInterval, itsExpirationIntervalRow,
                      expiryIntStr);
         setFieldDate(itsPasswordModTime, itsPasswordModTimeRow, lastModTime);

@@ -830,17 +830,17 @@ public class PasswdSafeEditRecordFragment
                 interval = PasswdExpiration.INTERVAL_DEFAULT;
                 recurring = false;
             } else {
-                if ((itsOrigExpiry.itsInterval != 0) &&
-                    itsOrigExpiry.itsIsRecurring) {
+                if ((itsOrigExpiry.interval() != 0) &&
+                    itsOrigExpiry.isRecurring()) {
                     expireType = PasswdExpiration.Type.INTERVAL;
-                    interval = itsOrigExpiry.itsInterval;
+                    interval = itsOrigExpiry.interval();
                     recurring = true;
                 } else {
                     expireType = PasswdExpiration.Type.DATE;
                     interval = PasswdExpiration.INTERVAL_DEFAULT;
                     recurring = false;
                 }
-                itsExpiryDate.setTime(itsOrigExpiry.itsExpiration);
+                itsExpiryDate.setTime(itsOrigExpiry.expiration());
             }
             updatePasswdExpiryDate();
 

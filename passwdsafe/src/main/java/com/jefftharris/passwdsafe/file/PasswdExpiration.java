@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -14,28 +14,39 @@ import java.util.Date;
  * The PasswdExpiration class contains the password expiration options for a
  * record
  */
-public class PasswdExpiration
+public record PasswdExpiration(
+        Date expiration,
+        int interval,
+        boolean isRecurring)
 {
-    /** Expiration type */
+    /**
+     * Expiration type
+     */
     public enum Type
     {
-        NEVER       (0),
-        DATE        (1),
-        INTERVAL    (2);
+        NEVER(0),
+        DATE(1),
+        INTERVAL(2);
 
-        /** Constructor */
+        /**
+         * Constructor
+         */
         Type(int strIdx)
         {
             itsStrIdx = strIdx;
         }
 
-        /** Index of the type in the string array of choices */
+        /**
+         * Index of the type in the string array of choices
+         */
         public final int itsStrIdx;
 
-        /** Get the type from the string index */
+        /**
+         * Get the type from the string index
+         */
         public static Type fromStrIdx(int idx)
         {
-            for (PasswdExpiration.Type t: values()) {
+            for (Type t : values()) {
                 if (idx == t.itsStrIdx) {
                     return t;
                 }
@@ -48,18 +59,6 @@ public class PasswdExpiration
     public static final int VALID_INTERVAL_MIN = 1;
     public static final int VALID_INTERVAL_MAX = 3650;
     public static final int INTERVAL_DEFAULT = 30;
-
-    public final Date itsExpiration;
-    public final int itsInterval;
-    public final boolean itsIsRecurring;
-
-    /** Constructor */
-    public PasswdExpiration(Date date, int interval, boolean recurring)
-    {
-        itsExpiration = date;
-        itsInterval = interval;
-        itsIsRecurring = recurring;
-    }
 
     /**
      * Are two expirations equal
@@ -76,13 +75,13 @@ public class PasswdExpiration
         }
 
         //noinspection SimplifiableIfStatement
-        if ((exp1.itsExpiration == null) || (exp2.itsExpiration == null)) {
+        if ((exp1.expiration == null) || (exp2.expiration == null)) {
             return false;
         }
 
-        return exp1.itsExpiration.equals(exp2.itsExpiration) &&
-               (exp1.itsInterval == exp2.itsInterval) &&
-               (exp1.itsIsRecurring == exp2.itsIsRecurring);
+        return exp1.expiration.equals(exp2.expiration) &&
+               (exp1.interval == exp2.interval) &&
+               (exp1.isRecurring == exp2.isRecurring);
 
     }
 }
