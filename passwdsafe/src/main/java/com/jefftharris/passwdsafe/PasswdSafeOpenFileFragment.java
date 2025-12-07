@@ -537,7 +537,7 @@ public class PasswdSafeOpenFileFragment
         itsPasswordEdit.setEnabled(enabled);
         itsOpenBtn.setEnabled(enabled);
         itsSavePasswdCb.setEnabled(enabled && (resolveData != null) &&
-                                   resolveData.itsIsSaveAllowed);
+                                   resolveData.isSaveAllowed());
         itsYubikeyCb.setEnabled(openData.getYubiState().isEnabled() && enabled);
     }
 
@@ -718,7 +718,7 @@ public class PasswdSafeOpenFileFragment
         var openData = itsOpenModel.getDataValue();
         var resolveData = openData.getResolveData().orElse(null);
         if (resolveData != null) {
-            setPasswdFileUri(resolveData.itsUri);
+            setPasswdFileUri(resolveData.uri());
             doSetFieldsEnabled(true);
             setPhase(Phase.WAITING_PASSWORD);
         } else {
