@@ -1284,8 +1284,8 @@ public class PasswdSafeEditRecordFragment
             }
 
             Pair<Boolean, PasswdPolicy> updatePolicy = getUpdatedPolicy();
-            if (updatePolicy.first) {
-                fileData.setPasswdPolicy(updatePolicy.second, record);
+            if (updatePolicy.first()) {
+                fileData.setPasswdPolicy(updatePolicy.second(), record);
             }
 
             if (itsTypeHasNormalPassword) {
@@ -1335,8 +1335,8 @@ public class PasswdSafeEditRecordFragment
             // Update expiration dates after password so changes in expiration
             // overwrite basic expiration updates when the password changes.
             Pair<Boolean, PasswdExpiration> updateExpiry = getUpdatedExpiry();
-            if (updateExpiry.first) {
-                fileData.setPasswdExpiry(updateExpiry.second, record);
+            if (updateExpiry.first()) {
+                fileData.setPasswdExpiry(updateExpiry.second(), record);
             }
         }
 

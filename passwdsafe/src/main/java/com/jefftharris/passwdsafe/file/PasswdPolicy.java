@@ -539,8 +539,8 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
             Pair<PasswdPolicy, Integer> rc = parseHdrPolicy(policyStr,
                                                             fieldStart, i,
                                                             Location.HEADER);
-            policies.add(rc.first);
-            fieldStart = rc.second;
+            policies.add(rc.first());
+            fieldStart = rc.second();
         }
 
         if (policyStart != policyLen) {

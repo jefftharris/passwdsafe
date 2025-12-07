@@ -2236,7 +2236,7 @@ public class PasswdSafe extends AppCompatActivity
             if (restoreUri == null) {
                 throw new Exception(
                         ctx.getString(R.string.restore_file_not_found));
-            } else if (!restoreUri.isWritable().first) {
+            } else if (!restoreUri.isWritable().first()) {
                 throw new Exception(
                         ctx.getString(R.string.restore_file_not_writable));
             }

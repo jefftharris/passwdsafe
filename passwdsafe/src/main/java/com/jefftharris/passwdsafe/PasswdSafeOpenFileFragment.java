@@ -628,8 +628,8 @@ public class PasswdSafeOpenFileFragment
         PasswdFileUri uri = getPasswdFileUri();
         if (uri != null) {
             Pair<Boolean, Integer> rc = uri.isWritable();
-            if (!rc.first && (rc.second != null)) {
-                itsReadonlyMsg.setText(getString(rc.second));
+            if (!rc.first() && (rc.second() != null)) {
+                itsReadonlyMsg.setText(getString(rc.second()));
                 GuiUtils.setVisible(itsReadonlyMsg, true);
             }
         }

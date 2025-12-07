@@ -112,7 +112,7 @@ public class PasswdFileData
         itsPwsFile = itsUri.load(passwd, context);
         //noinspection ConstantConditions
         itsPwsFile.setReadOnly(PasswdSafeApp.DEBUG_AUTO_FILE == null);
-        itsIsUriWritable = itsUri.isWritable().first;
+        itsIsUriWritable = itsUri.isWritable().first();
         finishOpenFile();
     }
 
@@ -703,10 +703,10 @@ public class PasswdFileData
                 if ((recPolicy == null) ||
                     (recPolicy.getLocation() !=
                         PasswdPolicy.Location.RECORD_NAME) ||
-                    (!recPolicy.getName().equals(policyRename.first))) {
+                    (!recPolicy.getName().equals(policyRename.first()))) {
                     continue;
                 }
-                recPolicy = new PasswdPolicy(policyRename.second, recPolicy);
+                recPolicy = new PasswdPolicy(policyRename.second(), recPolicy);
                 PasswdSafeUtil.dbginfo(TAG, "Rename policy to %s for %s",
                                        recPolicy.getName(),
                                        getId(rec.getRecord()));
