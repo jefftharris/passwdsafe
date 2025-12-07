@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -239,18 +239,18 @@ public class PasswdSafeListFragment extends ListFragment
         AdapterView.AdapterContextMenuInfo info =
                 (AdapterView.AdapterContextMenuInfo)menuInfo;
         PasswdRecordListData listItem = itsAdapter.getItem(info.position);
-        if ((listItem != null) && listItem.itsIsRecord) {
-            menu.setHeaderTitle(listItem.itsTitle);
+        if ((listItem != null) && listItem.isRecord()) {
+            menu.setHeaderTitle(listItem.title());
 
             int group = itsIsContents ? PasswdSafe.CONTEXT_GROUP_LIST_CONTENTS :
                         PasswdSafe.CONTEXT_GROUP_LIST;
             menu.add(group, R.id.menu_copy_user, 0, R.string.copy_user);
             menu.add(group, R.id.menu_copy_password, 0, R.string.copy_password);
 
-            if (!TextUtils.isEmpty(listItem.itsFields.itsUrl)) {
+            if (!TextUtils.isEmpty(listItem.fields().itsUrl)) {
                 menu.add(group, R.id.menu_copy_url, 0, R.string.copy_url);
             }
-            if (!TextUtils.isEmpty(listItem.itsFields.itsEmail)) {
+            if (!TextUtils.isEmpty(listItem.fields().itsEmail)) {
                 menu.add(group, R.id.menu_copy_email, 0, R.string.copy_email);
             }
         }
@@ -295,13 +295,13 @@ public class PasswdSafeListFragment extends ListFragment
         if (item == null) {
             return;
         }
-        if (item.itsIsRecord) {
-            itsSelectedRecord = item.itsFields.itsUuid;
+        if (item.isRecord()) {
+            itsSelectedRecord = item.fields().itsUuid;
             itsSelectedPos = position;
             itsListener.changeLocation(
-                    itsLocation.selectRecord(item.itsFields.itsUuid));
+                    itsLocation.selectRecord(item.fields().itsUuid));
         } else {
-            itsListener.changeLocation(itsLocation.selectGroup(item.itsTitle));
+            itsListener.changeLocation(itsLocation.selectGroup(item.title()));
         }
     }
 
@@ -457,9 +457,9 @@ public class PasswdSafeListFragment extends ListFragment
         final var info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
         final var listItem =
                 (info != null) ? itsAdapter.getItem(info.position) : null;
-        if ((listItem != null) && listItem.itsIsRecord) {
-            itsSelectedRecord = listItem.itsFields.itsUuid;
-            itsListener.copyField(field, listItem.itsFields.itsUuid);
+        if ((listItem != null) && listItem.isRecord()) {
+            itsSelectedRecord = listItem.fields().itsUuid;
+            itsListener.copyField(field, listItem.fields().itsUuid);
         }
     }
 
@@ -498,8 +498,8 @@ public class PasswdSafeListFragment extends ListFragment
                 for (PasswdRecordListData item : data) {
                     add(item);
 
-                    String str = TextUtils.isEmpty(item.itsTitle) ?
-                        " " : item.itsTitle.substring(0, 1).toUpperCase();
+                    String str = TextUtils.isEmpty(item.title()) ?
+                                 " " : item.title().substring(0, 1).toUpperCase();
                     if ((idx == 0) ||
                         !TextUtils.equals(currSection.itsTitle, str)) {
                         currSection = new ItemSection(str, idx);
@@ -507,7 +507,7 @@ public class PasswdSafeListFragment extends ListFragment
                     }
 
                     if ((selectedRecord != null) &&
-                        TextUtils.equals(item.itsFields.itsUuid,
+                        TextUtils.equals(item.fields().itsUuid,
                                          selectedRecord)) {
                         selectedPos = idx;
                     }
@@ -542,7 +542,7 @@ public class PasswdSafeListFragment extends ListFragment
                 ListView list = (ListView)parent;
                 boolean isSelected = list.isItemChecked(position);
                 itemViews.update(item, isSelected,
-                                 !itsIsContents && item.itsIsRecord);
+                                 !itsIsContents && item.isRecord());
             } else {
                 itemViews.reset();
             }
@@ -631,12 +631,12 @@ public class PasswdSafeListFragment extends ListFragment
                                   boolean selected,
                                   boolean isLeftListRecord)
             {
-                setText(itsTitle, item.itsTitle);
-                setText(itsUser, item.itsUser);
-                setText(itsMatch, item.itsFields.itsMatch);
-                if (itsLastIconImage != item.itsIcon) {
-                    itsIcon.setImageResource(item.itsIcon);
-                    itsLastIconImage = item.itsIcon;
+                setText(itsTitle, item.title());
+                setText(itsUser, item.user());
+                setText(itsMatch, item.fields().itsMatch);
+                if (itsLastIconImage != item.icon()) {
+                    itsIcon.setImageResource(item.icon());
+                    itsLastIconImage = item.icon();
                 }
                 GuiUtils.setVisible(itsSelection, isLeftListRecord && selected);
 
