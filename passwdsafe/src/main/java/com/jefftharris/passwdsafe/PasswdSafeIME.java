@@ -503,11 +503,11 @@ public class PasswdSafeIME extends InputMethodService
         RetT ret;
         if (rc != null) {
             label.append(getString(R.string.record)).append(": ");
-            label.append(rc.itsFileLabel);
+            label.append(rc.fileLabel);
             label.append(" - ");
-            label.append(rc.itsRecordLabel);
-            hasPreviousPassword = rc.itsHasPreviousPassword;
-            ret = rc.itsResult;
+            label.append(rc.recordLabel);
+            hasPreviousPassword = rc.hasPreviousPassword;
+            ret = rc.result;
         } else {
             label.append(getString(R.string.file)).append(": ")
                     .append(getString(R.string.none_selected_open));
@@ -560,26 +560,12 @@ public class PasswdSafeIME extends InputMethodService
     /**
      * Result of a refresh
      */
-    private static class RefreshResult<RetT>
+    private record RefreshResult<RetT>(
+            String fileLabel,
+            String recordLabel,
+            boolean hasPreviousPassword,
+            RetT result)
     {
-        protected final String itsFileLabel;
-        protected final String itsRecordLabel;
-        protected final boolean itsHasPreviousPassword;
-        protected final RetT itsResult;
-
-        /**
-         * Constructor
-         */
-        protected RefreshResult(String fileLabel,
-                                String recLabel,
-                                boolean hasPreviousPassword,
-                                RetT result)
-        {
-            itsFileLabel = fileLabel;
-            itsRecordLabel = recLabel;
-            itsHasPreviousPassword = hasPreviousPassword;
-            itsResult = result;
-        }
     }
 
     /**
