@@ -501,7 +501,7 @@ public class PasswdSafeListFragment extends ListFragment
                     String str = TextUtils.isEmpty(item.title()) ?
                                  " " : item.title().substring(0, 1).toUpperCase();
                     if ((idx == 0) ||
-                        !TextUtils.equals(currSection.itsTitle, str)) {
+                        !TextUtils.equals(currSection.title, str)) {
                         currSection = new ItemSection(str, idx);
                         sectionIdxs.add(currSection);
                     }
@@ -561,9 +561,9 @@ public class PasswdSafeListFragment extends ListFragment
             if (sectionIndex < 0) {
                 return 0;
             } else if (sectionIndex >= itsSections.length) {
-                return itsSections[itsSections.length - 1].itsPosition;
+                return itsSections[itsSections.length - 1].position;
             }
-            return itsSections[sectionIndex].itsPosition;
+            return itsSections[sectionIndex].position;
         }
 
         @Override
@@ -571,7 +571,7 @@ public class PasswdSafeListFragment extends ListFragment
         {
             for (int section = 0; section < itsSections.length; ++section)
             {
-                if (itsSections[section].itsPosition >= position) {
+                if (itsSections[section].position >= position) {
                     return section;
                 }
             }
@@ -581,25 +581,15 @@ public class PasswdSafeListFragment extends ListFragment
         /**
          * An indexed section item
          */
-        private static final class ItemSection
+        private record ItemSection(
+                String title,
+                int position)
         {
-            private final String itsTitle;
-            private final int itsPosition;
-
-            /**
-             * Constructor
-             */
-            private ItemSection(String title, int position)
-            {
-                itsTitle = title;
-                itsPosition = position;
-            }
-
             @Override
             @NonNull
             public String toString()
             {
-                return itsTitle;
+                return title;
             }
         }
 
