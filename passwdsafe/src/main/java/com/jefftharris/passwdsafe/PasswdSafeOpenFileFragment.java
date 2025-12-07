@@ -946,7 +946,7 @@ public class PasswdSafeOpenFileFragment
             if (openResult != null) {
                 switch (finishMode) {
                 case SUCCESS: {
-                    finishFileOpen(openResult.itsFileData);
+                    finishFileOpen(openResult.fileData);
                     break;
                 }
                 case KEY_INVALIDATED:
@@ -996,10 +996,10 @@ public class PasswdSafeOpenFileFragment
         if (result != null) {
             switch (itsSaveChange) {
             case ADD: {
-                if (result.itsKeygenError != null) {
+                if (result.keygenError != null) {
                     String msg = getString(
                             R.string.password_save_canceled_key_error,
-                            result.itsKeygenError.toString());
+                            result.keygenError.toString());
                     PasswdSafeUtil.showErrorMsg(msg,
                                                 new ActContext(getContext()));
                     setPhase(Phase.WAITING_PASSWORD);
@@ -1014,11 +1014,11 @@ public class PasswdSafeOpenFileFragment
             }
             case REMOVE: {
                 itsSavedPasswordsMgr.removeSavedPassword(getPasswdFileUri());
-                finishFileOpen(result.itsFileData);
+                finishFileOpen(result.fileData);
                 break;
             }
             case NONE: {
-                finishFileOpen(result.itsFileData);
+                finishFileOpen(result.fileData);
                 break;
             }
             }
@@ -1215,19 +1215,10 @@ public class PasswdSafeOpenFileFragment
     /**
      * Result of opening a file
      */
-    private static class OpenResult
+    private record OpenResult(
+            PasswdFileData fileData,
+            Exception keygenError)
     {
-        protected final PasswdFileData itsFileData;
-        protected final Exception itsKeygenError;
-
-        /**
-         * Constructor
-         */
-        protected OpenResult(PasswdFileData fileData, Exception keygenError)
-        {
-            itsFileData = fileData;
-            itsKeygenError = keygenError;
-        }
     }
 
     /**
