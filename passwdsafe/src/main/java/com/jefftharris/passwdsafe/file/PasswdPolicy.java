@@ -96,21 +96,14 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         }
     }
 
-    /** Policy fields for a record */
-    public static class RecordPolicyStrs
+    /**
+     * Policy fields for a record
+     */
+    public record RecordPolicyStrs(
+            String policyName,
+            String policyStr,
+            String ownSymbols)
     {
-        public final String itsPolicyName;
-        public final String itsPolicyStr;
-        public final String itsOwnSymbols;
-
-        protected RecordPolicyStrs(String policyName,
-                                   String policyStr,
-                                   String ownSymbols)
-        {
-            itsPolicyName = policyName;
-            itsPolicyStr = policyStr;
-            itsOwnSymbols = ownSymbols;
-        }
     }
 
     /** Type of policy.  String indexes must match policy_type strings. */
@@ -496,7 +489,7 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
 
         ParsedFields fields = parsePolicyFlagsAndLengths(policyStr,
                                                          policyNum, fieldStart);
-        fieldStart = fields.itsFieldsEnd;
+        fieldStart = fields.fieldsEnd;
 
         int numSpecials = getPolicyStrInt(policyStr, policyNum, fieldStart, 2,
                                           "special symbols length");
@@ -509,9 +502,9 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         }
 
         PasswdPolicy policy =
-            new PasswdPolicy(name, loc, fields.itsFlags, fields.itsLength,
-                             fields.itsMinLowercase, fields.itsMinUppercase,
-                             fields.itsMinDigits, fields.itsMinSymbols,
+            new PasswdPolicy(name, loc, fields.flags, fields.length,
+                             fields.minLowercase, fields.minUppercase,
+                             fields.minDigits, fields.minSymbols,
                              specialSyms);
         return new Pair<>(policy, fieldStart);
     }
@@ -577,16 +570,16 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
             policy = new PasswdPolicy(policyName, Location.RECORD_NAME);
         } else if (policyStr != null) {
             ParsedFields fields = parsePolicyFlagsAndLengths(policyStr, 0, 0);
-            int endPos = fields.itsFieldsEnd;
+            int endPos = fields.fieldsEnd;
             if (endPos > policyStr.length()) {
                 throw new IllegalArgumentException(
                     "Password policy too long: " + policyStr);
             }
             policy =
                 new PasswdPolicy(null, Location.RECORD,
-                                 fields.itsFlags, fields.itsLength,
-                                 fields.itsMinLowercase, fields.itsMinUppercase,
-                                 fields.itsMinDigits, fields.itsMinSymbols,
+                                 fields.flags, fields.length,
+                                 fields.minLowercase, fields.minUppercase,
+                                 fields.minDigits, fields.minSymbols,
                                  ownSymbols);
         }
         return policy;
@@ -616,28 +609,18 @@ public class PasswdPolicy implements Comparable<PasswdPolicy>, Parcelable
         PREFS_DEFAULT_SYMBOLS = symbols;
     }
 
-    /** Fields parsed from a policy flags and length string */
-    private static class ParsedFields
+    /**
+     * Fields parsed from a policy flags and length string
+     */
+    private record ParsedFields(
+            int flags,
+            int length,
+            int minLowercase,
+            int minUppercase,
+            int minDigits,
+            int minSymbols,
+            int fieldsEnd)
     {
-        protected final int itsFlags;
-        protected final int itsLength;
-        protected final int itsMinLowercase;
-        protected final int itsMinUppercase;
-        protected final int itsMinDigits;
-        protected final int itsMinSymbols;
-        protected final int itsFieldsEnd;
-
-        protected ParsedFields(int flags, int pwLen, int minLower, int minUpper,
-                               int minDigits, int minSymbols, int fieldsEnd)
-        {
-            itsFlags = flags;
-            itsLength = pwLen;
-            itsMinLowercase = minLower;
-            itsMinUppercase = minUpper;
-            itsMinDigits = minDigits;
-            itsMinSymbols = minSymbols;
-            itsFieldsEnd = fieldsEnd;
-        }
     }
 
     /** Parse the flags and lengths of a policy from a string */

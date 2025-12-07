@@ -762,11 +762,11 @@ public class PasswdFileData
     {
         PasswdPolicy.RecordPolicyStrs strs =
             PasswdPolicy.recordPolicyToString(policy);
-        setField((strs == null) ? null : strs.itsPolicyName,
+        setField((strs == null) ? null : strs.policyName(),
                  rec, PwsFieldTypeV3.PASSWORD_POLICY_NAME);
-        setField((strs == null) ? null : strs.itsPolicyStr,
+        setField((strs == null) ? null : strs.policyStr(),
                  rec, PwsFieldTypeV3.PASSWORD_POLICY);
-        setField((strs == null) ? null : strs.itsOwnSymbols,
+        setField((strs == null) ? null : strs.ownSymbols(),
                  rec, PwsFieldTypeV3.OWN_PASSWORD_SYMBOLS);
         updateFormatVersion(PwsRecordV3.DB_FMT_MINOR_3_28);
 
