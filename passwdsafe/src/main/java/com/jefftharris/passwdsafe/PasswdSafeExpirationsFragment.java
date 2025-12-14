@@ -186,8 +186,8 @@ public class PasswdSafeExpirationsFragment
         if (rc != null) {
             // Disable listener to set state
             itsEnableExpiryNotifs.setOnCheckedChangeListener(null);
-            itsEnableExpiryNotifs.setEnabled(rc.first);
-            itsEnableExpiryNotifs.setChecked(rc.second);
+            itsEnableExpiryNotifs.setEnabled(rc.first());
+            itsEnableExpiryNotifs.setChecked(rc.second());
             itsEnableExpiryNotifs.setOnCheckedChangeListener(this);
         }
     }

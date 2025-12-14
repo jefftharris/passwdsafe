@@ -97,6 +97,7 @@ public class BackupFilesModel extends AndroidViewModel
     /**
      * Runnable to verify backup files
      */
+    @SuppressWarnings("ClassCanBeRecord")
     private static class VerifyRunnable implements Runnable
     {
         private final List<BackupFile> itsBackupFiles;

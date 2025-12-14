@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -620,9 +620,9 @@ public class PasswdPolicyTest
         PasswdPolicy.RecordPolicyStrs strs =
             PasswdPolicy.recordPolicyToString(policy);
         assertNotNull(strs);
-        assertEquals(policyName, strs.itsPolicyName);
-        assertNull(strs.itsPolicyStr);
-        assertNull(strs.itsOwnSymbols);
+        assertEquals(policyName, strs.policyName());
+        assertNull(strs.policyStr());
+        assertNull(strs.ownSymbols());
     }
 
     /** Check a record with its own password policy */
@@ -663,9 +663,9 @@ public class PasswdPolicyTest
         PasswdPolicy.RecordPolicyStrs strs =
             PasswdPolicy.recordPolicyToString(policy);
         assertNotNull(strs);
-        assertEquals(policyName, strs.itsPolicyName);
-        assertTrue(policyStr.startsWith(strs.itsPolicyStr));
-        assertEquals(ownSymbols, strs.itsOwnSymbols);
+        assertEquals(policyName, strs.policyName());
+        assertTrue(policyStr.startsWith(strs.policyStr()));
+        assertEquals(ownSymbols, strs.ownSymbols());
 
         if (extras < 5) {
             policyStr += '\0';

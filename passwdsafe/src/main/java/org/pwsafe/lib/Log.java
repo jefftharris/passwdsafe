@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Contract;
  *
  * @author Kevin Preece
  */
+@SuppressWarnings("ClassCanBeRecord")
 public class Log
 {
     private final String itsTag;

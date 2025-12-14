@@ -171,7 +171,7 @@ public final class PasswdRecordFilter implements Closeable
             if (expiry == null) {
                 break;
             }
-            long expire = expiry.itsExpiration.getTime();
+            long expire = expiry.expiration().getTime();
             if (expire < itsExpiryAtMillis) {
                 queryMatch = Utils.formatDate(expire, ctx, true, true, true);
             }

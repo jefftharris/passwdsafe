@@ -125,11 +125,11 @@ public class PasswdSafeRecordNotesFragment
     @Override
     protected void doRefresh(@NonNull RecordInfo info)
     {
-        switch (info.itsPasswdRec.getType()) {
+        switch (info.passwdRec().getType()) {
         case NORMAL:
         case ALIAS: {
-            PasswdNotes notes = info.itsFileData.getNotes(info.itsRec,
-                                                          getContext());
+            PasswdNotes notes =
+                    info.fileData().getNotes(info.rec(), getContext());
             itsNotes.setText(notes.getNotes());
             break;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -53,24 +53,17 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
     /**
      * Resolved data for the file
      */
-    public static class ResolveData
+    public record ResolveData(
+            @Nullable
+            PasswdFileUri uri,
+            boolean isSaveAllowed)
     {
-        public final @Nullable PasswdFileUri itsUri;
-        public final boolean itsIsSaveAllowed;
-
-        private ResolveData(@Nullable PasswdFileUri passwdFileUri,
-                            boolean isSaveAllowed)
-        {
-            itsUri = passwdFileUri;
-            itsIsSaveAllowed = isSaveAllowed;
-        }
-
         @Override
         @NonNull
         public String toString()
         {
-            return String.format("{uri: %s, save allowed: %b}", itsUri,
-                                 itsIsSaveAllowed);
+            return String.format("{uri: %s, save allowed: %b}", uri,
+                                 isSaveAllowed);
         }
     }
 

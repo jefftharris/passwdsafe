@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -246,12 +246,12 @@ public class PasswdSafeIME extends InputMethodService
             return new Pair<>(intent, (fileData != null));
         });
         if (rc != null) {
-            if (rc.second) {
+            if (rc.second()) {
                 setKeyboard(itsPasswdSafeKeyboard);
             } else {
                 setKeyboard(itsQwertyKeyboard);
             }
-            startActivity(rc.first);
+            startActivity(rc.first());
         }
     }
 
@@ -503,11 +503,11 @@ public class PasswdSafeIME extends InputMethodService
         RetT ret;
         if (rc != null) {
             label.append(getString(R.string.record)).append(": ");
-            label.append(rc.itsFileLabel);
+            label.append(rc.fileLabel);
             label.append(" - ");
-            label.append(rc.itsRecordLabel);
-            hasPreviousPassword = rc.itsHasPreviousPassword;
-            ret = rc.itsResult;
+            label.append(rc.recordLabel);
+            hasPreviousPassword = rc.hasPreviousPassword;
+            ret = rc.result;
         } else {
             label.append(getString(R.string.file)).append(": ")
                     .append(getString(R.string.none_selected_open));
@@ -560,26 +560,12 @@ public class PasswdSafeIME extends InputMethodService
     /**
      * Result of a refresh
      */
-    private static class RefreshResult<RetT>
+    private record RefreshResult<RetT>(
+            String fileLabel,
+            String recordLabel,
+            boolean hasPreviousPassword,
+            RetT result)
     {
-        protected final String itsFileLabel;
-        protected final String itsRecordLabel;
-        protected final boolean itsHasPreviousPassword;
-        protected final RetT itsResult;
-
-        /**
-         * Constructor
-         */
-        protected RefreshResult(String fileLabel,
-                                String recLabel,
-                                boolean hasPreviousPassword,
-                                RetT result)
-        {
-            itsFileLabel = fileLabel;
-            itsRecordLabel = recLabel;
-            itsHasPreviousPassword = hasPreviousPassword;
-            itsResult = result;
-        }
     }
 
     /**

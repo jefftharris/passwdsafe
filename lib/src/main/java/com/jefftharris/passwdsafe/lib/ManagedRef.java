@@ -17,6 +17,7 @@ import java.lang.ref.WeakReference;
 /**
  * Managed reference to fragment or activity for callbacks
  */
+@SuppressWarnings("ClassCanBeRecord")
 public final class ManagedRef<T>
 {
     private final WeakReference<T> itsRef;

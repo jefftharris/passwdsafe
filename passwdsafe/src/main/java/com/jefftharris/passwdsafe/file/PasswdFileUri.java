@@ -229,7 +229,7 @@ public class PasswdFileUri
             InputStream is = cr.openInputStream(itsUri);
             String id = getIdentifier(context, false);
             PwsStorage storage;
-            if (itsWritableInfo.first) {
+            if (itsWritableInfo.first()) {
                 storage = new PasswdFileGenProviderStorage(itsUri, id, is);
             } else {
                 storage = new PwsStreamStorage(id, is);
@@ -291,7 +291,7 @@ public class PasswdFileUri
         case EMAIL:
         case GENERIC_PROVIDER: {
             String id = getIdentifier(context, false);
-            if (itsWritableInfo.first) {
+            if (itsWritableInfo.first()) {
                 return new PasswdFileGenProviderStorage(itsUri, id, null);
             } else {
                 return new PwsStreamStorage(id, null);
@@ -579,7 +579,7 @@ public class PasswdFileUri
     private void resolveFileUri(Context ctx)
     {
         itsWritableInfo = doResolveFileUri(ctx);
-        itsIsDeletable = itsWritableInfo.first;
+        itsIsDeletable = itsWritableInfo.first();
     }
 
 
@@ -850,15 +850,9 @@ public class PasswdFileUri
     /**
      * Resolved file permissions
      */
-    private static class FilePerms
+    private record FilePerms(
+            boolean isWritable,
+            boolean isDeletable)
     {
-        protected final boolean isWritable;
-        protected final boolean isDeletable;
-
-        protected FilePerms(boolean writable, boolean deletable)
-        {
-            isWritable = writable;
-            isDeletable = deletable;
-        }
     }
 }

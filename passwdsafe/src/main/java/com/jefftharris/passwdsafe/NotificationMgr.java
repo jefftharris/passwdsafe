@@ -304,10 +304,10 @@ public class NotificationMgr implements PasswdFileDataObserver
             }
 
             PwsRecord pwsrec = rec.getRecord();
-            ExpiryEntry entry = new ExpiryEntry(rec.getUUID(),
-                                                fileData.getTitle(pwsrec),
-                                                fileData.getGroup(pwsrec),
-                                                expiry.itsExpiration.getTime());
+            ExpiryEntry entry =
+                    new ExpiryEntry(rec.getUUID(), fileData.getTitle(pwsrec),
+                                    fileData.getGroup(pwsrec),
+                                    expiry.expiration().getTime());
             if (entries.remove(entry) == null) {
                 if (values == null) {
                     values = new ContentValues();
@@ -634,6 +634,7 @@ public class NotificationMgr implements PasswdFileDataObserver
 
 
     /** The ExpiryEntry class represents an expiration entry for notifications */
+    @SuppressWarnings("ClassCanBeRecord")
     private static final class ExpiryEntry implements Comparable<ExpiryEntry>
     {
         private final String itsUuid;

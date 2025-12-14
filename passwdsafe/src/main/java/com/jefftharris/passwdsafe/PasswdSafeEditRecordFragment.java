@@ -649,7 +649,7 @@ public class PasswdSafeEditRecordFragment
             PwsRecord record;
             String group;
             if (info != null) {
-                record = info.itsRec;
+                record = info.rec();
                 itsUuid = fileData.getUUID(record);
                 itsIsV3 = fileData.isV3();
                 itsTitle.setText(fileData.getTitle(record));
@@ -721,15 +721,15 @@ public class PasswdSafeEditRecordFragment
         String password = null;
         PwsRecord linkRef = null;
         if (info != null) {
-            itsRecOrigType = info.itsPasswdRec.getType();
+            itsRecOrigType = info.passwdRec().getType();
             switch (itsRecOrigType) {
             case NORMAL: {
-                password = info.itsFileData.getPassword(info.itsRec);
+                password = info.fileData().getPassword(info.rec());
                 break;
             }
             case ALIAS:
             case SHORTCUT: {
-                linkRef = info.itsPasswdRec.getRef();
+                linkRef = info.passwdRec().getRef();
                 break;
             }
             }
@@ -746,7 +746,7 @@ public class PasswdSafeEditRecordFragment
                                           itsPasswordConfirm);
 
         if (itsIsV3) {
-            setLinkRef(linkRef, (info != null) ? info.itsFileData : null);
+            setLinkRef(linkRef, (info != null) ? info.fileData() : null);
         } else {
             GuiUtils.setVisible(itsTypeGroup, false);
         }
@@ -759,7 +759,7 @@ public class PasswdSafeEditRecordFragment
                                   @NonNull PasswdFileData fileData)
     {
         if (info != null) {
-            itsOrigPolicy = info.itsPasswdRec.getPasswdPolicy();
+            itsOrigPolicy = info.passwdRec().getPasswdPolicy();
         } else {
             itsOrigPolicy = null;
         }
@@ -819,7 +819,7 @@ public class PasswdSafeEditRecordFragment
     {
         if (itsIsV3) {
             itsOrigExpiry =
-                    (info != null) ? info.itsPasswdRec.getPasswdExpiry() : null;
+                    (info != null) ? info.passwdRec().getPasswdExpiry() : null;
 
             itsExpiryDate = Calendar.getInstance();
             int interval;
@@ -830,17 +830,17 @@ public class PasswdSafeEditRecordFragment
                 interval = PasswdExpiration.INTERVAL_DEFAULT;
                 recurring = false;
             } else {
-                if ((itsOrigExpiry.itsInterval != 0) &&
-                    itsOrigExpiry.itsIsRecurring) {
+                if ((itsOrigExpiry.interval() != 0) &&
+                    itsOrigExpiry.isRecurring()) {
                     expireType = PasswdExpiration.Type.INTERVAL;
-                    interval = itsOrigExpiry.itsInterval;
+                    interval = itsOrigExpiry.interval();
                     recurring = true;
                 } else {
                     expireType = PasswdExpiration.Type.DATE;
                     interval = PasswdExpiration.INTERVAL_DEFAULT;
                     recurring = false;
                 }
-                itsExpiryDate.setTime(itsOrigExpiry.itsExpiration);
+                itsExpiryDate.setTime(itsOrigExpiry.expiration());
             }
             updatePasswdExpiryDate();
 
@@ -1213,7 +1213,7 @@ public class PasswdSafeEditRecordFragment
         PwsRecord record;
         boolean newRecord;
         if (info != null) {
-            record = info.itsRec;
+            record = info.rec();
             newRecord = false;
         } else {
             record = fileData.createRecord();
@@ -1284,8 +1284,8 @@ public class PasswdSafeEditRecordFragment
             }
 
             Pair<Boolean, PasswdPolicy> updatePolicy = getUpdatedPolicy();
-            if (updatePolicy.first) {
-                fileData.setPasswdPolicy(updatePolicy.second, record);
+            if (updatePolicy.first()) {
+                fileData.setPasswdPolicy(updatePolicy.second(), record);
             }
 
             if (itsTypeHasNormalPassword) {
@@ -1335,8 +1335,8 @@ public class PasswdSafeEditRecordFragment
             // Update expiration dates after password so changes in expiration
             // overwrite basic expiration updates when the password changes.
             Pair<Boolean, PasswdExpiration> updateExpiry = getUpdatedExpiry();
-            if (updateExpiry.first) {
-                fileData.setPasswdExpiry(updateExpiry.second, record);
+            if (updateExpiry.first()) {
+                fileData.setPasswdExpiry(updateExpiry.second(), record);
             }
         }
 
@@ -1742,6 +1742,7 @@ public class PasswdSafeEditRecordFragment
     /**
      * Unique key fields for a record
      */
+    @SuppressWarnings("ClassCanBeRecord")
     private static class RecordKey
     {
         private final String itsTitle;

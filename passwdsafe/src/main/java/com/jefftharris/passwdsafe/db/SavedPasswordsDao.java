@@ -45,7 +45,8 @@ public abstract class SavedPasswordsDao
                 return saved;
             }
             Pair<String, String> provdisp = getProviderAndDisplay(fileUri, ctx);
-            return queryByProvUriAndDispName(provdisp.first, provdisp.second);
+            return queryByProvUriAndDispName(provdisp.first(),
+                                             provdisp.second());
         }
         case BACKUP: {
             BackupFile backup = fileUri.getBackupFile();
@@ -69,8 +70,8 @@ public abstract class SavedPasswordsDao
                     Context ctx)
     {
         Pair<String, String> provdisp = getProviderAndDisplay(fileUri, ctx);
-        insert(new SavedPassword(fileUri.toString(), provdisp.first,
-                                 provdisp.second, ivStr, encStr));
+        insert(new SavedPassword(fileUri.toString(), provdisp.first(),
+                                 provdisp.second(), ivStr, encStr));
     }
 
     /**

@@ -364,8 +364,10 @@ public class Preferences
         PasswdPolicy policy = null;
         if (!TextUtils.isEmpty(policyStr)) {
             try {
-                policy = PasswdPolicy.parseHdrPolicy(
-                    policyStr, 0, 0, PasswdPolicy.Location.DEFAULT).first;
+                policy = PasswdPolicy
+                        .parseHdrPolicy(policyStr, 0, 0,
+                                        PasswdPolicy.Location.DEFAULT)
+                        .first();
             } catch (Exception e) {
                 // Use default
             }

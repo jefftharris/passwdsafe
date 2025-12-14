@@ -1143,12 +1143,12 @@ public class PasswdSafe extends AppCompatActivity
     @Override
     public void finishEditRecord(@NonNull EditRecordResult result)
     {
-        finishEdit(result.itsIsNewRecord ?
+        finishEdit(result.isNewRecord() ?
                    EditFinish.ADD_RECORD :
-                   (result.itsIsSave ?
+                   (result.isSave() ?
                     EditFinish.EDIT_SAVE_RECORD :
                     EditFinish.EDIT_NOSAVE_RECORD),
-                   null, result.itsNewLocation, null);
+                   null, result.newLocation(), null);
     }
 
     @Override
@@ -2236,7 +2236,7 @@ public class PasswdSafe extends AppCompatActivity
             if (restoreUri == null) {
                 throw new Exception(
                         ctx.getString(R.string.restore_file_not_found));
-            } else if (!restoreUri.isWritable().first) {
+            } else if (!restoreUri.isWritable().first()) {
                 throw new Exception(
                         ctx.getString(R.string.restore_file_not_writable));
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Token for users of a password file to enforce synchronous access
  */
+@SuppressWarnings("ClassCanBeRecord")
 public class PasswdFileToken
 {
     private static final ReentrantLock itsLock = new ReentrantLock();

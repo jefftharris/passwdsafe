@@ -214,18 +214,19 @@ public class PasswdSafeRecordFragment
     private void refresh()
     {
         useRecordInfo((RecordInfoUser<Void>)info -> {
-            itsCanEdit = info.itsFileData.canEdit();
-            itsTitle = info.itsFileData.getTitle(info.itsRec);
-            boolean isProtected = info.itsFileData.isProtected(info.itsRec);
-            List<PwsRecord> refs = info.itsPasswdRec.getRefsToRecord();
+            final var fileData = info.fileData();
+            final var rec = info.rec();
+            itsCanEdit = fileData.canEdit();
+            itsTitle = fileData.getTitle(rec);
+            boolean isProtected = fileData.isProtected(rec);
+            List<PwsRecord> refs = info.passwdRec().getRefsToRecord();
             boolean hasRefs = (refs != null) && !refs.isEmpty();
             itsCanDelete = itsCanEdit && !hasRefs && !isProtected;
 
-            switch (info.itsPasswdRec.getType()) {
+            switch (info.passwdRec().getType()) {
             case NORMAL:
             case ALIAS: {
-                PasswdNotes notes = info.itsFileData.getNotes(info.itsRec,
-                                                              getContext());
+                PasswdNotes notes = fileData.getNotes(rec, getContext());
                 itsHasNotes = !TextUtils.isEmpty(notes.getNotes());
                 break;
             }

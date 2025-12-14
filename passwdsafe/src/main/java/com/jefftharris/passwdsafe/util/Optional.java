@@ -15,6 +15,7 @@ import java.util.Objects;
 /**
  * The Optional class represents an optional value
  */
+@SuppressWarnings("ClassCanBeRecord")
 public final class Optional<T>
 {
     private final boolean itsHasObj;

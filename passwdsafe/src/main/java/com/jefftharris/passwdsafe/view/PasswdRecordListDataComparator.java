@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -17,6 +17,7 @@ import java.util.Date;
 /**
  * Comparator for records
  */
+@SuppressWarnings("ClassCanBeRecord")
 public final class PasswdRecordListDataComparator
         implements Comparator<PasswdRecordListData>
 {
@@ -74,20 +75,20 @@ public final class PasswdRecordListDataComparator
             break;
         }
         case CREATION_DATE: {
-            rc = compareDateField(arg0.itsFields.itsCreationTime,
-                                  arg1.itsFields.itsCreationTime);
+            rc = compareDateField(arg0.fields().itsCreationTime,
+                                  arg1.fields().itsCreationTime);
             if (rc != 0) {
                 return rc;
             }
             break;
         }
         case MOD_DATE: {
-            Date date0 = (arg0.itsFields.itsModTime != null) ?
-                         arg0.itsFields.itsModTime :
-                         arg0.itsFields.itsCreationTime;
-            Date date1 = (arg1.itsFields.itsModTime != null) ?
-                         arg1.itsFields.itsModTime :
-                         arg1.itsFields.itsCreationTime;
+            var fields0 = arg0.fields();
+            var fields1 = arg1.fields();
+            Date date0 = (fields0.itsModTime != null) ? fields0.itsModTime :
+                         fields0.itsCreationTime;
+            Date date1 = (fields1.itsModTime != null) ? fields1.itsModTime :
+                         fields1.itsCreationTime;
             rc = compareDateField(date0, date1);
             if (rc != 0) {
                 return rc;
@@ -96,11 +97,11 @@ public final class PasswdRecordListDataComparator
         }
         }
 
-        rc = compareField(arg0.itsTitle, arg1.itsTitle);
+        rc = compareField(arg0.title(), arg1.title());
         if (rc != 0) {
             return rc;
         }
-        return compareField(arg0.itsUser, arg1.itsUser);
+        return compareField(arg0.user(), arg1.user());
     }
 
     /**
@@ -146,9 +147,9 @@ public final class PasswdRecordListDataComparator
     private int compareIsGroup(@NonNull PasswdRecordListData arg0,
                                @NonNull PasswdRecordListData arg1)
     {
-        if (!arg0.itsIsRecord && arg1.itsIsRecord) {
+        if (!arg0.isRecord() && arg1.isRecord()) {
             return -1;
-        } else if (arg0.itsIsRecord && !arg1.itsIsRecord) {
+        } else if (arg0.isRecord() && !arg1.isRecord()) {
             return 1;
         }
         return 0;

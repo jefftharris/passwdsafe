@@ -112,7 +112,7 @@ public class PasswdFileData
         itsPwsFile = itsUri.load(passwd, context);
         //noinspection ConstantConditions
         itsPwsFile.setReadOnly(PasswdSafeApp.DEBUG_AUTO_FILE == null);
-        itsIsUriWritable = itsUri.isWritable().first;
+        itsIsUriWritable = itsUri.isWritable().first();
         finishOpenFile();
     }
 
@@ -441,10 +441,10 @@ public class PasswdFileData
 
         PasswdExpiration expiry = getPasswdExpiry(rec);
         Date expTime = null;
-        if ((expiry != null) && expiry.itsIsRecurring &&
-            (expiry.itsInterval > 0)) {
+        if ((expiry != null) && expiry.isRecurring() &&
+            (expiry.interval() > 0)) {
             long exp = System.currentTimeMillis();
-            exp += (long)expiry.itsInterval * DateUtils.DAY_IN_MILLIS;
+            exp += (long)expiry.interval() * DateUtils.DAY_IN_MILLIS;
             expTime = new Date(exp);
         }
         setField(expTime, rec, PwsFieldTypeV3.PASSWORD_LIFETIME, false);
@@ -487,9 +487,9 @@ public class PasswdFileData
         Date expDate = null;
         int expInterval = 0;
         if (expiry != null) {
-            expDate = expiry.itsExpiration;
-            if (expiry.itsIsRecurring) {
-                expInterval = expiry.itsInterval;
+            expDate = expiry.expiration();
+            if (expiry.isRecurring()) {
+                expInterval = expiry.interval();
             }
         }
         setField(expDate, rec, PwsFieldTypeV3.PASSWORD_LIFETIME);
@@ -703,10 +703,10 @@ public class PasswdFileData
                 if ((recPolicy == null) ||
                     (recPolicy.getLocation() !=
                         PasswdPolicy.Location.RECORD_NAME) ||
-                    (!recPolicy.getName().equals(policyRename.first))) {
+                    (!recPolicy.getName().equals(policyRename.first()))) {
                     continue;
                 }
-                recPolicy = new PasswdPolicy(policyRename.second, recPolicy);
+                recPolicy = new PasswdPolicy(policyRename.second(), recPolicy);
                 PasswdSafeUtil.dbginfo(TAG, "Rename policy to %s for %s",
                                        recPolicy.getName(),
                                        getId(rec.getRecord()));
@@ -762,11 +762,11 @@ public class PasswdFileData
     {
         PasswdPolicy.RecordPolicyStrs strs =
             PasswdPolicy.recordPolicyToString(policy);
-        setField((strs == null) ? null : strs.itsPolicyName,
+        setField((strs == null) ? null : strs.policyName(),
                  rec, PwsFieldTypeV3.PASSWORD_POLICY_NAME);
-        setField((strs == null) ? null : strs.itsPolicyStr,
+        setField((strs == null) ? null : strs.policyStr(),
                  rec, PwsFieldTypeV3.PASSWORD_POLICY);
-        setField((strs == null) ? null : strs.itsOwnSymbols,
+        setField((strs == null) ? null : strs.ownSymbols(),
                  rec, PwsFieldTypeV3.OWN_PASSWORD_SYMBOLS);
         updateFormatVersion(PwsRecordV3.DB_FMT_MINOR_3_28);
 

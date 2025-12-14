@@ -101,9 +101,10 @@ public class PasswdSafeRecordPasswordFragment
         PasswdExpiration passwdExpiry = null;
         Date lastModTime = null;
         PasswdHistory history = null;
-        switch (info.itsPasswdRec.getType()) {
+        final var fileData = info.fileData();
+        switch (info.passwdRec().getType()) {
         case NORMAL: {
-            policy = info.itsPasswdRec.getPasswdPolicy();
+            policy = info.passwdRec().getPasswdPolicy();
             if (policy == null) {
                 PasswdSafeApp app =
                         (PasswdSafeApp)requireActivity().getApplication();
@@ -112,7 +113,7 @@ public class PasswdSafeRecordPasswordFragment
             } else if (policy.getLocation() ==
                        PasswdPolicy.Location.RECORD_NAME) {
                 HeaderPasswdPolicies hdrPolicies =
-                        info.itsFileData.getHdrPasswdPolicies();
+                        fileData.getHdrPasswdPolicies();
                 String policyName = policy.getName();
                 if (hdrPolicies != null) {
                     policy = hdrPolicies.getPasswdPolicy(policyName);
@@ -123,16 +124,17 @@ public class PasswdSafeRecordPasswordFragment
             } else {
                 policyLoc = getString(R.string.record);
             }
-            passwdExpiry = info.itsFileData.getPasswdExpiry(info.itsRec);
-            lastModTime = info.itsFileData.getPasswdLastModTime(info.itsRec);
-            history = info.itsFileData.getPasswdHistory(info.itsRec);
+            final var rec = info.rec();
+            passwdExpiry = fileData.getPasswdExpiry(rec);
+            lastModTime = fileData.getPasswdLastModTime(rec);
+            history = fileData.getPasswdHistory(rec);
             break;
         }
         case ALIAS: {
-            PwsRecord recForPassword = info.itsPasswdRec.getRef();
-            passwdExpiry = info.itsFileData.getPasswdExpiry(recForPassword);
-            lastModTime = info.itsFileData.getPasswdLastModTime(recForPassword);
-            history = info.itsFileData.getPasswdHistory(recForPassword);
+            PwsRecord recForPassword = info.passwdRec().getRef();
+            passwdExpiry = fileData.getPasswdExpiry(recForPassword);
+            lastModTime = fileData.getPasswdLastModTime(recForPassword);
+            history = fileData.getPasswdHistory(recForPassword);
             break;
         }
         case SHORTCUT: {
@@ -141,8 +143,8 @@ public class PasswdSafeRecordPasswordFragment
         }
 
         String expiryIntStr = null;
-        if ((passwdExpiry != null) && passwdExpiry.itsIsRecurring) {
-            int val = passwdExpiry.itsInterval;
+        if ((passwdExpiry != null) && passwdExpiry.isRecurring()) {
+            int val = passwdExpiry.interval();
             if (val != 0) {
                 expiryIntStr = getResources().getQuantityString(
                         R.plurals.interval_days, val, val);
@@ -156,8 +158,7 @@ public class PasswdSafeRecordPasswordFragment
         GuiUtils.setVisible(itsPolicyRow, policy != null);
 
         setFieldDate(itsExpirationTime, itsExpirationTimeRow,
-                     (passwdExpiry != null) ?
-                             passwdExpiry.itsExpiration : null);
+                     (passwdExpiry != null) ? passwdExpiry.expiration() : null);
         setFieldText(itsExpirationInterval, itsExpirationIntervalRow,
                      expiryIntStr);
         setFieldDate(itsPasswordModTime, itsPasswordModTimeRow, lastModTime);

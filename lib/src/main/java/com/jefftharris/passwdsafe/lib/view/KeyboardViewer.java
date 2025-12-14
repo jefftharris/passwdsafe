@@ -15,6 +15,7 @@ import android.view.View;
  * The KeyboardViewer class shows the soft keyboard when run or the dialog
  * is shown.
  */
+@SuppressWarnings("ClassCanBeRecord")
 public class KeyboardViewer implements DialogInterface.OnShowListener,
                                        Runnable
 {
