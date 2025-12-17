@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -61,7 +61,10 @@ public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
     @Override
     protected void finalize() throws Throwable
     {
-        super.finalize();
-        close();
+        try {
+            close();
+        } finally {
+            super.finalize();
+        }
     }
 }
