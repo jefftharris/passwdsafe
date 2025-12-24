@@ -14,9 +14,11 @@ import java.io.OutputStream;
 import java.util.Date;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * The Utils class provides general utilities
@@ -88,5 +90,21 @@ public final class Utils
                 Log.e(Utils.class.getSimpleName(), "Error closing", e);
             }
         }
+    }
+
+    @Nullable
+    public static <E extends Enum<E>> E getEnum(
+            @NonNull Class<E> enumClass,
+            @NonNull String key,
+            @NonNull Bundle bundle)
+    {
+        var val = bundle.getString(key);
+        if (val != null) {
+            try {
+                return Enum.valueOf(enumClass, val);
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
     }
 }
