@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.selection.ItemKeyProvider;
 import androidx.recyclerview.selection.SelectionPredicates;
@@ -32,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jefftharris.passwdsafe.db.BackupFile;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 
@@ -43,7 +45,8 @@ import java.util.List;
  * A fragment for backup files
  */
 public class BackupFilesFragment extends Fragment
-        implements ConfirmPromptDialog.Listener, MenuProvider,
+        implements FragmentResultListener,
+                   MenuProvider,
                    View.OnClickListener
 {
     /**
@@ -102,6 +105,8 @@ public class BackupFilesFragment extends Fragment
         super.onCreate(savedInstanceState);
         itsBackupFiles = new ViewModelProvider(requireActivity())
                 .get(BackupFilesModel.class);
+
+        ConfirmPromptDialog.setListener(this);
     }
 
     @Override
@@ -218,32 +223,32 @@ public class BackupFilesFragment extends Fragment
     }
 
     @Override
-    public void promptConfirmed(Bundle confirmArgs)
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
     {
-        PasswdSafeUtil.dbginfo(TAG, "promptConfirmed: %s", confirmArgs);
-
-        switch (ConfirmAction.valueOf(
-                confirmArgs.getString(CONFIRM_ARG_ACTION))) {
-        case DELETE_ALL: {
-            itsBackupFiles.deleteAll();
-            break;
-        }
-        case DELETE_SELECTED: {
-            for (Long selected : itsSelTracker.getSelection()) {
-                if (selected != null) {
-                    PasswdSafeUtil.dbginfo(TAG, "delete %d", selected);
-                    itsBackupFiles.delete(selected);
+        switch (requestKey) {
+        case ConfirmPromptDialog.REQUEST_KEY -> {
+            var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
+                                       result);
+            if (action != null) {
+                switch (action) {
+                case DELETE_ALL -> itsBackupFiles.deleteAll();
+                case DELETE_SELECTED -> onConfirmDeleteSelected();
                 }
             }
-            itsSelTracker.clearSelection();
-            break;
         }
         }
     }
 
-    @Override
-    public void promptCanceled()
+    private void onConfirmDeleteSelected()
     {
+        for (Long selected : itsSelTracker.getSelection()) {
+            if (selected != null) {
+                PasswdSafeUtil.dbginfo(TAG, "delete %d", selected);
+                itsBackupFiles.delete(selected);
+            }
+        }
+        itsSelTracker.clearSelection();
     }
 
     /**
@@ -324,7 +329,6 @@ public class BackupFilesFragment extends Fragment
         confirmArgs.putString(CONFIRM_ARG_ACTION, action.name());
         ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
                 title, null, confirm, confirmArgs);
-        dialog.setTargetFragment(this, 0);
         dialog.show(getParentFragmentManager(), "prompt");
     }
 

@@ -35,6 +35,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -81,7 +82,7 @@ public class PasswdSafe extends AppCompatActivity
                    AboutFragment.Listener,
                    View.OnClickListener,
                    MenuItem.OnActionExpandListener,
-                   ConfirmPromptDialog.Listener,
+                   FragmentResultListener,
                    PasswdSafeChangePasswordFragment.Listener,
                    PasswdSafeEditRecordFragment.Listener,
                    PasswdSafeExpirationsFragment.Listener,
@@ -307,6 +308,8 @@ public class PasswdSafe extends AppCompatActivity
         assert expiryClearBtn != null;
         expiryClearBtn.setOnClickListener(this);
         itsExpiry = findViewById(R.id.expiry);
+
+        ConfirmPromptDialog.setListener(this);
 
         FragmentManager fragMgr = getSupportFragmentManager();
         itsFileDataFrag = (PasswdSafeFileDataFragment)
@@ -1248,82 +1251,81 @@ public class PasswdSafe extends AppCompatActivity
     }
 
     @Override
-    public void promptConfirmed(Bundle confirmArgs)
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
     {
-        PasswdSafeUtil.dbginfo(TAG, "promptConfirmed: %s", confirmArgs);
-        ConfirmAction action;
-        try {
-            action = ConfirmAction.valueOf(
-                    confirmArgs.getString(CONFIRM_ARG_ACTION));
-        } catch (Exception e) {
-            return;
-        }
-
-        switch (action) {
-        case COPY_PASSWORD: {
-            SharedPreferences prefs = Preferences.getSharedPrefs(this);
-            Preferences.setCopyPasswordConfirm(true, prefs);
-            copyField(CopyField.PASSWORD,
-                      confirmArgs.getString(CONFIRM_ARG_RECORD));
-            break;
-        }
-        case DELETE_FILE: {
-            PasswdFileUri uri = itsFileDataFrag.useFileData(
-                    PasswdFileData::getUri);
-            if (uri != null) {
-                itsTasks.startTask(new DeleteTask(uri, this));
-            }
-            break;
-        }
-        case DELETE_RECORD: {
-            final PasswdLocation location =
-                    confirmArgs.getParcelable(CONFIRM_ARG_LOCATION);
-            if (location == null) {
-                break;
-            }
-
-            Boolean removed = itsFileDataFrag.useFileData(fileData -> {
-                PwsRecord rec = fileData.getRecord(location.getRecord());
-                if (rec != null) {
-                    return fileData.removeRecord(
-                            rec, new ActContext(PasswdSafe.this));
+        switch (requestKey) {
+        case ConfirmPromptDialog.REQUEST_KEY -> {
+            var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
+                                       result);
+            if (action != null) {
+                switch (action) {
+                case COPY_PASSWORD -> onConfirmCopyPassword(result);
+                case DELETE_FILE -> onConfirmDeleteFile();
+                case DELETE_RECORD -> onConfirmDeleteRecord(result);
+                case SHARE_FILE -> finishShareFile();
+                case SHOW_ENABLE_KEYBOARD -> onConfirmShowEnableKeyboard();
+                case RESTORE_FILE -> onConfirmRestoreFile();
                 }
-                return null;
-            });
-            if ((removed != null) && removed) {
-                finishEdit(EditFinish.DELETE_RECORD, location.getRecord(),
-                           location.selectRecord(null), null);
             }
-            break;
-        }
-        case SHARE_FILE: {
-            finishShareFile();
-            break;
-        }
-        case SHOW_ENABLE_KEYBOARD: {
-            try {
-                startActivity(
-                        new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS));
-            } catch (ActivityNotFoundException e) {
-                PasswdSafeUtil.showError("Keyboard settings not found", TAG, e,
-                                         new ActContext(this));
-            }
-            break;
-        }
-        case RESTORE_FILE: {
-            PasswdFileUri uri = itsFileDataFrag.useFileData(
-                    PasswdFileData::getUri);
-            if (uri != null) {
-                itsTasks.startTask(new RestoreTask(uri, this));
-            }
-            break;
         }
         }
     }
 
-    @Override
-    public void promptCanceled()
+    private void onConfirmCopyPassword(@NonNull Bundle result)
     {
+        SharedPreferences prefs = Preferences.getSharedPrefs(this);
+        Preferences.setCopyPasswordConfirm(true, prefs);
+        copyField(CopyField.PASSWORD,
+                  result.getString(CONFIRM_ARG_RECORD));
+    }
+
+    private void onConfirmDeleteFile()
+    {
+        PasswdFileUri uri = itsFileDataFrag.useFileData(PasswdFileData::getUri);
+        if (uri != null) {
+            itsTasks.startTask(new DeleteTask(uri, this));
+        }
+    }
+
+    private void onConfirmDeleteRecord(@NonNull Bundle result)
+    {
+        final PasswdLocation location =
+                result.getParcelable(CONFIRM_ARG_LOCATION);
+        if (location == null) {
+            return;
+        }
+
+        Boolean removed = itsFileDataFrag.useFileData(fileData -> {
+            PwsRecord rec = fileData.getRecord(location.getRecord());
+            if (rec != null) {
+                return fileData.removeRecord(rec,
+                                             new ActContext(PasswdSafe.this));
+            }
+            return null;
+        });
+        if ((removed != null) && removed) {
+            finishEdit(EditFinish.DELETE_RECORD, location.getRecord(),
+                       location.selectRecord(null), null);
+        }
+    }
+
+    private void onConfirmRestoreFile()
+    {
+        PasswdFileUri uri = itsFileDataFrag.useFileData(PasswdFileData::getUri);
+        if (uri != null) {
+            itsTasks.startTask(new RestoreTask(uri, this));
+        }
+    }
+
+    private void onConfirmShowEnableKeyboard()
+    {
+        try {
+            startActivity(new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS));
+        } catch (ActivityNotFoundException e) {
+            PasswdSafeUtil.showError("Keyboard settings not found", TAG, e,
+                                     new ActContext(this));
+        }
     }
 
     /**

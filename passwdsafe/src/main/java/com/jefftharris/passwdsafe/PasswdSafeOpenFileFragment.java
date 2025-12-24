@@ -40,6 +40,7 @@ import androidx.annotation.StringRes;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -48,6 +49,7 @@ import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.PasswdSafeLog;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
@@ -76,7 +78,7 @@ import javax.crypto.IllegalBlockSizeException;
  */
 public class PasswdSafeOpenFileFragment
         extends AbstractPasswdSafeOpenNewFileFragment
-        implements ConfirmPromptDialog.Listener, MenuProvider,
+        implements FragmentResultListener, MenuProvider,
                    View.OnClickListener, CompoundButton.OnCheckedChangeListener
 {
     /**
@@ -144,6 +146,13 @@ public class PasswdSafeOpenFileFragment
         NONE
     }
 
+    /** Action confirmed via ConfirmPromptDialog */
+    private enum ConfirmAction
+    {
+        /** Save password */
+        SAVE_PASSWORD
+    }
+
     private Listener itsListener;
     private String itsRecToOpen;
     private TextView itsTitle;
@@ -171,6 +180,9 @@ public class PasswdSafeOpenFileFragment
 
     private static final String ARG_URI = "uri";
     private static final String ARG_REC_TO_OPEN = "recToOpen";
+
+    private static final String CONFIRM_ARG_ACTION = "action";
+
     private static final String TAG = "PasswdSafeOpenFileFragment";
 
 
@@ -211,6 +223,8 @@ public class PasswdSafeOpenFileFragment
         itsYubikeyModel
                 .getLogTracingData()
                 .observe(this, this::onYubikeyLogTracingChanged);
+
+        ConfirmPromptDialog.setListener(this);
     }
 
     @Override
@@ -458,11 +472,13 @@ public class PasswdSafeOpenFileFragment
                 SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
                 if (!Preferences.isFileSavedPasswordConfirm(prefs)) {
                     FragmentManager fragMgr = getParentFragmentManager();
+                    Bundle confirmArgs = new Bundle();
+                    confirmArgs.putString(CONFIRM_ARG_ACTION,
+                                          ConfirmAction.SAVE_PASSWORD.name());
                     ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
                             getString(R.string.save_password_p),
                             getString(R.string.save_password_warning),
-                            getString(R.string.save), null);
-                    dlg.setTargetFragment(this, 0);
+                            getString(R.string.save), confirmArgs);
                     dlg.show(fragMgr, "saveConfirm");
                 }
             }
@@ -472,13 +488,26 @@ public class PasswdSafeOpenFileFragment
     }
 
     @Override
-    public void promptCanceled()
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
     {
-        itsSavePasswdCb.setChecked(false);
+        switch (requestKey) {
+        case ConfirmPromptDialog.REQUEST_KEY -> {
+            var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
+                                       result);
+            if (action != null) {
+                switch (action) {
+                case SAVE_PASSWORD -> onConfirmSavePassword();
+                }
+            } else {
+                itsSavePasswdCb.setChecked(false);
+            }
+        }
+        }
+
     }
 
-    @Override
-    public void promptConfirmed(Bundle confirmArgs)
+    private void onConfirmSavePassword()
     {
         SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
         Preferences.setFileSavedPasswordConfirmed(prefs);

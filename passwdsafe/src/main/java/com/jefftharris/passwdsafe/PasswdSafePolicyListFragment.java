@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.ListFragment;
 
 import com.jefftharris.passwdsafe.file.HeaderPasswdPolicies;
@@ -47,7 +48,7 @@ import java.util.List;
  */
 public class PasswdSafePolicyListFragment extends ListFragment
         implements PasswdPolicyEditDialog.Listener,
-                   ConfirmPromptDialog.Listener
+                   FragmentResultListener
 {
     /** Listener interface for owning activity */
     public interface Listener
@@ -81,6 +82,13 @@ public class PasswdSafePolicyListFragment extends ListFragment
     {
         super.onAttach(ctx);
         itsListener = (Listener)ctx;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        ConfirmPromptDialog.setListener(this);
     }
 
     @Override
@@ -166,19 +174,17 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void promptConfirmed(Bundle confirmArgs)
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
     {
-        PasswdPolicy policy = confirmArgs.getParcelable(CONFIRM_ARG_POLICY);
-        if (policy == null) {
-            return;
+        switch (requestKey) {
+        case ConfirmPromptDialog.REQUEST_KEY -> {
+            PasswdPolicy policy = result.getParcelable(CONFIRM_ARG_POLICY);
+            if (policy != null) {
+                savePolicies(policy.getName(), null);
+            }
         }
-
-        savePolicies(policy.getName(), null);
-    }
-
-    @Override
-    public void promptCanceled()
-    {
+        }
     }
 
     /**
@@ -192,7 +198,6 @@ public class PasswdSafePolicyListFragment extends ListFragment
         ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
                 getString(R.string.delete_policy_msg, policy.getName()), null,
                 getString(R.string.delete), confirmArgs);
-        dialog.setTargetFragment(this, 0);
         dialog.show(getParentFragmentManager(), "Delete policy");
     }
 
