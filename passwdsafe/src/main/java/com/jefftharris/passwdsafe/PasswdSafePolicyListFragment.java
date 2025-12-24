@@ -37,6 +37,8 @@ import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import com.jefftharris.passwdsafe.view.PasswdPolicyEditDialog;
 import com.jefftharris.passwdsafe.view.PasswdPolicyView;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,6 +74,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static PasswdSafePolicyListFragment newInstance()
     {
         return new PasswdSafePolicyListFragment();
@@ -92,7 +96,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState)
     {
         setHasOptionsMenu(true);
@@ -137,7 +142,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_add_policy) {
             editPolicy(null);
@@ -147,14 +152,17 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void onListItemClick(ListView l, @NonNull View v, int pos, long id)
+    public void onListItemClick(@NonNull ListView l,
+                                @NonNull View v,
+                                int pos,
+                                long id)
     {
         l.invalidateViews();
     }
 
     @Override
     public void handlePolicyEditComplete(PasswdPolicy oldPolicy,
-                                         PasswdPolicy newPolicy)
+                                         @NonNull PasswdPolicy newPolicy)
     {
         if (newPolicy.getLocation() == PasswdPolicy.Location.DEFAULT) {
             PasswdSafeApp app =
@@ -409,7 +417,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             /**
              * Constructor
              */
-            protected ViewHolder(View view)
+            protected ViewHolder(@NonNull View view)
             {
                 itsTitle = view.findViewById(R.id.title);
                 itsEditBtn = view.findViewById(R.id.edit);
@@ -449,7 +457,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             }
 
             @Override
-            public void onClick(View v)
+            public void onClick(@NonNull View v)
             {
                 int id = v.getId();
                 if (id == R.id.edit) {
@@ -460,7 +468,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             }
 
             @Override
-            public boolean onLongClick(View v)
+            public boolean onLongClick(@NonNull View v)
             {
                 int id = v.getId();
                 if (id == R.id.edit) {
