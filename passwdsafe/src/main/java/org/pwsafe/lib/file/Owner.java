@@ -12,14 +12,11 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.Log;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 /**
  * The Owner class encapsulates an object to ensure it is closed after all
  * users are finished with it
  */
-public final class Owner<T extends Closeable> implements Closeable
+public final class Owner<T extends AutoCloseable> implements AutoCloseable
 {
     private T itsItem;
     private int itsRefCount = 1;
@@ -85,7 +82,7 @@ public final class Owner<T extends Closeable> implements Closeable
             if (--itsRefCount <= 0) {
                 try {
                     itsItem.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Log.getInstance(Owner.class.getName()).error(e);
                 }
                 itsItem = null;

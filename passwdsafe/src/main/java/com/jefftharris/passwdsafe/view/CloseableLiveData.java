@@ -11,15 +11,12 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 /**
  * The CloseableLiveData class extends MutableLiveData to attempt to close
  * the data it contains.
  */
-public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
-    implements Closeable
+public class CloseableLiveData<T extends AutoCloseable>
+        extends MutableLiveData<T> implements AutoCloseable
 {
     private static final String TAG = "CloseableLiveData";
 
@@ -41,7 +38,7 @@ public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
             PasswdSafeUtil.dbginfo(TAG, "Closing value");
             try {
                 value.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 PasswdSafeUtil.dbginfo(TAG, e, "Error closing live data");
             }
             setValue(null);
