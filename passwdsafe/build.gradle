@@ -82,7 +82,7 @@ android {
 
 dependencies {
     def room_version = "2.7.1"
-    def yubikey_version = "2.9.0"
+    def yubikey_version = "3.0.0"
     def espresso_version = "3.7.0"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
