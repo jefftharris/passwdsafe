@@ -1172,7 +1172,7 @@ public class PasswdSafeOpenFileFragment
                              PasswdSafeApp.DEBUG_AUTO_FILE)) {
             itsYubikeyCb.setChecked(false);
             itsPasswordEdit.setText("test123");
-            itsOpenBtn.performClick();
+            itsOpenBtn.post(() -> itsOpenBtn.performClick());
         }
     }
 
