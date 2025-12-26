@@ -55,7 +55,9 @@ public class CloseableLiveData<T extends AutoCloseable>
     protected void onInactive()
     {
         super.onInactive();
-        close();
+        if (!hasObservers()) {
+            close();
+        }
     }
 
     /**
