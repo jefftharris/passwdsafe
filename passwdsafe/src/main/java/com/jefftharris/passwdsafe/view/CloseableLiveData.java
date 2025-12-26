@@ -28,6 +28,14 @@ public class CloseableLiveData<T extends AutoCloseable>
     }
 
     /**
+     * Constructor with a value
+     */
+    public CloseableLiveData(T value)
+    {
+        super(value);
+    }
+
+   /**
      * Close the data
      */
     @Override
