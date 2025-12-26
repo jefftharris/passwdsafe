@@ -35,22 +35,20 @@ public class CloseableLiveData<T extends AutoCloseable>
         super(value);
     }
 
+    @Override
+    public void setValue(T value)
+    {
+        doClose(false);
+        super.setValue(value);
+    }
+
    /**
      * Close the data
      */
     @Override
     public void close()
     {
-        T value = getValue();
-        if (value != null) {
-            PasswdSafeUtil.dbginfo(TAG, "Closing value");
-            try {
-                value.close();
-            } catch (Exception e) {
-                PasswdSafeUtil.dbginfo(TAG, e, "Error closing live data");
-            }
-            setValue(null);
-        }
+        doClose(true);
     }
 
     @Override
@@ -70,6 +68,21 @@ public class CloseableLiveData<T extends AutoCloseable>
             close();
         } finally {
             super.finalize();
+        }
+    }
+
+    private void doClose(boolean setNull)
+    {
+        T value = getValue();
+        if (value != null) {
+            try {
+                value.close();
+            } catch (Exception e) {
+                PasswdSafeUtil.dbginfo(TAG, e, "Error closing live data");
+            }
+            if (setNull) {
+                setValue(null);
+            }
         }
     }
 }
