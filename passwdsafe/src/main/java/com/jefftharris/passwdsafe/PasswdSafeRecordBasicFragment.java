@@ -24,11 +24,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
@@ -89,6 +91,9 @@ public class PasswdSafeRecordBasicFragment
     private CompoundButton itsPasswordSubsetBtn;
     private TextInputLayout itsPasswordSubsetInput;
     private TextView itsPasswordSubset;
+    private View itsTotpRow;
+    private TextView itsTotp;
+    private ProgressBar itsTotpProgress;
     private View itsUrlRow;
     private TextView itsUrl;
     private View itsEmailRow;
@@ -101,6 +106,7 @@ public class PasswdSafeRecordBasicFragment
     private View itsProtectedRow;
     private View itsReferencesRow;
     private ListView itsReferences;
+    private PasswdSafeRecordBasicViewModel itsViewModel;
 
     /**
      * Create a new instance of the fragment
@@ -112,6 +118,16 @@ public class PasswdSafeRecordBasicFragment
         PasswdSafeRecordBasicFragment frag = new PasswdSafeRecordBasicFragment();
         frag.setArguments(createArgs(location));
         return frag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        itsViewModel = new ViewModelProvider(requireActivity()).get(
+                PasswdSafeRecordBasicViewModel.class);
+        itsViewModel.getTotpState().observe(this, this::onTotpChanged);
     }
 
     @Override
@@ -190,6 +206,10 @@ public class PasswdSafeRecordBasicFragment
         });
         itsPasswordHideRun = () ->
                 updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
+        itsTotpRow = root.findViewById(R.id.totp_row);
+        itsTotpRow.setOnClickListener(this);
+        itsTotp = root.findViewById(R.id.totp);
+        itsTotpProgress = root.findViewById(R.id.totp_progress);
         itsUrlRow = root.findViewById(R.id.url_row);
         itsUrl = root.findViewById(R.id.url);
         itsEmailRow = root.findViewById(R.id.email_row);
@@ -219,6 +239,7 @@ public class PasswdSafeRecordBasicFragment
     {
         super.onPause();
         itsPassword.removeCallbacks(itsPasswordHideRun);
+        itsViewModel.setTotp(null);
     }
 
     @Override
@@ -323,6 +344,9 @@ public class PasswdSafeRecordBasicFragment
             showRefRec(true, 0);
         } else if (id == R.id.password_row) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
+        } else if (id == R.id.totp_row) {
+            itsViewModel.updateTotpShown(
+                    PasswdSafeRecordBasicViewModel.TotpVisibiltyChange.TOGGLE);
         }
     }
 
@@ -411,6 +435,10 @@ public class PasswdSafeRecordBasicFragment
         itsSubsetErrorStr = getString(R.string.password_subset_error,
                                       passwordLen);
         updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
+
+        try (var totp = fileData.getTotp(rec)) {
+            itsViewModel.setTotp((totp != null) ? totp.pass() : null);
+        }
 
         setFieldText(itsUrl, itsUrlRow, url);
         setFieldText(itsEmail, itsEmailRow, email);
@@ -544,7 +572,55 @@ public class PasswdSafeRecordBasicFragment
             case TO_NONE -> {
             }
             }
+        }
+        act.invalidateOptionsMenu();
+    }
+
+    /**
+     * Handle a change in TOTP state
+     */
+    private void onTotpChanged(
+            @Nullable PasswdSafeRecordBasicViewModel.TotpState totpState)
+    {
+        if (totpState == null) {
+            return;
+        }
+
+        Activity act = requireActivity();
+        var status = totpState.getStatus();
+        if (status != null) {
+            GuiUtils.setVisible(itsTotpRow, true);
+            switch (status) {
+            case OK -> {
+                boolean isShown = totpState.isShown();
+                if (isShown) {
+                    try (var value = totpState.getValue()) {
+                        if (value != null) {
+                            value.get().setInto(itsTotp);
+                        } else {
+                            itsTotp.setText("");
+                        }
+                    }
+                    itsTotpProgress.setProgress(totpState.getTimeProgress());
+                } else {
+                    itsTotp.setText(R.string.hidden_password_normal);
+                }
+                TypefaceUtils.enableMonospace(itsTotp, isShown, act);
+                GuiUtils.setVisible(itsTotpProgress, isShown);
             }
+            case INVALID_ALGORITHM,
+                 INVALID_TIME_STEP,
+                 INVALID_SECRET_KEY,
+                 INVALID_NUM_DIGITS -> {
+                itsTotp.setText(getString(R.string.error_fmt, status));
+                TypefaceUtils.enableMonospace(itsTotp, false, act);
+                GuiUtils.setVisible(itsTotpProgress, false);
+            }
+            }
+        } else {
+            GuiUtils.setVisible(itsTotpRow, false);
+            itsTotp.setText("");
+            GuiUtils.setVisible(itsTotpProgress, false);
         }
         act.invalidateOptionsMenu();
     }
