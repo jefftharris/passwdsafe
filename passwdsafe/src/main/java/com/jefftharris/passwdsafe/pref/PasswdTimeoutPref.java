@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,6 +8,8 @@
 package com.jefftharris.passwdsafe.pref;
 
 import android.content.res.Resources;
+
+import androidx.annotation.NonNull;
 
 import com.jefftharris.passwdsafe.R;
 
@@ -62,6 +64,7 @@ public enum PasswdTimeoutPref
     /**
      * Get the values of the preference values
      */
+    @NonNull
     public static String[] getValues()
     {
         PasswdTimeoutPref[] prefs = values();
@@ -75,6 +78,7 @@ public enum PasswdTimeoutPref
     /**
      * Get the display names of the preference values
      */
+    @NonNull
     public static String[] getDisplayNames(Resources res)
     {
         String[] displayNames = getDisplayNamesArray(res);
@@ -89,7 +93,8 @@ public enum PasswdTimeoutPref
     /**
      * Get the array of display names
      */
-    private static String[] getDisplayNamesArray(Resources res)
+    @NonNull
+    private static String[] getDisplayNamesArray(@NonNull Resources res)
     {
         return res.getStringArray(R.array.passwd_timeout_pref);
     }

@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe;
 
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -37,7 +36,6 @@ import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
-import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.view.CopyField;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 
@@ -535,20 +533,16 @@ public class PasswdSafeRecordBasicFragment
         TypefaceUtils.enableMonospace(itsPassword, itsIsPasswordShown, act);
         itsPassword.removeCallbacks(itsPasswordHideRun);
         if (itsIsPasswordShown) {
-            SharedPreferences prefs = Preferences.getSharedPrefs(getContext());
-            PasswdTimeoutPref timeout =
-                    Preferences.getPasswdVisibleTimeoutPref(prefs);
+            var prefs = Preferences.getSharedPrefs(requireContext());
+            var timeout = Preferences.getPasswdVisibleTimeoutPref(prefs);
             switch (timeout) {
-            case TO_15_SEC:
-            case TO_30_SEC:
-            case TO_1_MIN:
-            case TO_5_MIN: {
-                itsPassword.postDelayed(itsPasswordHideRun,
-                                        timeout.getTimeout());
-                break;
+            case TO_15_SEC,
+                 TO_30_SEC,
+                 TO_1_MIN,
+                 TO_5_MIN -> itsPassword.postDelayed(itsPasswordHideRun,
+                                                     timeout.getTimeout());
+            case TO_NONE -> {
             }
-            case TO_NONE: {
-                break;
             }
             }
         }
