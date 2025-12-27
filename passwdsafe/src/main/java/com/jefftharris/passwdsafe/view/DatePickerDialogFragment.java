@@ -91,10 +91,13 @@ public class DatePickerDialogFragment extends DialogFragment
                                   createBundle(year, monthOfYear, dayOfMonth));
     }
 
-    private static void setResultField(@NonNull Bundle result,
-                                       @NonNull String key,
-                                       @NonNull Calendar date,
-                                       int field)
+    /**
+     * Set a date field from a result bundle
+     */
+    static void setResultField(@NonNull Bundle result,
+                               @NonNull String key,
+                               @NonNull Calendar date,
+                               int field)
     {
         date.set(field, result.getInt(key, date.get(field)));
     }

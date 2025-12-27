@@ -88,7 +88,6 @@ public class PasswdSafeEditRecordFragment
                    NewGroupDialog.Listener,
                    View.OnClickListener,
                    View.OnLongClickListener,
-                   TimePickerDialogFragment.Listener,
                    PasswdPolicyEditDialog.Listener,
                    AdapterView.OnItemSelectedListener
 {
@@ -208,6 +207,7 @@ public class PasswdSafeEditRecordFragment
     {
         super.onCreate(savedInstanceState);
         DatePickerDialogFragment.setListener(this);
+        TimePickerDialogFragment.setListener(this);
 
         itsTotpViewModel = new ViewModelProvider(this).get(
                 PasswdSafeRecordTotpViewModel.class);
@@ -508,7 +508,6 @@ public class PasswdSafeEditRecordFragment
                     TimePickerDialogFragment.newInstance(
                             itsExpiryDate.get(Calendar.HOUR_OF_DAY),
                             itsExpiryDate.get(Calendar.MINUTE));
-            picker.setTargetFragment(this, 0);
             picker.show(getParentFragmentManager(), "timePicker");
         } else if (id == R.id.history_addremove) {
             if (itsHistory == null) {
@@ -623,15 +622,6 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void handleTimePicked(int hourOfDay, int minute)
-    {
-        itsExpiryDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        itsExpiryDate.set(Calendar.MINUTE, minute);
-        itsExpiryDate.set(Calendar.SECOND, 0);
-        updatePasswdExpiryDate();
-    }
-
-    @Override
     public void handlePolicyEditComplete(PasswdPolicy oldPolicy,
                                          PasswdPolicy newPolicy)
     {
@@ -668,6 +658,7 @@ public class PasswdSafeEditRecordFragment
     {
         switch (requestKey) {
         case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
+        case TimePickerDialogFragment.REQUEST_KEY -> handleTimePicked(result);
         }
     }
 
@@ -982,6 +973,15 @@ public class PasswdSafeEditRecordFragment
         GuiUtils.setVisible(itsExpireIntervalFields,
                             itsExpiryType == PasswdExpiration.Type.INTERVAL);
         itsValidator.validate();
+    }
+
+    /**
+     * Handle a time picked
+     */
+    private void handleTimePicked(@NonNull Bundle result)
+    {
+        TimePickerDialogFragment.updateDateFromResult(result, itsExpiryDate);
+        updatePasswdExpiryDate();
     }
 
     /**
