@@ -40,7 +40,6 @@ public class PasswdSafeExpirationsFragment
                         <PasswdSafeExpirationsFragment.Listener>
         implements AdapterView.OnItemClickListener,
                    CompoundButton.OnCheckedChangeListener,
-                   DatePickerDialogFragment.Listener,
                    FragmentResultListener
 {
     /**
@@ -84,6 +83,7 @@ public class PasswdSafeExpirationsFragment
     {
         super.onCreate(savedInstanceState);
         ConfirmPromptDialog.setListener(this);
+        DatePickerDialogFragment.setListener(this);
     }
 
     @Override
@@ -133,7 +133,6 @@ public class PasswdSafeExpirationsFragment
                             now.get(Calendar.YEAR),
                             now.get(Calendar.MONTH),
                             now.get(Calendar.DAY_OF_MONTH));
-            picker.setTargetFragment(this, 0);
             picker.show(getParentFragmentManager(), "datePicker");
             break;
         }
@@ -162,21 +161,6 @@ public class PasswdSafeExpirationsFragment
     }
 
     @Override
-    public void handleDatePicked(int year, int monthOfYear, int dayOfMonth)
-    {
-        Listener listener = getListener();
-        if (listener == null) {
-            return;
-        }
-        Calendar date = Calendar.getInstance();
-        date.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
-        date.set(Calendar.MILLISECOND, 0);
-        date.add(Calendar.DAY_OF_MONTH, 1);
-        listener.setRecordExpiryFilter(PasswdExpiryFilter.CUSTOM,
-                                       date.getTime());
-    }
-
-    @Override
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
@@ -192,7 +176,28 @@ public class PasswdSafeExpirationsFragment
                 refresh();
             }
         }
+        case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
         }
+    }
+
+    /**
+     * Handle a date picked
+     */
+    private void handleDatePicked(@NonNull Bundle result)
+    {
+        Listener listener = getListener();
+        if (listener == null) {
+            return;
+        }
+        Calendar date = Calendar.getInstance();
+        DatePickerDialogFragment.updateDateFromResult(result, date);
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        date.add(Calendar.DAY_OF_MONTH, 1);
+        listener.setRecordExpiryFilter(PasswdExpiryFilter.CUSTOM,
+                                       date.getTime());
     }
 
     /**

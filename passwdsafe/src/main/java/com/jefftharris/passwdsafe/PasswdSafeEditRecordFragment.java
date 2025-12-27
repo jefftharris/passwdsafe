@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -83,11 +84,11 @@ import java.util.TreeSet;
 public class PasswdSafeEditRecordFragment
         extends AbstractPasswdSafeLocationFragment
                         <PasswdSafeEditRecordFragment.Listener>
-        implements NewGroupDialog.Listener,
+        implements FragmentResultListener,
+                   NewGroupDialog.Listener,
                    View.OnClickListener,
                    View.OnLongClickListener,
                    TimePickerDialogFragment.Listener,
-                   DatePickerDialogFragment.Listener,
                    PasswdPolicyEditDialog.Listener,
                    AdapterView.OnItemSelectedListener
 {
@@ -206,6 +207,7 @@ public class PasswdSafeEditRecordFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        DatePickerDialogFragment.setListener(this);
 
         itsTotpViewModel = new ViewModelProvider(this).get(
                 PasswdSafeRecordTotpViewModel.class);
@@ -500,7 +502,6 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.YEAR),
                             itsExpiryDate.get(Calendar.MONTH),
                             itsExpiryDate.get(Calendar.DAY_OF_MONTH));
-            picker.setTargetFragment(this, 0);
             picker.show(getParentFragmentManager(), "datePicker");
         } else if (id == R.id.expire_date_time) {
             TimePickerDialogFragment picker =
@@ -631,15 +632,6 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void handleDatePicked(int year, int monthOfYear, int dayOfMonth)
-    {
-        itsExpiryDate.set(Calendar.YEAR, year);
-        itsExpiryDate.set(Calendar.MONTH, monthOfYear);
-        itsExpiryDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        updatePasswdExpiryDate();
-    }
-
-    @Override
     public void handlePolicyEditComplete(PasswdPolicy oldPolicy,
                                          PasswdPolicy newPolicy)
     {
@@ -667,6 +659,15 @@ public class PasswdSafeEditRecordFragment
             setLinkRefUuid(data.getStringExtra(PasswdSafeApp.RESULT_DATA_UUID));
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
+    {
+        switch (requestKey) {
+        case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
         }
     }
 
@@ -981,6 +982,15 @@ public class PasswdSafeEditRecordFragment
         GuiUtils.setVisible(itsExpireIntervalFields,
                             itsExpiryType == PasswdExpiration.Type.INTERVAL);
         itsValidator.validate();
+    }
+
+    /**
+     * Handle a date picked
+     */
+    private void handleDatePicked(@NonNull Bundle result)
+    {
+        DatePickerDialogFragment.updateDateFromResult(result, itsExpiryDate);
+        updatePasswdExpiryDate();
     }
 
     /**
