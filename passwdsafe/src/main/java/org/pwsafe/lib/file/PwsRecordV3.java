@@ -324,6 +324,7 @@ public class PwsRecordV3 extends PwsRecord
                         break;
 
                     case PASSWORD:
+                    case TWO_FACTOR_KEY:
                         itemVal = new PwsPasswdUnicodeField(type,
                                                             item.getByteData(),
                                                             file);
@@ -504,6 +505,7 @@ public class PwsRecordV3 extends PwsRecord
                 switch ((PwsFieldTypeV3)fieldType) {
                 case PASSWORD,
                      NOTES,
+                     TWO_FACTOR_KEY,
                      END_OF_RECORD,
                      UNKNOWN -> {
                 }

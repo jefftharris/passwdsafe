@@ -43,6 +43,7 @@ public enum PwsFieldTypeV3 implements PwsFieldType
     SHIFT_DOUBLE_CLICK_ACTION(0x17, PwsShortField.class),
     PASSWORD_POLICY_NAME(0x18, PwsStringUnicodeField.class),
     ENTRY_KEYBOARD_SHORTCUT(0x19, PwsIntegerField.class),
+    TWO_FACTOR_KEY(0x1b, PwsPasswdUnicodeField.class),
     END_OF_RECORD(255, null),
 
     UNKNOWN(-1, null);

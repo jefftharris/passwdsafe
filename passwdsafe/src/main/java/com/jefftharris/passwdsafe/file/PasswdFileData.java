@@ -466,6 +466,24 @@ public class PasswdFileData
         }
     }
 
+    /** Get the TOTP authentication code */
+    @Nullable
+    public final Owner<Totp> getTotp(@NonNull PwsRecord rec)
+    {
+        Owner<Totp> totp = null;
+
+        PwsField field = doGetRecField(rec, PwsFieldTypeV3.TWO_FACTOR_KEY);
+        if (field instanceof PwsPasswdUnicodeField) {
+            try (var secretKey = PwsPassword.create(field.toString())) {
+                totp = new Owner<>(new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                            Totp.DEFAULT_NUM_DIGITS,
+                                            Totp.DEFAULT_TIME_STEP, Totp.T0));
+            }
+        }
+
+        return totp;
+    }
+
     /** Get the password expiration */
     public final PasswdExpiration getPasswdExpiry(PwsRecord rec)
     {
@@ -905,6 +923,7 @@ public class PasswdFileData
              DOUBLE_CLICK_ACTION,
              SHIFT_DOUBLE_CLICK_ACTION,
              ENTRY_KEYBOARD_SHORTCUT,
+             TWO_FACTOR_KEY,
              END_OF_RECORD,
              UNKNOWN -> {
             return null;
@@ -956,6 +975,7 @@ public class PasswdFileData
              DOUBLE_CLICK_ACTION,
              SHIFT_DOUBLE_CLICK_ACTION,
              ENTRY_KEYBOARD_SHORTCUT,
+             TWO_FACTOR_KEY,
              END_OF_RECORD,
              UNKNOWN -> {
             return null;
@@ -1175,7 +1195,8 @@ public class PasswdFileData
                 }
                 break;
             }
-            case PASSWORD: {
+            case PASSWORD:
+            case TWO_FACTOR_KEY: {
                 String str = (val == null) ? null : val.toString();
                 if (!TextUtils.isEmpty(str)) {
                     field = new PwsPasswdUnicodeField(fieldId, str, itsPwsFile);
@@ -1265,6 +1286,7 @@ public class PasswdFileData
             case SHIFT_DOUBLE_CLICK_ACTION:
             case PASSWORD_POLICY_NAME:
             case ENTRY_KEYBOARD_SHORTCUT:
+            case TWO_FACTOR_KEY:
             case END_OF_RECORD:
             case UNKNOWN: {
                 fieldId = null;
