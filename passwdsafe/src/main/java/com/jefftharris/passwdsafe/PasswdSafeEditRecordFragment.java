@@ -85,7 +85,6 @@ public class PasswdSafeEditRecordFragment
         extends AbstractPasswdSafeLocationFragment
                         <PasswdSafeEditRecordFragment.Listener>
         implements FragmentResultListener,
-                   NewGroupDialog.Listener,
                    View.OnClickListener,
                    View.OnLongClickListener,
                    PasswdPolicyEditDialog.Listener,
@@ -207,6 +206,7 @@ public class PasswdSafeEditRecordFragment
     {
         super.onCreate(savedInstanceState);
         DatePickerDialogFragment.setListener(this);
+        NewGroupDialog.setListener(this);
         TimePickerDialogFragment.setListener(this);
 
         itsTotpViewModel = new ViewModelProvider(this).get(
@@ -481,18 +481,6 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void handleNewGroup(String newGroup)
-    {
-        if (newGroup != null) {
-            if (!TextUtils.isEmpty(newGroup)) {
-                itsGroups.add(newGroup);
-            }
-            itsPrevGroupPos = updateGroups(newGroup);
-            itsValidator.validate();
-        }
-    }
-
-    @Override
     public void onClick(@NonNull View v)
     {
         int id = v.getId();
@@ -658,6 +646,7 @@ public class PasswdSafeEditRecordFragment
     {
         switch (requestKey) {
         case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
+        case NewGroupDialog.REQUEST_KEY -> handleNewGroup(result);
         case TimePickerDialogFragment.REQUEST_KEY -> handleTimePicked(result);
         }
     }
@@ -994,6 +983,21 @@ public class PasswdSafeEditRecordFragment
     }
 
     /**
+     * Handle a new group result
+     */
+    private void handleNewGroup(@NonNull Bundle result)
+    {
+        String newGroup = result.getString(NewGroupDialog.ARG_GROUP);
+        if (newGroup != null) {
+            if (!TextUtils.isEmpty(newGroup)) {
+                itsGroups.add(newGroup);
+            }
+            itsPrevGroupPos = updateGroups(newGroup);
+            itsValidator.validate();
+        }
+    }
+
+    /**
      * Update fields after the password expiration date changes
      */
     private void updatePasswdExpiryDate()
@@ -1237,7 +1241,6 @@ public class PasswdSafeEditRecordFragment
             // group item selected
             itsGroup.setSelection(itsPrevGroupPos);
             NewGroupDialog groupDlg = NewGroupDialog.newInstance();
-            groupDlg.setTargetFragment(this, 0);
             groupDlg.show(getParentFragmentManager(), "NewGroupDialog");
         } else {
             itsPrevGroupPos = position;

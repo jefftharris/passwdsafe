@@ -7,7 +7,6 @@
  */
 package com.jefftharris.passwdsafe.view;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,8 +17,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.jefftharris.passwdsafe.R;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
@@ -31,15 +33,11 @@ import org.jetbrains.annotations.Contract;
 /**
  * Dialog to select a new group
  */
-public class NewGroupDialog extends DialogFragment
+public class NewGroupDialog extends AppCompatDialogFragment
 {
-    /**
-     * Listener interface for the owning fragment
-     */
-    public interface Listener
-    {
-        void handleNewGroup(String newGroup);
-    }
+    public static final String REQUEST_KEY = "NewGroupDialog";
+
+    public static final String ARG_GROUP = "group";
 
     /**
      * Create a new instance
@@ -51,15 +49,21 @@ public class NewGroupDialog extends DialogFragment
         return new NewGroupDialog();
     }
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.DialogFragment#onCreateDialog(android.os.Bundle)
+    /**
+     * Set the fragment listener for results
      */
+    public static <T extends Fragment & FragmentResultListener>
+    void setListener(@NonNull T listener)
+    {
+        var fragMgr = listener.getParentFragmentManager();
+        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+    }
+
     @Override
     public @NonNull
     Dialog onCreateDialog(Bundle savedInstanceState)
     {
         LayoutInflater factory = getLayoutInflater();
-        @SuppressLint("InflateParams")
         final View view = factory.inflate(R.layout.new_group, null);
         AbstractDialogClickListener dlgClick =
                 new AbstractDialogClickListener()
@@ -68,20 +72,13 @@ public class NewGroupDialog extends DialogFragment
                     public void onOkClicked(DialogInterface dialog)
                     {
                         EditText newGroup = view.findViewById(R.id.new_group);
-                        Listener listener = (Listener)getTargetFragment();
-                        if (listener != null) {
-                            listener.handleNewGroup(
-                                    newGroup.getText().toString());
-                        }
+                        setResult(newGroup.getText().toString());
                     }
 
                     @Override
                     public void onCancelClicked()
                     {
-                        Listener listener = (Listener)getTargetFragment();
-                        if (listener != null) {
-                            listener.handleNewGroup(null);
-                        }
+                        setResult(null);
                     }
                 };
 
@@ -101,5 +98,13 @@ public class NewGroupDialog extends DialogFragment
             }
         });
         return alertDialog;
+    }
+
+    private void setResult(@Nullable String group)
+    {
+        var fragMgr = getParentFragmentManager();
+        var result = new Bundle();
+        result.putString(ARG_GROUP, group);
+        fragMgr.setFragmentResult(REQUEST_KEY, result);
     }
 }
