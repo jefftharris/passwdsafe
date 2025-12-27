@@ -1,6 +1,5 @@
 /*
- * $Id: Util.java 411 2009-09-25 18:19:34Z roxon $
- *
+ * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -385,7 +384,7 @@ public final class Util
     /**
      * Clear the contents of a byte array
      */
-    public static void clearArray(byte[] array)
+    public static void clearArray(@NonNull byte[] array)
     {
         Arrays.fill(array, (byte)0xA5);
         Arrays.fill(array, (byte)0x5A);
@@ -395,7 +394,7 @@ public final class Util
     /**
      * Clear the contents of a char array
      */
-    public static void clearArray(char[] array)
+    public static void clearArray(@NonNull char[] array)
     {
         Arrays.fill(array, (char)0xA5A5);
         Arrays.fill(array, (char)0x5A5A);
