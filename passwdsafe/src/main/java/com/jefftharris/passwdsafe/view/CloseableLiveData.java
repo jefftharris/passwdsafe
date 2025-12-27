@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -11,15 +11,12 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 /**
  * The CloseableLiveData class extends MutableLiveData to attempt to close
  * the data it contains.
  */
-public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
-    implements Closeable
+public class CloseableLiveData<T extends AutoCloseable>
+        extends MutableLiveData<T> implements AutoCloseable
 {
     private static final String TAG = "CloseableLiveData";
 
@@ -31,28 +28,36 @@ public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
     }
 
     /**
+     * Constructor with a value
+     */
+    public CloseableLiveData(T value)
+    {
+        super(value);
+    }
+
+    @Override
+    public void setValue(T value)
+    {
+        doClose(false);
+        super.setValue(value);
+    }
+
+   /**
      * Close the data
      */
     @Override
     public void close()
     {
-        T value = getValue();
-        if (value != null) {
-            PasswdSafeUtil.dbginfo(TAG, "Closing value");
-            try {
-                value.close();
-            } catch (IOException e) {
-                PasswdSafeUtil.dbginfo(TAG, e, "Error closing live data");
-            }
-            setValue(null);
-        }
+        doClose(true);
     }
 
     @Override
     protected void onInactive()
     {
         super.onInactive();
-        close();
+        if (!hasObservers()) {
+            close();
+        }
     }
 
     /**
@@ -61,7 +66,25 @@ public class CloseableLiveData<T extends Closeable> extends MutableLiveData<T>
     @Override
     protected void finalize() throws Throwable
     {
-        super.finalize();
-        close();
+        try {
+            close();
+        } finally {
+            super.finalize();
+        }
+    }
+
+    private void doClose(boolean setNull)
+    {
+        T value = getValue();
+        if (value != null) {
+            try {
+                value.close();
+            } catch (Exception e) {
+                PasswdSafeUtil.dbginfo(TAG, e, "Error closing live data");
+            }
+            if (setNull) {
+                setValue(null);
+            }
+        }
     }
 }

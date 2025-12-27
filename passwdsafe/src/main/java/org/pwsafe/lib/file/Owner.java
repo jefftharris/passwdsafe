@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -12,14 +12,11 @@ import androidx.annotation.NonNull;
 
 import org.pwsafe.lib.Log;
 
-import java.io.Closeable;
-import java.io.IOException;
-
 /**
  * The Owner class encapsulates an object to ensure it is closed after all
  * users are finished with it
  */
-public final class Owner<T extends Closeable> implements Closeable
+public final class Owner<T extends AutoCloseable> implements AutoCloseable
 {
     private T itsItem;
     private int itsRefCount = 1;
@@ -85,7 +82,7 @@ public final class Owner<T extends Closeable> implements Closeable
             if (--itsRefCount <= 0) {
                 try {
                     itsItem.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Log.getInstance(Owner.class.getName()).error(e);
                 }
                 itsItem = null;
@@ -99,10 +96,13 @@ public final class Owner<T extends Closeable> implements Closeable
     @Override
     protected void finalize() throws Throwable
     {
-        super.finalize();
-        if ((itsItem != null) && (itsRefCount > 0)) {
-            Exception e = new Exception("NOT FINALIZED");
-            Log.getInstance(Owner.class.getName()).error(e);
+        try {
+            if ((itsItem != null) && (itsRefCount > 0)) {
+                Exception e = new Exception("NOT FINALIZED");
+                Log.getInstance(Owner.class.getName()).error(e);
+            }
+        } finally {
+            super.finalize();
         }
     }
 }

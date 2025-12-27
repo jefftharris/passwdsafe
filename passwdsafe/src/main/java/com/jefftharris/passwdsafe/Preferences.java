@@ -341,6 +341,7 @@ public class Preferences
         return val;
     }
 
+    @NonNull
     public static PasswdTimeoutPref getPasswdVisibleTimeoutPref(
             @NonNull SharedPreferences prefs)
     {

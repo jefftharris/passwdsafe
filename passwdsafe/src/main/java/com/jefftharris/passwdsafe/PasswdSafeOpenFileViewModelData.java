@@ -300,10 +300,15 @@ public class PasswdSafeOpenFileViewModelData implements Closeable
     /**
      * Finalize the data
      */
-    protected void finalize()
+    @Override
+    protected void finalize() throws Throwable
     {
-        PasswdSafeUtil.dbginfo(TAG, "data finalize");
-        close();
+        try {
+            PasswdSafeUtil.dbginfo(TAG, "data finalize");
+            close();
+        } finally {
+            super.finalize();
+        }
     }
 
     /**

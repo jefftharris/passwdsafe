@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Util;
@@ -151,6 +152,15 @@ public class PwsPassword implements Closeable
     }
 
     /**
+     * Get the password as an un-protected string
+     */
+    @NonNull
+    public String unprotectAsString()
+    {
+        return new String(itsPasswd);
+    }
+
+    /**
      * Seal the password
      */
     public SealedObject seal(Cipher cipher)
@@ -190,6 +200,18 @@ public class PwsPassword implements Closeable
     }
 
     /**
+     * Does the password equals the passed password
+     */
+    @Override
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj instanceof PwsPassword rhs) {
+            return Arrays.equals(itsPasswd, rhs.itsPasswd);
+        }
+        return false;
+    }
+
+    /**
      * Close the password and clear any stored values
      */
     @Override
@@ -209,8 +231,11 @@ public class PwsPassword implements Closeable
     @Override
     protected void finalize() throws Throwable
     {
-        super.finalize();
-        close();
+        try {
+            close();
+        } finally {
+            super.finalize();
+        }
     }
 
     /**
