@@ -973,6 +973,9 @@ public class PasswdSafe extends AppCompatActivity
             dialog.show(getSupportFragmentManager(), "Copy password");
             return;
         }
+        case TOTP: {
+            break;
+        }
         case USER_NAME:
         case URL:
         case EMAIL: {
@@ -992,6 +995,16 @@ public class PasswdSafe extends AppCompatActivity
                 PasswdRecord passwdRec = fileData.getPasswdRecord(rec);
                 if (passwdRec != null) {
                     return passwdRec.getPassword(fileData);
+                }
+                break;
+            }
+            case TOTP: {
+                try (var totp = fileData.getTotp(rec);
+                     var value = (totp != null) ? totp.get().generate() :
+                                 null) {
+                    if (value != null) {
+                        return value.get().unprotectAsString();
+                    }
                 }
                 break;
             }

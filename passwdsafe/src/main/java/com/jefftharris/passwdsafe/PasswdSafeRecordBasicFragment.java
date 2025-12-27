@@ -227,6 +227,7 @@ public class PasswdSafeRecordBasicFragment
 
         registerForContextMenu(itsUserRow);
         registerForContextMenu(itsPasswordRow);
+        registerForContextMenu(itsTotpRow);
         registerForContextMenu(itsUrlRow);
         registerForContextMenu(itsEmailRow);
         updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
@@ -245,12 +246,16 @@ public class PasswdSafeRecordBasicFragment
     @Override
     public void onPrepareMenu(@NonNull Menu menu)
     {
-        MenuItem item = menu.findItem(R.id.menu_toggle_password);
+        boolean totpVisible = itsTotpRow.getVisibility() == View.VISIBLE;
+        MenuItem item = menu.findItem(R.id.menu_toggle_passwords);
         if (item != null) {
-            item.setTitle(
-                    itsIsPasswordShown ?
-                            R.string.hide_password : R.string.show_password);
-            item.setEnabled(itsPasswordRow.getVisibility() == View.VISIBLE);
+            item.setEnabled((itsPasswordRow.getVisibility() == View.VISIBLE) ||
+                            totpVisible);
+        }
+
+        item = menu.findItem(R.id.menu_copy_auth_code);
+        if (item != null) {
+            item.setVisible(totpVisible);
         }
 
         item = menu.findItem(R.id.menu_copy_url);
@@ -276,14 +281,19 @@ public class PasswdSafeRecordBasicFragment
         } else if (itemId == R.id.menu_copy_password) {
             copyPassword();
             return true;
+        } else if (itemId == R.id.menu_copy_auth_code) {
+            copyAuthCode();
+            return true;
         } else if (itemId == R.id.menu_copy_url) {
             copyUrl();
             return true;
         } else if (itemId == R.id.menu_copy_email) {
             copyEmail();
             return true;
-        } else if (itemId == R.id.menu_toggle_password) {
+        } else if (itemId == R.id.menu_toggle_passwords) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
+            itsViewModel.updateTotpShown(
+                    PasswdSafeRecordBasicViewModel.TotpVisibiltyChange.TOGGLE);
             return true;
         }
         return super.onMenuItemSelected(item);
@@ -303,6 +313,10 @@ public class PasswdSafeRecordBasicFragment
         } else if (id == R.id.password_row) {
             menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
                      R.id.menu_copy_password, 0, R.string.copy_password);
+        } else if (id == R.id.totp_row) {
+            menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
+                     R.id.menu_copy_auth_code, 0,
+                     R.string.copy_authentication_code);
         } else if (id == R.id.url_row) {
             menu.add(PasswdSafe.CONTEXT_GROUP_RECORD_BASIC,
                      R.id.menu_copy_url, 0, R.string.copy_url);
@@ -322,6 +336,9 @@ public class PasswdSafeRecordBasicFragment
         int itemId = item.getItemId();
         if (itemId == R.id.menu_copy_password) {
             copyPassword();
+            return true;
+        } else if (itemId == R.id.menu_copy_auth_code) {
+            copyAuthCode();
             return true;
         } else if (itemId == R.id.menu_copy_user) {
             copyUser();
@@ -687,6 +704,14 @@ public class PasswdSafeRecordBasicFragment
     private void copyPassword()
     {
         getListener().copyField(CopyField.PASSWORD, getLocation().getRecord());
+    }
+
+    /**
+     * Copy the authentication code to the clipboard
+     */
+    private void copyAuthCode()
+    {
+        getListener().copyField(CopyField.TOTP, getLocation().getRecord());
     }
 
     /**

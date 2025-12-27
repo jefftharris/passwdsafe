@@ -152,6 +152,15 @@ public class PwsPassword implements Closeable
     }
 
     /**
+     * Get the password as an un-protected string
+     */
+    @NonNull
+    public String unprotectAsString()
+    {
+        return new String(itsPasswd);
+    }
+
+    /**
      * Seal the password
      */
     public SealedObject seal(Cipher cipher)

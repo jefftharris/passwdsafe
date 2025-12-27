@@ -14,13 +14,16 @@
     <item android:id="@+id/menu_copy_password"
           android:title="@string/copy_password"/>
 
+    <item android:id="@+id/menu_copy_auth_code"
+        android:title="@string/copy_authentication_code"/>
+
     <item android:id="@+id/menu_copy_url"
           android:title="@string/copy_url"/>
 
     <item android:id="@+id/menu_copy_email"
           android:title="@string/copy_email"/>
 
-    <item android:id="@+id/menu_toggle_password"
-          android:title="@string/show_password"/>
+    <item android:id="@+id/menu_toggle_passwords"
+          android:title="@string/toggle_passwords"/>
 
 </menu>
