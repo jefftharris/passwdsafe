@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Util;
@@ -187,6 +188,18 @@ public class PwsPassword implements Closeable
         }
 
         return true;
+    }
+
+    /**
+     * Does the password equals the passed password
+     */
+    @Override
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj instanceof PwsPassword rhs) {
+            return Arrays.equals(itsPasswd, rhs.itsPasswd);
+        }
+        return false;
     }
 
     /**
