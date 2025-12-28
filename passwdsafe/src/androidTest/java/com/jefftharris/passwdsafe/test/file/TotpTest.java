@@ -81,11 +81,11 @@ public final class TotpTest
         try (var secretKey = createSecretKey(Totp.Hash.SHA1)) {
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1, 6,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA1_6, totp);
+                assertTotps(EXP_SHA1_6, Totp.Hash.SHA1, 6, totp);
             }
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1, 8,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA1_8, totp);
+                assertTotps(EXP_SHA1_8, Totp.Hash.SHA1, 8, totp);
             }
         }
     }
@@ -96,11 +96,11 @@ public final class TotpTest
         try (var secretKey = createSecretKey(Totp.Hash.SHA256)) {
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA256, 6,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA256_6, totp);
+                assertTotps(EXP_SHA256_6, Totp.Hash.SHA256, 6, totp);
             }
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA256, 8,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA256_8, totp);
+                assertTotps(EXP_SHA256_8, Totp.Hash.SHA256, 8, totp);
             }
         }
     }
@@ -111,11 +111,11 @@ public final class TotpTest
         try (var secretKey = createSecretKey(Totp.Hash.SHA512)) {
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA512, 6,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA512_6, totp);
+                assertTotps(EXP_SHA512_6, Totp.Hash.SHA512, 6, totp);
             }
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA512, 8,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA512_8, totp);
+                assertTotps(EXP_SHA512_8, Totp.Hash.SHA512, 8, totp);
             }
         }
     }
@@ -225,9 +225,16 @@ public final class TotpTest
     }
 
     private static void assertTotps(@NonNull String[] expecteds,
+                                    @NonNull Totp.Hash hash,
+                                    int numDigits,
                                     @NonNull Totp totp)
     {
         assertEquals(Totp.Status.OK, totp.getStatus());
+        assertTrue(totp.getSecretKey().get().equals(TEST_KEYS.get(hash)));
+        assertEquals(hash, totp.getHash());
+        assertEquals(numDigits, totp.getNumDigits());
+        assertEquals(30, totp.getTimeStep());
+        assertEquals(0, totp.getTimeStart());
         assertEquals(expecteds.length, TotpTest.TIMES.length);
         for (int i = 0; i < TotpTest.TIMES.length; ++i) {
             try (var value = totp.generate(

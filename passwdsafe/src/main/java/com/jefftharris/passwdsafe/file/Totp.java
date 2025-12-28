@@ -71,6 +71,7 @@ public class Totp implements AutoCloseable
     private final @NonNull Status itsStatus;
     private final @NonNull Owner<PwsPassword> itsSecretKey;
     private final @Nullable Mac itsHmac;
+    private final @NonNull Hash itsHash;
     private final int itsNumDigits;
     /// Time step in seconds
     private final long itsTimeStep;
@@ -90,6 +91,7 @@ public class Totp implements AutoCloseable
         var init = init(itsSecretKey.get(), hash, numDigits, timeStep);
         itsStatus = init.first();
         itsHmac = init.second();
+        itsHash = hash;
         itsNumDigits = numDigits;
         itsTimeStep = timeStep;
         itsTimeStart = timeStart;
@@ -105,11 +107,43 @@ public class Totp implements AutoCloseable
     }
 
     /**
+     * Get the hash algorithm
+     */
+    @NonNull
+    public Hash getHash()
+    {
+        return itsHash;
+    }
+
+    /**
+     * Get the number of digits
+     */
+    public int getNumDigits()
+    {
+        return itsNumDigits;
+    }
+
+    /**
      * Get the time step in seconds
      */
     public long getTimeStep()
     {
         return itsTimeStep;
+    }
+
+    /**
+     * Get the time start in seconds
+     */
+    public long getTimeStart()
+    {
+        return itsTimeStart;
+    }
+
+    @NonNull
+    @CheckResult
+    public Owner<PwsPassword> getSecretKey()
+    {
+        return itsSecretKey.pass().use();
     }
 
     /**
