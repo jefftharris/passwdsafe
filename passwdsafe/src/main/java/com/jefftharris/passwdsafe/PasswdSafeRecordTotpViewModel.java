@@ -27,21 +27,24 @@ import org.pwsafe.lib.file.PwsPassword;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
+/**
+ * Password record view model for TOTP
+ */
+public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
 {
-    public enum TotpVisibiltyChange
+    public enum VisibiltyChange
     {
         HIDE,
         TOGGLE
     }
 
     @SuppressWarnings("ClassCanBeRecord")
-    public static final class TotpConfig implements AutoCloseable
+    public static final class Config implements AutoCloseable
     {
         private final @Nullable Owner<Totp> itsTotp;
         private final boolean itsIsShown;
 
-        private TotpConfig(@Nullable Owner<Totp>.Param totp, boolean isShown)
+        private Config(@Nullable Owner<Totp>.Param totp, boolean isShown)
         {
             itsTotp = (totp != null) ? totp.use() : null;
             itsIsShown = isShown;
@@ -49,10 +52,10 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
 
         @NonNull
         @Contract("_ -> new")
-        private TotpConfig updateShown(boolean isShown)
+        private Config updateShown(boolean isShown)
         {
-            return new TotpConfig((itsTotp != null) ? itsTotp.pass() : null,
-                                  isShown);
+            return new Config((itsTotp != null) ? itsTotp.pass() : null,
+                              isShown);
         }
 
         public boolean hasTotp()
@@ -81,22 +84,22 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
         }
     }
 
-    public static final class TotpState implements AutoCloseable
+    public static final class State implements AutoCloseable
     {
         private final @Nullable Totp.Status itsStatus;
         private final boolean itsIsShown;
         private final @Nullable Owner<PwsPassword> itsValue;
         private final int itsTimeProgress;
 
-        private TotpState(@Nullable Totp.Status status)
+        private State(@Nullable Totp.Status status)
         {
             this(status, false, null, 100);
         }
 
-        private TotpState(@Nullable Totp.Status status,
-                          boolean isShown,
-                          @Nullable Owner<PwsPassword>.Param totpValue,
-                          int timeProgress)
+        private State(@Nullable Totp.Status status,
+                      boolean isShown,
+                      @Nullable Owner<PwsPassword>.Param totpValue,
+                      int timeProgress)
         {
             itsStatus = status;
             itsIsShown = isShown;
@@ -106,11 +109,11 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
 
         @NonNull
         @Contract("_ -> new")
-        private TotpState updateProgress(int progress)
+        private State updateProgress(int progress)
         {
-            return new TotpState(itsStatus, itsIsShown,
-                                 (itsValue != null) ? itsValue.pass() : null,
-                                 progress);
+            return new State(itsStatus, itsIsShown,
+                             (itsValue != null) ? itsValue.pass() : null,
+                             progress);
         }
 
         @Override
@@ -149,48 +152,48 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
     }
 
     private static final long INIT_UPDATE_TIME = Long.MIN_VALUE;
-    private static final String TAG = "PasswdSafeRecordBasicViewModel";
+    private static final String TAG = "PasswdSafeRecordTotpVM";
 
-    private final CloseableLiveData<TotpConfig> itsTotpConfig;
-    private final CloseableLiveData<TotpState> itsTotpState;
+    private final CloseableLiveData<Config> itsConfig;
+    private final CloseableLiveData<State> itsState;
     private final Handler itsHandler = new Handler();
-    private final Runnable itsTotpConfigHideRun =
-            () -> updateTotpConfigShown(TotpVisibiltyChange.HIDE);
-    private final Runnable itsTotpStateHideRun =
-            () -> updateTotpStateShown(TotpVisibiltyChange.HIDE);
-    private final Runnable itsUpdateTotpValueRun = this::updateTotpValue;
+    private final Runnable itsConfigHideRun =
+            () -> updateConfigShown(VisibiltyChange.HIDE);
+    private final Runnable itsStateHideRun =
+            () -> updateStateShown(VisibiltyChange.HIDE);
+    private final Runnable itsUpdateValueRun = this::updateStateValue;
     private long itsNextUpdateTime = INIT_UPDATE_TIME;
 
-    public PasswdSafeRecordBasicViewModel(Application app)
+    public PasswdSafeRecordTotpViewModel(Application app)
     {
         super(app);
-        itsTotpConfig = new CloseableLiveData<>(new TotpConfig(null, false));
-        itsTotpState = new CloseableLiveData<>(newTotpState());
+        itsConfig = new CloseableLiveData<>(new Config(null, false));
+        itsState = new CloseableLiveData<>(createState());
     }
 
-    public LiveData<TotpConfig> getTotpConfig()
+    public LiveData<Config> getConfig()
     {
-        return itsTotpConfig;
+        return itsConfig;
     }
 
-    public void updateTotpConfigShown(@NonNull TotpVisibiltyChange change)
+    public void updateConfigShown(@NonNull VisibiltyChange change)
     {
         var currConfig = getConfigValue();
         boolean shown = changeVisibility(currConfig.isShown(), change,
-                                         itsTotpConfigHideRun);
+                                         itsConfigHideRun);
         setConfigValue(currConfig.updateShown(shown));
     }
 
-    public LiveData<TotpState> getTotpState()
+    public LiveData<State> getState()
     {
-        return itsTotpState;
+        return itsState;
     }
 
-    public void updateTotpStateShown(@NonNull TotpVisibiltyChange change)
+    public void updateStateShown(@NonNull VisibiltyChange change)
     {
-        boolean shown = changeVisibility(getStateValue().isShown(),
-                                         change, itsTotpStateHideRun);
-        updateTotpState(shown);
+        boolean shown = changeVisibility(getStateValue().isShown(), change,
+                                         itsStateHideRun);
+        updateState(shown);
     }
 
     public void setTotp(@Nullable Owner<Totp>.Param totp)
@@ -198,7 +201,7 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
         PasswdSafeUtil.dbginfo(TAG, "setTotp totp %b -> %b",
                                getConfigValue().hasTotp(), totp != null);
         updateTotp(totp);
-        updateTotpValue();
+        updateStateValue();
     }
 
     @Override
@@ -207,42 +210,42 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
         PasswdSafeUtil.dbginfo(TAG, "onCleared");
         super.onCleared();
         updateTotp(null);
-        itsTotpState.close();
+        itsState.close();
     }
 
     private void resetConfigTimers()
     {
-        itsHandler.removeCallbacks(itsTotpConfigHideRun);
+        itsHandler.removeCallbacks(itsConfigHideRun);
     }
 
     private void resetStateTimers()
     {
         itsNextUpdateTime = INIT_UPDATE_TIME;
-        itsHandler.removeCallbacks(itsTotpStateHideRun);
-        itsHandler.removeCallbacks(itsUpdateTotpValueRun);
+        itsHandler.removeCallbacks(itsStateHideRun);
+        itsHandler.removeCallbacks(itsUpdateValueRun);
     }
 
     private void updateTotp(@Nullable Owner<Totp>.Param newTotp)
     {
         resetConfigTimers();
         resetStateTimers();
-        setConfigValue(new TotpConfig(newTotp, false));
+        setConfigValue(new Config(newTotp, false));
     }
 
-    private void updateTotpValue()
+    private void updateStateValue()
     {
-        updateTotpState(getStateValue().isShown());
+        updateState(getStateValue().isShown());
     }
 
-    private void updateTotpState(boolean shown)
+    private void updateState(boolean shown)
     {
         try (var totpOwner = getConfigValue().getTotp()) {
-            PasswdSafeUtil.dbginfo(TAG, "updateTotpState shown %b, totp %b",
-                                   shown, (totpOwner != null));
+            PasswdSafeUtil.dbginfo(TAG, "updateState shown %b, totp %b", shown,
+                                   (totpOwner != null));
 
             if ((totpOwner == null) || !shown) {
                 resetStateTimers();
-                setStateValue(newTotpState());
+                setStateValue(createState());
                 return;
             }
 
@@ -257,18 +260,18 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
             }
             int progress = calcNextProgress(now, timeStepMs);
 
-            itsHandler.postDelayed(itsUpdateTotpValueRun,
+            itsHandler.postDelayed(itsUpdateValueRun,
                                    nextWallUpdate(timeStepMs / 5));
 
             if (updateValue) {
                 PasswdSafeUtil.dbginfo(TAG,
-                                       "updateTotpState new value, progress " +
-                                       "%d", progress);
+                                       "updateState new value, progress %d",
+                                       progress);
 
                 try (var value = totp.generate()) {
-                    setStateValue(new TotpState(totp.getStatus(), true,
-                                                (value != null) ? value.pass() :
-                                                null, progress));
+                    setStateValue(new State(totp.getStatus(), true,
+                                            (value != null) ? value.pass() :
+                                            null, progress));
                 }
             } else {
                 var state = getStateValue();
@@ -278,7 +281,7 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
     }
 
     private boolean changeVisibility(boolean currShown,
-                                     @NonNull TotpVisibiltyChange change,
+                                     @NonNull VisibiltyChange change,
                                      @NonNull Runnable hideRun)
     {
         boolean shown = currShown;
@@ -317,31 +320,31 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
                           100);
     }
 
-    private @NonNull TotpState newTotpState()
+    private @NonNull State createState()
     {
         try (var totpOwner = getConfigValue().getTotp()) {
-            return new TotpState(
+            return new State(
                     (totpOwner != null) ? totpOwner.get().getStatus() : null);
         }
     }
 
-    private @NonNull TotpConfig getConfigValue()
+    private @NonNull Config getConfigValue()
     {
-        return Objects.requireNonNull(itsTotpConfig.getValue());
+        return Objects.requireNonNull(itsConfig.getValue());
     }
 
-    private void setConfigValue(@NonNull TotpConfig totpConfig)
+    private void setConfigValue(@NonNull Config config)
     {
-        itsTotpConfig.setValue(totpConfig);
+        itsConfig.setValue(config);
     }
 
-    private @NonNull TotpState getStateValue()
+    private @NonNull State getStateValue()
     {
-        return Objects.requireNonNull(itsTotpState.getValue());
+        return Objects.requireNonNull(itsState.getValue());
     }
 
-    private void setStateValue(@NonNull TotpState totpState)
+    private void setStateValue(@NonNull State state)
     {
-        itsTotpState.setValue(totpState);
+        itsState.setValue(state);
     }
 }

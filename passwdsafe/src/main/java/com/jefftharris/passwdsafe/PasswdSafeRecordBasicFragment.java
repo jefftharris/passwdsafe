@@ -106,7 +106,7 @@ public class PasswdSafeRecordBasicFragment
     private View itsProtectedRow;
     private View itsReferencesRow;
     private ListView itsReferences;
-    private PasswdSafeRecordBasicViewModel itsViewModel;
+    private PasswdSafeRecordTotpViewModel itsViewModel;
 
     /**
      * Create a new instance of the fragment
@@ -126,8 +126,8 @@ public class PasswdSafeRecordBasicFragment
         super.onCreate(savedInstanceState);
 
         itsViewModel = new ViewModelProvider(requireActivity()).get(
-                PasswdSafeRecordBasicViewModel.class);
-        itsViewModel.getTotpState().observe(this, this::onTotpChanged);
+                PasswdSafeRecordTotpViewModel.class);
+        itsViewModel.getState().observe(this, this::onTotpChanged);
     }
 
     @Override
@@ -292,8 +292,8 @@ public class PasswdSafeRecordBasicFragment
             return true;
         } else if (itemId == R.id.menu_toggle_passwords) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
-            itsViewModel.updateTotpStateShown(
-                    PasswdSafeRecordBasicViewModel.TotpVisibiltyChange.TOGGLE);
+            itsViewModel.updateStateShown(
+                    PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
             return true;
         }
         return super.onMenuItemSelected(item);
@@ -362,8 +362,8 @@ public class PasswdSafeRecordBasicFragment
         } else if (id == R.id.password_row) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
         } else if (id == R.id.totp_row) {
-            itsViewModel.updateTotpStateShown(
-                    PasswdSafeRecordBasicViewModel.TotpVisibiltyChange.TOGGLE);
+            itsViewModel.updateStateShown(
+                    PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
         }
     }
 
@@ -597,7 +597,7 @@ public class PasswdSafeRecordBasicFragment
      * Handle a change in TOTP state
      */
     private void onTotpChanged(
-            @Nullable PasswdSafeRecordBasicViewModel.TotpState totpState)
+            @Nullable PasswdSafeRecordTotpViewModel.State totpState)
     {
         if (totpState == null) {
             return;

@@ -63,7 +63,7 @@ public class PasswdSafeRecordPasswordFragment
     private TextView itsHistoryMaxSizeLabel;
     private TextView itsHistoryMaxSize;
     private ListView itsHistory;
-    private PasswdSafeRecordBasicViewModel itsViewModel;
+    private PasswdSafeRecordTotpViewModel itsViewModel;
 
 
     /**
@@ -86,8 +86,8 @@ public class PasswdSafeRecordPasswordFragment
         super.onCreate(savedInstanceState);
 
         itsViewModel = new ViewModelProvider(requireActivity()).get(
-                PasswdSafeRecordBasicViewModel.class);
-        itsViewModel.getTotpConfig().observe(this, this::onTotpChanged);
+                PasswdSafeRecordTotpViewModel.class);
+        itsViewModel.getConfig().observe(this, this::onTotpChanged);
     }
 
     @Override
@@ -136,8 +136,8 @@ public class PasswdSafeRecordPasswordFragment
     {
         int id = view.getId();
         if (id == R.id.totp_row) {
-            itsViewModel.updateTotpConfigShown(
-                    PasswdSafeRecordBasicViewModel.TotpVisibiltyChange.TOGGLE);
+            itsViewModel.updateConfigShown(
+                    PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
         }
     }
 
@@ -244,7 +244,7 @@ public class PasswdSafeRecordPasswordFragment
      * Handle a change in TOTP configuration
      */
     private void onTotpChanged(
-            @Nullable PasswdSafeRecordBasicViewModel.TotpConfig totpConfig)
+            @Nullable PasswdSafeRecordTotpViewModel.Config totpConfig)
     {
         if (totpConfig == null) {
             return;
