@@ -292,7 +292,7 @@ public class PasswdSafeRecordBasicFragment
             return true;
         } else if (itemId == R.id.menu_toggle_passwords) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
-            itsViewModel.updateTotpShown(
+            itsViewModel.updateTotpStateShown(
                     PasswdSafeRecordBasicViewModel.TotpVisibiltyChange.TOGGLE);
             return true;
         }
@@ -362,7 +362,7 @@ public class PasswdSafeRecordBasicFragment
         } else if (id == R.id.password_row) {
             updatePasswordShown(PasswordVisibilityChange.TOGGLE, 0, false);
         } else if (id == R.id.totp_row) {
-            itsViewModel.updateTotpShown(
+            itsViewModel.updateTotpStateShown(
                     PasswdSafeRecordBasicViewModel.TotpVisibiltyChange.TOGGLE);
         }
     }

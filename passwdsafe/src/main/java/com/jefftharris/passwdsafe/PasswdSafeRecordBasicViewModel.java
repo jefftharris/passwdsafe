@@ -108,8 +108,8 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
     private @Nullable Owner<Totp> itsTotp = null;
     private final CloseableLiveData<TotpState> itsTotpState;
     private final Handler itsHandler = new Handler();
-    private final Runnable itsTotpHideRun =
-            () -> updateTotpShown(TotpVisibiltyChange.HIDE);
+    private final Runnable itsTotpStateHideRun =
+            () -> updateTotpStateShown(TotpVisibiltyChange.HIDE);
     private final Runnable itsUpdateTotpValueRun = this::updateTotpValue;
     private long itsNextUpdateTime = INIT_UPDATE_TIME;
 
@@ -124,16 +124,16 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
         return itsTotpState;
     }
 
-    public void updateTotpShown(@NonNull TotpVisibiltyChange change)
+    public void updateTotpStateShown(@NonNull TotpVisibiltyChange change)
     {
-        var currState = getDataValue();
+        var currState = getStateValue();
         boolean shown = currState.isShown();
         switch (change) {
         case HIDE -> shown = false;
         case TOGGLE -> shown = !shown;
         }
 
-        itsHandler.removeCallbacks(itsTotpHideRun);
+        itsHandler.removeCallbacks(itsTotpStateHideRun);
         if (shown) {
             var prefs = Preferences.getSharedPrefs(getApplication());
             var timeout = Preferences.getPasswdVisibleTimeoutPref(prefs);
@@ -141,7 +141,7 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
             case TO_15_SEC,
                  TO_30_SEC,
                  TO_1_MIN,
-                 TO_5_MIN -> itsHandler.postDelayed(itsTotpHideRun,
+                 TO_5_MIN -> itsHandler.postDelayed(itsTotpStateHideRun,
                                                     timeout.getTimeout());
             case TO_NONE -> {
             }
@@ -171,10 +171,10 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
         itsTotpState.close();
     }
 
-    private void resetTimers()
+    private void resetStateTimers()
     {
         itsNextUpdateTime = INIT_UPDATE_TIME;
-        itsHandler.removeCallbacks(itsTotpHideRun);
+        itsHandler.removeCallbacks(itsTotpStateHideRun);
         itsHandler.removeCallbacks(itsUpdateTotpValueRun);
     }
 
@@ -184,13 +184,12 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
             itsTotp.close();
             itsTotp = null;
         }
-        resetTimers();
+        resetStateTimers();
     }
 
     private void updateTotpValue()
     {
-        var currState = getDataValue();
-        updateTotpState(currState.isShown());
+        updateTotpState(getStateValue().isShown());
     }
 
     private void updateTotpState(boolean shown)
@@ -199,8 +198,8 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
                                shown, itsTotp != null);
 
         if ((itsTotp == null) || !shown) {
-            resetTimers();
-            setDataValue(newTotpState());
+            resetStateTimers();
+            setStateValue(newTotpState());
             return;
         }
 
@@ -224,13 +223,13 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
 
             var totp = itsTotp.get();
             try (var value = totp.generate()) {
-                setDataValue(new TotpState(totp.getStatus(), true,
-                                           (value != null) ? value.pass() :
-                                           null, progress));
+                setStateValue(new TotpState(totp.getStatus(), true,
+                                            (value != null) ? value.pass() :
+                                            null, progress));
             }
         } else {
-            var state = getDataValue();
-            setDataValue(state.updateProgress(progress));
+            var state = getStateValue();
+            setStateValue(state.updateProgress(progress));
         }
     }
 
@@ -252,12 +251,12 @@ public class PasswdSafeRecordBasicViewModel extends AndroidViewModel
                 (itsTotp != null) ? itsTotp.get().getStatus() : null);
     }
 
-    private @NonNull TotpState getDataValue()
+    private @NonNull TotpState getStateValue()
     {
         return Objects.requireNonNull(itsTotpState.getValue());
     }
 
-    private void setDataValue(@NonNull TotpState totpState)
+    private void setStateValue(@NonNull TotpState totpState)
     {
         itsTotpState.setValue(totpState);
     }
