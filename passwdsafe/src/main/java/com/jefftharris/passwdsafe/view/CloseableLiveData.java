@@ -67,7 +67,7 @@ public class CloseableLiveData<T extends AutoCloseable>
     protected void finalize() throws Throwable
     {
         try {
-            close();
+            doClose(false);
         } finally {
             super.finalize();
         }
