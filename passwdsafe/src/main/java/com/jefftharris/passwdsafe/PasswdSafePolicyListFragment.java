@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.ListFragment;
 
@@ -49,7 +50,8 @@ import java.util.List;
  * Fragment showing a list of password policies
  */
 public class PasswdSafePolicyListFragment extends ListFragment
-        implements FragmentResultListener
+        implements FragmentResultListener,
+                   MenuProvider
 {
     /** Listener interface for owning activity */
     public interface Listener
@@ -100,7 +102,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
         return inflater.inflate(R.layout.fragment_passwdsafe_policy_list,
                                 container, false);
     }
@@ -121,20 +123,16 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
             inflater.inflate(R.menu.fragment_passwdsafe_policy_list, menu);
         }
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    public void onPrepareMenu(@NonNull Menu menu)
     {
-        super.onPrepareOptionsMenu(menu);
-
         MenuItem item = menu.findItem(R.id.menu_add_policy);
         if (item != null) {
             item.setVisible(!itsIsFileReadonly);
@@ -142,13 +140,13 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_add_policy) {
             editPolicy(null);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
