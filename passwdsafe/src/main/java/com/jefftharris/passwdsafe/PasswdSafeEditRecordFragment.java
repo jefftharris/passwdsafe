@@ -87,7 +87,6 @@ public class PasswdSafeEditRecordFragment
         implements FragmentResultListener,
                    View.OnClickListener,
                    View.OnLongClickListener,
-                   PasswdPolicyEditDialog.Listener,
                    AdapterView.OnItemSelectedListener
 {
     /**
@@ -207,6 +206,7 @@ public class PasswdSafeEditRecordFragment
         super.onCreate(savedInstanceState);
         DatePickerDialogFragment.setListener(this);
         NewGroupDialog.setListener(this);
+        PasswdPolicyEditDialog.setListener(this);
         TimePickerDialogFragment.setListener(this);
 
         itsTotpViewModel = new ViewModelProvider(this).get(
@@ -542,10 +542,9 @@ public class PasswdSafeEditRecordFragment
                 }
             }
         } else if (id == R.id.policy_edit) {
-            PasswdPolicyEditDialog dlg =
-                    PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
-            dlg.setTargetFragment(this, 0);
-            dlg.show(getParentFragmentManager(), "PasswdPolicyEditDialog");
+            var dlg = PasswdPolicyEditDialog.newInstance(itsCurrPolicy, null);
+            dlg.show(getParentFragmentManager(),
+                     PasswdPolicyEditDialog.REQUEST_KEY);
         } else if (id == R.id.totp_value_row) {
             itsTotpViewModel.updateStateShown(
                     PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
@@ -610,24 +609,6 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void handlePolicyEditComplete(PasswdPolicy oldPolicy,
-                                         PasswdPolicy newPolicy)
-    {
-        if (oldPolicy != null) {
-            itsPolicies.remove(oldPolicy);
-        }
-        itsPolicies.add(newPolicy);
-        updatePasswdPolicies(newPolicy);
-    }
-
-    @Override
-    public boolean isDuplicatePolicy(String name)
-    {
-        // Shouldn't ever be called as record policy
-        return false;
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         PasswdSafeUtil.dbginfo(TAG, "onActivityResult data: %s", data);
@@ -647,6 +628,8 @@ public class PasswdSafeEditRecordFragment
         switch (requestKey) {
         case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
         case NewGroupDialog.REQUEST_KEY -> handleNewGroup(result);
+        case PasswdPolicyEditDialog.REQUEST_KEY ->
+                handlePolicyEditComplete(result);
         case TimePickerDialogFragment.REQUEST_KEY -> handleTimePicked(result);
         }
     }
@@ -962,6 +945,20 @@ public class PasswdSafeEditRecordFragment
         GuiUtils.setVisible(itsExpireIntervalFields,
                             itsExpiryType == PasswdExpiration.Type.INTERVAL);
         itsValidator.validate();
+    }
+
+    private void handlePolicyEditComplete(@NonNull Bundle result)
+    {
+        var policies = PasswdPolicyEditDialog.getPoliciesFromResult(result);
+        var oldPolicy = policies.oldPolicy();
+        if (oldPolicy != null) {
+            itsPolicies.remove(oldPolicy);
+        }
+        var newPolicy = policies.newPolicy();
+        if (newPolicy != null) {
+            itsPolicies.add(newPolicy);
+            updatePasswdPolicies(newPolicy);
+        }
     }
 
     /**

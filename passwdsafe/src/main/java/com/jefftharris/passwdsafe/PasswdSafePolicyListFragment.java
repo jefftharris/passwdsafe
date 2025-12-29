@@ -49,8 +49,7 @@ import java.util.List;
  * Fragment showing a list of password policies
  */
 public class PasswdSafePolicyListFragment extends ListFragment
-        implements PasswdPolicyEditDialog.Listener,
-                   FragmentResultListener
+        implements FragmentResultListener
 {
     /** Listener interface for owning activity */
     public interface Listener
@@ -93,6 +92,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
     {
         super.onCreate(savedInstanceState);
         ConfirmPromptDialog.setListener(this);
+        PasswdPolicyEditDialog.setListener(this);
     }
 
     @Override
@@ -161,27 +161,6 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void handlePolicyEditComplete(PasswdPolicy oldPolicy,
-                                         @NonNull PasswdPolicy newPolicy)
-    {
-        if (newPolicy.getLocation() == PasswdPolicy.Location.DEFAULT) {
-            PasswdSafeApp app =
-                    (PasswdSafeApp)requireContext().getApplicationContext();
-            app.setDefaultPasswdPolicy(newPolicy);
-            refresh();
-        } else {
-            String oldName = (oldPolicy != null) ? oldPolicy.getName() : null;
-            savePolicies(oldName, newPolicy);
-        }
-    }
-
-    @Override
-    public boolean isDuplicatePolicy(String name)
-    {
-        return (itsHdrPolicies != null) && itsHdrPolicies.containsPolicy(name);
-    }
-
-    @Override
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
@@ -192,6 +171,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
                 savePolicies(policy.getName(), null);
             }
         }
+        case PasswdPolicyEditDialog.REQUEST_KEY ->
+                handlePolicyEditComplete(result);
         }
     }
 
@@ -215,9 +196,35 @@ public class PasswdSafePolicyListFragment extends ListFragment
     private void editPolicy(PasswdPolicy policy)
     {
         PasswdSafeUtil.dbginfo(TAG, "Edit policy: %s", policy);
-        PasswdPolicyEditDialog dlg = PasswdPolicyEditDialog.newInstance(policy);
-        dlg.setTargetFragment(this, 0);
-        dlg.show(getParentFragmentManager(), "PasswdPolicyEditDialog");
+
+        ArrayList<String> currPolicies = null;
+        if (itsHdrPolicies != null) {
+            currPolicies = new ArrayList<>(itsHdrPolicies.getPolicyNames());
+        }
+
+        var dlg = PasswdPolicyEditDialog.newInstance(policy, currPolicies);
+        dlg.show(getParentFragmentManager(),
+                 PasswdPolicyEditDialog.REQUEST_KEY);
+    }
+
+    private void handlePolicyEditComplete(@NonNull Bundle result)
+    {
+        var policies = PasswdPolicyEditDialog.getPoliciesFromResult(result);
+        var newPolicy = policies.newPolicy();
+        if (newPolicy == null) {
+            return;
+        }
+
+        if (newPolicy.getLocation() == PasswdPolicy.Location.DEFAULT) {
+            PasswdSafeApp app =
+                    (PasswdSafeApp)requireContext().getApplicationContext();
+            app.setDefaultPasswdPolicy(newPolicy);
+            refresh();
+        } else {
+            var oldPolicy = policies.oldPolicy();
+            String oldName = (oldPolicy != null) ? oldPolicy.getName() : null;
+            savePolicies(oldName, newPolicy);
+        }
     }
 
     /**
