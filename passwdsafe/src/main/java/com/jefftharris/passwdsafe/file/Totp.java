@@ -241,6 +241,23 @@ public class Totp implements AutoCloseable
     }
 
     /**
+     * Is the secret key in the supported Base32 alphabet
+     */
+    private static boolean isInAlphabet(@NonNull byte[] secretKey,
+                                        @NonNull Base32 base32)
+    {
+        // Allow space and dash for Password Safe compatibility as well as
+        // padding
+        for (byte b: secretKey) {
+            if ((b != ' ') && (b != '-') && (b != '=') &&
+                !base32.isInAlphabet(b)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Initialize the overall status and MAC
      */
     @NonNull
@@ -270,7 +287,7 @@ public class Totp implements AutoCloseable
                         .setDecodingPolicy(CodecPolicy.STRICT)
                         .get();
                 secretBytes = secretKey.getBytes("US-ASCII");
-                if (!base32.isInAlphabet(secretBytes, true)) {
+                if (!isInAlphabet(secretBytes, base32)) {
                     return new Pair<>(Status.INVALID_SECRET_KEY, null);
                 }
 

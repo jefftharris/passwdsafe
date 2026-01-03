@@ -171,6 +171,45 @@ public final class TotpTest
     }
 
     @Test
+    public void testExtraKeyChars()
+    {
+        final Date TEST_DATE = new Date();
+        for (var hash : Totp.Hash.values()) {
+            try (var baseSecretKey = createSecretKey(hash);
+                 var baseTotp = new Totp(baseSecretKey.pass(), hash,
+                                         Totp.DEFAULT_NUM_DIGITS,
+                                         Totp.DEFAULT_TIME_STEP, Totp.T0);
+                 var baseValue = baseTotp.generate(TEST_DATE)) {
+                assertNotNull(baseValue);
+                var baseKey = TEST_KEYS.get(hash);
+                assertNotNull(baseKey);
+                for (var s: new String[]{" ", "-", "  ", " -", "- ", "--"}) {
+                    StringBuilder key = new StringBuilder();
+                    for (int idx = 0; idx < baseKey.length(); ++idx) {
+                        key.append(s);
+                        key.append(baseKey.charAt(idx));
+                    }
+                    key.append(s);
+
+                    try (var secretKey = PwsPassword.create(key.toString());
+                         var totp = new Totp(secretKey.pass(), hash,
+                                             Totp.DEFAULT_NUM_DIGITS,
+                                             Totp.DEFAULT_TIME_STEP, Totp.T0);
+                         var value = totp.generate(TEST_DATE);
+                         var totpSecretKey = totp.getSecretKey()) {
+
+                        assertEquals(Totp.Status.OK, totp.getStatus());
+                        assertNotNull(value);
+                        assertEquals(baseValue.get(), value.get());
+                        assertEquals(key.toString(),
+                                     totpSecretKey.get().unprotectAsString());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void testEquals()
     {
         try (var secretKey = createSecretKey(Totp.Hash.SHA1);
