@@ -171,6 +171,90 @@ public final class TotpTest
     }
 
     @Test
+    public void testEquals()
+    {
+        try (var secretKey = createSecretKey(Totp.Hash.SHA1);
+             var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                 Totp.DEFAULT_NUM_DIGITS,
+                                 Totp.DEFAULT_TIME_STEP, Totp.T0)) {
+
+            // Hash equality
+            for (var testHash : Totp.Hash.values()) {
+                try (var testKey = createSecretKey(testHash);
+                     var testTotp = new Totp(testKey.pass(), testHash,
+                                             totp.getNumDigits(),
+                                             (int)totp.getTimeStep(),
+                                             totp.getTimeStart())) {
+                    if (testHash == Totp.Hash.SHA1) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Secret key equality
+            for (var testKeyExtra: new String[]{"", "-", " ", "="}) {
+                try (var testSecretKey = PwsPassword.create(
+                        TEST_KEYS.get(Totp.Hash.SHA1) + testKeyExtra);
+                     var testTotp = new Totp(testSecretKey.pass(),
+                                             totp.getHash(),
+                                             totp.getNumDigits(),
+                                             (int)totp.getTimeStep(),
+                                             totp.getTimeStart())) {
+                    if (testKeyExtra.length() == 0) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Num digits equality
+            for (var numDigits : new int[]{5, 6, 7, 8, totp.getNumDigits()}) {
+                try (var testTotp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                             numDigits, (int)totp.getTimeStep(),
+                                             totp.getTimeStart())) {
+                    if (numDigits == totp.getNumDigits()) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Time step equality
+            for (long timeStep = totp.getTimeStep() - 10;
+                 timeStep < totp.getTimeStep() + 10; ++timeStep) {
+                try (var testTotp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                             totp.getNumDigits(), (int)timeStep,
+                                             totp.getTimeStart())) {
+                    if (timeStep == totp.getTimeStep()) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Time start equality
+            for (long timeStart = totp.getTimeStart() - 10;
+                 timeStart < totp.getTimeStart() + 10; ++timeStart) {
+                try (var testTotp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                             totp.getNumDigits(),
+                                             (int)totp.getTimeStep(),
+                                             timeStart)) {
+                    if (timeStart == totp.getTimeStart()) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void testInvalidNumDigits()
     {
         for (var num : new int[]{-2, -1, 0, 9, 10}) {

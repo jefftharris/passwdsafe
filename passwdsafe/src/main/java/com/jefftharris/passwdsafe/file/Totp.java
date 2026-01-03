@@ -212,6 +212,22 @@ public class Totp implements AutoCloseable
     }
 
     /**
+     * Are the TOTP generators equal
+     */
+    @Override
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj instanceof Totp rhs) {
+            return (itsStatus == rhs.itsStatus) && (itsHash == rhs.itsHash) &&
+                   (itsNumDigits == rhs.itsNumDigits) &&
+                   (itsTimeStep == rhs.itsTimeStep) &&
+                   (itsTimeStart == rhs.itsTimeStart) &&
+                   itsSecretKey.get().equals(rhs.itsSecretKey.get());
+        }
+        return false;
+    }
+
+    /**
      * Finalize the object
      */
     @Override
