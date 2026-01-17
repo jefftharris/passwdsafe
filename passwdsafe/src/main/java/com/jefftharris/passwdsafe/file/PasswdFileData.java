@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2009-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2009-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -13,6 +13,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
+import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -468,6 +469,7 @@ public class PasswdFileData
 
     /** Get the TOTP authentication code */
     @Nullable
+    @CheckResult
     public final Owner<Totp> getTotp(@NonNull PwsRecord rec)
     {
         Owner<Totp> totp = null;
@@ -482,6 +484,21 @@ public class PasswdFileData
         }
 
         return totp;
+    }
+
+    /** Set the TOTP authentication code */
+    public final void setTotp(@Nullable Owner<Totp>.Param totpParam,
+                              @NonNull PwsRecord rec)
+    {
+        String twoFactorField = null;
+        if (totpParam != null) {
+            try (var totp = totpParam.use();
+                 var secretKey = totp.get().getSecretKey()) {
+                twoFactorField = secretKey.get().unprotectAsString();
+            }
+        }
+
+        setField(twoFactorField, rec, PwsFieldTypeV3.TWO_FACTOR_KEY);
     }
 
     /** Get the password expiration */

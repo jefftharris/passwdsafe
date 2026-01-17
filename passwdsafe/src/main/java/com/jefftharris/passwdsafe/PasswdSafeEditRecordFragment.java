@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -44,6 +44,7 @@ import com.jefftharris.passwdsafe.file.PasswdHistory;
 import com.jefftharris.passwdsafe.file.PasswdNotes;
 import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.file.PasswdRecord;
+import com.jefftharris.passwdsafe.file.Totp;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
@@ -61,6 +62,8 @@ import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
 import com.jefftharris.passwdsafe.view.TimePickerDialogFragment;
 
 import org.jetbrains.annotations.Contract;
+import org.pwsafe.lib.file.Owner;
+import org.pwsafe.lib.file.PwsPassword;
 import org.pwsafe.lib.file.PwsRecord;
 
 import java.util.ArrayList;
@@ -161,6 +164,9 @@ public class PasswdSafeEditRecordFragment
     private TextInputLayout itsHistoryMaxSizeInput;
     private TextView itsHistoryMaxSize;
     private ListView itsHistoryList;
+    private View itsTotpGroup;
+    private TextInputLayout itsTotpSecretKeyInput;
+    private EditText itsTotpSecretKey;
     private View itsNotesLabel;
     private TextView itsNotes;
 
@@ -282,6 +288,14 @@ public class PasswdSafeEditRecordFragment
                 });
         itsHistoryList = rootView.findViewById(R.id.history);
         registerForContextMenu(itsHistoryList);
+
+        // TOTP
+        itsTotpGroup = rootView.findViewById(R.id.totp_group);
+        itsTotpSecretKeyInput =
+                rootView.findViewById(R.id.totp_secret_key_input);
+        itsTotpSecretKey = rootView.findViewById(R.id.totp_secret_key);
+        TypefaceUtils.setMonospace(itsTotpSecretKey, ctx);
+        itsValidator.registerTextView(itsTotpSecretKey);
 
         // Notes
         itsNotesLabel = rootView.findViewById(R.id.notes_label);
@@ -684,6 +698,7 @@ public class PasswdSafeEditRecordFragment
             initTypeAndPassword(info);
             initPasswdPolicy(info, fileData);
             initPasswdExpiry(info);
+            initTotp(fileData, record);
             return null;
         });
         updateProtected();
@@ -850,6 +865,33 @@ public class PasswdSafeEditRecordFragment
             itsExpireIntervalRecurring.setChecked(recurring);
         } else {
             GuiUtils.setVisible(itsExpireGroup, false);
+        }
+    }
+
+    /**
+     * Initialize TOTP
+     */
+    private void initTotp(@NonNull PasswdFileData fileData,
+                          @Nullable PwsRecord editRec)
+    {
+        if (itsIsV3) {
+            boolean secretKeySet = false;
+            if (editRec != null) {
+                try (var totp = fileData.getTotp(editRec)) {
+                    if (totp != null) {
+                        try (var secretKey = totp.get().getSecretKey()) {
+                            secretKey.get().setInto(itsTotpSecretKey);
+                            secretKeySet = true;
+                        }
+                    }
+                }
+            }
+            if (!secretKeySet) {
+                itsTotpSecretKey.setText(null);
+            }
+            PasswordVisibilityMenuHandler.set(getContext(), itsTotpSecretKey);
+        } else {
+            GuiUtils.setVisible(itsTotpGroup, false);
         }
     }
 
@@ -1300,6 +1342,22 @@ public class PasswdSafeEditRecordFragment
                     fileData.setPasswdHistory(null, record, true);
                 }
             }
+
+            // TOTP
+            try (var currTotp = fileData.getTotp(record);
+                 var updatedTotp = getUpdatedTotp()) {
+                if (currTotp == null) {
+                    if (updatedTotp != null) {
+                        fileData.setTotp(updatedTotp.pass(), record);
+                    }
+                } else {
+                    if (updatedTotp == null) {
+                        fileData.setTotp(null, record);
+                    } else if (!currTotp.get().equals(updatedTotp.get())) {
+                        fileData.setTotp(updatedTotp.pass(), record);
+                    }
+                }
+            }
         }
 
         // Update password after history so update is shown in new history
@@ -1496,6 +1554,21 @@ public class PasswdSafeEditRecordFragment
                           updatedExpiry);
     }
 
+    @Nullable
+    private Owner<Totp> getUpdatedTotp()
+    {
+        var secretKeyStr = itsTotpSecretKey.getText();
+        if (secretKeyStr.length() == 0) {
+            return null;
+        }
+
+        try (var secretKeyVal = PwsPassword.create(secretKeyStr)) {
+            return new Owner<>(new Totp(secretKeyVal.pass(), Totp.Hash.SHA1,
+                                     Totp.DEFAULT_NUM_DIGITS,
+                                     Totp.DEFAULT_TIME_STEP, Totp.T0));
+        }
+    }
+
     /**
      * Get the group value
      */
@@ -1621,6 +1694,9 @@ public class PasswdSafeEditRecordFragment
                 }
                 }
                 GuiUtils.setVisible(itsExpireDateWarning, warnExpiryDate);
+
+                valid &= !TextInputUtils.setTextInputError(validateTotp(),
+                                                           itsTotpSecretKeyInput);
             }
 
             boolean invalidHistory = false;
@@ -1736,6 +1812,29 @@ public class PasswdSafeEditRecordFragment
                     (interval > PasswdExpiration.VALID_INTERVAL_MAX)) ?
                     getString(R.string.password_expiration_invalid_interval) :
                     null;
+        }
+
+        /**
+         * Validate the TOTP fields
+         * @return error message if invalid; null if valid
+         */
+        @Nullable
+        private String validateTotp()
+        {
+            try (var totpVal = getUpdatedTotp()) {
+                if (totpVal == null) {
+                    return null;
+                }
+                var totp = totpVal.get();
+                return switch (totp.getStatus()) {
+                    case OK -> null;
+                    case INVALID_SECRET_KEY ->
+                            getString(R.string.authentication_key_invalid);
+                    case INVALID_ALGORITHM,
+                         INVALID_NUM_DIGITS,
+                         INVALID_TIME_STEP -> totp.getStatus().toString();
+                };
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -17,7 +17,10 @@
     <string name="app_desc">Access PasswordSafe databases on Android</string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">At least</string>
+    <string name="authentication_code" tools:ignore="MissingTranslation">Authentication Code</string>
     <string name="authentication_code_header" tools:ignore="MissingTranslation">AUTHENTICATION CODE</string>
+    <string name="authentication_key" tools:ignore="MissingTranslation">Authentication Key</string>
+    <string name="authentication_key_invalid" tools:ignore="MissingTranslation">The Base32 authentication key is invalid. Allowed characters are a–z, A–Z, 2–7, space, and dash.</string>
     <string name="backup_creation_failed">Backup creation failed</string>
     <string name="backup_file">Backup file</string>
     <string name="backup_file_help">
