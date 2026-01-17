@@ -150,6 +150,7 @@ public class PasswdSafeRecordPasswordFragment
         Date lastModTime = null;
         PasswdHistory history = null;
         final var rec = info.rec();
+        PwsRecord recForPassword = rec;
         final var fileData = info.fileData();
         switch (info.passwdRec().getType()) {
         case NORMAL: {
@@ -179,13 +180,14 @@ public class PasswdSafeRecordPasswordFragment
             break;
         }
         case ALIAS: {
-            PwsRecord recForPassword = info.passwdRec().getRef();
+            recForPassword = info.passwdRec().getRef();
             passwdExpiry = fileData.getPasswdExpiry(recForPassword);
             lastModTime = fileData.getPasswdLastModTime(recForPassword);
             history = fileData.getPasswdHistory(recForPassword);
             break;
         }
         case SHORTCUT: {
+            recForPassword = info.passwdRec().getRef();
             break;
         }
         }
@@ -205,7 +207,7 @@ public class PasswdSafeRecordPasswordFragment
         }
         GuiUtils.setVisible(itsPolicyRow, policy != null);
 
-        try (var totp = fileData.getTotp(rec)) {
+        try (var totp = fileData.getTotp(recForPassword)) {
             itsViewModel.setTotp((totp != null) ? totp.pass() : null);
         }
 

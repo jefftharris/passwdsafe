@@ -453,7 +453,7 @@ public class PasswdSafeRecordBasicFragment
                                       passwordLen);
         updatePasswordShown(PasswordVisibilityChange.INITIAL, 0, false);
 
-        try (var totp = fileData.getTotp(rec)) {
+        try (var totp = fileData.getTotp(recForPassword)) {
             itsViewModel.setTotp((totp != null) ? totp.pass() : null);
         }
 
@@ -620,7 +620,7 @@ public class PasswdSafeRecordBasicFragment
                     }
                     itsTotpProgress.setProgress(totpState.getTimeProgress());
                 } else {
-                    itsTotp.setText(R.string.hidden_password_normal);
+                    itsTotp.setText(itsHiddenPasswordStr);
                 }
                 TypefaceUtils.enableMonospace(itsTotp, isShown, act);
                 GuiUtils.setVisible(itsTotpProgress, isShown);
