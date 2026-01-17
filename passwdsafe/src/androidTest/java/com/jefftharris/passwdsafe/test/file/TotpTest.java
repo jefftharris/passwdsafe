@@ -228,6 +228,36 @@ public final class TotpTest
     }
 
     @Test
+    public void testFromPc()
+    {
+        for (var pctest : new PcTest[]{
+                new PcTest("y7p2mq33tdqbddp33cbvgquclcihdq27", 6, 30, 0,
+                           1696145833, "643493"),
+                new PcTest("y7p2mq33tdqbddp33cbvgquclcihdq27", 6, 30, 0,
+                           1696145913, "802888"),
+                new PcTest("ODAVH3CHB2ZBAVON", 6, 30, 0, 1696146173, "077912"),
+                new PcTest("ODAVH3CHB2ZBAVON", 6, 30, 0, 1696146302, "988442"),
+                new PcTest("YRUTW6JLVKRXEC7ZA7QMPXCGBSOO6HHT", 6, 30, 0,
+                           1696145984, "174075"),
+                new PcTest("YRUTW6JLVKRXEC7ZA7QMPXCGBSOO6HHT", 6, 30, 0,
+                           1696146044, "597507"),
+                }) {
+            try (var secretKey = PwsPassword.create(pctest.key());
+                 var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                     pctest.numDigits(), pctest.timeStep(),
+                                     pctest.timeStart());
+                 var value = totp.generate(
+                         new Date(pctest.timeNowSec() * 1000))) {
+                assertEquals(Totp.Status.OK, totp.getStatus());
+                assertNotNull(value);
+                assertEquals(pctest.value(), value.get().unprotectAsString());
+                assertEquals(pctest.key(),
+                             totp.getSecretKey().get().unprotectAsString());
+            }
+        }
+    }
+
+    @Test
     public void testEquals()
     {
         try (var secretKey = createSecretKey(Totp.Hash.SHA1);
@@ -446,5 +476,15 @@ public final class TotpTest
                 }
             }
         }
+    }
+
+    private record PcTest(
+            String key,
+            int numDigits,
+            int timeStep,
+            int timeStart,
+            long timeNowSec,
+            String value)
+    {
     }
 }
