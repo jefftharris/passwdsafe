@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -24,6 +24,7 @@ import org.pwsafe.lib.file.PwsPassword;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -275,42 +276,44 @@ public class Totp implements AutoCloseable
             return new Pair<>(Status.INVALID_TIME_STEP, null);
         }
 
-        byte[] secretBytes = null;
-        byte[] keyBytes = null;
+        Key secretKeySpec;
         try {
+            if (secretKey.length() == 0) {
+                return new Pair<>(Status.INVALID_SECRET_KEY, null);
+            }
+            byte[] secretBytes = secretKey.getBytes("US-ASCII");
             try {
-                if (secretKey.length() == 0) {
-                    return new Pair<>(Status.INVALID_SECRET_KEY, null);
-                }
                 var base32 = Base32
                         .builder()
-                        .setDecodingPolicy(CodecPolicy.STRICT)
+                        .setDecodingPolicy(CodecPolicy.LENIENT)
                         .get();
-                secretBytes = secretKey.getBytes("US-ASCII");
                 if (!isInAlphabet(secretBytes, base32)) {
                     return new Pair<>(Status.INVALID_SECRET_KEY, null);
                 }
 
-                keyBytes = base32.decode(secretBytes);
-            } catch (UnsupportedEncodingException | RuntimeException e) {
-                return new Pair<>(Status.INVALID_SECRET_KEY, null);
+                byte[] keyBytes = base32.decode(secretBytes);
+                try {
+                    secretKeySpec = new SecretKeySpec(keyBytes, "RAW");
+                } finally {
+                    if (keyBytes != null) {
+                        Util.clearArray(keyBytes);
+                    }
+                }
+            } finally {
+                if (secretBytes != null) {
+                    Util.clearArray(secretBytes);
+                }
             }
+        } catch (UnsupportedEncodingException | RuntimeException e) {
+            return new Pair<>(Status.INVALID_SECRET_KEY, null);
+        }
 
-            try {
-                var hmac = Mac.getInstance(hash.itsAlgorithm);
-                var key = new SecretKeySpec(keyBytes, "RAW");
-                hmac.init(key);
-                return new Pair<>(Status.OK, hmac);
-            } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-                return new Pair<>(Status.INVALID_ALGORITHM, null);
-            }
-        } finally {
-            if (keyBytes != null) {
-                Util.clearArray(keyBytes);
-            }
-            if (secretBytes != null) {
-                Util.clearArray(secretBytes);
-            }
+        try {
+            var hmac = Mac.getInstance(hash.itsAlgorithm);
+            hmac.init(secretKeySpec);
+            return new Pair<>(Status.OK, hmac);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            return new Pair<>(Status.INVALID_ALGORITHM, null);
         }
     }
 }

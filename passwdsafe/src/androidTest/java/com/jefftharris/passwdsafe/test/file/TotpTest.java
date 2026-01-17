@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -210,6 +210,24 @@ public final class TotpTest
     }
 
     @Test
+    public void testLenientKey()
+    {
+        for (var key: new String[] {"22", "2222", "22222", "2222222"}) {
+            try (var secretKey = PwsPassword.create(key.toCharArray())) {
+                for (var hash : Totp.Hash.values()) {
+                    try (var totp = new Totp(secretKey.pass(), hash,
+                                             Totp.DEFAULT_NUM_DIGITS,
+                                             Totp.DEFAULT_TIME_STEP, Totp.T0);
+                         var value = totp.generate()) {
+                        assertEquals(Totp.Status.OK, totp.getStatus());
+                        assertNotNull(value);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void testEquals()
     {
         try (var secretKey = createSecretKey(Totp.Hash.SHA1);
@@ -311,7 +329,8 @@ public final class TotpTest
     @Test
     public void testInvalidSecretKey()
     {
-        for (var key: new String[] {"", "!", "abc"}) {
+        for (var key : new String[]{"", " ", "  ", "-", " -", "- ", "!",
+                                    "123"}) {
             try (var secretKey = PwsPassword.create(key.toCharArray())) {
                 for (var hash : Totp.Hash.values()) {
                     try (var totp = new Totp(secretKey.pass(), hash, 6,
