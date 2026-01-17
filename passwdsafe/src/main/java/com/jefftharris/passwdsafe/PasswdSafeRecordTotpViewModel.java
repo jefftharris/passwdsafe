@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -152,6 +152,7 @@ public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
     }
 
     private static final long INIT_UPDATE_TIME = Long.MIN_VALUE;
+    private static final long PROGRESS_STEPS = 10;
     private static final String TAG = "PasswdSafeRecordTotpVM";
 
     private final CloseableLiveData<Config> itsConfig;
@@ -261,7 +262,7 @@ public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
             int progress = calcNextProgress(now, timeStepMs);
 
             itsHandler.postDelayed(itsUpdateValueRun,
-                                   nextWallUpdate(timeStepMs / 5));
+                                   nextWallUpdate(timeStepMs / PROGRESS_STEPS));
 
             if (updateValue) {
                 PasswdSafeUtil.dbginfo(TAG,
