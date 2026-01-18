@@ -30,11 +30,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jefftharris.passwdsafe.file.HeaderPasswdPolicies;
@@ -102,6 +104,7 @@ public class PasswdSafeEditRecordFragment
         void finishEditRecord(EditRecordResult result);
     }
 
+    private PasswdSafeRecordTotpViewModel itsTotpViewModel;
     private final Validator itsValidator = new Validator();
     private final TreeSet<String> itsGroups =
             new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -167,6 +170,9 @@ public class PasswdSafeEditRecordFragment
     private View itsTotpGroup;
     private TextInputLayout itsTotpSecretKeyInput;
     private EditText itsTotpSecretKey;
+    private View itsTotpValueRow;
+    private TextView itsTotp;
+    private ProgressBar itsTotpProgress;
     private View itsNotesLabel;
     private TextView itsNotes;
 
@@ -194,6 +200,16 @@ public class PasswdSafeEditRecordFragment
         PasswdSafeEditRecordFragment frag = new PasswdSafeEditRecordFragment();
         frag.setArguments(createArgs(location));
         return frag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        itsTotpViewModel = new ViewModelProvider(this).get(
+                PasswdSafeRecordTotpViewModel.class);
+        itsTotpViewModel.getState().observe(this, this::onTotpChanged);
     }
 
     @Override
@@ -296,6 +312,10 @@ public class PasswdSafeEditRecordFragment
         itsTotpSecretKey = rootView.findViewById(R.id.totp_secret_key);
         TypefaceUtils.setMonospace(itsTotpSecretKey, ctx);
         itsValidator.registerTextView(itsTotpSecretKey);
+        itsTotpValueRow = rootView.findViewById(R.id.totp_value_row);
+        itsTotpValueRow.setOnClickListener(this);
+        itsTotp = rootView.findViewById(R.id.totp);
+        itsTotpProgress = rootView.findViewById(R.id.totp_progress);
 
         // Notes
         itsNotesLabel = rootView.findViewById(R.id.notes_label);
@@ -538,6 +558,9 @@ public class PasswdSafeEditRecordFragment
                     PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
             dlg.setTargetFragment(this, 0);
             dlg.show(getParentFragmentManager(), "PasswdPolicyEditDialog");
+        } else if (id == R.id.totp_value_row) {
+            itsTotpViewModel.updateStateShown(
+                    PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
         }
     }
 
@@ -896,6 +919,31 @@ public class PasswdSafeEditRecordFragment
     }
 
     /**
+     * Handle a change in the TOTP settings
+     * @return null if valid; error message otherwise
+     */
+    private String handleTotpChanged()
+    {
+        String totpErrorMsg = null;
+        try (var totpVal = getUpdatedTotp()) {
+            itsTotpViewModel.setTotp((totpVal != null) ? totpVal.pass() : null);
+            if (totpVal != null) {
+                var status = totpVal.get().getStatus();
+                switch (status) {
+                case OK -> {
+                }
+                case INVALID_SECRET_KEY -> totpErrorMsg =
+                        getString(R.string.authentication_key_invalid);
+                case INVALID_ALGORITHM,
+                     INVALID_NUM_DIGITS,
+                     INVALID_TIME_STEP -> totpErrorMsg = status.toString();
+                }
+            }
+        }
+        return totpErrorMsg;
+    }
+
+    /**
      * Update the password policies
      */
     private void updatePasswdPolicies(PasswdPolicy selPolicy)
@@ -1000,6 +1048,53 @@ public class PasswdSafeEditRecordFragment
     private int getHistMaxSize()
     {
         return getTextFieldInt(itsHistoryMaxSize, -1);
+    }
+
+    /**
+     * Handle a change in TOTP state
+     */
+    private void onTotpChanged(
+            @Nullable PasswdSafeRecordTotpViewModel.State totpState)
+    {
+        if (totpState == null) {
+            return;
+        }
+
+        var status = totpState.getStatus();
+        if (status != null) {
+            GuiUtils.setVisible(itsTotpValueRow, true);
+            switch (status) {
+            case OK -> {
+                boolean isShown = totpState.isShown();
+                if (isShown) {
+                    try (var value = totpState.getValue()) {
+                        if (value != null) {
+                            value.get().setInto(itsTotp);
+                        } else {
+                            itsTotp.setText(null);
+                        }
+                    }
+                    itsTotpProgress.setProgress(totpState.getTimeProgress());
+                } else {
+                    itsTotp.setText(R.string.hidden_password_normal);
+                }
+                TypefaceUtils.enableMonospace(itsTotp, isShown,
+                                              requireContext());
+                GuiUtils.setVisible(itsTotpProgress, isShown);
+            }
+            case INVALID_ALGORITHM,
+                 INVALID_TIME_STEP,
+                 INVALID_SECRET_KEY,
+                 INVALID_NUM_DIGITS -> {
+                itsTotp.setText(null);
+                GuiUtils.setVisible(itsTotpProgress, false);
+            }
+            }
+        } else {
+            GuiUtils.setVisible(itsTotpValueRow, false);
+            itsTotp.setText(null);
+            GuiUtils.setVisible(itsTotpProgress, false);
+        }
     }
 
     /**
@@ -1598,6 +1693,7 @@ public class PasswdSafeEditRecordFragment
     {
         private boolean itsIsValid = false;
         private boolean itsIsPaused = false;
+        private String itsTotpErrorMsg = null;
 
         /**
          * Register a text view with the validator
@@ -1695,8 +1791,8 @@ public class PasswdSafeEditRecordFragment
                 }
                 GuiUtils.setVisible(itsExpireDateWarning, warnExpiryDate);
 
-                valid &= !TextInputUtils.setTextInputError(validateTotp(),
-                                                           itsTotpSecretKeyInput);
+                valid &= !TextInputUtils.setTextInputError(
+                        itsTotpErrorMsg, itsTotpSecretKeyInput);
             }
 
             boolean invalidHistory = false;
@@ -1731,6 +1827,9 @@ public class PasswdSafeEditRecordFragment
         @Override
         public final void afterTextChanged(Editable s)
         {
+            if (s == itsTotpSecretKey.getText()) {
+                itsTotpErrorMsg = handleTotpChanged();
+            }
             validate();
         }
 
@@ -1812,29 +1911,6 @@ public class PasswdSafeEditRecordFragment
                     (interval > PasswdExpiration.VALID_INTERVAL_MAX)) ?
                     getString(R.string.password_expiration_invalid_interval) :
                     null;
-        }
-
-        /**
-         * Validate the TOTP fields
-         * @return error message if invalid; null if valid
-         */
-        @Nullable
-        private String validateTotp()
-        {
-            try (var totpVal = getUpdatedTotp()) {
-                if (totpVal == null) {
-                    return null;
-                }
-                var totp = totpVal.get();
-                return switch (totp.getStatus()) {
-                    case OK -> null;
-                    case INVALID_SECRET_KEY ->
-                            getString(R.string.authentication_key_invalid);
-                    case INVALID_ALGORITHM,
-                         INVALID_NUM_DIGITS,
-                         INVALID_TIME_STEP -> totp.getStatus().toString();
-                };
-            }
         }
     }
 
