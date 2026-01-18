@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -41,10 +42,10 @@ import com.jefftharris.passwdsafe.db.RecentFilesDao;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ActContext;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
-import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
+import com.jefftharris.passwdsafe.view.OpenPsafe3DocActResultContract;
 
 import java.util.List;
 
@@ -79,8 +80,6 @@ public final class StorageFileListFragment extends Fragment
 
     private static final String TAG = "StorageFileListFragment";
 
-    private static final int OPEN_RC = 1;
-
     private static final int LOADER_FILES = 0;
 
     private Listener itsListener;
@@ -93,6 +92,7 @@ public final class StorageFileListFragment extends Fragment
     private StorageFileListAdapter itsFilesAdapter;
     private int itsFileIcon;
     private Uri itsLastOpenUri;
+    private ActivityResultLauncher<Uri> itsOpenDocLauncher;
 
 
     @Override
@@ -115,6 +115,10 @@ public final class StorageFileListFragment extends Fragment
         itsRecentFilesDao =
                 PasswdSafeDb.get(requireContext()).accessRecentFiles();
         itsRecentFilesDaoRef = new ManagedRef<>(itsRecentFilesDao);
+
+        itsOpenDocLauncher = registerForActivityResult(
+                new OpenPsafe3DocActResultContract(),
+                this::onOpenPsafe3DocResult);
     }
 
     @NonNull
@@ -190,25 +194,6 @@ public final class StorageFileListFragment extends Fragment
         itsRecentFilesDao = null;
         itsRecentFilesDaoRef.clear();
         itsRecentFilesDaoRef = null;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        switch (requestCode) {
-        case OPEN_RC: {
-            PasswdSafeUtil.dbginfo(TAG, "onActivityResult open %d: %s",
-                                   resultCode, data);
-            if ((resultCode == Activity.RESULT_OK) && (data != null)) {
-                openUri(data);
-            }
-            break;
-        }
-        default: {
-            super.onActivityResult(requestCode, resultCode, data);
-            break;
-        }
-        }
     }
 
     @Override
@@ -378,27 +363,17 @@ public final class StorageFileListFragment extends Fragment
     /** Start the intent to open a file */
     private void startOpenFile()
     {
-        Intent intent = new Intent(
-                DocumentsContractCompat.INTENT_ACTION_OPEN_DOCUMENT);
+        itsOpenDocLauncher.launch(itsLastOpenUri);
+    }
 
-        Uri initialUri = (itsLastOpenUri != null) ? itsLastOpenUri :
-                         ApiCompat.getPrimaryStorageRootUri(requireContext());
-        if (initialUri != null) {
-            intent.putExtra(DocumentsContractCompat.EXTRA_INITIAL_URI,
-                            initialUri);
+
+    /** Handle the result of opening a file */
+    private void onOpenPsafe3DocResult(@Nullable Intent result)
+    {
+        PasswdSafeUtil.dbginfo(TAG, "onOpenPsafe3DocResult: %s", result);
+        if (result != null) {
+            openUri(result);
         }
-
-        intent.putExtra(DocumentsContractCompat.EXTRA_PROMPT,
-                        getString(R.string.open_password_file));
-        intent.putExtra(DocumentsContractCompat.EXTRA_SHOW_ADVANCED, true);
-
-        // Filter to only show results that can be "opened", such as a
-        // file (as opposed to a list of contacts or timezones)
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        intent.setType("application/*");
-
-        startActivityForResult(intent, OPEN_RC);
     }
 
 
