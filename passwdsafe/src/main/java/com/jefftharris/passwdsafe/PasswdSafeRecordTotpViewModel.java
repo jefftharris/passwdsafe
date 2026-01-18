@@ -241,10 +241,12 @@ public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
     private void updateState(boolean shown)
     {
         try (var totpOwner = getConfigValue().getTotp()) {
-            PasswdSafeUtil.dbginfo(TAG, "updateState shown %b, totp %b", shown,
-                                   (totpOwner != null));
+            PasswdSafeUtil.dbginfo(TAG, "updateState shown %b, totp %s", shown,
+                                   ((totpOwner != null) ?
+                                    totpOwner.get().getStatus() : null));
 
-            if ((totpOwner == null) || !shown) {
+            if (shouldResetStateFromUpdate(
+                    ((totpOwner != null) ? totpOwner.get() : null), shown)) {
                 resetStateTimers();
                 setStateValue(createState());
                 return;
@@ -279,6 +281,21 @@ public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
                 setStateValue(state.updateProgress(progress));
             }
         }
+    }
+
+    private static boolean shouldResetStateFromUpdate(@Nullable Totp totp,
+                                                      boolean shown)
+    {
+        if ((totp == null) || !shown) {
+            return true;
+        }
+        return switch (totp.getStatus()) {
+            case OK -> false;
+            case INVALID_ALGORITHM,
+                 INVALID_NUM_DIGITS,
+                 INVALID_SECRET_KEY,
+                 INVALID_TIME_STEP -> true;
+        };
     }
 
     private boolean changeVisibility(boolean currShown,
