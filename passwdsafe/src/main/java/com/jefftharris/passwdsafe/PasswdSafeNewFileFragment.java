@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,7 +7,6 @@
  */
 package com.jefftharris.passwdsafe;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -33,13 +33,13 @@ import com.jefftharris.passwdsafe.db.RecentFilesDao;
 import com.jefftharris.passwdsafe.file.PasswdFileData;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
-import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.CountedBool;
+import com.jefftharris.passwdsafe.view.CreatePsafe3DocActResultContract;
 import com.jefftharris.passwdsafe.view.PasswordVisibilityMenuHandler;
 
 import org.jetbrains.annotations.Contract;
@@ -82,10 +82,9 @@ public class PasswdSafeNewFileFragment
     private final CountedBool itsBackgroundDisable = new CountedBool();
     private final Validator itsValidator = new Validator();
     private boolean itsUseStorage = false;
+    private ActivityResultLauncher<String> itsCreateDocLauncher;
 
     private static final String ARG_URI = "uri";
-
-    private static final int CREATE_DOCUMENT_REQUEST = 0;
 
     private static final String TAG = "PasswdSafeNewFileFrag";
 
@@ -113,6 +112,10 @@ public class PasswdSafeNewFileFragment
             setFileUri(uri);
             setDoResolveOnStart(!itsUseStorage);
         }
+
+        itsCreateDocLauncher = registerForActivityResult(
+                new CreatePsafe3DocActResultContract(),
+                this::onCreatePsafe3DocResult);
     }
 
     @Override
@@ -222,73 +225,13 @@ public class PasswdSafeNewFileFragment
             GuiUtils.setKeyboardVisible(itsPassword, requireContext(), false);
             String fileName = itsFileName.getText().toString();
             if (itsUseStorage) {
-                startActivityForResult(createNewFileIntent(fileName),
-                                       CREATE_DOCUMENT_REQUEST);
+                itsCreateDocLauncher.launch(fileName);
             } else {
                 try (Owner<PwsPassword> passwd =
                              PwsPassword.create(itsPassword.getText())) {
                     startTask(new NewTask(fileName, passwd.pass(), this));
                 }
             }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        switch (requestCode) {
-        case CREATE_DOCUMENT_REQUEST: {
-            if (resultCode != Activity.RESULT_OK) {
-                cancelFragment(true);
-                break;
-            }
-
-            Context ctx = requireContext();
-            Uri newUri = data.getData();
-            String title = RecentFilesDao.getSafDisplayName(newUri, ctx);
-
-            boolean checkPermissions = isCheckPermissions();
-            if (!checkPermissions && (title == null)) {
-                title = data.getStringExtra("__test_display_name");
-            }
-
-            String error = validateFileName(title);
-            if (error != null) {
-                ContentResolver cr = ctx.getContentResolver();
-                ApiCompat.documentsContractDeleteDocument(cr, newUri);
-                String fileError = getString(R.string.cannot_create_file,
-                                             title);
-                PasswdSafeUtil.showFatalMsg(
-                        String.format("%s - %s", fileError, error),
-                        getActivity());
-                break;
-            }
-
-            if (checkPermissions) {
-                RecentFilesDao.updateOpenedSafFile(
-                        newUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION |
-                                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION),
-                        ctx);
-            }
-
-            if ((newUri != null) && !TextUtils.isEmpty(title)) {
-                RecentFilesDao recentFilesDao =
-                        PasswdSafeDb.get(ctx).accessRecentFiles();
-                try {
-                    recentFilesDao.insertOrUpdate(newUri, title);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error saving recent file: " + newUri, e);
-                }
-            }
-            setFileUri(newUri);
-            itsFileName.setText(title);
-            startResolve();
-            break;
-        }
-        default: {
-            super.onActivityResult(requestCode, resultCode, data);
-            break;
-        }
         }
     }
 
@@ -380,23 +323,56 @@ public class PasswdSafeNewFileFragment
         itsValidator.validate();
     }
 
-    /**
-     * Create the intent for creating a new file document
-     */
-    private static @NonNull Intent createNewFileIntent(String fileName)
+    /** Handle the result of creating a file */
+    private void onCreatePsafe3DocResult(
+            @Nullable CreatePsafe3DocActResultContract.Result result)
     {
-        Intent createIntent = new Intent(
-                DocumentsContractCompat.INTENT_ACTION_CREATE_DOCUMENT);
+        if (result == null) {
+            cancelFragment(true);
+            return;
+        }
 
-        // Filter to only show results that can be "opened", such as
-        // a file (as opposed to a list of contacts or timezones).
-        createIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        Context ctx = requireContext();
+        var newUri = result.uri();
+        String title = RecentFilesDao.getSafDisplayName(newUri, ctx);
 
-        // Create a file with the requested MIME type and name.
-        createIntent.setType(PasswdSafeUtil.MIME_TYPE_PSAFE3);
-        createIntent.putExtra(Intent.EXTRA_TITLE, fileName);
-        return createIntent;
+        boolean checkPermissions = isCheckPermissions();
+        if (!checkPermissions && (title == null)) {
+            title = result.testDisplayName();
+        }
+
+        String error = validateFileName(title);
+        if (error != null) {
+            ContentResolver cr = ctx.getContentResolver();
+            ApiCompat.documentsContractDeleteDocument(cr, newUri);
+            String fileError = getString(R.string.cannot_create_file, title);
+            PasswdSafeUtil.showFatalMsg(
+                    String.format("%s - %s", fileError, error),
+                    getActivity());
+            return;
+        }
+
+        if (checkPermissions) {
+            RecentFilesDao.updateOpenedSafFile(
+                    newUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION),
+                    ctx);
+        }
+
+        if ((newUri != null) && !TextUtils.isEmpty(title)) {
+            RecentFilesDao recentFilesDao =
+                    PasswdSafeDb.get(ctx).accessRecentFiles();
+            try {
+                recentFilesDao.insertOrUpdate(newUri, title);
+            } catch (Exception e) {
+                Log.e(TAG, "Error saving recent file: " + newUri, e);
+            }
+        }
+        setFileUri(newUri);
+        itsFileName.setText(title);
+        startResolve();
     }
+
 
     /**
      * Handle when the new task is finished
