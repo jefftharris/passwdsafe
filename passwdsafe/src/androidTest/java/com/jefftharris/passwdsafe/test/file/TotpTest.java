@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -81,11 +81,11 @@ public final class TotpTest
         try (var secretKey = createSecretKey(Totp.Hash.SHA1)) {
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1, 6,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA1_6, totp);
+                assertTotps(EXP_SHA1_6, Totp.Hash.SHA1, 6, totp);
             }
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1, 8,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA1_8, totp);
+                assertTotps(EXP_SHA1_8, Totp.Hash.SHA1, 8, totp);
             }
         }
     }
@@ -96,11 +96,11 @@ public final class TotpTest
         try (var secretKey = createSecretKey(Totp.Hash.SHA256)) {
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA256, 6,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA256_6, totp);
+                assertTotps(EXP_SHA256_6, Totp.Hash.SHA256, 6, totp);
             }
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA256, 8,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA256_8, totp);
+                assertTotps(EXP_SHA256_8, Totp.Hash.SHA256, 8, totp);
             }
         }
     }
@@ -111,11 +111,11 @@ public final class TotpTest
         try (var secretKey = createSecretKey(Totp.Hash.SHA512)) {
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA512, 6,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA512_6, totp);
+                assertTotps(EXP_SHA512_6, Totp.Hash.SHA512, 6, totp);
             }
             try (var totp = new Totp(secretKey.pass(), Totp.Hash.SHA512, 8,
                                      Totp.DEFAULT_TIME_STEP, Totp.T0)) {
-                assertTotps(EXP_SHA512_8, totp);
+                assertTotps(EXP_SHA512_8, Totp.Hash.SHA512, 8, totp);
             }
         }
     }
@@ -171,6 +171,177 @@ public final class TotpTest
     }
 
     @Test
+    public void testExtraKeyChars()
+    {
+        final Date TEST_DATE = new Date();
+        for (var hash : Totp.Hash.values()) {
+            try (var baseSecretKey = createSecretKey(hash);
+                 var baseTotp = new Totp(baseSecretKey.pass(), hash,
+                                         Totp.DEFAULT_NUM_DIGITS,
+                                         Totp.DEFAULT_TIME_STEP, Totp.T0);
+                 var baseValue = baseTotp.generate(TEST_DATE)) {
+                assertNotNull(baseValue);
+                var baseKey = TEST_KEYS.get(hash);
+                assertNotNull(baseKey);
+                for (var s: new String[]{" ", "-", "  ", " -", "- ", "--"}) {
+                    StringBuilder key = new StringBuilder();
+                    for (int idx = 0; idx < baseKey.length(); ++idx) {
+                        key.append(s);
+                        key.append(baseKey.charAt(idx));
+                    }
+                    key.append(s);
+
+                    try (var secretKey = PwsPassword.create(key.toString());
+                         var totp = new Totp(secretKey.pass(), hash,
+                                             Totp.DEFAULT_NUM_DIGITS,
+                                             Totp.DEFAULT_TIME_STEP, Totp.T0);
+                         var value = totp.generate(TEST_DATE);
+                         var totpSecretKey = totp.getSecretKey()) {
+
+                        assertEquals(Totp.Status.OK, totp.getStatus());
+                        assertNotNull(value);
+                        assertEquals(baseValue.get(), value.get());
+                        assertEquals(key.toString(),
+                                     totpSecretKey.get().unprotectAsString());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testLenientKey()
+    {
+        for (var key: new String[] {"22", "2222", "22222", "2222222"}) {
+            try (var secretKey = PwsPassword.create(key.toCharArray())) {
+                for (var hash : Totp.Hash.values()) {
+                    try (var totp = new Totp(secretKey.pass(), hash,
+                                             Totp.DEFAULT_NUM_DIGITS,
+                                             Totp.DEFAULT_TIME_STEP, Totp.T0);
+                         var value = totp.generate()) {
+                        assertEquals(Totp.Status.OK, totp.getStatus());
+                        assertNotNull(value);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testFromPc()
+    {
+        for (var pctest : new PcTest[]{
+                new PcTest("y7p2mq33tdqbddp33cbvgquclcihdq27", 6, 30, 0,
+                           1696145833, "643493"),
+                new PcTest("y7p2mq33tdqbddp33cbvgquclcihdq27", 6, 30, 0,
+                           1696145913, "802888"),
+                new PcTest("ODAVH3CHB2ZBAVON", 6, 30, 0, 1696146173, "077912"),
+                new PcTest("ODAVH3CHB2ZBAVON", 6, 30, 0, 1696146302, "988442"),
+                new PcTest("YRUTW6JLVKRXEC7ZA7QMPXCGBSOO6HHT", 6, 30, 0,
+                           1696145984, "174075"),
+                new PcTest("YRUTW6JLVKRXEC7ZA7QMPXCGBSOO6HHT", 6, 30, 0,
+                           1696146044, "597507"),
+                }) {
+            try (var secretKey = PwsPassword.create(pctest.key());
+                 var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                     pctest.numDigits(), pctest.timeStep(),
+                                     pctest.timeStart());
+                 var value = totp.generate(
+                         new Date(pctest.timeNowSec() * 1000))) {
+                assertEquals(Totp.Status.OK, totp.getStatus());
+                assertNotNull(value);
+                assertEquals(pctest.value(), value.get().unprotectAsString());
+                assertEquals(pctest.key(),
+                             totp.getSecretKey().get().unprotectAsString());
+            }
+        }
+    }
+
+    @Test
+    public void testEquals()
+    {
+        try (var secretKey = createSecretKey(Totp.Hash.SHA1);
+             var totp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                 Totp.DEFAULT_NUM_DIGITS,
+                                 Totp.DEFAULT_TIME_STEP, Totp.T0)) {
+
+            // Hash equality
+            for (var testHash : Totp.Hash.values()) {
+                try (var testKey = createSecretKey(testHash);
+                     var testTotp = new Totp(testKey.pass(), testHash,
+                                             totp.getNumDigits(),
+                                             (int)totp.getTimeStep(),
+                                             totp.getTimeStart())) {
+                    if (testHash == Totp.Hash.SHA1) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Secret key equality
+            for (var testKeyExtra: new String[]{"", "-", " ", "="}) {
+                try (var testSecretKey = PwsPassword.create(
+                        TEST_KEYS.get(Totp.Hash.SHA1) + testKeyExtra);
+                     var testTotp = new Totp(testSecretKey.pass(),
+                                             totp.getHash(),
+                                             totp.getNumDigits(),
+                                             (int)totp.getTimeStep(),
+                                             totp.getTimeStart())) {
+                    if (testKeyExtra.length() == 0) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Num digits equality
+            for (var numDigits : new int[]{5, 6, 7, 8, totp.getNumDigits()}) {
+                try (var testTotp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                             numDigits, (int)totp.getTimeStep(),
+                                             totp.getTimeStart())) {
+                    if (numDigits == totp.getNumDigits()) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Time step equality
+            for (long timeStep = totp.getTimeStep() - 10;
+                 timeStep < totp.getTimeStep() + 10; ++timeStep) {
+                try (var testTotp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                             totp.getNumDigits(), (int)timeStep,
+                                             totp.getTimeStart())) {
+                    if (timeStep == totp.getTimeStep()) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+
+            // Time start equality
+            for (long timeStart = totp.getTimeStart() - 10;
+                 timeStart < totp.getTimeStart() + 10; ++timeStart) {
+                try (var testTotp = new Totp(secretKey.pass(), Totp.Hash.SHA1,
+                                             totp.getNumDigits(),
+                                             (int)totp.getTimeStep(),
+                                             timeStart)) {
+                    if (timeStart == totp.getTimeStart()) {
+                        assertEquals(totp, testTotp);
+                    } else {
+                        assertNotEquals(totp, testTotp);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void testInvalidNumDigits()
     {
         for (var num : new int[]{-2, -1, 0, 9, 10}) {
@@ -188,7 +359,8 @@ public final class TotpTest
     @Test
     public void testInvalidSecretKey()
     {
-        for (var key: new String[] {"", "!", "abc"}) {
+        for (var key : new String[]{"", " ", "  ", "-", " -", "- ", "!",
+                                    "123"}) {
             try (var secretKey = PwsPassword.create(key.toCharArray())) {
                 for (var hash : Totp.Hash.values()) {
                     try (var totp = new Totp(secretKey.pass(), hash, 6,
@@ -225,9 +397,16 @@ public final class TotpTest
     }
 
     private static void assertTotps(@NonNull String[] expecteds,
+                                    @NonNull Totp.Hash hash,
+                                    int numDigits,
                                     @NonNull Totp totp)
     {
         assertEquals(Totp.Status.OK, totp.getStatus());
+        assertTrue(totp.getSecretKey().get().equals(TEST_KEYS.get(hash)));
+        assertEquals(hash, totp.getHash());
+        assertEquals(numDigits, totp.getNumDigits());
+        assertEquals(30, totp.getTimeStep());
+        assertEquals(0, totp.getTimeStart());
         assertEquals(expecteds.length, TotpTest.TIMES.length);
         for (int i = 0; i < TotpTest.TIMES.length; ++i) {
             try (var value = totp.generate(
@@ -297,5 +476,15 @@ public final class TotpTest
                 }
             }
         }
+    }
+
+    private record PcTest(
+            String key,
+            int numDigits,
+            int timeStep,
+            int timeStart,
+            long timeNowSec,
+            String value)
+    {
     }
 }
