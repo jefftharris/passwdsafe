@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -33,6 +34,7 @@ import com.jefftharris.passwdsafe.file.PasswdPolicy;
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.pref.FileBackupPref;
 import com.jefftharris.passwdsafe.pref.FileTimeoutPref;
 import com.jefftharris.passwdsafe.pref.PasswdExpiryNotifPref;
@@ -51,7 +53,7 @@ import java.util.Objects;
  * Fragment for PasswdSafe preferences
  */
 public class PreferencesFragment extends PreferenceFragmentCompat
-        implements ConfirmPromptDialog.Listener
+        implements FragmentResultListener
 {
     /** Listener interface for owning activity */
     public interface Listener
@@ -70,8 +72,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     private static final int REQUEST_DEFAULT_FILE = 0;
-    private static final int REQUEST_CLEAR_ALL_NOTIFS = 1;
-    private static final int REQUEST_CLEAR_ALL_SAVED = 2;
 
     private static final String CONFIRM_ARG_ACTION = "action";
 
@@ -91,6 +91,13 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         PreferencesFragment frag = new PreferencesFragment();
         frag.setArguments(args);
         return frag;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        ConfirmPromptDialog.setListener(this);
     }
 
     @Override
@@ -159,21 +166,18 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void promptCanceled()
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
     {
-    }
-
-    @Override
-    public void promptConfirmed(Bundle confirmArgs)
-    {
-        ConfirmAction action;
-        try {
-            action = ConfirmAction.valueOf(
-                    confirmArgs.getString(CONFIRM_ARG_ACTION));
-        } catch (Exception e) {
-            return;
+        switch (requestKey) {
+        case ConfirmPromptDialog.REQUEST_KEY -> {
+            var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
+                                       result);
+            if (action != null) {
+                itsScreen.promptConfirmed(action);
+            }
         }
-        itsScreen.promptConfirmed(action);
+        }
     }
 
     /**
@@ -587,8 +591,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                                       ConfirmAction.CLEAR_ALL_NOTIFS.name());
                 DialogFragment dlg = app.getNotifyMgr().createClearAllPrompt(
                         act, confirmArgs);
-                dlg.setTargetFragment(PreferencesFragment.this,
-                                      REQUEST_CLEAR_ALL_NOTIFS);
                 dlg.show(getParentFragmentManager(), "clearNotifsConfirm");
                 return true;
             }
@@ -600,8 +602,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                         getString(R.string.clear_all_saved_passwords),
                         getString(R.string.erase_all_saved_passwords),
                         getString(R.string.clear), confirmArgs);
-                dlg.setTargetFragment(PreferencesFragment.this,
-                                      REQUEST_CLEAR_ALL_SAVED);
                 dlg.show(getParentFragmentManager(), "clearSavedConfirm");
                 return true;
             }

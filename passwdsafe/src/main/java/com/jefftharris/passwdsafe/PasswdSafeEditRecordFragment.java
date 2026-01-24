@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -83,12 +84,9 @@ import java.util.TreeSet;
 public class PasswdSafeEditRecordFragment
         extends AbstractPasswdSafeLocationFragment
                         <PasswdSafeEditRecordFragment.Listener>
-        implements NewGroupDialog.Listener,
+        implements FragmentResultListener,
                    View.OnClickListener,
                    View.OnLongClickListener,
-                   TimePickerDialogFragment.Listener,
-                   DatePickerDialogFragment.Listener,
-                   PasswdPolicyEditDialog.Listener,
                    AdapterView.OnItemSelectedListener
 {
     /**
@@ -206,6 +204,10 @@ public class PasswdSafeEditRecordFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        DatePickerDialogFragment.setListener(this);
+        NewGroupDialog.setListener(this);
+        PasswdPolicyEditDialog.setListener(this);
+        TimePickerDialogFragment.setListener(this);
 
         itsTotpViewModel = new ViewModelProvider(this).get(
                 PasswdSafeRecordTotpViewModel.class);
@@ -479,18 +481,6 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void handleNewGroup(String newGroup)
-    {
-        if (newGroup != null) {
-            if (!TextUtils.isEmpty(newGroup)) {
-                itsGroups.add(newGroup);
-            }
-            itsPrevGroupPos = updateGroups(newGroup);
-            itsValidator.validate();
-        }
-    }
-
-    @Override
     public void onClick(@NonNull View v)
     {
         int id = v.getId();
@@ -500,14 +490,12 @@ public class PasswdSafeEditRecordFragment
                             itsExpiryDate.get(Calendar.YEAR),
                             itsExpiryDate.get(Calendar.MONTH),
                             itsExpiryDate.get(Calendar.DAY_OF_MONTH));
-            picker.setTargetFragment(this, 0);
             picker.show(getParentFragmentManager(), "datePicker");
         } else if (id == R.id.expire_date_time) {
             TimePickerDialogFragment picker =
                     TimePickerDialogFragment.newInstance(
                             itsExpiryDate.get(Calendar.HOUR_OF_DAY),
                             itsExpiryDate.get(Calendar.MINUTE));
-            picker.setTargetFragment(this, 0);
             picker.show(getParentFragmentManager(), "timePicker");
         } else if (id == R.id.history_addremove) {
             if (itsHistory == null) {
@@ -554,10 +542,9 @@ public class PasswdSafeEditRecordFragment
                 }
             }
         } else if (id == R.id.policy_edit) {
-            PasswdPolicyEditDialog dlg =
-                    PasswdPolicyEditDialog.newInstance(itsCurrPolicy);
-            dlg.setTargetFragment(this, 0);
-            dlg.show(getParentFragmentManager(), "PasswdPolicyEditDialog");
+            var dlg = PasswdPolicyEditDialog.newInstance(itsCurrPolicy, null);
+            dlg.show(getParentFragmentManager(),
+                     PasswdPolicyEditDialog.REQUEST_KEY);
         } else if (id == R.id.totp_value_row) {
             itsTotpViewModel.updateStateShown(
                     PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
@@ -622,42 +609,6 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void handleTimePicked(int hourOfDay, int minute)
-    {
-        itsExpiryDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        itsExpiryDate.set(Calendar.MINUTE, minute);
-        itsExpiryDate.set(Calendar.SECOND, 0);
-        updatePasswdExpiryDate();
-    }
-
-    @Override
-    public void handleDatePicked(int year, int monthOfYear, int dayOfMonth)
-    {
-        itsExpiryDate.set(Calendar.YEAR, year);
-        itsExpiryDate.set(Calendar.MONTH, monthOfYear);
-        itsExpiryDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        updatePasswdExpiryDate();
-    }
-
-    @Override
-    public void handlePolicyEditComplete(PasswdPolicy oldPolicy,
-                                         PasswdPolicy newPolicy)
-    {
-        if (oldPolicy != null) {
-            itsPolicies.remove(oldPolicy);
-        }
-        itsPolicies.add(newPolicy);
-        updatePasswdPolicies(newPolicy);
-    }
-
-    @Override
-    public boolean isDuplicatePolicy(String name)
-    {
-        // Shouldn't ever be called as record policy
-        return false;
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         PasswdSafeUtil.dbginfo(TAG, "onActivityResult data: %s", data);
@@ -667,6 +618,19 @@ public class PasswdSafeEditRecordFragment
             setLinkRefUuid(data.getStringExtra(PasswdSafeApp.RESULT_DATA_UUID));
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
+    {
+        switch (requestKey) {
+        case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
+        case NewGroupDialog.REQUEST_KEY -> handleNewGroup(result);
+        case PasswdPolicyEditDialog.REQUEST_KEY ->
+                handlePolicyEditComplete(result);
+        case TimePickerDialogFragment.REQUEST_KEY -> handleTimePicked(result);
         }
     }
 
@@ -983,6 +947,53 @@ public class PasswdSafeEditRecordFragment
         itsValidator.validate();
     }
 
+    private void handlePolicyEditComplete(@NonNull Bundle result)
+    {
+        var policies = PasswdPolicyEditDialog.getPoliciesFromResult(result);
+        var oldPolicy = policies.oldPolicy();
+        if (oldPolicy != null) {
+            itsPolicies.remove(oldPolicy);
+        }
+        var newPolicy = policies.newPolicy();
+        if (newPolicy != null) {
+            itsPolicies.add(newPolicy);
+            updatePasswdPolicies(newPolicy);
+        }
+    }
+
+    /**
+     * Handle a time picked
+     */
+    private void handleTimePicked(@NonNull Bundle result)
+    {
+        TimePickerDialogFragment.updateDateFromResult(result, itsExpiryDate);
+        updatePasswdExpiryDate();
+    }
+
+    /**
+     * Handle a date picked
+     */
+    private void handleDatePicked(@NonNull Bundle result)
+    {
+        DatePickerDialogFragment.updateDateFromResult(result, itsExpiryDate);
+        updatePasswdExpiryDate();
+    }
+
+    /**
+     * Handle a new group result
+     */
+    private void handleNewGroup(@NonNull Bundle result)
+    {
+        String newGroup = result.getString(NewGroupDialog.ARG_GROUP);
+        if (newGroup != null) {
+            if (!TextUtils.isEmpty(newGroup)) {
+                itsGroups.add(newGroup);
+            }
+            itsPrevGroupPos = updateGroups(newGroup);
+            itsValidator.validate();
+        }
+    }
+
     /**
      * Update fields after the password expiration date changes
      */
@@ -1227,7 +1238,6 @@ public class PasswdSafeEditRecordFragment
             // group item selected
             itsGroup.setSelection(itsPrevGroupPos);
             NewGroupDialog groupDlg = NewGroupDialog.newInstance();
-            groupDlg.setTargetFragment(this, 0);
             groupDlg.show(getParentFragmentManager(), "NewGroupDialog");
         } else {
             itsPrevGroupPos = position;

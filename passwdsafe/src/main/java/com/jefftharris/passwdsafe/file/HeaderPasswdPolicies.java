@@ -103,10 +103,10 @@ public class HeaderPasswdPolicies
 
     }
 
-    /** Does the header contain a policy with the given name */
-    public boolean containsPolicy(String name)
+    /** Get the collection of header policy names */
+    public Collection<String> getPolicyNames()
     {
-        return itsPolicies.containsKey(name);
+        return itsPolicies.keySet();
     }
 
     /** Get the collection of header policies */

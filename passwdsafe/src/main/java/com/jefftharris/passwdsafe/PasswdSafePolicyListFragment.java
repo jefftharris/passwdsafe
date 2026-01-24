@@ -22,6 +22,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.ListFragment;
 
 import com.jefftharris.passwdsafe.file.HeaderPasswdPolicies;
@@ -36,6 +38,8 @@ import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import com.jefftharris.passwdsafe.view.PasswdPolicyEditDialog;
 import com.jefftharris.passwdsafe.view.PasswdPolicyView;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,8 +50,8 @@ import java.util.List;
  * Fragment showing a list of password policies
  */
 public class PasswdSafePolicyListFragment extends ListFragment
-        implements PasswdPolicyEditDialog.Listener,
-                   ConfirmPromptDialog.Listener
+        implements FragmentResultListener,
+                   MenuProvider
 {
     /** Listener interface for owning activity */
     public interface Listener
@@ -71,6 +75,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
     /**
      * Create a new instance
      */
+    @NonNull
+    @Contract(" -> new")
     public static PasswdSafePolicyListFragment newInstance()
     {
         return new PasswdSafePolicyListFragment();
@@ -84,10 +90,19 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        ConfirmPromptDialog.setListener(this);
+        PasswdPolicyEditDialog.setListener(this);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
         return inflater.inflate(R.layout.fragment_passwdsafe_policy_list,
                                 container, false);
     }
@@ -108,20 +123,16 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         if ((itsListener != null) && itsListener.isNavDrawerClosed()) {
             inflater.inflate(R.menu.fragment_passwdsafe_policy_list, menu);
         }
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu)
+    public void onPrepareMenu(@NonNull Menu menu)
     {
-        super.onPrepareOptionsMenu(menu);
-
         MenuItem item = menu.findItem(R.id.menu_add_policy);
         if (item != null) {
             item.setVisible(!itsIsFileReadonly);
@@ -129,56 +140,38 @@ public class PasswdSafePolicyListFragment extends ListFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_add_policy) {
             editPolicy(null);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
-    public void onListItemClick(ListView l, @NonNull View v, int pos, long id)
+    public void onListItemClick(@NonNull ListView l,
+                                @NonNull View v,
+                                int pos,
+                                long id)
     {
         l.invalidateViews();
     }
 
     @Override
-    public void handlePolicyEditComplete(PasswdPolicy oldPolicy,
-                                         PasswdPolicy newPolicy)
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
     {
-        if (newPolicy.getLocation() == PasswdPolicy.Location.DEFAULT) {
-            PasswdSafeApp app =
-                    (PasswdSafeApp)requireContext().getApplicationContext();
-            app.setDefaultPasswdPolicy(newPolicy);
-            refresh();
-        } else {
-            String oldName = (oldPolicy != null) ? oldPolicy.getName() : null;
-            savePolicies(oldName, newPolicy);
+        switch (requestKey) {
+        case ConfirmPromptDialog.REQUEST_KEY -> {
+            PasswdPolicy policy = result.getParcelable(CONFIRM_ARG_POLICY);
+            if (policy != null) {
+                savePolicies(policy.getName(), null);
+            }
         }
-    }
-
-    @Override
-    public boolean isDuplicatePolicy(String name)
-    {
-        return (itsHdrPolicies != null) && itsHdrPolicies.containsPolicy(name);
-    }
-
-    @Override
-    public void promptConfirmed(Bundle confirmArgs)
-    {
-        PasswdPolicy policy = confirmArgs.getParcelable(CONFIRM_ARG_POLICY);
-        if (policy == null) {
-            return;
+        case PasswdPolicyEditDialog.REQUEST_KEY ->
+                handlePolicyEditComplete(result);
         }
-
-        savePolicies(policy.getName(), null);
-    }
-
-    @Override
-    public void promptCanceled()
-    {
     }
 
     /**
@@ -192,7 +185,6 @@ public class PasswdSafePolicyListFragment extends ListFragment
         ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
                 getString(R.string.delete_policy_msg, policy.getName()), null,
                 getString(R.string.delete), confirmArgs);
-        dialog.setTargetFragment(this, 0);
         dialog.show(getParentFragmentManager(), "Delete policy");
     }
 
@@ -202,9 +194,35 @@ public class PasswdSafePolicyListFragment extends ListFragment
     private void editPolicy(PasswdPolicy policy)
     {
         PasswdSafeUtil.dbginfo(TAG, "Edit policy: %s", policy);
-        PasswdPolicyEditDialog dlg = PasswdPolicyEditDialog.newInstance(policy);
-        dlg.setTargetFragment(this, 0);
-        dlg.show(getParentFragmentManager(), "PasswdPolicyEditDialog");
+
+        ArrayList<String> currPolicies = null;
+        if (itsHdrPolicies != null) {
+            currPolicies = new ArrayList<>(itsHdrPolicies.getPolicyNames());
+        }
+
+        var dlg = PasswdPolicyEditDialog.newInstance(policy, currPolicies);
+        dlg.show(getParentFragmentManager(),
+                 PasswdPolicyEditDialog.REQUEST_KEY);
+    }
+
+    private void handlePolicyEditComplete(@NonNull Bundle result)
+    {
+        var policies = PasswdPolicyEditDialog.getPoliciesFromResult(result);
+        var newPolicy = policies.newPolicy();
+        if (newPolicy == null) {
+            return;
+        }
+
+        if (newPolicy.getLocation() == PasswdPolicy.Location.DEFAULT) {
+            PasswdSafeApp app =
+                    (PasswdSafeApp)requireContext().getApplicationContext();
+            app.setDefaultPasswdPolicy(newPolicy);
+            refresh();
+        } else {
+            var oldPolicy = policies.oldPolicy();
+            String oldName = (oldPolicy != null) ? oldPolicy.getName() : null;
+            savePolicies(oldName, newPolicy);
+        }
     }
 
     /**
@@ -404,7 +422,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             /**
              * Constructor
              */
-            protected ViewHolder(View view)
+            protected ViewHolder(@NonNull View view)
             {
                 itsTitle = view.findViewById(R.id.title);
                 itsEditBtn = view.findViewById(R.id.edit);
@@ -444,7 +462,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             }
 
             @Override
-            public void onClick(View v)
+            public void onClick(@NonNull View v)
             {
                 int id = v.getId();
                 if (id == R.id.edit) {
@@ -455,7 +473,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             }
 
             @Override
-            public boolean onLongClick(View v)
+            public boolean onLongClick(@NonNull View v)
             {
                 int id = v.getId();
                 if (id == R.id.edit) {

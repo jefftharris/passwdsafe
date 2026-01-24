@@ -16,11 +16,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
 import com.jefftharris.passwdsafe.file.PasswdFileDataUser;
 import com.jefftharris.passwdsafe.file.PasswdFileUri;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
+import com.jefftharris.passwdsafe.lib.Utils;
 import com.jefftharris.passwdsafe.util.Pair;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
@@ -38,8 +40,7 @@ public class PasswdSafeExpirationsFragment
                         <PasswdSafeExpirationsFragment.Listener>
         implements AdapterView.OnItemClickListener,
                    CompoundButton.OnCheckedChangeListener,
-                   ConfirmPromptDialog.Listener,
-                   DatePickerDialogFragment.Listener
+                   FragmentResultListener
 {
     /**
      * Listener interface for owning activity
@@ -54,6 +55,15 @@ public class PasswdSafeExpirationsFragment
         void setRecordExpiryFilter(PasswdExpiryFilter filter, Date customDate);
     }
 
+    /** Action confirmed via ConfirmPromptDialog */
+    private enum ConfirmAction
+    {
+        /** Enable expiration notifications */
+        ENABLE_EXPIRY_NOTIFS
+    }
+
+    private static final String CONFIRM_ARG_ACTION = "action";
+
     private static final String TAG = "PasswdSafeExpirationsFragment";
 
     private CheckBox itsEnableExpiryNotifs;
@@ -66,6 +76,14 @@ public class PasswdSafeExpirationsFragment
     public static PasswdSafeExpirationsFragment newInstance()
     {
         return new PasswdSafeExpirationsFragment();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        ConfirmPromptDialog.setListener(this);
+        DatePickerDialogFragment.setListener(this);
     }
 
     @Override
@@ -115,7 +133,6 @@ public class PasswdSafeExpirationsFragment
                             now.get(Calendar.YEAR),
                             now.get(Calendar.MONTH),
                             now.get(Calendar.DAY_OF_MONTH));
-            picker.setTargetFragment(this, 0);
             picker.show(getParentFragmentManager(), "datePicker");
             break;
         }
@@ -129,11 +146,13 @@ public class PasswdSafeExpirationsFragment
         PasswdSafeUtil.dbginfo(TAG, "onCheckedChanged checked %b", isChecked);
         if (button.getId() == R.id.enable_expiry_notifs) {
             if (isChecked) {
+                Bundle confirmArgs = new Bundle();
+                confirmArgs.putString(CONFIRM_ARG_ACTION,
+                                      ConfirmAction.ENABLE_EXPIRY_NOTIFS.name());
                 ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
                         getString(R.string.expiration_notifications),
                         getString(R.string.expiration_notifications_warning),
-                        getString(R.string.enable), null);
-                dialog.setTargetFragment(this, 0);
+                        getString(R.string.enable), confirmArgs);
                 dialog.show(getParentFragmentManager(), "expiry");
             } else {
                 setExpiryNotif(false);
@@ -142,30 +161,43 @@ public class PasswdSafeExpirationsFragment
     }
 
     @Override
-    public void handleDatePicked(int year, int monthOfYear, int dayOfMonth)
+    public void onFragmentResult(@NonNull String requestKey,
+                                 @NonNull Bundle result)
+    {
+        switch (requestKey) {
+        case ConfirmPromptDialog.REQUEST_KEY -> {
+            var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
+                                       result);
+            if (action != null) {
+                switch (action) {
+                case ENABLE_EXPIRY_NOTIFS -> setExpiryNotif(true);
+                }
+            } else {
+                refresh();
+            }
+        }
+        case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
+        }
+    }
+
+    /**
+     * Handle a date picked
+     */
+    private void handleDatePicked(@NonNull Bundle result)
     {
         Listener listener = getListener();
         if (listener == null) {
             return;
         }
         Calendar date = Calendar.getInstance();
-        date.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
+        DatePickerDialogFragment.updateDateFromResult(result, date);
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
         date.add(Calendar.DAY_OF_MONTH, 1);
         listener.setRecordExpiryFilter(PasswdExpiryFilter.CUSTOM,
                                        date.getTime());
-    }
-
-    @Override
-    public void promptConfirmed(Bundle confirmArgs)
-    {
-        setExpiryNotif(true);
-    }
-
-    @Override
-    public void promptCanceled()
-    {
-        refresh();
     }
 
     /**

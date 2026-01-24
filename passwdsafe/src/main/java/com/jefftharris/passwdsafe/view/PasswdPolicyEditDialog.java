@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -23,8 +23,11 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.jefftharris.passwdsafe.Preferences;
 import com.jefftharris.passwdsafe.R;
@@ -34,26 +37,28 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 
+import org.jetbrains.annotations.Contract;
+
+import java.util.ArrayList;
+
 /**
  * The PasswdPolicyEditDialog class encapsulates the functionality for the
  * dialog to add or edit a policy.
  */
 public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 {
-    /**
-     * Listener interface for the owning fragment
-     */
-    public interface Listener
-    {
-        /** Callback when the policy has finished being edited */
-        void handlePolicyEditComplete(PasswdPolicy oldPolicy,
-                                      PasswdPolicy newPolicy);
+    public static final String REQUEST_KEY = "PasswdPolicyEditDialog";
 
-        /** Check whether the policy name already exists */
-        boolean isDuplicatePolicy(String name);
+    public record ResultPolicies(PasswdPolicy oldPolicy, PasswdPolicy newPolicy)
+    {
     }
 
+    private static final String ARG_POLICY = "policy";
+    private static final String ARG_EXISTING_POLICIES = "existingPolicies";
+    private static final String ARG_NEW_POLICY = "newPolicy";
+
     private PasswdPolicy itsPolicy;
+    private ArrayList<String> itsExistingPolicies;
     private View itsView;
     private DialogValidator itsValidator;
     private PasswdPolicy.Type itsType = PasswdPolicy.Type.NORMAL;
@@ -71,14 +76,37 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
     /**
      * Create a new instance
      * @param policy The policy to edit; null for an add
+     * @param existingPolicies Existing policy names; null for none
      */
-    public static PasswdPolicyEditDialog newInstance(PasswdPolicy policy)
+    @NonNull
+    public static PasswdPolicyEditDialog newInstance(
+            @Nullable PasswdPolicy policy,
+            @Nullable ArrayList<String> existingPolicies)
     {
         PasswdPolicyEditDialog dlg = new PasswdPolicyEditDialog();
         Bundle args = new Bundle();
-        args.putParcelable("policy", policy);
+        args.putParcelable(ARG_POLICY, policy);
+        args.putStringArrayList(ARG_EXISTING_POLICIES, existingPolicies);
         dlg.setArguments(args);
         return dlg;
+    }
+
+    /**
+     * Set the fragment listener for results
+     */
+    public static <T extends Fragment & FragmentResultListener>
+    void setListener(@NonNull T listener)
+    {
+        var fragMgr = listener.getParentFragmentManager();
+        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+    }
+
+    @NonNull
+    public static ResultPolicies
+    getPoliciesFromResult(@NonNull Bundle result)
+    {
+        return new ResultPolicies(result.getParcelable(ARG_POLICY),
+                                  result.getParcelable(ARG_NEW_POLICY));
     }
 
     @SuppressLint("InflateParams")
@@ -87,9 +115,12 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
     {
         Bundle args = getArguments();
         if (args != null) {
-            itsPolicy = args.getParcelable("policy");
+            itsPolicy = args.getParcelable(ARG_POLICY);
+            itsExistingPolicies =
+                    args.getStringArrayList(ARG_EXISTING_POLICIES);
         } else {
             itsPolicy = null;
+            itsExistingPolicies = null;
         }
 
         Context ctx = requireContext();
@@ -175,11 +206,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
                 public void onOkClicked(DialogInterface dialog)
                 {
                     dialog.dismiss();
-                    Listener listener = (Listener)getTargetFragment();
-                    if (listener != null) {
-                        listener.handlePolicyEditComplete(itsPolicy,
-                                                          createPolicy());
-                    }
+                    setResult();
                 }
             };
 
@@ -226,11 +253,22 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         itsValidator.reset();
     }
 
+    private void setResult()
+    {
+        Bundle result = new Bundle();
+        result.putParcelable(ARG_POLICY, itsPolicy);
+        result.putParcelable(ARG_NEW_POLICY, createPolicy());
+
+        var fragMgr = getParentFragmentManager();
+        fragMgr.setFragmentResult(REQUEST_KEY, result);
+    }
 
     /**
      * Create a policy from the dialog fields. It is assumed that the fields
      * are valid
      */
+    @NonNull
+    @Contract(" -> new")
     private PasswdPolicy createPolicy()
     {
         int length = getTextViewInt(itsLengthEdit);
@@ -460,7 +498,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 
 
     /** Set the visibility on an option's length field */
-    private void setOptionLenVisible(CheckBox option)
+    private void setOptionLenVisible(@NonNull CheckBox option)
     {
         boolean visible =
                 (itsType == PasswdPolicy.Type.NORMAL) && option.isChecked();
@@ -498,7 +536,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 
 
     /** Get an integer value from a text view */
-    private int getTextViewInt(TextView tv)
+    private int getTextViewInt(@NonNull TextView tv)
         throws NumberFormatException
     {
         return Integer.valueOf(tv.getText().toString(), 10);
@@ -507,7 +545,7 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 
     /** Set a text view to an integer value */
     @SuppressLint("SetTextI18n")
-    private void setTextView(TextView tv, int value)
+    private void setTextView(@NonNull TextView tv, int value)
     {
         tv.setText(Integer.toString(value));
     }
@@ -545,9 +583,8 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 
                 if ((itsPolicy == null) ||
                     !itsPolicy.getName().equals(name)) {
-                    Listener listener = (Listener)getTargetFragment();
-                    if ((listener != null) &&
-                        listener.isDuplicatePolicy(name)) {
+                    if ((itsExistingPolicies != null) &&
+                        itsExistingPolicies.contains(name)) {
                         return getString(R.string.duplicate_name);
                     }
                 }

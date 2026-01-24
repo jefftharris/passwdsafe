@@ -48,19 +48,19 @@ public class FileV3Test
     {
         protected V3FileInfo itsFileInfo;
 
-        public final void parseNewFileInfo(PwsFile file)
+        protected final void parseNewFileInfo(PwsFile file)
         {
             itsFileInfo = new V3FileInfo(file, getHdrTimeFormat());
             itsFileInfo.populateHeader();
         }
 
-        public PwsTimeField.Format getHdrTimeFormat()
+        protected PwsTimeField.Format getHdrTimeFormat()
         {
             return PwsTimeField.Format.DEFAULT;
         }
-        public abstract void populate(PwsFile file);
+        protected abstract void populate(PwsFile file);
 
-        public final void verify(@NonNull PwsFile file)
+        protected final void verify(@NonNull PwsFile file)
         {
             assertTrue(file instanceof PwsFileV3);
             assertFalse(file.isReadOnly());
@@ -85,7 +85,7 @@ public class FileV3Test
         int itsUnknownField2 = -1;
         byte[] itsUnknownValue2 = null;
 
-        public RecInfo(PwsRecord rec, String title, String password)
+        protected RecInfo(PwsRecord rec, String title, String password)
         {
             itsRec = rec;
             itsTitle = title;
@@ -97,7 +97,7 @@ public class FileV3Test
             itsCreation = (Date)creationDate.getValue();
         }
 
-        public static UUID getUuid(@NonNull PwsRecord rec)
+        protected static UUID getUuid(@NonNull PwsRecord rec)
         {
             var uuid = rec.getField(PwsFieldTypeV3.UUID);
             assertTrue(uuid instanceof PwsUUIDField);

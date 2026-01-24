@@ -18,10 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.jefftharris.passwdsafe.file.PasswdNotes;
 import com.jefftharris.passwdsafe.view.PasswdLocation;
 
@@ -85,23 +86,22 @@ public class PasswdSafeRecordFragment
         View root = inflater.inflate(R.layout.fragment_passwdsafe_record,
                                      container, false);
 
-        final ViewPager viewPager = root.findViewById(R.id.viewpager);
-        viewPager.addOnPageChangeListener(
-                new ViewPager.SimpleOnPageChangeListener()
+        final ViewPager2 viewPager = root.findViewById(R.id.viewpager);
+        viewPager.registerOnPageChangeCallback(
+                new ViewPager2.OnPageChangeCallback()
                 {
                     @Override
                     public void onPageSelected(int position)
                     {
+                        super.onPageSelected(position);
                         itsLastSelectedTab = position;
                     }
                 });
-        viewPager.setAdapter(new FragmentPagerAdapter(
-                getChildFragmentManager(),
-                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
+        viewPager.setAdapter(new FragmentStateAdapter(this)
         {
             @NonNull
             @Override
-            public Fragment getItem(int position)
+            public Fragment createFragment(int position)
             {
                 switch (position) {
                 case 0: {
@@ -116,35 +116,29 @@ public class PasswdSafeRecordFragment
                             getLocation());
                 }
                 }
-                return PasswdSafeRecordBasicFragment.newInstance(
-                        getLocation());
+                return PasswdSafeRecordBasicFragment.newInstance(getLocation());
             }
 
             @Override
-            public int getCount()
+            public int getItemCount()
             {
                 return 3;
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position)
-            {
-                return switch (position) {
-                    case 0 -> getString(R.string.basic);
-                    case 1 -> getString(R.string.password);
-                    case 2 -> getString(R.string.notes);
-                    default -> null;
-                };
             }
         });
         viewPager.setCurrentItem(itsLastSelectedTab);
 
         itsTabs = root.findViewById(R.id.tabs);
+        new TabLayoutMediator(itsTabs, viewPager, (tab, position) -> {
+            switch (position) {
+            case 0 -> tab.setText(R.string.basic);
+            case 1 -> tab.setText(R.string.password);
+            case 2 -> tab.setText(R.string.notes);
+            }
+        }).attach();
         itsTabs.post(() -> {
             if (!isAdded()) {
                 return;
             }
-            itsTabs.setupWithViewPager(viewPager);
             updateNotesTab();
         });
 

@@ -20,13 +20,14 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.jefftharris.passwdsafe.R;
-
-import java.util.Objects;
 
 /**
  * Dialog to confirm a prompt
@@ -36,18 +37,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
                DialogInterface.OnCancelListener,
                DialogInterface.OnClickListener
 {
-    /**
-     * Listener interface for owning activity
-     */
-    public interface Listener
-    {
-        /** Handle when a prompt was confirmed or the neutral action selected
-         */
-        void promptConfirmed(Bundle confirmArgs);
-
-        /** Handle when a prompt was canceled */
-        void promptCanceled();
-    }
+    public static final String REQUEST_KEY = "ConfirmPromptDialog";
 
     private static final String ARG_CONFIRM = "confirm";
     private static final String ARG_CONFIRM_ARGS = "confirmArgs";
@@ -56,9 +46,10 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     private static final String ARG_PROMPT = "prompt";
     private static final String ARG_TITLE = "title";
 
+    private static final Bundle CANCEL_ARGS = new Bundle();
+
     private CheckBox itsConfirmCb;
     private AlertDialog itsDialog;
-    private Listener itsListener;
 
     /**
      * Create a new instance
@@ -93,6 +84,26 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
         args.putBundle(ARG_NEUTRAL_ARGS, neutralArgs);
         dialog.setArguments(args);
         return dialog;
+    }
+
+    /**
+     * Set the fragment listener for results
+     */
+    public static <T extends Fragment & FragmentResultListener>
+    void setListener(@NonNull T listener)
+    {
+        var fragMgr = listener.getParentFragmentManager();
+        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+    }
+
+    /**
+     * Set the fragment activity listener for results
+     */
+    public static <T extends FragmentActivity & FragmentResultListener>
+    void setListener(@NonNull T listener)
+    {
+        var fragMgr = listener.getSupportFragmentManager();
+        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
     }
 
     @Override
@@ -131,14 +142,6 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     }
 
     @Override
-    public void onAttach(@NonNull Context ctx)
-    {
-        super.onAttach(ctx);
-        Fragment frag = getTargetFragment();
-        itsListener = (Listener)Objects.requireNonNullElse(frag, ctx);
-    }
-
-    @Override
     public void onResume()
     {
         super.onResume();
@@ -146,32 +149,21 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     }
 
     @Override
-    public void onDetach()
-    {
-        super.onDetach();
-        itsListener = null;
-    }
-
-    @Override
     public void onClick(DialogInterface dialog, int which)
     {
-        if (itsListener == null) {
-            return;
-        }
-
         switch (which) {
         case AlertDialog.BUTTON_POSITIVE: {
             Bundle args = requireArguments();
-            itsListener.promptConfirmed(args.getBundle(ARG_CONFIRM_ARGS));
+            setResult(args.getBundle(ARG_CONFIRM_ARGS));
             break;
         }
         case AlertDialog.BUTTON_NEGATIVE: {
-            itsListener.promptCanceled();
+            setResult(CANCEL_ARGS);
             break;
         }
         case AlertDialog.BUTTON_NEUTRAL: {
             Bundle args = requireArguments();
-            itsListener.promptConfirmed(args.getBundle(ARG_NEUTRAL_ARGS));
+            setResult(args.getBundle(ARG_NEUTRAL_ARGS));
             break;
         }
         }
@@ -188,9 +180,14 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     public void onCancel(@NonNull DialogInterface dialog)
     {
         super.onCancel(dialog);
-        if (itsListener != null) {
-            itsListener.promptCanceled();
-        }
+        setResult(CANCEL_ARGS);
+    }
+
+    private void setResult(@Nullable Bundle result)
+    {
+        var fragMgr = getParentFragmentManager();
+        fragMgr.setFragmentResult(REQUEST_KEY,
+                                  (result != null) ? result : CANCEL_ARGS);
     }
 
     /**
