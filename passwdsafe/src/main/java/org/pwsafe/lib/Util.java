@@ -313,19 +313,25 @@ public final class Util
 
     /**
      * Stores a long milliseconds as seconds in a byte array. The value is
-     * four bytes in little-endian order.
+     * four or five bytes in little-endian order.
      *
-     * @param buff   the buffer to store the seconds into.
+     * @param buff   the buffer to store the seconds into (4-5 bytes).
      * @param value  the millis long value to store.
      */
     public static void putMillisToByteArray(@NonNull byte[] buff, long value)
     {
         value /= 1000L; // convert from millis to seconds
 
-        buff[0] = (byte)(value & 0xff);
-        buff[1] = (byte)((value >>> 8) & 0xff);
-        buff[2] = (byte)((value >>> 16) & 0xff);
-        buff[3] = (byte)((value >>> 24) & 0xff);
+        if (buff.length >= 4) {
+            buff[0] = (byte)(value & 0xff);
+            buff[1] = (byte)((value >>> 8) & 0xff);
+            buff[2] = (byte)((value >>> 16) & 0xff);
+            buff[3] = (byte)((value >>> 24) & 0xff);
+
+            if (buff.length >= 5) {
+                buff[4] = (byte)((value >>> 32) & 0xff);
+            }
+        }
     }
 
     /**

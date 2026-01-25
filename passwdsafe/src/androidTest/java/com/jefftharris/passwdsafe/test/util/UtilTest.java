@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import org.junit.Test;
 import org.pwsafe.lib.Util;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -33,13 +35,21 @@ public final class UtilTest
     }
 
     @Test
-    public void testMillisToByteArray()
+    public void testMillisToFromByteArray()
     {
         long expected = 0x12345678L * 1000L;
         byte[] buf = new byte[4];
         Util.putMillisToByteArray(buf, expected);
         assertArrayEquals(new byte[]{0x78, 0x56, 0x34, 0x12}, buf);
 
+        long value = Util.getMillisFromByteArray(buf);
+        assertEquals(expected, value);
+    }
+
+    @Test
+    public void testMillisToByteArray()
+    {
+        // 4 bytes
         doTestMillisToByteArray(new byte[]{0, 0, 0, 0}, 0x00);
         doTestMillisToByteArray(new byte[]{0x78, 0, 0, 0}, 0x78);
         doTestMillisToByteArray(new byte[]{0x78, 0x56, 0, 0}, 0x5678);
@@ -56,48 +66,68 @@ public final class UtilTest
                                 0x8765432112345678L);
          */
 
-        long value = Util.getMillisFromByteArray(buf);
-        assertEquals(expected, value);
-
-        // 0-8
-        doTestMillisToByteArray(0, new byte[]{});
-        doTestMillisToByteArray(0x78, new byte[]{0x78});
-        doTestMillisToByteArray(0x5678, new byte[]{0x78, 0x56});
-        doTestMillisToByteArray(0x345678, new byte[]{0x78, 0x56, 0x34});
-        doTestMillisToByteArray(0x12345678, new byte[]{0x78, 0x56, 0x34, 0x12});
-        doTestMillisToByteArray(0x2112345678L,
-                                new byte[]{0x78, 0x56, 0x34, 0x12, 0x21});
-        doTestMillisToByteArray(0x432112345678L,
-                                new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43});
-        doTestMillisToByteArray(0x65432112345678L,
-                                new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
-                                           0x65});
-        doTestMillisToByteArray(0x8765432112345678L,
-                                new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
-                                           0x65, (byte)0x87});
-
-        // > 8
-        doTestMillisToByteArray(0,
-                                new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
-                                           0x65, (byte)0x87, (byte)0x99});
-        doTestMillisToByteArray(0,
-                                new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
-                                           0x65, (byte)0x87, (byte)0x99,
-                                           (byte)0xaa});
+        // 5 bytes
+        doTestMillisToByteArray(new byte[]{0, 0, 0, 0, 0}, 0x00);
+        doTestMillisToByteArray(new byte[]{0x78, 0, 0, 0, 0}, 0x78);
+        doTestMillisToByteArray(new byte[]{0x78, 0x56, 0, 0, 0}, 0x5678);
+        doTestMillisToByteArray(new byte[]{0x78, 0x56, 0x34, 0, 0}, 0x345678);
+        doTestMillisToByteArray(new byte[]{0x78, 0x56, 0x34, 0x12, 0},
+                                0x12345678);
+        doTestMillisToByteArray(new byte[]{0x78, 0x56, 0x34, 0x12, 0x21},
+                                0x2112345678L);
+        doTestMillisToByteArray(new byte[]{0x78, 0x56, 0x34, 0x12, 0x21},
+                                0x432112345678L);
+        /* Tests skipped due to millisecond overflow converting from seconds
+        doTestMillisToByteArray(new byte[]{0x78, 0x56, 0x34, 0x12},
+                                0x65432112345678L);
+        doTestMillisToByteArray(new byte[]{0x78, 0x56, 0x34, 0x12},
+                                0x8765432112345678L);
+         */
     }
 
     private static void doTestMillisToByteArray(@NonNull byte[] expectedBuf,
                                                 long valueSecs)
     {
-        byte[] valueBuf = new byte[]{0, 0, 0, 0};
-        Util.putMillisToByteArray(valueBuf, valueSecs * 1000);
-        assertEquals(4, valueBuf.length);
-        assertEquals(4, expectedBuf.length);
+        long valueMillis = valueSecs * 1000;
+        byte[] valueBuf = new byte[expectedBuf.length];
+        Arrays.fill(valueBuf, (byte)0);
+        Util.putMillisToByteArray(valueBuf, valueMillis);
+        assertEquals(expectedBuf.length, valueBuf.length);
         assertArrayEquals(expectedBuf, valueBuf);
     }
 
-    private static void doTestMillisToByteArray(long expectedSecs,
-                                                @NonNull byte[] valueBuf)
+    @Test
+    public void testMillisFromByteArray()
+    {
+        // 0-8
+        doTestMillisFromByteArray(0, new byte[]{});
+        doTestMillisFromByteArray(0x78, new byte[]{0x78});
+        doTestMillisFromByteArray(0x5678, new byte[]{0x78, 0x56});
+        doTestMillisFromByteArray(0x345678, new byte[]{0x78, 0x56, 0x34});
+        doTestMillisFromByteArray(0x12345678, new byte[]{0x78, 0x56, 0x34, 0x12});
+        doTestMillisFromByteArray(0x2112345678L,
+                                  new byte[]{0x78, 0x56, 0x34, 0x12, 0x21});
+        doTestMillisFromByteArray(0x432112345678L,
+                                  new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43});
+        doTestMillisFromByteArray(0x65432112345678L,
+                                  new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
+                                           0x65});
+        doTestMillisFromByteArray(0x8765432112345678L,
+                                  new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
+                                           0x65, (byte)0x87});
+
+        // > 8
+        doTestMillisFromByteArray(0,
+                                  new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
+                                           0x65, (byte)0x87, (byte)0x99});
+        doTestMillisFromByteArray(0,
+                                  new byte[]{0x78, 0x56, 0x34, 0x12, 0x21, 0x43,
+                                           0x65, (byte)0x87, (byte)0x99,
+                                           (byte)0xaa});
+    }
+
+    private static void doTestMillisFromByteArray(long expectedSecs,
+                                                  @NonNull byte[] valueBuf)
     {
         long value = Util.getMillisFromByteArray(valueBuf);
         assertEquals(expectedSecs * 1000, value);

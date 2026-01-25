@@ -33,7 +33,9 @@ public class PwsTimeField extends PwsField
         ONLY_32BIT,
         /// Allow early 8 byte hex string of seconds since epoch for header
         /// fields
-        ALLOW_HEADER_ASCII
+        ALLOW_HEADER_ASCII,
+        /// Save as 40-bit
+        SAVE_40BIT
     }
 
     private final Format itsFormat;
@@ -80,10 +82,12 @@ public class PwsTimeField extends PwsField
     {
         long value = ((Date)getValue()).getTime();
 
+        byte[] retval = null;
         switch (itsFormat) {
         case DEFAULT,
             ONLY_32BIT -> {
         }
+        case SAVE_40BIT -> retval = new byte[5];
         case ALLOW_HEADER_ASCII -> {
             int secs = (int)(value / 1000);
             String str = String.format("%08x", secs);
@@ -91,9 +95,9 @@ public class PwsTimeField extends PwsField
         }
         }
 
-        // Force a size of 4, otherwise it would be set to a size of
-        // blocklength
-        byte[] retval = new byte[4];
+        if (retval == null) {
+            retval = new byte[4];
+        }
         Util.putMillisToByteArray(retval, value);
         return retval;
     }
@@ -159,7 +163,8 @@ public class PwsTimeField extends PwsField
     {
         switch (format) {
         case DEFAULT,
-             ONLY_32BIT -> {
+             ONLY_32BIT,
+             SAVE_40BIT -> {
         }
         case ALLOW_HEADER_ASCII -> {
             // Check deprecated ASCII form, else fall through
