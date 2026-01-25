@@ -205,7 +205,7 @@ public class PwsRecordV3 extends PwsRecord
                 throw eofe;
             }
 
-            length = Util.getIntFromByteArray(rawData, 0);
+            length = Util.getIntFromByteArray(rawData);
             type = rawData[4] & 0x000000ff; // rest of header is now random data
             try {
                 data = new byte[length];

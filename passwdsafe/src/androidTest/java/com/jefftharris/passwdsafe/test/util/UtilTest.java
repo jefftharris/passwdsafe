@@ -28,7 +28,7 @@ public final class UtilTest
         Util.putIntToByteArray(buf, expected, 0);
         assertArrayEquals(new byte[]{0x78, 0x56, 0x34, 0x12}, buf);
 
-        int value = Util.getIntFromByteArray(buf, 0);
+        int value = Util.getIntFromByteArray(buf);
         assertEquals(expected, value);
     }
 
@@ -37,7 +37,7 @@ public final class UtilTest
     {
         long expected = 0x12345678L * 1000L;
         byte[] buf = new byte[4];
-        Util.putMillisToByteArray(buf, expected, 0);
+        Util.putMillisToByteArray(buf, expected);
         assertArrayEquals(new byte[]{0x78, 0x56, 0x34, 0x12}, buf);
 
         doTestMillisToByteArray(new byte[]{0, 0, 0, 0}, 0x00);
@@ -56,7 +56,7 @@ public final class UtilTest
                                 0x8765432112345678L);
          */
 
-        long value = Util.getMillisFromByteArray(buf, 0);
+        long value = Util.getMillisFromByteArray(buf);
         assertEquals(expected, value);
 
         // 0-8
@@ -90,7 +90,7 @@ public final class UtilTest
                                                 long valueSecs)
     {
         byte[] valueBuf = new byte[]{0, 0, 0, 0};
-        Util.putMillisToByteArray(valueBuf, valueSecs * 1000, 0);
+        Util.putMillisToByteArray(valueBuf, valueSecs * 1000);
         assertEquals(4, valueBuf.length);
         assertEquals(4, expectedBuf.length);
         assertArrayEquals(expectedBuf, valueBuf);
@@ -99,7 +99,7 @@ public final class UtilTest
     private static void doTestMillisToByteArray(long expectedSecs,
                                                 @NonNull byte[] valueBuf)
     {
-        long value = Util.getMillisFromByteArray(valueBuf, 0);
+        long value = Util.getMillisFromByteArray(valueBuf);
         assertEquals(expectedSecs * 1000, value);
     }
 
@@ -108,10 +108,10 @@ public final class UtilTest
     {
         short expected = 0x1234;
         byte[] buf = new byte[2];
-        Util.putShortToByteArray(buf, expected, 0);
+        Util.putShortToByteArray(buf, expected);
         assertArrayEquals(new byte[]{0x34, 0x12}, buf);
 
-        short value = Util.getShortFromByteArray(buf, 0);
+        short value = Util.getShortFromByteArray(buf);
         assertEquals(expected, value);
     }
 }

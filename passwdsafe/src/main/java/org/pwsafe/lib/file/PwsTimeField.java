@@ -94,7 +94,7 @@ public class PwsTimeField extends PwsField
         // Force a size of 4, otherwise it would be set to a size of
         // blocklength
         byte[] retval = new byte[4];
-        Util.putMillisToByteArray(retval, value, 0);
+        Util.putMillisToByteArray(retval, value);
         return retval;
     }
 
@@ -175,7 +175,7 @@ public class PwsTimeField extends PwsField
 
         // Read 4, 5, 8 as little-endian seconds
         return new ParsedDate(format,
-                              new Date(Util.getMillisFromByteArray(value, 0)));
+                              new Date(Util.getMillisFromByteArray(value)));
     }
 
     /**
