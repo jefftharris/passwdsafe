@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -312,26 +312,22 @@ public final class Util
 
     /**
      * Extracts an milliseconds from seconds stored in a byte array.
-     * The value is four bytes in little-endian order starting at
-     * <code>offset</code>.
+     * The value is up to 8 bytes in little-endian order
      *
      * @param buff   the array to extract the millis from.
-     * @param offset the offset to start reading from.
      * @return The value extracted.
-     * @throws IndexOutOfBoundsException if offset is negative or <code>buff
-     * .length</code> &lt; <code>offset + 4</code>.
      */
     public static long getMillisFromByteArray(
             @NonNull byte[] buff,
-            @SuppressWarnings("SameParameterValue") int offset)
+            @SuppressWarnings("SameParameterValue") int ignoredOffset)
     {
-
-        long result;
-
-        result = (buff[offset + 0] & 0x000000ff)
-                 | ((buff[offset + 1] & 0x000000ff) << 8)
-                 | ((buff[offset + 2] & 0x000000ff) << 16)
-                 | ((long)(buff[offset + 3] & 0x000000ff) << 24);
+        long result = 0;
+        int bufflen = buff.length;
+        if (bufflen <= 8) {
+            for (int i = 0, shift = 0; i < bufflen; ++i, shift += 8) {
+                result |= ((long)(buff[i] & 0xFF)) << shift;
+            }
+        }
 
         result *= 1000L; // convert from seconds to millis
 

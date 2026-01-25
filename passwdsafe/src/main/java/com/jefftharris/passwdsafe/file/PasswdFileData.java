@@ -1088,7 +1088,7 @@ public class PasswdFileData
             case LAST_PASSWORD_CHANGE: {
                 int minor = getHdrMinorVersion(rec);
                 var format = (minor >= 2) ? PwsTimeField.Format.DEFAULT :
-                             PwsTimeField.Format.HEADER_ASCII;
+                             PwsTimeField.Format.ALLOW_HEADER_ASCII;
                 rec.setField(new PwsTimeField(fieldId, format, (Date)value));
                 break;
             }

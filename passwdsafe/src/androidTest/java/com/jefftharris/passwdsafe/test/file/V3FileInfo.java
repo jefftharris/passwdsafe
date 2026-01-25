@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -213,14 +213,14 @@ class V3FileInfo
                 var headerField = fileInfo.itsHeaderRec.getField(headerFieldId);
                 var bytes = headerField.getBytes();
                 switch (itsHdrTimeFormat) {
-                case DEFAULT -> assertEquals(4, bytes.length);
-                case HEADER_ASCII -> assertEquals(8, bytes.length);
+                case DEFAULT, ONLY_32BIT -> assertEquals(4, bytes.length);
+                case ALLOW_HEADER_ASCII -> assertEquals(8, bytes.length);
                 }
 
-                switch (headerType) {
-                case LAST_SAVE_TIME -> lastSaveTimeVerified = true;
-                case LAST_PASSWORD_CHANGE -> lastPasswordChangeVerified =
-                        true;
+                if (headerType == PwsHeaderTypeV3.LAST_SAVE_TIME) {
+                    lastSaveTimeVerified = true;
+                } else if (headerType == PwsHeaderTypeV3.LAST_PASSWORD_CHANGE) {
+                    lastPasswordChangeVerified = true;
                 }
             }
             case END_OF_RECORD -> fail();

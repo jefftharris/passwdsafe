@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -11,7 +11,6 @@ package org.pwsafe.lib.file;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Util;
 
 import java.io.Serial;
@@ -27,37 +26,47 @@ public class PwsTimeField extends PwsField
 
     public enum Format
     {
-        /// 32-bit, little-endian seconds since epoch
+        /// 32-bit, little-endian seconds since epoch.  May be extended to 5 or
+        /// 8 bytes
         DEFAULT,
-        /// Early 8 byte hex string of seconds since epoch for header fields
-        HEADER_ASCII
+        /// 32-bit only (for V2 format)
+        ONLY_32BIT,
+        /// Allow early 8 byte hex string of seconds since epoch for header
+        /// fields
+        ALLOW_HEADER_ASCII
     }
 
     private final Format itsFormat;
 
     /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param value the field's value.
+     * Constructor from bytes
      */
-    public PwsTimeField(PwsFieldType type, byte[] value)
+    public PwsTimeField(@NonNull PwsFieldType type,
+                        @NonNull Format format,
+                        byte[] value)
     {
-        super(type, createDateFromBytes(value));
-        itsFormat = formatFromBytes(value);
+        this(type, parseDateFromBytes(format, value));
     }
 
     /**
-     * Constructor
-     *
-     * @param type  the field's type.
-     * @param aDate the field's value.
+     * Constructor from a date
      */
     @SuppressWarnings("SameParameterValue")
-    public PwsTimeField(PwsFieldType type, Format format, Date aDate)
+    public PwsTimeField(@NonNull PwsFieldType type,
+                        @NonNull Format format,
+                        Date aDate)
     {
         super(type, normalizeDate(aDate));
         itsFormat = format;
+    }
+
+    /**
+     * Constructor from a parsed date
+     */
+    private PwsTimeField(@NonNull PwsFieldType type, @NonNull ParsedDate date)
+    {
+        super(type, date.date());
+        itsFormat = date.format();
     }
 
     /**
@@ -72,9 +81,10 @@ public class PwsTimeField extends PwsField
         long value = ((Date)getValue()).getTime();
 
         switch (itsFormat) {
-        case DEFAULT -> {
+        case DEFAULT,
+            ONLY_32BIT -> {
         }
-        case HEADER_ASCII -> {
+        case ALLOW_HEADER_ASCII -> {
             int secs = (int)(value / 1000);
             String str = String.format("%08x", secs);
             return str.getBytes();
@@ -141,46 +151,56 @@ public class PwsTimeField extends PwsField
     }
 
     /**
-     * Get the time format from its bytes value
-     */
-    @NonNull
-    private static Format formatFromBytes(@NonNull byte[] value)
-    {
-        if (value.length == 8) {
-            return Format.HEADER_ASCII;
-        }
-        return Format.DEFAULT;
-    }
-
-    /**
      * Create a date value from its bytes value
      */
-    @Contract("_ -> new")
     @NonNull
-    private static Date createDateFromBytes(@NonNull byte[] value)
+    private static ParsedDate parseDateFromBytes(@NonNull Format format,
+                                                 @NonNull byte[] value)
     {
-        switch (formatFromBytes(value)) {
-        case DEFAULT -> {
+        switch (format) {
+        case DEFAULT,
+             ONLY_32BIT -> {
         }
-        case HEADER_ASCII -> {
-            byte[] binbytes = new byte[4];
-            Util.putIntToByteArray(binbytes, hexBytesToInt(value), 0);
-            value = binbytes;
+        case ALLOW_HEADER_ASCII -> {
+            // Check deprecated ASCII form, else fall through
+            if (value.length == 8) {
+                var asciiTime = headerAsciiToDate(value);
+                if (asciiTime != null) {
+                    return new ParsedDate(format, asciiTime);
+                }
+            }
+            format = Format.DEFAULT;
         }
         }
-        return new Date(Util.getMillisFromByteArray(value, 0));
+
+        // Read 4, 5, 8 as little-endian seconds
+        return new ParsedDate(format,
+                              new Date(Util.getMillisFromByteArray(value, 0)));
     }
 
     /**
      * Convert hex bytes to an integer
+     * @return The parsed time from hex bytes if successful; null otherwise
      */
-    private static int hexBytesToInt(@NonNull byte[] bytes)
+    @Nullable
+    private static Date headerAsciiToDate(@NonNull byte[] bytes)
     {
-        int i = 0;
+        long tsecs = 0;
         for (byte aByte : bytes) {
-            i <<= 4;
-            i |= Character.digit(aByte, 16);
+            tsecs <<= 4;
+            int d = Character.digit(aByte, 16);
+            if (d == -1) {
+                return null;
+            }
+            tsecs |= d;
         }
-        return i;
+        return new Date(tsecs * 1000);
+    }
+
+    /**
+     * Date and supported format parsed from bytes
+     */
+    private record ParsedDate(@NonNull Format format, @NonNull Date date)
+    {
     }
 }

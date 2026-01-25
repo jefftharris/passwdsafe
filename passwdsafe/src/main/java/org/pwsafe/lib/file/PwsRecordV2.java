@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -152,7 +152,9 @@ public class PwsRecordV2 extends PwsRecord
                 case PASSWORD_MOD_TIME:
                 case LAST_ACCESS_TIME:
                 case LAST_MOD_TIME:
-                    itemVal = new PwsTimeField(type, item.getByteData());
+                    itemVal = new PwsTimeField(type,
+                                               PwsTimeField.Format.ONLY_32BIT,
+                                               item.getByteData());
                     break;
 
                 case PASSWORD_LIFETIME:
