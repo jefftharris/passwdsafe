@@ -342,6 +342,12 @@ public class PwsRecordV3 extends PwsRecord
                                                    item.getByteData());
                         break;
 
+                    case TOTP_START_TIME:
+                        itemVal = new PwsTimeField(
+                                type, PwsTimeField.Format.SAVE_40BIT,
+                                item.getByteData());
+                        break;
+
                     case PASSWORD_EXPIRY_INTERVAL:
                     case ENTRY_KEYBOARD_SHORTCUT:
                         itemVal = new PwsIntegerField(type, item.getByteData());
@@ -353,6 +359,9 @@ public class PwsRecordV3 extends PwsRecord
                         break;
 
                     case PROTECTED_ENTRY:
+                    case TOTP_CONFIG:
+                    case TOTP_LENGTH:
+                    case TOTP_TIME_STEP:
                         itemVal = new PwsByteField(type, item.getByteData());
                         break;
 
@@ -535,7 +544,11 @@ public class PwsRecordV3 extends PwsRecord
                      OWN_PASSWORD_SYMBOLS,
                      SHIFT_DOUBLE_CLICK_ACTION,
                      PASSWORD_POLICY_NAME,
-                     ENTRY_KEYBOARD_SHORTCUT -> sb.append(value);
+                     ENTRY_KEYBOARD_SHORTCUT,
+                     TOTP_CONFIG,
+                     TOTP_LENGTH,
+                     TOTP_TIME_STEP,
+                     TOTP_START_TIME -> sb.append(value);
                 }
             }
         }
