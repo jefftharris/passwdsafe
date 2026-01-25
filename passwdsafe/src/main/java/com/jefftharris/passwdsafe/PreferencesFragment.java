@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -10,7 +10,6 @@ package com.jefftharris.passwdsafe;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -19,6 +18,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -42,7 +42,9 @@ import com.jefftharris.passwdsafe.pref.PasswdTimeoutPref;
 import com.jefftharris.passwdsafe.pref.RecordFieldSortPref;
 import com.jefftharris.passwdsafe.pref.RecordSortOrderPref;
 import com.jefftharris.passwdsafe.pref.ThemePref;
+import com.jefftharris.passwdsafe.util.Optional;
 import com.jefftharris.passwdsafe.view.ConfirmPromptDialog;
+import com.jefftharris.passwdsafe.view.CreateFileShortcutActResultContract;
 
 import org.pwsafe.lib.file.PwsFile;
 
@@ -70,8 +72,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         CLEAR_ALL_NOTIFS,
         CLEAR_ALL_SAVED
     }
-
-    private static final int REQUEST_DEFAULT_FILE = 0;
 
     private static final String CONFIRM_ARG_ACTION = "action";
 
@@ -157,15 +157,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (!itsScreen.onActivityResult(requestCode, resultCode, data))
-        {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
@@ -206,16 +197,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         implements Preference.OnPreferenceClickListener,
                    SharedPreferences.OnSharedPreferenceChangeListener
     {
-        /**
-         * Handle an activity result
-         * @return true if handled; false otherwise
-         */
-        protected boolean onActivityResult(int requestCode, int resultCode,
-                                           Intent data)
-        {
-            return false;
-        }
-
         /**
          * Handle a confirmed dialog prompt
          */
@@ -314,6 +295,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         private final Preference itsDefFilePref;
         private final ListPreference itsFileClosePref;
         private final ListPreference itsFileBackupPref;
+        ActivityResultLauncher<Void> itsCreateFileShortcutLauncher;
 
         /**
          * Constructor
@@ -345,6 +327,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                 hidePreference(Preferences.PREF_FILE_DIR);
                 hidePreference(Preferences.PREF_FILE_LEGACY_FILE_CHOOSER);
             }
+
+            itsCreateFileShortcutLauncher = registerForActivityResult(
+                    new CreateFileShortcutActResultContract(),
+                    this::onCreateFileShortcutResult);
         }
 
         @Override
@@ -413,38 +399,23 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         @Override
         public boolean onPreferenceClick(@NonNull Preference preference)
         {
-            switch (preference.getKey()) {
-            case Preferences.PREF_DEF_FILE: {
-                Intent intent = new Intent(Intent.ACTION_CREATE_SHORTCUT, null,
-                                           getContext(),
-                                           LauncherFileShortcuts.class);
-                intent.putExtra(LauncherFileShortcuts.EXTRA_IS_DEFAULT_FILE,
-                                true);
-                startActivityForResult(intent, REQUEST_DEFAULT_FILE);
-                return true;
-            }
-            }
-            return false;
+            return switch (preference.getKey()) {
+                case Preferences.PREF_DEF_FILE -> {
+                    itsCreateFileShortcutLauncher.launch(null);
+                    yield true;
+                }
+                default -> false;
+            };
         }
 
-        @Override
-        public boolean onActivityResult(int requestCode, int resultCode,
-                                        Intent data)
+        /**
+         * Handle the result of choosing a file shortcut
+         */
+        private void onCreateFileShortcutResult(@Nullable Optional<Uri> result)
         {
-            switch (requestCode) {
-            case REQUEST_DEFAULT_FILE: {
-                if (resultCode != Activity.RESULT_OK) {
-                    return true;
-                }
-                Intent val =
-                        data.getParcelableExtra(Intent.EXTRA_SHORTCUT_INTENT);
-                Uri uri = (val != null) ? val.getData() : null;
+            if (result != null) {
+                var uri = result.orElse(null);
                 setDefFilePref((uri != null) ? uri.toString() : null);
-                return true;
-            }
-            default: {
-                return false;
-            }
             }
         }
 
