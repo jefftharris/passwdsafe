@@ -9,9 +9,7 @@ package com.jefftharris.passwdsafe;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -34,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentResultListener;
@@ -54,7 +53,9 @@ import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
+import com.jefftharris.passwdsafe.util.Optional;
 import com.jefftharris.passwdsafe.util.Pair;
+import com.jefftharris.passwdsafe.view.ChooseRecordActResultContract;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
 import com.jefftharris.passwdsafe.view.EditRecordResult;
 import com.jefftharris.passwdsafe.view.NewGroupDialog;
@@ -173,10 +174,8 @@ public class PasswdSafeEditRecordFragment
     private ProgressBar itsTotpProgress;
     private View itsNotesLabel;
     private TextView itsNotes;
-
-    private static final String TAG = "PasswdSafeEditRecordFragment";
-
-    private static final int RECORD_SELECTION_REQUEST = 0;
+    private ActivityResultLauncher<ChooseRecordActResultContract.Args>
+            itsRecordSelectionLauncher;
 
     private static final String STATE_EXPIRY_DATE = "expiryDate";
     private static final String STATE_HISTORY = "history";
@@ -208,6 +207,10 @@ public class PasswdSafeEditRecordFragment
         NewGroupDialog.setListener(this);
         PasswdPolicyEditDialog.setListener(this);
         TimePickerDialogFragment.setListener(this);
+
+        itsRecordSelectionLauncher = registerForActivityResult(
+                new ChooseRecordActResultContract(),
+                this::onChooseRecordResult);
 
         itsTotpViewModel = new ViewModelProvider(this).get(
                 PasswdSafeRecordTotpViewModel.class);
@@ -510,29 +513,10 @@ public class PasswdSafeEditRecordFragment
             }
             historyChanged(true);
         } else if (id == R.id.link_ref) {
-            Intent intent = new Intent(PasswdSafeApp.CHOOSE_RECORD_INTENT,
-                                       requireActivity().getIntent().getData(),
-                                       getContext(),
-                                       LauncherRecordShortcuts.class);
-            // Do not allow mixed alias and shortcut references to a
-            // record to work around a bug in Password Safe that does
-            // not allow both
-            switch (itsRecType) {
-            case NORMAL: {
-                break;
-            }
-            case ALIAS: {
-                intent.putExtra(LauncherRecordShortcuts.FILTER_NO_SHORTCUT,
-                                true);
-                break;
-            }
-            case SHORTCUT: {
-                intent.putExtra(LauncherRecordShortcuts.FILTER_NO_ALIAS, true);
-                break;
-            }
-            }
-
-            startActivityForResult(intent, RECORD_SELECTION_REQUEST);
+            itsRecordSelectionLauncher.launch(
+                    new ChooseRecordActResultContract.Args(
+                            requireActivity().getIntent().getData(),
+                            itsRecType));
         } else if (id == R.id.password_generate) {
             if (itsCurrPolicy != null) {
                 try {
@@ -605,19 +589,6 @@ public class PasswdSafeEditRecordFragment
             selectPolicy(null);
         } else if (id == R.id.expire_choice) {
             updatePasswdExpiryChoice(PasswdExpiration.Type.NEVER);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        PasswdSafeUtil.dbginfo(TAG, "onActivityResult data: %s", data);
-
-        if ((requestCode == RECORD_SELECTION_REQUEST) &&
-            (resultCode == Activity.RESULT_OK)) {
-            setLinkRefUuid(data.getStringExtra(PasswdSafeApp.RESULT_DATA_UUID));
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -1171,6 +1142,16 @@ public class PasswdSafeEditRecordFragment
         if (!init) {
             // Clear link on type change in case it is no longer valid
             setLinkRef(null, null);
+        }
+    }
+
+    /**
+     * Handle the result of choosing a record
+     */
+    private void onChooseRecordResult(@Nullable Optional<String> result)
+    {
+        if (result != null) {
+            setLinkRefUuid(result.orElse(null));
         }
     }
 
