@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.fragment.app.ListFragment;
 import androidx.loader.app.LoaderManager;
@@ -40,7 +41,8 @@ import com.jefftharris.passwdsafe.util.ProviderSyncTask;
  * The SyncProviderFragment allows the user to choose a sync provider
  */
 public class SyncProviderFragment extends ListFragment
-        implements LoaderCallbacks<Cursor>
+        implements LoaderCallbacks<Cursor>,
+                   MenuProvider
 {
     /** Listener interface for the owning activity */
     public interface Listener
@@ -71,7 +73,7 @@ public class SyncProviderFragment extends ListFragment
                              Bundle savedInstanceState)
     {
         if (itsListener.activityHasMenu()) {
-            setHasOptionsMenu(true);
+            GuiUtils.enableOptionsMenu(this);
         }
         View rootView = inflater.inflate(R.layout.fragment_sync_provider,
                                          container, false);
@@ -145,21 +147,20 @@ public class SyncProviderFragment extends ListFragment
 
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_sync_provider, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_sync) {
             itsSyncTask.start(null, requireContext());
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
 
@@ -209,7 +210,7 @@ public class SyncProviderFragment extends ListFragment
     /**
      * Check whether the sync provider is present
      */
-    public static boolean checkProvider(Context ctx)
+    public static boolean checkProvider(@NonNull Context ctx)
     {
         ContentResolver res = ctx.getContentResolver();
         String type = res.getType(PasswdSafeContract.Providers.CONTENT_URI);
