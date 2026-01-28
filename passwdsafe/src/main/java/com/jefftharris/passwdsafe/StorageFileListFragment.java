@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -30,6 +30,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
@@ -57,6 +58,7 @@ import java.util.List;
 public final class StorageFileListFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
                    View.OnClickListener,
+                   MenuProvider,
                    StorageFileListOps
 {
     /** Listener interface for the owning activity */
@@ -129,7 +131,7 @@ public final class StorageFileListFragment extends Fragment
     {
         boolean hasMenu = itsListener.activityHasMenu();
         if (hasMenu) {
-            setHasOptionsMenu(true);
+            GuiUtils.enableOptionsMenu(this);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_storage_file_list,
@@ -221,15 +223,13 @@ public final class StorageFileListFragment extends Fragment
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu,
-                                    @NonNull MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_storage_file_list, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_file_open) {
@@ -253,7 +253,7 @@ public final class StorageFileListFragment extends Fragment
             }
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
 
