@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -24,10 +24,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.ListFragment;
 
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.Utils;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.sync.R;
 
 import java.util.Comparator;
@@ -37,6 +39,7 @@ import java.util.List;
  *  Fragment to show synced password files
  */
 public class SyncedFilesFragment extends ListFragment
+        implements MenuProvider
 {
     /** Listener interface for the owning activity */
     public interface Listener
@@ -73,6 +76,7 @@ public class SyncedFilesFragment extends ListFragment
     private int itsProgressBarRefCount = 0;
 
     /** Create a new instance of the fragment */
+    @NonNull
     public static SyncedFilesFragment newInstance(String pathName,
                                                   String pathId)
     {
@@ -93,9 +97,6 @@ public class SyncedFilesFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onCreate(android.os.Bundle)
-     */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -106,15 +107,12 @@ public class SyncedFilesFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-     */
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
         View rootView = inflater.inflate(R.layout.fragment_synced_files,
                                          container, false);
 
@@ -139,9 +137,6 @@ public class SyncedFilesFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onResume()
-     */
     @Override
     public void onResume()
     {
@@ -149,11 +144,8 @@ public class SyncedFilesFragment extends ListFragment
         reload();
     }
 
-    /**
-     * Initialize the contents of the Activity's standard options menu
-     */
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_synced_files, menu);
 
@@ -162,25 +154,18 @@ public class SyncedFilesFragment extends ListFragment
 
         MenuItem item = menu.findItem(R.id.menu_parent_dir);
         item.setVisible(parentEnabled);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
-    /**
-     * This hook is called whenever an item in your options menu is selected
-     */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_parent_dir) {
             itsListener.changeParentDir();
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.ListFragment#onListItemClick(android.widget.ListView, android.view.View, int, long)
-     */
     @Override
     public void onListItemClick(@NonNull ListView l,
                                 @NonNull View v,
@@ -327,7 +312,7 @@ public class SyncedFilesFragment extends ListFragment
             protected final CheckBox itsSelected;
 
             /** Constructor */
-            protected ViewHolder(View view)
+            protected ViewHolder(@NonNull View view)
             {
                 itsText = view.findViewById(R.id.text);
                 itsModDate = view.findViewById(R.id.mod_date);
@@ -343,7 +328,7 @@ public class SyncedFilesFragment extends ListFragment
             implements Comparator<ListItem>
     {
         @Override
-        public int compare(ListItem lhs, ListItem rhs)
+        public int compare(@NonNull ListItem lhs, @NonNull ListItem rhs)
         {
             ProviderRemoteFile lhsFile = lhs.itsFile;
             ProviderRemoteFile rhsFile = rhs.itsFile;
