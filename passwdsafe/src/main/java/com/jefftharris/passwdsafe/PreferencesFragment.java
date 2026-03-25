@@ -21,7 +21,6 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.preference.EditTextPreference;
@@ -79,6 +78,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
 
     private Listener itsListener;
     private Screen itsScreen;
+    private ConfirmPromptDialog.Client itsConfirmDlg;
 
     /**
      * Create a new instance
@@ -97,7 +97,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        ConfirmPromptDialog.setListener(this);
+        itsConfirmDlg = new ConfirmPromptDialog.Client(this, TAG);
     }
 
     @Override
@@ -160,14 +160,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
-        switch (requestKey) {
-        case ConfirmPromptDialog.REQUEST_KEY -> {
+        if (itsConfirmDlg.checkKey(requestKey)) {
             var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
                                        result);
             if (action != null) {
                 itsScreen.promptConfirmed(action);
             }
-        }
         }
     }
 
@@ -560,20 +558,19 @@ public class PreferencesFragment extends PreferenceFragmentCompat
                 Bundle confirmArgs = new Bundle();
                 confirmArgs.putString(CONFIRM_ARG_ACTION,
                                       ConfirmAction.CLEAR_ALL_NOTIFS.name());
-                DialogFragment dlg = app.getNotifyMgr().createClearAllPrompt(
-                        act, confirmArgs);
-                dlg.show(getParentFragmentManager(), "clearNotifsConfirm");
+                app
+                        .getNotifyMgr()
+                        .showClearAllPrompt(itsConfirmDlg, act, confirmArgs);
                 return true;
             }
             case Preferences.PREF_PASSWD_CLEAR_ALL_SAVED: {
                 Bundle confirmArgs = new Bundle();
                 confirmArgs.putString(CONFIRM_ARG_ACTION,
                                       ConfirmAction.CLEAR_ALL_SAVED.name());
-                ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
+                itsConfirmDlg.show(
                         getString(R.string.clear_all_saved_passwords),
                         getString(R.string.erase_all_saved_passwords),
                         getString(R.string.clear), confirmArgs);
-                dlg.show(getParentFragmentManager(), "clearSavedConfirm");
                 return true;
             }
             }

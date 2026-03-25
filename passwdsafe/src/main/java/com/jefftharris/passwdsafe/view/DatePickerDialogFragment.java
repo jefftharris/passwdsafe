@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -24,7 +24,7 @@ import java.util.Calendar;
 public class DatePickerDialogFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener
 {
-    public static final String REQUEST_KEY = "DatePickerDialogFragment";
+    private static final String REQUEST_KEY = "DatePickerDialogFragment";
 
     private static final String ARG_YEAR = "year";
 
@@ -33,26 +33,28 @@ public class DatePickerDialogFragment extends DialogFragment
     private static final String ARG_DAY_OF_MONTH = "dayOfMonth";
 
     /**
-     * Create a new instance
+     * Client for showing and checking result of the dialog
      */
-    @NonNull
-    public static DatePickerDialogFragment newInstance(int year,
-                                                       int monthOfYear,
-                                                       int dayOfMonth)
+    public static class Client extends DialogClient
     {
-        DatePickerDialogFragment frag = new DatePickerDialogFragment();
-        frag.setArguments(createBundle(year, monthOfYear, dayOfMonth));
-        return frag;
-    }
+        /**
+         * Constructor for a fragment
+         */
+        public <T extends Fragment & FragmentResultListener> Client(
+                @NonNull T listener, @NonNull String id)
+        {
+            super(REQUEST_KEY, id, listener.getParentFragmentManager(),
+                  listener, listener);
+        }
 
-    /**
-     * Set the fragment listener for results
-     */
-    public static <T extends Fragment & FragmentResultListener>
-    void setListener(@NonNull T listener)
-    {
-        var fragMgr = listener.getParentFragmentManager();
-        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+        /**
+         * Show the dialog
+         */
+        public void show(int year, int monthOfYear, int dayOfMonth)
+        {
+            doShow(new DatePickerDialogFragment(),
+                   createBundle(year, monthOfYear, dayOfMonth));
+        }
     }
 
     /**
@@ -86,9 +88,9 @@ public class DatePickerDialogFragment extends DialogFragment
     public void onDateSet(DatePicker view, int year, int monthOfYear,
                           int dayOfMonth)
     {
-        var fragMgr = getParentFragmentManager();
-        fragMgr.setFragmentResult(REQUEST_KEY,
-                                  createBundle(year, monthOfYear, dayOfMonth));
+        Client.setResult(requireArguments(),
+                         createBundle(year, monthOfYear, dayOfMonth),
+                         getParentFragmentManager());
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -236,6 +236,9 @@ public class PasswdSafe extends AppCompatActivity
     /** Currently running tasks */
     private final ManagedTasks itsTasks = new ManagedTasks();
 
+    /** Confirm prompt dialog */
+    private ConfirmPromptDialog.Client itsConfirmDlg;
+
     /** Used to store the last screen title */
     private CharSequence itsTitle;
 
@@ -309,7 +312,7 @@ public class PasswdSafe extends AppCompatActivity
         expiryClearBtn.setOnClickListener(this);
         itsExpiry = findViewById(R.id.expiry);
 
-        ConfirmPromptDialog.setListener(this);
+        itsConfirmDlg = new ConfirmPromptDialog.Client(this, TAG);
 
         FragmentManager fragMgr = getSupportFragmentManager();
         itsFileDataFrag = (PasswdSafeFileDataFragment)
@@ -637,11 +640,9 @@ public class PasswdSafe extends AppCompatActivity
             Bundle confirmArgs = new Bundle();
             confirmArgs.putString(CONFIRM_ARG_ACTION,
                                   ConfirmAction.RESTORE_FILE.name());
-            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                    getString(R.string.restore_file_p, backup.title,
-                              Utils.formatDate(backup.date, this)),
-                    null, getString(R.string.restore), confirmArgs);
-            dialog.show(getSupportFragmentManager(), "Restore file");
+            itsConfirmDlg.show(getString(R.string.restore_file_p, backup.title,
+                                         Utils.formatDate(backup.date, this)),
+                               null, getString(R.string.restore), confirmArgs);
             return true;
         } else if (itemId == R.id.menu_close) {
             checkNavigation(false, this::finish);
@@ -661,10 +662,8 @@ public class PasswdSafe extends AppCompatActivity
             Bundle confirmArgs = new Bundle();
             confirmArgs.putString(CONFIRM_ARG_ACTION,
                                   ConfirmAction.DELETE_FILE.name());
-            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                    getString(R.string.delete_file_msg, uriName),
-                    null, getString(R.string.delete), confirmArgs);
-            dialog.show(getSupportFragmentManager(), "Delete file");
+            itsConfirmDlg.show(getString(R.string.delete_file_msg, uriName),
+                               null, getString(R.string.delete), confirmArgs);
             return true;
         } else if (itemId == R.id.menu_file_protect_records) {
             protectRecords(true);
@@ -968,12 +967,10 @@ public class PasswdSafe extends AppCompatActivity
             Bundle enableArgs = new Bundle();
             enableArgs.putString(CONFIRM_ARG_ACTION,
                                  ConfirmAction.SHOW_ENABLE_KEYBOARD.name());
-            ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                    getString(R.string.copy_password),
-                    getString(R.string.copy_password_warning),
-                    getString(android.R.string.copy), confirmArgs,
-                    getString(R.string.enable), enableArgs);
-            dialog.show(getSupportFragmentManager(), "Copy password");
+            itsConfirmDlg.show(getString(R.string.copy_password),
+                               getString(R.string.copy_password_warning),
+                               getString(android.R.string.copy), confirmArgs,
+                               getString(R.string.enable), enableArgs);
             return;
         }
         case TOTP: {
@@ -1080,10 +1077,8 @@ public class PasswdSafe extends AppCompatActivity
         confirmArgs.putString(CONFIRM_ARG_ACTION,
                               ConfirmAction.DELETE_RECORD.name());
         confirmArgs.putParcelable(CONFIRM_ARG_LOCATION, location);
-        ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                getString(R.string.delete_record_msg, title), null,
-                getString(R.string.delete), confirmArgs);
-        dialog.show(getSupportFragmentManager(), "Delete record");
+        itsConfirmDlg.show(getString(R.string.delete_record_msg, title), null,
+                           getString(R.string.delete), confirmArgs);
     }
 
     @Override
@@ -1198,11 +1193,9 @@ public class PasswdSafe extends AppCompatActivity
         Bundle confirmArgs = new Bundle();
         confirmArgs.putString(CONFIRM_ARG_ACTION,
                               ConfirmAction.SHARE_FILE.name());
-        ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                getString(R.string.share_file_p),
-                getString(R.string.share_file_msg),
-                getString(R.string.share), confirmArgs);
-        dialog.show(getSupportFragmentManager(), "Share file");
+        itsConfirmDlg.show(getString(R.string.share_file_p),
+                           getString(R.string.share_file_msg),
+                           getString(R.string.share), confirmArgs);
     }
 
     @Override
@@ -1254,8 +1247,7 @@ public class PasswdSafe extends AppCompatActivity
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
-        switch (requestKey) {
-        case ConfirmPromptDialog.REQUEST_KEY -> {
+        if (itsConfirmDlg.checkKey(requestKey)) {
             var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
                                        result);
             if (action != null) {
@@ -1268,7 +1260,6 @@ public class PasswdSafe extends AppCompatActivity
                 case RESTORE_FILE -> onConfirmRestoreFile();
                 }
             }
-        }
         }
     }
 

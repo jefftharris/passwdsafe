@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -25,32 +25,35 @@ import java.util.Calendar;
 public class TimePickerDialogFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener
 {
-    public static final String REQUEST_KEY = "TimePickerDialogFragment";
+    private static final String REQUEST_KEY = "TimePickerDialogFragment";
 
     private static final String ARG_HOUR_OF_DAY = "hourOfDay";
 
     private static final String ARG_MINUTE = "minute";
 
     /**
-     * Create a new instance
+     * Client for showing and checking result of the dialog
      */
-    @NonNull
-    public static TimePickerDialogFragment newInstance(int hourOfDay,
-                                                       int minute)
+    public static class Client extends DialogClient
     {
-        TimePickerDialogFragment frag = new TimePickerDialogFragment();
-        frag.setArguments(createBundle(hourOfDay, minute));
-        return frag;
-    }
+        /**
+         * Constructor for a fragment
+         */
+        public <T extends Fragment & FragmentResultListener> Client(
+                @NonNull T listener, @NonNull String id)
+        {
+            super(REQUEST_KEY, id, listener.getParentFragmentManager(),
+                  listener, listener);
+        }
 
-    /**
-     * Set the fragment listener for results
-     */
-    public static <T extends Fragment & FragmentResultListener>
-    void setListener(@NonNull T listener)
-    {
-        var fragMgr = listener.getParentFragmentManager();
-        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+        /**
+         * Show the dialog
+         */
+        public void show(int hourOfDay, int minute)
+        {
+            doShow(new TimePickerDialogFragment(),
+                   createBundle(hourOfDay, minute));
+        }
     }
 
     /**
@@ -82,8 +85,8 @@ public class TimePickerDialogFragment extends DialogFragment
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute)
     {
-        var fragMgr = getParentFragmentManager();
-        fragMgr.setFragmentResult(REQUEST_KEY, createBundle(hourOfDay, minute));
+        Client.setResult(requireArguments(), createBundle(hourOfDay, minute),
+                         getParentFragmentManager());
     }
 
     @NonNull

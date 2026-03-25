@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -37,7 +37,7 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
                DialogInterface.OnCancelListener,
                DialogInterface.OnClickListener
 {
-    public static final String REQUEST_KEY = "ConfirmPromptDialog";
+    private static final String REQUEST_KEY = "ConfirmPromptDialog";
 
     private static final String ARG_CONFIRM = "confirm";
     private static final String ARG_CONFIRM_ARGS = "confirmArgs";
@@ -52,58 +52,61 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     private AlertDialog itsDialog;
 
     /**
-     * Create a new instance
+     * Client for showing and checking result of the dialog
      */
-    @NonNull
-    public static ConfirmPromptDialog newInstance(String title,
-                                                  String prompt,
-                                                  String confirm,
-                                                  Bundle confirmArgs)
+    public static class Client extends DialogClient
     {
-        return newInstance(title, prompt, confirm, confirmArgs, null, null);
-    }
+        /**
+         * Constructor for a fragment
+         */
+        public <T extends Fragment & FragmentResultListener>
+        Client(@NonNull T listener, @NonNull String id)
+        {
+            super(REQUEST_KEY, id, listener.getParentFragmentManager(),
+                  listener, listener);
+        }
 
-    /**
-     * Create a new instance with a neutral option
-     */
-    @NonNull
-    public static ConfirmPromptDialog newInstance(String title,
-                                                  String prompt,
-                                                  String confirm,
-                                                  Bundle confirmArgs,
-                                                  String neutral,
-                                                  Bundle neutralArgs)
-    {
-        ConfirmPromptDialog dialog = new ConfirmPromptDialog();
-        Bundle args = new Bundle();
-        args.putString(ARG_TITLE, title);
-        args.putString(ARG_PROMPT, prompt);
-        args.putString(ARG_CONFIRM, confirm);
-        args.putBundle(ARG_CONFIRM_ARGS, confirmArgs);
-        args.putString(ARG_NEUTRAL, neutral);
-        args.putBundle(ARG_NEUTRAL_ARGS, neutralArgs);
-        dialog.setArguments(args);
-        return dialog;
-    }
+        /**
+         * Constructor for a fragment activity
+         */
+        public <T extends FragmentActivity & FragmentResultListener>
+        Client(@NonNull T listener, @NonNull String id)
+        {
+            super(REQUEST_KEY, id, listener.getSupportFragmentManager(),
+                  listener, listener);
+        }
 
-    /**
-     * Set the fragment listener for results
-     */
-    public static <T extends Fragment & FragmentResultListener>
-    void setListener(@NonNull T listener)
-    {
-        var fragMgr = listener.getParentFragmentManager();
-        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
-    }
+        /**
+         * Show the dialog
+         */
+        public void show(String title,
+                         String prompt,
+                         String confirm,
+                         Bundle confirmArgs)
+        {
+            show(title, prompt, confirm, confirmArgs, null, null);
+        }
 
-    /**
-     * Set the fragment activity listener for results
-     */
-    public static <T extends FragmentActivity & FragmentResultListener>
-    void setListener(@NonNull T listener)
-    {
-        var fragMgr = listener.getSupportFragmentManager();
-        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+        /**
+         * Show the dialog with a neutral option
+         */
+        public void show(String title,
+                         String prompt,
+                         String confirm,
+                         Bundle confirmArgs,
+                         String neutral,
+                         Bundle neutralArgs)
+        {
+            ConfirmPromptDialog dialog = new ConfirmPromptDialog();
+            Bundle args = new Bundle();
+            args.putString(ARG_TITLE, title);
+            args.putString(ARG_PROMPT, prompt);
+            args.putString(ARG_CONFIRM, confirm);
+            args.putBundle(ARG_CONFIRM_ARGS, confirmArgs);
+            args.putString(ARG_NEUTRAL, neutral);
+            args.putBundle(ARG_NEUTRAL_ARGS, neutralArgs);
+            doShow(dialog, args);
+        }
     }
 
     @Override
@@ -153,17 +156,15 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     {
         switch (which) {
         case AlertDialog.BUTTON_POSITIVE: {
-            Bundle args = requireArguments();
-            setResult(args.getBundle(ARG_CONFIRM_ARGS));
+            setResult(ARG_CONFIRM_ARGS);
             break;
         }
         case AlertDialog.BUTTON_NEGATIVE: {
-            setResult(CANCEL_ARGS);
+            setResult(null);
             break;
         }
         case AlertDialog.BUTTON_NEUTRAL: {
-            Bundle args = requireArguments();
-            setResult(args.getBundle(ARG_NEUTRAL_ARGS));
+            setResult(ARG_NEUTRAL_ARGS);
             break;
         }
         }
@@ -180,14 +181,16 @@ public class ConfirmPromptDialog extends AppCompatDialogFragment
     public void onCancel(@NonNull DialogInterface dialog)
     {
         super.onCancel(dialog);
-        setResult(CANCEL_ARGS);
+        setResult(null);
     }
 
-    private void setResult(@Nullable Bundle result)
+    private void setResult(@Nullable String resultKey)
     {
-        var fragMgr = getParentFragmentManager();
-        fragMgr.setFragmentResult(REQUEST_KEY,
-                                  (result != null) ? result : CANCEL_ARGS);
+        var args = requireArguments();
+        var result = args.getBundle(resultKey);
+        Client.setResult(requireArguments(),
+                         (result != null) ? result : CANCEL_ARGS,
+                         getParentFragmentManager());
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -28,35 +28,37 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.AbstractDialogClickListener;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
-import org.jetbrains.annotations.Contract;
-
 /**
  * Dialog to select a new group
  */
 public class NewGroupDialog extends AppCompatDialogFragment
 {
-    public static final String REQUEST_KEY = "NewGroupDialog";
-
     public static final String ARG_GROUP = "group";
 
-    /**
-     * Create a new instance
-     */
-    @NonNull
-    @Contract(" -> new")
-    public static NewGroupDialog newInstance()
-    {
-        return new NewGroupDialog();
-    }
+    private static final String REQUEST_KEY = "NewGroupDialog";
 
     /**
-     * Set the fragment listener for results
+     * Client for showing and checking result of the dialog
      */
-    public static <T extends Fragment & FragmentResultListener>
-    void setListener(@NonNull T listener)
+    public static class Client extends DialogClient
     {
-        var fragMgr = listener.getParentFragmentManager();
-        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+        /**
+         * Constructor for a fragment
+         */
+        public <T extends Fragment & FragmentResultListener> Client(
+                @NonNull T listener, @NonNull String id)
+        {
+            super(REQUEST_KEY, id, listener.getParentFragmentManager(),
+                  listener, listener);
+        }
+
+        /**
+         * Show the dialog
+         */
+        public void show()
+        {
+            doShow(new NewGroupDialog(), new Bundle());
+        }
     }
 
     @Override
@@ -102,9 +104,9 @@ public class NewGroupDialog extends AppCompatDialogFragment
 
     private void setResult(@Nullable String group)
     {
-        var fragMgr = getParentFragmentManager();
         var result = new Bundle();
         result.putString(ARG_GROUP, group);
-        fragMgr.setFragmentResult(REQUEST_KEY, result);
+        Client.setResult(requireArguments(), result,
+                         getParentFragmentManager());
     }
 }
