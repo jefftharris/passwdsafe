@@ -48,6 +48,7 @@
       <option name="ignoredTypes">
         <set>
           <option value="java.lang.CharSequence" />
+          <option value="java.lang.StringBuilder" />
         </set>
       </option>
     </inspection_tool>
