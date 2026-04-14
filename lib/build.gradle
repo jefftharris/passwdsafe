@@ -20,7 +20,6 @@ android {
     compileSdk = 36
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 36
         vectorDrawables.useSupportLibrary = true
         buildConfigField 'String', 'BUILD_ID', "\"${buildId()}\""
         buildConfigField 'String', 'BUILD_DATE', "\"${buildTime()}\""
@@ -33,6 +32,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     productFlavors {
+    }
+    lint {
+        targetSdk = 36
+    }
+    testOptions {
+        targetSdk = 36
     }
 }
 
