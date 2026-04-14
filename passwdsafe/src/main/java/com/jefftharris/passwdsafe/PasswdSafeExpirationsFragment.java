@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -66,6 +66,8 @@ public class PasswdSafeExpirationsFragment
 
     private static final String TAG = "PasswdSafeExpirationsFragment";
 
+    private ConfirmPromptDialog.Client itsConfirmDlg;
+    private DatePickerDialogFragment.Client itsDatePickerDlg;
     private CheckBox itsEnableExpiryNotifs;
 
     /**
@@ -82,8 +84,8 @@ public class PasswdSafeExpirationsFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        ConfirmPromptDialog.setListener(this);
-        DatePickerDialogFragment.setListener(this);
+        itsConfirmDlg = new ConfirmPromptDialog.Client(this, TAG);
+        itsDatePickerDlg = new DatePickerDialogFragment.Client(this, TAG);
     }
 
     @Override
@@ -128,12 +130,9 @@ public class PasswdSafeExpirationsFragment
         }
         case CUSTOM: {
             Calendar now = Calendar.getInstance();
-            DatePickerDialogFragment picker =
-                    DatePickerDialogFragment.newInstance(
-                            now.get(Calendar.YEAR),
-                            now.get(Calendar.MONTH),
-                            now.get(Calendar.DAY_OF_MONTH));
-            picker.show(getParentFragmentManager(), "datePicker");
+            itsDatePickerDlg.show(now.get(Calendar.YEAR),
+                                  now.get(Calendar.MONTH),
+                                  now.get(Calendar.DAY_OF_MONTH));
             break;
         }
         }
@@ -149,11 +148,10 @@ public class PasswdSafeExpirationsFragment
                 Bundle confirmArgs = new Bundle();
                 confirmArgs.putString(CONFIRM_ARG_ACTION,
                                       ConfirmAction.ENABLE_EXPIRY_NOTIFS.name());
-                ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                        getString(R.string.expiration_notifications),
-                        getString(R.string.expiration_notifications_warning),
-                        getString(R.string.enable), confirmArgs);
-                dialog.show(getParentFragmentManager(), "expiry");
+                itsConfirmDlg.show(getString(R.string.expiration_notifications),
+                                   getString(
+                                           R.string.expiration_notifications_warning),
+                                   getString(R.string.enable), confirmArgs);
             } else {
                 setExpiryNotif(false);
             }
@@ -164,8 +162,7 @@ public class PasswdSafeExpirationsFragment
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
-        switch (requestKey) {
-        case ConfirmPromptDialog.REQUEST_KEY -> {
+        if (itsConfirmDlg.checkKey(requestKey)) {
             var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
                                        result);
             if (action != null) {
@@ -175,8 +172,8 @@ public class PasswdSafeExpirationsFragment
             } else {
                 refresh();
             }
-        }
-        case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
+        } else if (itsDatePickerDlg.checkKey(requestKey)) {
+            handleDatePicked(result);
         }
     }
 

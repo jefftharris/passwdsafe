@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2020-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2020-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -73,6 +73,7 @@ public class BackupFilesFragment extends Fragment
     private Listener itsListener;
     private BackupFilesModel itsBackupFiles;
     private BackupFilesAdapter itsBackupFilesAdapter;
+    private ConfirmPromptDialog.Client itsConfirmDlg;
     private SelectionKeyProvider itsKeyProvider;
     private SelectionTracker<Long> itsSelTracker;
     private ActionMode itsActionMode;
@@ -106,7 +107,7 @@ public class BackupFilesFragment extends Fragment
         itsBackupFiles = new ViewModelProvider(requireActivity())
                 .get(BackupFilesModel.class);
 
-        ConfirmPromptDialog.setListener(this);
+        itsConfirmDlg = new ConfirmPromptDialog.Client(this, TAG);
     }
 
     @Override
@@ -226,8 +227,7 @@ public class BackupFilesFragment extends Fragment
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
-        switch (requestKey) {
-        case ConfirmPromptDialog.REQUEST_KEY -> {
+        if (itsConfirmDlg.checkKey(requestKey)) {
             var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
                                        result);
             if (action != null) {
@@ -236,7 +236,6 @@ public class BackupFilesFragment extends Fragment
                 case DELETE_SELECTED -> onConfirmDeleteSelected();
                 }
             }
-        }
         }
     }
 
@@ -327,9 +326,7 @@ public class BackupFilesFragment extends Fragment
 
         Bundle confirmArgs = new Bundle();
         confirmArgs.putString(CONFIRM_ARG_ACTION, action.name());
-        ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
-                title, null, confirm, confirmArgs);
-        dialog.show(getParentFragmentManager(), "prompt");
+        itsConfirmDlg.show(title, null, confirm, confirmArgs);
     }
 
     /**

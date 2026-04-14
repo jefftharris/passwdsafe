@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -177,6 +177,7 @@ public class PasswdSafeOpenFileFragment
 
     private PasswdSafeOpenFileViewModel itsOpenModel;
     private YubikeyViewModel itsYubikeyModel;
+    private ConfirmPromptDialog.Client itsConfirmDlg;
 
     private static final String ARG_URI = "uri";
     private static final String ARG_REC_TO_OPEN = "recToOpen";
@@ -224,7 +225,7 @@ public class PasswdSafeOpenFileFragment
                 .getLogTracingData()
                 .observe(this, this::onYubikeyLogTracingChanged);
 
-        ConfirmPromptDialog.setListener(this);
+        itsConfirmDlg = new ConfirmPromptDialog.Client(this, TAG);
     }
 
     @Override
@@ -475,11 +476,10 @@ public class PasswdSafeOpenFileFragment
                     Bundle confirmArgs = new Bundle();
                     confirmArgs.putString(CONFIRM_ARG_ACTION,
                                           ConfirmAction.SAVE_PASSWORD.name());
-                    ConfirmPromptDialog dlg = ConfirmPromptDialog.newInstance(
-                            getString(R.string.save_password_p),
-                            getString(R.string.save_password_warning),
-                            getString(R.string.save), confirmArgs);
-                    dlg.show(fragMgr, "saveConfirm");
+                    itsConfirmDlg.show(getString(R.string.save_password_p),
+                                       getString(
+                                               R.string.save_password_warning),
+                                       getString(R.string.save), confirmArgs);
                 }
             }
         } else if (id == R.id.yubikey) {
@@ -491,8 +491,7 @@ public class PasswdSafeOpenFileFragment
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
-        switch (requestKey) {
-        case ConfirmPromptDialog.REQUEST_KEY -> {
+        if (itsConfirmDlg.checkKey(requestKey)) {
             var action = Utils.getEnum(ConfirmAction.class, CONFIRM_ARG_ACTION,
                                        result);
             if (action != null) {
@@ -503,8 +502,6 @@ public class PasswdSafeOpenFileFragment
                 itsSavePasswdCb.setChecked(false);
             }
         }
-        }
-
     }
 
     private void onConfirmSavePassword()

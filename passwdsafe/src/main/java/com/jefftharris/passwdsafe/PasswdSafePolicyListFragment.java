@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -70,6 +70,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
 
     private Listener itsListener;
     private HeaderPasswdPolicies itsHdrPolicies;
+    private ConfirmPromptDialog.Client itsConfirmDlg;
+    private PasswdPolicyEditDialog.Client itsPasswdPolicyDlg;
     private boolean itsIsFileReadonly = true;
 
     /**
@@ -93,8 +95,8 @@ public class PasswdSafePolicyListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        ConfirmPromptDialog.setListener(this);
-        PasswdPolicyEditDialog.setListener(this);
+        itsConfirmDlg = new ConfirmPromptDialog.Client(this, TAG);
+        itsPasswdPolicyDlg = new PasswdPolicyEditDialog.Client(this, TAG);
     }
 
     @Override
@@ -162,15 +164,14 @@ public class PasswdSafePolicyListFragment extends ListFragment
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
-        switch (requestKey) {
-        case ConfirmPromptDialog.REQUEST_KEY -> {
+        if (itsConfirmDlg.checkKey(requestKey)) {
             PasswdPolicy policy = result.getParcelable(CONFIRM_ARG_POLICY);
             if (policy != null) {
                 savePolicies(policy.getName(), null);
             }
         }
-        case PasswdPolicyEditDialog.REQUEST_KEY ->
-                handlePolicyEditComplete(result);
+        else if (itsPasswdPolicyDlg.checkKey(requestKey)) {
+            handlePolicyEditComplete(result);
         }
     }
 
@@ -182,10 +183,9 @@ public class PasswdSafePolicyListFragment extends ListFragment
         PasswdSafeUtil.dbginfo(TAG, "Delete policy: %s", policy);
         Bundle confirmArgs = new Bundle();
         confirmArgs.putParcelable(CONFIRM_ARG_POLICY, policy);
-        ConfirmPromptDialog dialog = ConfirmPromptDialog.newInstance(
+        itsConfirmDlg.show(
                 getString(R.string.delete_policy_msg, policy.getName()), null,
                 getString(R.string.delete), confirmArgs);
-        dialog.show(getParentFragmentManager(), "Delete policy");
     }
 
     /**
@@ -200,9 +200,7 @@ public class PasswdSafePolicyListFragment extends ListFragment
             currPolicies = new ArrayList<>(itsHdrPolicies.getPolicyNames());
         }
 
-        var dlg = PasswdPolicyEditDialog.newInstance(policy, currPolicies);
-        dlg.show(getParentFragmentManager(),
-                 PasswdPolicyEditDialog.REQUEST_KEY);
+        itsPasswdPolicyDlg.show(policy, currPolicies);
     }
 
     private void handlePolicyEditComplete(@NonNull Bundle result)

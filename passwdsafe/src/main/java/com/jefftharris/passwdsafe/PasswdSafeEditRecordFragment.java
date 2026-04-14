@@ -9,9 +9,7 @@ package com.jefftharris.passwdsafe;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -34,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentResultListener;
@@ -54,7 +53,9 @@ import com.jefftharris.passwdsafe.lib.view.AbstractTextWatcher;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
+import com.jefftharris.passwdsafe.util.Optional;
 import com.jefftharris.passwdsafe.util.Pair;
+import com.jefftharris.passwdsafe.view.ChooseRecordActResultContract;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
 import com.jefftharris.passwdsafe.view.EditRecordResult;
 import com.jefftharris.passwdsafe.view.NewGroupDialog;
@@ -103,6 +104,10 @@ public class PasswdSafeEditRecordFragment
     }
 
     private PasswdSafeRecordTotpViewModel itsTotpViewModel;
+    private DatePickerDialogFragment.Client itsDatePickerDlg;
+    private TimePickerDialogFragment.Client itsTimePickerDlg;
+    private NewGroupDialog.Client itsNewGroupDlg;
+    private PasswdPolicyEditDialog.Client itsPasswdPolicyDlg;
     private final Validator itsValidator = new Validator();
     private final TreeSet<String> itsGroups =
             new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -173,10 +178,8 @@ public class PasswdSafeEditRecordFragment
     private ProgressBar itsTotpProgress;
     private View itsNotesLabel;
     private TextView itsNotes;
-
-    private static final String TAG = "PasswdSafeEditRecordFragment";
-
-    private static final int RECORD_SELECTION_REQUEST = 0;
+    private ActivityResultLauncher<ChooseRecordActResultContract.Args>
+            itsRecordSelectionLauncher;
 
     private static final String STATE_EXPIRY_DATE = "expiryDate";
     private static final String STATE_HISTORY = "history";
@@ -187,6 +190,8 @@ public class PasswdSafeEditRecordFragment
     private static final int TYPE_NORMAL = 0;
     private static final int TYPE_ALIAS = 1;
     private static final int TYPE_SHORTCUT = 2;
+
+    private static final String TAG = "PasswdSafeEditRecordFragment";
 
     /**
      * Create a new instance
@@ -204,10 +209,14 @@ public class PasswdSafeEditRecordFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        DatePickerDialogFragment.setListener(this);
-        NewGroupDialog.setListener(this);
-        PasswdPolicyEditDialog.setListener(this);
-        TimePickerDialogFragment.setListener(this);
+        itsDatePickerDlg = new DatePickerDialogFragment.Client(this, TAG);
+        itsTimePickerDlg = new TimePickerDialogFragment.Client(this, TAG);
+        itsNewGroupDlg = new NewGroupDialog.Client(this, TAG);
+        itsPasswdPolicyDlg = new PasswdPolicyEditDialog.Client(this, TAG);
+
+        itsRecordSelectionLauncher = registerForActivityResult(
+                new ChooseRecordActResultContract(),
+                this::onChooseRecordResult);
 
         itsTotpViewModel = new ViewModelProvider(this).get(
                 PasswdSafeRecordTotpViewModel.class);
@@ -485,18 +494,12 @@ public class PasswdSafeEditRecordFragment
     {
         int id = v.getId();
         if (id == R.id.expire_date_date) {
-            DatePickerDialogFragment picker =
-                    DatePickerDialogFragment.newInstance(
-                            itsExpiryDate.get(Calendar.YEAR),
-                            itsExpiryDate.get(Calendar.MONTH),
-                            itsExpiryDate.get(Calendar.DAY_OF_MONTH));
-            picker.show(getParentFragmentManager(), "datePicker");
+            itsDatePickerDlg.show(itsExpiryDate.get(Calendar.YEAR),
+                                  itsExpiryDate.get(Calendar.MONTH),
+                                  itsExpiryDate.get(Calendar.DAY_OF_MONTH));
         } else if (id == R.id.expire_date_time) {
-            TimePickerDialogFragment picker =
-                    TimePickerDialogFragment.newInstance(
-                            itsExpiryDate.get(Calendar.HOUR_OF_DAY),
-                            itsExpiryDate.get(Calendar.MINUTE));
-            picker.show(getParentFragmentManager(), "timePicker");
+            itsTimePickerDlg.show(itsExpiryDate.get(Calendar.HOUR_OF_DAY),
+                                  itsExpiryDate.get(Calendar.MINUTE));
         } else if (id == R.id.history_addremove) {
             if (itsHistory == null) {
                 itsHistory = new PasswdHistory();
@@ -510,29 +513,10 @@ public class PasswdSafeEditRecordFragment
             }
             historyChanged(true);
         } else if (id == R.id.link_ref) {
-            Intent intent = new Intent(PasswdSafeApp.CHOOSE_RECORD_INTENT,
-                                       requireActivity().getIntent().getData(),
-                                       getContext(),
-                                       LauncherRecordShortcuts.class);
-            // Do not allow mixed alias and shortcut references to a
-            // record to work around a bug in Password Safe that does
-            // not allow both
-            switch (itsRecType) {
-            case NORMAL: {
-                break;
-            }
-            case ALIAS: {
-                intent.putExtra(LauncherRecordShortcuts.FILTER_NO_SHORTCUT,
-                                true);
-                break;
-            }
-            case SHORTCUT: {
-                intent.putExtra(LauncherRecordShortcuts.FILTER_NO_ALIAS, true);
-                break;
-            }
-            }
-
-            startActivityForResult(intent, RECORD_SELECTION_REQUEST);
+            itsRecordSelectionLauncher.launch(
+                    new ChooseRecordActResultContract.Args(
+                            requireActivity().getIntent().getData(),
+                            itsRecType));
         } else if (id == R.id.password_generate) {
             if (itsCurrPolicy != null) {
                 try {
@@ -542,9 +526,7 @@ public class PasswdSafeEditRecordFragment
                 }
             }
         } else if (id == R.id.policy_edit) {
-            var dlg = PasswdPolicyEditDialog.newInstance(itsCurrPolicy, null);
-            dlg.show(getParentFragmentManager(),
-                     PasswdPolicyEditDialog.REQUEST_KEY);
+            itsPasswdPolicyDlg.show(itsCurrPolicy, null);
         } else if (id == R.id.totp_value_row) {
             itsTotpViewModel.updateStateShown(
                     PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
@@ -609,28 +591,17 @@ public class PasswdSafeEditRecordFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        PasswdSafeUtil.dbginfo(TAG, "onActivityResult data: %s", data);
-
-        if ((requestCode == RECORD_SELECTION_REQUEST) &&
-            (resultCode == Activity.RESULT_OK)) {
-            setLinkRefUuid(data.getStringExtra(PasswdSafeApp.RESULT_DATA_UUID));
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
     public void onFragmentResult(@NonNull String requestKey,
                                  @NonNull Bundle result)
     {
-        switch (requestKey) {
-        case DatePickerDialogFragment.REQUEST_KEY -> handleDatePicked(result);
-        case NewGroupDialog.REQUEST_KEY -> handleNewGroup(result);
-        case PasswdPolicyEditDialog.REQUEST_KEY ->
-                handlePolicyEditComplete(result);
-        case TimePickerDialogFragment.REQUEST_KEY -> handleTimePicked(result);
+        if (itsDatePickerDlg.checkKey(requestKey)) {
+            handleDatePicked(result);
+        } else if (itsTimePickerDlg.checkKey(requestKey)) {
+            handleTimePicked(result);
+        } else if (itsNewGroupDlg.checkKey(requestKey)) {
+            handleNewGroup(result);
+        } else if (itsPasswdPolicyDlg.checkKey(requestKey)) {
+            handlePolicyEditComplete(result);
         }
     }
 
@@ -1175,6 +1146,16 @@ public class PasswdSafeEditRecordFragment
     }
 
     /**
+     * Handle the result of choosing a record
+     */
+    private void onChooseRecordResult(@Nullable Optional<String> result)
+    {
+        if (result != null) {
+            setLinkRefUuid(result.orElse(null));
+        }
+    }
+
+    /**
      * Set the link to another record
      */
     private void setLinkRef(PwsRecord ref, PasswdFileData fileData)
@@ -1237,8 +1218,7 @@ public class PasswdSafeEditRecordFragment
             // Set to previous group so rotations don't recreate with the new
             // group item selected
             itsGroup.setSelection(itsPrevGroupPos);
-            NewGroupDialog groupDlg = NewGroupDialog.newInstance();
-            groupDlg.show(getParentFragmentManager(), "NewGroupDialog");
+            itsNewGroupDlg.show();
         } else {
             itsPrevGroupPos = position;
             itsValidator.validate();

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2012-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2012-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -47,12 +47,11 @@ import java.util.ArrayList;
  */
 public class PasswdPolicyEditDialog extends AppCompatDialogFragment
 {
-    public static final String REQUEST_KEY = "PasswdPolicyEditDialog";
-
     public record ResultPolicies(PasswdPolicy oldPolicy, PasswdPolicy newPolicy)
     {
     }
 
+    private static final String REQUEST_KEY = "PasswdPolicyEditDialog";
     private static final String ARG_POLICY = "policy";
     private static final String ARG_EXISTING_POLICIES = "existingPolicies";
     private static final String ARG_NEW_POLICY = "newPolicy";
@@ -74,31 +73,34 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
     private String itsDefaultSymbols;
 
     /**
-     * Create a new instance
-     * @param policy The policy to edit; null for an add
-     * @param existingPolicies Existing policy names; null for none
+     * Client for showing and checking result of the dialog
      */
-    @NonNull
-    public static PasswdPolicyEditDialog newInstance(
-            @Nullable PasswdPolicy policy,
-            @Nullable ArrayList<String> existingPolicies)
+    public static class Client extends DialogClient
     {
-        PasswdPolicyEditDialog dlg = new PasswdPolicyEditDialog();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_POLICY, policy);
-        args.putStringArrayList(ARG_EXISTING_POLICIES, existingPolicies);
-        dlg.setArguments(args);
-        return dlg;
-    }
+        /**
+         * Constructor for a fragment
+         */
+        public <T extends Fragment & FragmentResultListener> Client(
+                @NonNull T listener, @NonNull String id)
+        {
+            super(REQUEST_KEY, id, listener.getParentFragmentManager(),
+                  listener, listener);
+        }
 
-    /**
-     * Set the fragment listener for results
-     */
-    public static <T extends Fragment & FragmentResultListener>
-    void setListener(@NonNull T listener)
-    {
-        var fragMgr = listener.getParentFragmentManager();
-        fragMgr.setFragmentResultListener(REQUEST_KEY, listener, listener);
+        /**
+         * Show the dialog
+         * @param policy The policy to edit; null for an add
+         * @param existingPolicies Existing policy names; null for none
+         */
+        public void show(
+                @Nullable PasswdPolicy policy,
+                @Nullable ArrayList<String> existingPolicies)
+        {
+            Bundle args = new Bundle();
+            args.putParcelable(ARG_POLICY, policy);
+            args.putStringArrayList(ARG_EXISTING_POLICIES, existingPolicies);
+            doShow(new PasswdPolicyEditDialog(), args);
+        }
     }
 
     @NonNull
@@ -258,9 +260,8 @@ public class PasswdPolicyEditDialog extends AppCompatDialogFragment
         Bundle result = new Bundle();
         result.putParcelable(ARG_POLICY, itsPolicy);
         result.putParcelable(ARG_NEW_POLICY, createPolicy());
-
-        var fragMgr = getParentFragmentManager();
-        fragMgr.setFragmentResult(REQUEST_KEY, result);
+        Client.setResult(requireArguments(), result,
+                         getParentFragmentManager());
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -24,7 +24,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
-import androidx.fragment.app.DialogFragment;
 
 import com.jefftharris.passwdsafe.file.PasswdExpiration;
 import com.jefftharris.passwdsafe.file.PasswdExpiryFilter;
@@ -161,15 +160,17 @@ public class NotificationMgr implements PasswdFileDataObserver
     }
 
     /**
-     * Create a confirm prompt for clearing all notifications
+     * Show a confirmation prompt for clearing all notifications
      */
-    public DialogFragment createClearAllPrompt(@NonNull Context ctx,
-                                               Bundle args)
+    public void showClearAllPrompt(
+            @NonNull ConfirmPromptDialog.Client confirmDlg,
+            @NonNull Context ctx,
+            Bundle args)
     {
-        return ConfirmPromptDialog.newInstance(
-                ctx.getString(R.string.clear_password_notifications),
-                ctx.getString(R.string.erase_all_expiration_notifications),
-                ctx.getString(R.string.clear), args);
+        confirmDlg.show(ctx.getString(R.string.clear_password_notifications),
+                        ctx.getString(
+                                R.string.erase_all_expiration_notifications),
+                        ctx.getString(R.string.clear), args);
     }
 
     /**

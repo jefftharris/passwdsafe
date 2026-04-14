@@ -61,13 +61,13 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':lib')
     implementation 'androidx.lifecycle:lifecycle-livedata:2.10.0'
-    implementation('androidx.work:work-runtime:2.11.0') {
+    implementation('androidx.work:work-runtime:2.11.2') {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
-    implementation 'com.google.android.gms:play-services-auth:21.4.0'
+    implementation 'com.google.android.gms:play-services-auth:21.5.1'
     // Google Drive
-    implementation('com.google.api-client:google-api-client-android:2.8.1') {
+    implementation('com.google.api-client:google-api-client-android:2.9.0') {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation('com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0') {
@@ -81,10 +81,10 @@ dependencies {
         exclude group: 'com.google.guava'
     }
     // OneDrive
-    implementation ('com.microsoft.identity.client:msal:8.1.1') {
+    implementation ('com.microsoft.identity.client:msal:8.3.0') {
         exclude group: 'com.microsoft.device.display'
     }
-    implementation 'com.microsoft.graph:microsoft-graph:6.59.0'
+    implementation 'com.microsoft.graph:microsoft-graph:6.62.0'
 }
 
 secrets {

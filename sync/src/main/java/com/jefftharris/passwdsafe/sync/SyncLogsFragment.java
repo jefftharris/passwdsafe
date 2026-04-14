@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.fragment.app.ListFragment;
 import androidx.loader.app.LoaderManager;
@@ -36,6 +37,7 @@ import java.util.Locale;
  * Fragment to show the sync logs
  */
 public class SyncLogsFragment extends ListFragment
+        implements MenuProvider
 {
     private static final int LOADER_LOGS = 0;
     private static final String STATE_SHOW_ALL = "showAll";
@@ -54,7 +56,7 @@ public class SyncLogsFragment extends ListFragment
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
 
         itsIsShowAll = (savedInstanceState != null) &&
                        savedInstanceState.getBoolean(STATE_SHOW_ALL, false);
@@ -182,9 +184,6 @@ public class SyncLogsFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onSaveInstanceState(android.os.Bundle)
-     */
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState)
     {
@@ -193,25 +192,18 @@ public class SyncLogsFragment extends ListFragment
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onCreateOptionsMenu(android.view.Menu, android.view.MenuInflater)
-     */
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_sync_logs, menu);
-        super.onCreateOptionsMenu(menu, inflater);
 
         MenuItem item = menu.findItem(R.id.menu_show_all);
         item.setChecked(itsIsShowAll);
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onOptionsItemSelected(android.view.MenuItem)
-     */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         if (item.getItemId() == R.id.menu_show_all) {
             itsIsShowAll = !item.isChecked();
@@ -220,11 +212,14 @@ public class SyncLogsFragment extends ListFragment
                                                           itsLogsCbs);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
-    public void onListItemClick(ListView l, @NonNull View v, int pos, long id)
+    public void onListItemClick(@NonNull ListView l,
+                                @NonNull View v,
+                                int pos,
+                                long id)
     {
         if (l.isItemChecked(pos)) {
             if (pos == itsSelItemPos) {

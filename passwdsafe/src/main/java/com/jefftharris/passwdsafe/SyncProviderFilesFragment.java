@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 import androidx.fragment.app.ListFragment;
 import androidx.loader.app.LoaderManager;
@@ -34,6 +35,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeContract;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.ProviderType;
 import com.jefftharris.passwdsafe.lib.Utils;
+import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 import com.jefftharris.passwdsafe.lib.view.PasswdCursorLoader;
 import com.jefftharris.passwdsafe.util.ProviderSyncTask;
 
@@ -41,6 +43,7 @@ import com.jefftharris.passwdsafe.util.ProviderSyncTask;
  * The SyncProviderFilesFragment shows the list of files for a provider
  */
 public class SyncProviderFilesFragment extends ListFragment
+        implements MenuProvider
 {
     /** Listener interface for the owning activity */
     public interface Listener
@@ -67,7 +70,9 @@ public class SyncProviderFilesFragment extends ListFragment
 
 
     /** Create a new instance of the fragment */
-    public static SyncProviderFilesFragment newInstance(Uri providerUri)
+    @NonNull
+    public static SyncProviderFilesFragment newInstance(
+            @NonNull Uri providerUri)
     {
         SyncProviderFilesFragment frag = new SyncProviderFilesFragment();
         Bundle args = new Bundle();
@@ -103,11 +108,11 @@ public class SyncProviderFilesFragment extends ListFragment
      * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
      */
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
+        GuiUtils.enableOptionsMenu(this);
         return inflater.inflate(R.layout.fragment_sync_provider_files,
                                 container, false);
     }
@@ -245,22 +250,15 @@ public class SyncProviderFilesFragment extends ListFragment
         itsSyncTask.cancel();
     }
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onCreateOptionsMenu(android.view.Menu, android.view.MenuInflater)
-     */
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater)
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         inflater.inflate(R.menu.fragment_sync_provider_files, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.Fragment#onOptionsItemSelected(android.view.MenuItem)
-     */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onMenuItemSelected(@NonNull MenuItem item)
     {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_sync_files) {
@@ -270,13 +268,10 @@ public class SyncProviderFilesFragment extends ListFragment
             itsListener.createNewFile(itsFilesUri);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
 
-    /* (non-Javadoc)
-     * @see android.support.v4.app.ListFragment#onListItemClick(android.widget.ListView, android.view.View, int, long)
-     */
     @Override
     public void onListItemClick(@NonNull ListView l,
                                 @NonNull View v,
