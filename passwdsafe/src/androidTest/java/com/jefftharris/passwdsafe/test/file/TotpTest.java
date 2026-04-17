@@ -478,6 +478,7 @@ public final class TotpTest
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private record PcTest(
             String key,
             int numDigits,
