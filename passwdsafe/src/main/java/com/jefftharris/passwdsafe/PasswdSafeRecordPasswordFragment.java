@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2015-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2015-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -85,7 +85,7 @@ public class PasswdSafeRecordPasswordFragment
     {
         super.onCreate(savedInstanceState);
 
-        itsViewModel = new ViewModelProvider(requireActivity()).get(
+        itsViewModel = new ViewModelProvider(requireParentFragment()).get(
                 PasswdSafeRecordTotpViewModel.class);
         itsViewModel.getConfig().observe(this, this::onTotpChanged);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -205,7 +205,7 @@ public class PwsRecordV3 extends PwsRecord
                 throw eofe;
             }
 
-            length = Util.getIntFromByteArray(rawData, 0);
+            length = Util.getIntFromByteArray(rawData);
             type = rawData[4] & 0x000000ff; // rest of header is now random data
             try {
                 data = new byte[length];
@@ -274,8 +274,9 @@ public class PwsRecordV3 extends PwsRecord
                     case UUID -> itemVal =
                             new PwsUUIDField(type, item.getByteData());
                     case LAST_SAVE_TIME,
-                         LAST_PASSWORD_CHANGE -> itemVal =
-                            new PwsTimeField(type, item.getByteData());
+                         LAST_PASSWORD_CHANGE -> itemVal = new PwsTimeField(
+                            type, PwsTimeField.Format.ALLOW_HEADER_ASCII,
+                            item.getByteData());
                     case NON_DEFAULT_PREFS,
                          TREE_DISPLAY_STATUS,
                          LAST_SAVE_WHO,
@@ -336,7 +337,15 @@ public class PwsRecordV3 extends PwsRecord
                     case LAST_ACCESS_TIME:
                     case LAST_MOD_TIME:
                     case PASSWORD_LIFETIME:
-                        itemVal = new PwsTimeField(type, item.getByteData());
+                        itemVal = new PwsTimeField(type,
+                                                   PwsTimeField.Format.DEFAULT,
+                                                   item.getByteData());
+                        break;
+
+                    case TOTP_START_TIME:
+                        itemVal = new PwsTimeField(
+                                type, PwsTimeField.Format.SAVE_40BIT,
+                                item.getByteData());
                         break;
 
                     case PASSWORD_EXPIRY_INTERVAL:
@@ -350,6 +359,9 @@ public class PwsRecordV3 extends PwsRecord
                         break;
 
                     case PROTECTED_ENTRY:
+                    case TOTP_CONFIG:
+                    case TOTP_LENGTH:
+                    case TOTP_TIME_STEP:
                         itemVal = new PwsByteField(type, item.getByteData());
                         break;
 
@@ -532,7 +544,11 @@ public class PwsRecordV3 extends PwsRecord
                      OWN_PASSWORD_SYMBOLS,
                      SHIFT_DOUBLE_CLICK_ACTION,
                      PASSWORD_POLICY_NAME,
-                     ENTRY_KEYBOARD_SHORTCUT -> sb.append(value);
+                     ENTRY_KEYBOARD_SHORTCUT,
+                     TOTP_CONFIG,
+                     TOTP_LENGTH,
+                     TOTP_TIME_STEP,
+                     TOTP_START_TIME -> sb.append(value);
                 }
             }
         }

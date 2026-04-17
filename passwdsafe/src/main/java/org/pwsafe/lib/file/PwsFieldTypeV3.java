@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -44,6 +44,10 @@ public enum PwsFieldTypeV3 implements PwsFieldType
     PASSWORD_POLICY_NAME(0x18, PwsStringUnicodeField.class),
     ENTRY_KEYBOARD_SHORTCUT(0x19, PwsIntegerField.class),
     TWO_FACTOR_KEY(0x1b, PwsPasswdUnicodeField.class),
+    TOTP_CONFIG(0x21, PwsByteField.class),
+    TOTP_LENGTH(0x22, PwsByteField.class),
+    TOTP_TIME_STEP(0x23, PwsByteField.class),
+    TOTP_START_TIME(0x24, PwsTimeField.class),
     END_OF_RECORD(255, null),
 
     UNKNOWN(-1, null);

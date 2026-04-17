@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -211,48 +211,31 @@ public final class Util
 
     /**
      * Extracts an int from a byte array.  The value is four bytes in
-     * little-endian order starting at <code>offset</code>.
+     * little-endian order.
      *
      * @param buff   the array to extract the int from.
-     * @param offset the offset to start reading from.
      * @return The value extracted.
      * @throws IndexOutOfBoundsException if offset is negative or <code>buff
-     * .length</code> &lt; <code>offset + 4</code>.
+     * .length</code> &lt; <code>4</code>.
      */
-    public static int getIntFromByteArray(
-            @NonNull byte[] buff,
-            @SuppressWarnings("SameParameterValue") int offset)
+    public static int getIntFromByteArray(@NonNull byte[] buff)
     {
-        int result;
-
-        result = (buff[offset + 0] & 0x000000ff)
-                 | ((buff[offset + 1] & 0x000000ff) << 8)
-                 | ((buff[offset + 2] & 0x000000ff) << 16)
-                 | ((buff[offset + 3] & 0x000000ff) << 24);
-
-        return result;
+        return (buff[0] & 0x000000ff) | ((buff[1] & 0x000000ff) << 8) |
+               ((buff[2] & 0x000000ff) << 16) | ((buff[3] & 0x000000ff) << 24);
     }
 
     /**
      * Extracts an short from a byte array.  The value is two bytes in
-     * little-endian order starting at <code>offset</code>.
+     * little-endian order.
      *
      * @param buff   the array to extract the short from.
-     * @param offset the offset to start reading from.
      * @return The value extracted.
      * @throws IndexOutOfBoundsException if offset is negative or <code>buff
-     * .length</code> &lt; <code>offset + 2</code>.
+     * .length</code> &lt; <code>2</code>.
      */
-    public static short getShortFromByteArray(
-            @NonNull byte[] buff,
-            @SuppressWarnings("SameParameterValue") int offset)
+    public static short getShortFromByteArray(@NonNull byte[] buff)
     {
-        short result;
-
-        result = (short)((buff[offset + 0] & 0x00ff)
-                         | ((buff[offset + 1] & 0x00ff) << 8));
-
-        return result;
+        return (short)((buff[0] & 0x00ff) | ((buff[1] & 0x00ff) << 8));
     }
 
     /**
@@ -295,43 +278,33 @@ public final class Util
     }
 
     /**
-     * Stores an short in little endian order into <code>buff</code> starting at
-     * offset <code>offset</code>.
+     * Stores an short in little endian order into <code>buff</code>.
      *
      * @param buff   the buffer to store the short into.
      * @param value  the short value to store.
-     * @param offset the offset at which to store the value.
      */
-    public static void putShortToByteArray(
-            @NonNull byte[] buff, short value,
-            @SuppressWarnings("SameParameterValue") int offset)
+    public static void putShortToByteArray(@NonNull byte[] buff, short value)
     {
-        buff[offset + 0] = (byte)(value & 0xff);
-        buff[offset + 1] = (byte)((value >>> 8) & 0xff);
+        buff[0] = (byte)(value & 0xff);
+        buff[1] = (byte)((value >>> 8) & 0xff);
     }
 
     /**
      * Extracts an milliseconds from seconds stored in a byte array.
-     * The value is four bytes in little-endian order starting at
-     * <code>offset</code>.
+     * The value is up to 8 bytes in little-endian order
      *
      * @param buff   the array to extract the millis from.
-     * @param offset the offset to start reading from.
      * @return The value extracted.
-     * @throws IndexOutOfBoundsException if offset is negative or <code>buff
-     * .length</code> &lt; <code>offset + 4</code>.
      */
-    public static long getMillisFromByteArray(
-            @NonNull byte[] buff,
-            @SuppressWarnings("SameParameterValue") int offset)
+    public static long getMillisFromByteArray(@NonNull byte[] buff)
     {
-
-        long result;
-
-        result = (buff[offset + 0] & 0x000000ff)
-                 | ((buff[offset + 1] & 0x000000ff) << 8)
-                 | ((buff[offset + 2] & 0x000000ff) << 16)
-                 | ((long)(buff[offset + 3] & 0x000000ff) << 24);
+        long result = 0;
+        int bufflen = buff.length;
+        if (bufflen <= 8) {
+            for (int i = 0, shift = 0; i < bufflen; ++i, shift += 8) {
+                result |= ((long)(buff[i] & 0xFF)) << shift;
+            }
+        }
 
         result *= 1000L; // convert from seconds to millis
 
@@ -340,22 +313,25 @@ public final class Util
 
     /**
      * Stores a long milliseconds as seconds in a byte array. The value is
-     * four bytes in little-endian order starting at <code>offset</code>.
+     * four or five bytes in little-endian order.
      *
-     * @param buff   the buffer to store the seconds into.
+     * @param buff   the buffer to store the seconds into (4-5 bytes).
      * @param value  the millis long value to store.
-     * @param offset the offset at which to store the value.
      */
-    public static void putMillisToByteArray(
-            @NonNull byte[] buff, long value,
-            @SuppressWarnings("SameParameterValue") int offset)
+    public static void putMillisToByteArray(@NonNull byte[] buff, long value)
     {
         value /= 1000L; // convert from millis to seconds
 
-        buff[offset + 0] = (byte)(value & 0xff);
-        buff[offset + 1] = (byte)((value >>> 8) & 0xff);
-        buff[offset + 2] = (byte)((value >>> 16) & 0xff);
-        buff[offset + 3] = (byte)((value >>> 24) & 0xff);
+        if (buff.length >= 4) {
+            buff[0] = (byte)(value & 0xff);
+            buff[1] = (byte)((value >>> 8) & 0xff);
+            buff[2] = (byte)((value >>> 16) & 0xff);
+            buff[3] = (byte)((value >>> 24) & 0xff);
+
+            if (buff.length >= 5) {
+                buff[4] = (byte)((value >>> 32) & 0xff);
+            }
+        }
     }
 
     /**

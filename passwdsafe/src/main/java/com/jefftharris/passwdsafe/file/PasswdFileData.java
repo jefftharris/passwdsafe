@@ -941,6 +941,10 @@ public class PasswdFileData
              SHIFT_DOUBLE_CLICK_ACTION,
              ENTRY_KEYBOARD_SHORTCUT,
              TWO_FACTOR_KEY,
+             TOTP_CONFIG,
+             TOTP_LENGTH,
+             TOTP_TIME_STEP,
+             TOTP_START_TIME,
              END_OF_RECORD,
              UNKNOWN -> {
             return null;
@@ -993,6 +997,10 @@ public class PasswdFileData
              SHIFT_DOUBLE_CLICK_ACTION,
              ENTRY_KEYBOARD_SHORTCUT,
              TWO_FACTOR_KEY,
+             TOTP_CONFIG,
+             TOTP_LENGTH,
+             TOTP_TIME_STEP,
+             TOTP_START_TIME,
              END_OF_RECORD,
              UNKNOWN -> {
             return null;
@@ -1088,7 +1096,7 @@ public class PasswdFileData
             case LAST_PASSWORD_CHANGE: {
                 int minor = getHdrMinorVersion(rec);
                 var format = (minor >= 2) ? PwsTimeField.Format.DEFAULT :
-                             PwsTimeField.Format.HEADER_ASCII;
+                             PwsTimeField.Format.ALLOW_HEADER_ASCII;
                 rec.setField(new PwsTimeField(fieldId, format, (Date)value));
                 break;
             }
@@ -1220,7 +1228,10 @@ public class PasswdFileData
                 }
                 break;
             }
-            case PROTECTED_ENTRY: {
+            case PROTECTED_ENTRY:
+            case TOTP_CONFIG:
+            case TOTP_LENGTH:
+            case TOTP_TIME_STEP: {
                 Byte b = (Byte)val;
                 if ((b != null) && (b != 0)) {
                     field = new PwsByteField(fieldId, b);
@@ -1232,6 +1243,14 @@ public class PasswdFileData
                 if ((d != null) && (d.getTime() != 0)) {
                     field = new PwsTimeField(fieldId,
                                              PwsTimeField.Format.DEFAULT, d);
+                }
+                break;
+            }
+            case TOTP_START_TIME: {
+                Date d = (Date)val;
+                if ((d != null) && (d.getTime() != 0)) {
+                    field = new PwsTimeField(fieldId,
+                                             PwsTimeField.Format.SAVE_40BIT, d);
                 }
                 break;
             }
@@ -1304,6 +1323,10 @@ public class PasswdFileData
             case PASSWORD_POLICY_NAME:
             case ENTRY_KEYBOARD_SHORTCUT:
             case TWO_FACTOR_KEY:
+            case TOTP_CONFIG:
+            case TOTP_LENGTH:
+            case TOTP_TIME_STEP:
+            case TOTP_START_TIME:
             case END_OF_RECORD:
             case UNKNOWN: {
                 fieldId = null;

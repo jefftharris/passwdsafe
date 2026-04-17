@@ -6,6 +6,8 @@
 /passwdsafe/build/
 /secrets.properties
 /sync/build/
+/test/*.ibak
+/test/*.plk
 /.gradle/
 /.idea/androidTestResultsUserPreferences.xml
 /.idea/assetWizardSettings.xml

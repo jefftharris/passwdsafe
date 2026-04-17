@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -37,7 +37,7 @@ public class PwsIntegerField extends PwsField
      */
     public PwsIntegerField(PwsFieldType type, byte[] value)
     {
-        super(type, Util.getIntFromByteArray(value, 0));
+        super(type, Util.getIntFromByteArray(value));
     }
 
     /**

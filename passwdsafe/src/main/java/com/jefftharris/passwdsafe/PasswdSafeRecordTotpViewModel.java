@@ -38,7 +38,6 @@ public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
         TOGGLE
     }
 
-    @SuppressWarnings("ClassCanBeRecord")
     public static final class Config implements AutoCloseable
     {
         private final @Nullable Owner<Totp> itsTotp;
@@ -58,7 +57,7 @@ public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
                               isShown);
         }
 
-        public boolean hasTotp()
+        private boolean hasTotp()
         {
             return itsTotp != null;
         }

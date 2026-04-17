@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2009-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2009-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -35,7 +35,7 @@ public class PwsShortField extends PwsField
      */
     public PwsShortField(PwsFieldType type, byte[] value)
     {
-        super(type, Util.getShortFromByteArray(value, 0));
+        super(type, Util.getShortFromByteArray(value));
     }
 
     /**
@@ -52,7 +52,7 @@ public class PwsShortField extends PwsField
         short value = (Short)super.getValue();
         // Force a size of 2, otherwise it would be set to a size of blocklength
         byte[] retval = new byte[2];
-        Util.putShortToByteArray(retval, value, 0);
+        Util.putShortToByteArray(retval, value);
         return retval;
     }
 

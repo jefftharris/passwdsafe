@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -94,7 +94,7 @@ public abstract class PwsRecord implements Comparable<Object>, Serializable
                                                      IOException
         {
             rawData = file.readBlock();
-            length = Util.getIntFromByteArray(rawData, 0);
+            length = Util.getIntFromByteArray(rawData);
             //type	= Util.getIntFromByteArray( RawData, 4 );
             type = rawData[4] & 0x000000ff; // rest of header is now random data
             try {
