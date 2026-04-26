@@ -31,10 +31,14 @@ import com.jefftharris.commons.codec.EncoderException;
  * This class is immutable and thread-safe.
  * </p>
  *
- * TODO: may want to add more bit vector functions like and/or/xor/nand TODO: also might be good to generate boolean[] from byte[] et cetera.
+ * TODOapache: may want to add more bit vector functions like and/or/xor/nand
+ * TODOapache: also might be good to generate boolean[] from byte[] et cetera.
  *
  * @since 1.3
  */
+@SuppressWarnings(
+        {"WeakerAccess", "lossy-conversions", "ImplicitNumericConversion",
+         "unused", "SpellCheckingInspection"})
 public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
 
     /*

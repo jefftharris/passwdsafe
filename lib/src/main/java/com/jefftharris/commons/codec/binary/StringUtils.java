@@ -39,6 +39,9 @@ import com.jefftharris.commons.codec.CharEncoding;
  * @see StandardCharsets
  * @since 1.4
  */
+@SuppressWarnings(
+        {"SameParameterValue", "ReturnOfNull", "unused", "WeakerAccess",
+         "SpellCheckingInspection", "GrazieInspection", "RedundantSuppression"})
 public class StringUtils {
 
     /**
@@ -416,9 +419,9 @@ public class StringUtils {
     }
 
     /**
-     * TODO Make private in 2.0.
+     * TODOapache Make private in 2.0.
      *
-     * @deprecated TODO Make private in 2.0.
+     * @deprecated TODOapache Make private in 2.0.
      */
     @Deprecated
     public StringUtils() {

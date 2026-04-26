@@ -22,6 +22,7 @@ package com.jefftharris.commons.codec;
 /**
  * Defines common encoding methods for byte array encoders.
  */
+@SuppressWarnings({"RedundantThrows", "unused"})
 public interface BinaryEncoder extends Encoder {
 
     /**

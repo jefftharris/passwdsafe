@@ -21,7 +21,6 @@ package com.jefftharris.commons.codec.binary;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.jefftharris.commons.codec.BinaryDecoder;
 import com.jefftharris.commons.codec.BinaryEncoder;
@@ -49,6 +48,11 @@ import com.jefftharris.commons.codec.EncoderException;
  * the final character. This requires that the input bytes use the same padding and alphabet as the encoder.
  * </p>
  */
+@SuppressWarnings({"WeakerAccess", "unused", "deprecation", "JavadocBlankLines",
+                   "SameParameterValue", "ClassEscapesDefinedScope",
+                   "MismatchedJavadocCode", "UnusedReturnValue",
+                   "SpellCheckingInspection", "GrazieStyle",
+                   "RedundantSuppression"})
 public abstract class BaseNCodec implements BinaryEncoder, BinaryDecoder {
 
     /**
@@ -58,7 +62,8 @@ public abstract class BaseNCodec implements BinaryEncoder, BinaryDecoder {
      * @param <B> the codec builder subtype.
      * @since 1.17.0
      */
-    public abstract static class AbstractBuilder<T, B extends AbstractBuilder<T, B>> implements Supplier<T> {
+    @SuppressWarnings({"JavadocReference", "unused", "UnusedReturnValue"})
+    public abstract static class AbstractBuilder<T, B extends AbstractBuilder<T, B>> {
 
         private int unencodedBlockSize;
         private int encodedBlockSize;
@@ -93,6 +98,13 @@ public abstract class BaseNCodec implements BinaryEncoder, BinaryDecoder {
         B asThis() {
             return (B) this;
         }
+
+        /**
+         * Gets a result.
+         *
+         * @return a result
+         */
+        abstract T get();
 
         byte[] getDecodeTable() {
             return decodeTable;
@@ -243,6 +255,7 @@ public abstract class BaseNCodec implements BinaryEncoder, BinaryDecoder {
      *
      * This class is not itself thread-safe; each thread must allocate its own copy.
      */
+    @SuppressWarnings({"JavadocBlankLines", "NullableProblems"})
     static class Context {
 
         /**

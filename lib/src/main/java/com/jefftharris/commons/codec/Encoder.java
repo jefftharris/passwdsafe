@@ -27,6 +27,7 @@ package com.jefftharris.commons.codec;
  * in the codec package.
  * </p>
  */
+@SuppressWarnings("unused")
 public interface Encoder {
 
     /**

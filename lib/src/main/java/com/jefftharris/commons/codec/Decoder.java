@@ -29,6 +29,7 @@ package com.jefftharris.commons.codec;
  * One of the two interfaces at the center of the codec package.
  * </p>
  */
+@SuppressWarnings("unused")
 public interface Decoder {
 
     /**

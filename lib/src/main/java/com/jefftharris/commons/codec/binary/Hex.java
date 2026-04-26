@@ -37,6 +37,8 @@ import com.jefftharris.commons.codec.EncoderException;
  *
  * @since 1.1
  */
+@SuppressWarnings(
+        {"WeakerAccess", "unused", "UnusedReturnValue", "NullableProblems"})
 public class Hex implements BinaryEncoder, BinaryDecoder {
 
     /**

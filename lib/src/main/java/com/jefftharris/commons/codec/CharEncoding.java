@@ -58,6 +58,7 @@ import java.nio.charset.StandardCharsets;
  * @see Charset
  * @since 1.4
  */
+@SuppressWarnings({"JavadocBlankLines", "unused", "SpellCheckingInspection"})
 public class CharEncoding {
 
     /**
@@ -122,9 +123,9 @@ public class CharEncoding {
     public static final String UTF_8 = StandardCharsets.UTF_8.name();
 
     /**
-     * TODO Make private in 2.0.
+     * TODOapache Make private in 2.0.
      *
-     * @deprecated TODO Make private in 2.0.
+     * @deprecated TODOapache Make private in 2.0.
      */
     @Deprecated
     public CharEncoding() {

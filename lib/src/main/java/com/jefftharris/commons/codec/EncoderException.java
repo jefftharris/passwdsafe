@@ -24,6 +24,9 @@ package com.jefftharris.commons.codec;
  * {@link Encoder} encounters an encoding specific exception such as invalid data, inability to calculate a checksum,
  * characters outside of the expected range.
  */
+@SuppressWarnings(
+        {"MissingSerialAnnotation", "unused", "SpellCheckingInspection",
+         "GrazieStyle", "RedundantSuppression"})
 public class EncoderException extends Exception {
 
     /**

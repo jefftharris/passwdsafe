@@ -58,6 +58,9 @@ import com.jefftharris.commons.codec.CodecPolicy;
  * @see <a href="https://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>
  * @since 1.5
  */
+@SuppressWarnings(
+        {"JavadocReference", "unused", "DeprecatedIsStillUsed", "deprecation",
+         "SpellCheckingInspection", "GrazieInspection", "RedundantSuppression"})
 public class Base32 extends BaseNCodec {
 
     /**
@@ -79,6 +82,7 @@ public class Base32 extends BaseNCodec {
      *
      * @since 1.17.0
      */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static class Builder extends AbstractBuilder<Base32, Builder> {
 
         /**

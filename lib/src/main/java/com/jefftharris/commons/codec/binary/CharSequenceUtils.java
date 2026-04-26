@@ -29,6 +29,7 @@ package com.jefftharris.commons.codec.binary;
  * @see CharSequence
  * @since 1.10
  */
+@SuppressWarnings({"SameParameterValue", "GrazieStyle", "RedundantSuppression"})
 public class CharSequenceUtils {
 
     /**
