@@ -13,14 +13,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Package renamed for inclusion in PasswdSafe project
  */
 
-package org.apache.commons.codec.binary;
+package com.jefftharris.commons.codec.binary;
 
-import org.apache.commons.codec.BinaryDecoder;
-import org.apache.commons.codec.BinaryEncoder;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.EncoderException;
+import com.jefftharris.commons.codec.BinaryDecoder;
+import com.jefftharris.commons.codec.BinaryEncoder;
+import com.jefftharris.commons.codec.DecoderException;
+import com.jefftharris.commons.codec.EncoderException;
 
 /**
  * Converts between byte arrays and strings of "0"s and "1"s.
@@ -138,7 +140,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      *
      * @param raw the raw binary data to convert.
      * @return an array of 0 and 1 character bytes for each bit of the argument.
-     * @see org.apache.commons.codec.BinaryEncoder#encode(byte[])
+     * @see com.jefftharris.commons.codec.BinaryEncoder#encode(byte[])
      */
     public static byte[] toAsciiBytes(final byte[] raw) {
         if (isEmpty(raw)) {
@@ -167,7 +169,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      *
      * @param raw the raw binary data to convert.
      * @return an array of 0 and 1 characters for each bit of the argument.
-     * @see org.apache.commons.codec.BinaryEncoder#encode(byte[])
+     * @see com.jefftharris.commons.codec.BinaryEncoder#encode(byte[])
      */
     public static char[] toAsciiChars(final byte[] raw) {
         if (isEmpty(raw)) {
@@ -196,7 +198,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      *
      * @param raw the raw binary data to convert.
      * @return a String of 0 and 1 characters representing the binary data.
-     * @see org.apache.commons.codec.BinaryEncoder#encode(byte[])
+     * @see com.jefftharris.commons.codec.BinaryEncoder#encode(byte[])
      */
     public static String toAsciiString(final byte[] raw) {
         return new String(toAsciiChars(raw));
@@ -214,7 +216,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      *
      * @param ascii each byte represents an ASCII '0' or '1'.
      * @return the raw encoded binary where each bit corresponds to a byte in the byte array argument.
-     * @see org.apache.commons.codec.Decoder#decode(Object)
+     * @see com.jefftharris.commons.codec.Decoder#decode(Object)
      */
     @Override
     public byte[] decode(final byte[] ascii) {
@@ -227,7 +229,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      * @param ascii each byte represents an ASCII '0' or '1'.
      * @return the raw encoded binary where each bit corresponds to a byte in the byte array argument.
      * @throws DecoderException if argument is not a byte[], char[] or String.
-     * @see org.apache.commons.codec.Decoder#decode(Object)
+     * @see com.jefftharris.commons.codec.Decoder#decode(Object)
      */
     @Override
     public Object decode(final Object ascii) throws DecoderException {
@@ -251,7 +253,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      *
      * @param raw the raw binary data to convert.
      * @return 0 and 1 ASCII character bytes one for each bit of the argument.
-     * @see org.apache.commons.codec.BinaryEncoder#encode(byte[])
+     * @see com.jefftharris.commons.codec.BinaryEncoder#encode(byte[])
      */
     @Override
     public byte[] encode(final byte[] raw) {
@@ -264,7 +266,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      * @param raw the raw binary data to convert.
      * @return 0 and 1 ASCII character chars one for each bit of the argument.
      * @throws EncoderException if the argument is not a byte[].
-     * @see org.apache.commons.codec.Encoder#encode(Object)
+     * @see com.jefftharris.commons.codec.Encoder#encode(Object)
      */
     @Override
     public Object encode(final Object raw) throws EncoderException {
@@ -279,7 +281,7 @@ public class BinaryCodec implements BinaryDecoder, BinaryEncoder {
      *
      * @param ascii String of '0' and '1' characters.
      * @return the raw encoded binary where each bit corresponds to a byte in the byte array argument.
-     * @see org.apache.commons.codec.Decoder#decode(Object)
+     * @see com.jefftharris.commons.codec.Decoder#decode(Object)
      */
     public byte[] toByteArray(final String ascii) {
         if (ascii == null) {

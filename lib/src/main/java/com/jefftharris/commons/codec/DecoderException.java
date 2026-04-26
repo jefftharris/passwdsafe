@@ -13,9 +13,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Package renamed for inclusion in PasswdSafe project
  */
 
-package org.apache.commons.codec;
+package com.jefftharris.commons.codec;
 
 /**
  * Thrown when there is a failure condition during the decoding process. This exception is thrown when a {@link Decoder}

@@ -13,16 +13,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Package renamed for inclusion in PasswdSafe project
  */
 
-package org.apache.commons.codec.binary;
+package com.jefftharris.commons.codec.binary;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.codec.CharEncoding;
+import com.jefftharris.commons.codec.CharEncoding;
 
 /**
  * Converts String to and from bytes using the encodings required by the Java specification. These encodings are

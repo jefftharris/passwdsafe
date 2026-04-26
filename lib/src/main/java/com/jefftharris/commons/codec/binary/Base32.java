@@ -13,13 +13,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Package renamed for inclusion in PasswdSafe project
  */
 
-package org.apache.commons.codec.binary;
+package com.jefftharris.commons.codec.binary;
 
 import java.util.Arrays;
 
-import org.apache.commons.codec.CodecPolicy;
+import com.jefftharris.commons.codec.CodecPolicy;
 
 /**
  * Provides Base32 encoding and decoding as defined by <a href="https://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>.
@@ -510,8 +512,8 @@ public class Base32 extends BaseNCodec {
      * for other bytes, too. This method subscribes to the garbage-in, garbage-out philosophy: it will not check the provided data for validity.
      * </p>
      * <p>
-     * Output is written to {@link org.apache.commons.codec.binary.BaseNCodec.Context#buffer Context#buffer} as 8-bit octets, using
-     * {@link org.apache.commons.codec.binary.BaseNCodec.Context#pos Context#pos} as the buffer position
+     * Output is written to {@link com.jefftharris.commons.codec.binary.BaseNCodec.Context#buffer Context#buffer} as 8-bit octets, using
+     * {@link com.jefftharris.commons.codec.binary.BaseNCodec.Context#pos Context#pos} as the buffer position
      * </p>
      *
      * @param input   byte[] array of ASCII data to Base32 decode.

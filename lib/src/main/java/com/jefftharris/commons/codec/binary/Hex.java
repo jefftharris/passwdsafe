@@ -13,19 +13,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Package renamed for inclusion in PasswdSafe project
  */
 
-package org.apache.commons.codec.binary;
+package com.jefftharris.commons.codec.binary;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.codec.BinaryDecoder;
-import org.apache.commons.codec.BinaryEncoder;
-import org.apache.commons.codec.CharEncoding;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.EncoderException;
+import com.jefftharris.commons.codec.BinaryDecoder;
+import com.jefftharris.commons.codec.BinaryEncoder;
+import com.jefftharris.commons.codec.CharEncoding;
+import com.jefftharris.commons.codec.DecoderException;
+import com.jefftharris.commons.codec.EncoderException;
 
 /**
  * Converts hexadecimal Strings. The Charset used for certain operation can be set, the default is set in
