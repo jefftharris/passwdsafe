@@ -11,12 +11,12 @@ import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.jefftharris.commons.codec.CodecPolicy;
+import com.jefftharris.commons.codec.DecoderException;
+import com.jefftharris.commons.codec.binary.Hex;
+import com.jefftharris.commons.codec.binary.Base32;
 import com.jefftharris.passwdsafe.util.Pair;
 
-import org.apache.commons.codec.CodecPolicy;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.file.Owner;
