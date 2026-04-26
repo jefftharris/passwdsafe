@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -22,12 +22,13 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import com.jefftharris.passwdsafe.lib.AboutUtils;
 
 /**
- *  The about dialog
+ * Dialog for showing app 'about' information
  */
 public class AboutDialog extends AppCompatDialogFragment
         implements DialogInterface.OnClickListener
 {
     /** Create a new instance */
+    @NonNull
     public static AboutDialog newInstance()
     {
         AboutDialog frag = new AboutDialog();
@@ -51,7 +52,8 @@ public class AboutDialog extends AppCompatDialogFragment
 
         String licenses = AboutUtils.getLicenses(
                 requireContext(), "license-PasswdSafe.txt",
-                "license-android.txt", "license-AndroidAssetStudio.txt",
+                "license-android.txt", "license-apache.txt",
+                "license-AndroidAssetStudio.txt",
                 "license-MaterialIcons.txt", "license-icons.txt",
                 "license-box.txt", "license-onedrive.txt");
         String name = AboutUtils.updateAboutFields(detailsView, licenses, act);
