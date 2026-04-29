@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2003-2014 Rony Shapiro <ronys@users.sourceforge.net>.
- * Copyright (c) 2019 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (c) 2019-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -18,10 +18,11 @@
 #include "sha256.h"
 
 #pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-bounds-avoid-unchecked-container-access"
 #pragma ide diagnostic ignored "cppcoreguidelines-pro-bounds-constant-array-index"
 #pragma ide diagnostic ignored "cppcoreguidelines-pro-bounds-pointer-arithmetic"
 #pragma ide diagnostic ignored "readability-magic-numbers"
-#pragma ide diagnostic ignored "cppcoreguidelines-avoid-magic-numbers"
 
 namespace {
 
