@@ -39,7 +39,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.view.MenuProvider;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -472,7 +471,6 @@ public class PasswdSafeOpenFileFragment
                 Context ctx = getContext();
                 SharedPreferences prefs = Preferences.getSharedPrefs(ctx);
                 if (!Preferences.isFileSavedPasswordConfirm(prefs)) {
-                    FragmentManager fragMgr = getParentFragmentManager();
                     Bundle confirmArgs = new Bundle();
                     confirmArgs.putString(CONFIRM_ARG_ACTION,
                                           ConfirmAction.SAVE_PASSWORD.name());
