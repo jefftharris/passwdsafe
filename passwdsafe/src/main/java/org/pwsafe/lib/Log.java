@@ -1,7 +1,6 @@
 /*
- * $Id: Log.java 411 2009-09-25 18:19:34Z roxon $
- *
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
+ * Copyright (©) 2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.Contract;
  *
  * @author Kevin Preece
  */
-@SuppressWarnings("ClassCanBeRecord")
 public class Log
 {
     private final String itsTag;
