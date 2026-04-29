@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
  * Wrapper for a context that must be an Activity.  Used to ensure UI elements
  * created from a context are backed by an activity.
  */
-@SuppressWarnings("ClassCanBeRecord")
 public final class ActContext
 {
     private final ManagedRef<Context> itsContext;
