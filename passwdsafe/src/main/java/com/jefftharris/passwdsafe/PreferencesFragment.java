@@ -293,7 +293,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         private final Preference itsDefFilePref;
         private final ListPreference itsFileClosePref;
         private final ListPreference itsFileBackupPref;
-        ActivityResultLauncher<Void> itsCreateFileShortcutLauncher;
+        private final ActivityResultLauncher<Void>
+                itsCreateFileShortcutLauncher;
 
         /**
          * Constructor
