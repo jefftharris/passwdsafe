@@ -214,6 +214,7 @@ class V3FileInfo
                 var bytes = headerField.getBytes();
                 switch (itsHdrTimeFormat) {
                 case DEFAULT, ONLY_32BIT -> assertEquals(4, bytes.length);
+                case SAVE_40BIT -> assertEquals(5, bytes.length);
                 case ALLOW_HEADER_ASCII -> assertEquals(8, bytes.length);
                 }
 
