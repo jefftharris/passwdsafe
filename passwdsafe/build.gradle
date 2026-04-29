@@ -98,8 +98,6 @@ dependencies {
 
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
-    implementation 'commons-codec:commons-codec:1.21.0'
-
     // Core library
     androidTestImplementation 'androidx.test:core:1.7.0'
 
