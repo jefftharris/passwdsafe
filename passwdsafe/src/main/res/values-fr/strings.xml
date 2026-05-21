@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -10,12 +10,17 @@
     <string name="add">Ajouter</string>
     <string name="add_policy">Ajouter Stratégie</string>
     <string name="add_record">Ajouter Entrée</string>
+    <string name="algorithm">Algorithme</string>
     <string name="alias_base_record_header">ALIAS</string>
     <string name="alias_to_same_record">Alias pour la même entrée</string>
     <string name="any_changes_will_be_lost">Toutes modifications apportées à l\'entrée seront perdues.</string>
     <string name="app_desc">Accès bases de données PasswordSafe sur Android </string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">Au moins</string>
+    <string name="authentication_code">Code d\'authentification</string>
+    <string name="authentication_code_header">CODE D\'AUTHENTIFICATION</string>
+    <string name="authentication_key">Clé d\'authentification</string>
+    <string name="authentication_key_invalid">La clé d\'authentification Base32 n\'est pas valide. Les caractères autorisés sont a–z, A–Z, 2–7, espace et tiret.</string>
     <string name="backup_creation_failed">Création du fichier de sauvegarde a échoué</string>
     <string name="backup_file">Fichier de sauvegarde</string>
     <string name="backup_file_help">
@@ -50,6 +55,7 @@
     <string name="confirm">Confirmer</string>
     <string name="cannot_delete_record">Impossible de supprimer l\'entrée - %1$s"</string>
     <string name="content_file">Contenu du fichier</string>
+    <string name="copy_authentication_code">Copier le code d\'authentification</string>
     <string name="copy_email">Copier Email</string>
     <string name="copy_notes">Copier les notes</string>
     <string name="copy_password">Copier le mot de passe</string>
@@ -82,6 +88,7 @@
     <string name="delete_policy">Supprimer la stratégie</string>
     <string name="delete_policy_msg">Supprimer la stratégie \"%1$s\"?</string>
     <string name="delete_record_msg">Supprimer l\'entrée \"%1$s\"?</string>
+    <string name="digits">Chiffres</string>
     <string name="directory_for_files">Répertoire des fichiers</string>
     <string name="discard">Ignorer</string>
     <string name="discard_unsaged_changes_p">Ignorer les modifications non enregistrées?</string>
@@ -375,6 +382,7 @@
     </string>
     <string name="saved_password_invalid_biometrics_change">Le mot de passe enregistré est devenu invalide en raison d\'une modification biométrique. Choisissez de réenregistrer le mot de passe et ouvrez le fichier contenant le mot de passe.</string>
     <string name="saving_file">Enregistrement %s…</string>
+    <string name="secret_key">Clé secrète</string>
     <string name="security_settings">Paramètres de sécurité</string>
     <string name="search">Rechercher</string>
     <string name="search_hint">Rechercher PasswdSafe</string>
@@ -402,12 +410,15 @@
     <string name="sync">Synchroniser</string>
     <string name="sync_account_deleted">Synchronisation compte effacé. Utiliser le menu pour choisir une autre option.</string>
     <string name="theme">Thème</string>
+    <string name="time_start">Heure de début</string>
+    <string name="time_step">Intervalle de temps</string>
     <string name="times_header">TEMPS</string>
     <string name="title">Titre</string>
     <string name="touch_sensor_to_save_the_password">Toucher le lecteur
         d\'empreinte digitale pour enregistrer le mot de passe</string>
     <string name="touch_sensor_to_load_saved_password">Toucher le lecteur
         d\'empreinte digitale pour charger le mot de passe enregistré</string>
+    <string name="toggle_passwords">Activer/désactiver les mots de passe</string>
     <string name="unknown_sync_file">Fichier synchronisé inconnu</string>
     <string name="unprotect_all">Déprotéger toutes les entrées</string>
     <string name="unprotect_group">Déprotéger les groupes</string>

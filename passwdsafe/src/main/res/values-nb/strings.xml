@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!--
-  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -10,12 +10,17 @@
     <string name="add">Legg til</string>
     <string name="add_policy">Legg til regel</string>
     <string name="add_record">Legg til oppføring</string>
+    <string name="algorithm">Algoritme</string>
     <string name="alias_base_record_header">ALIAS</string>
     <string name="alias_to_same_record">Alias til samme oppføring</string>
     <string name="any_changes_will_be_lost">Eventuelle endringer i oppføringen går tapt.</string>
     <string name="app_desc">Bruk PasswordSafe-databaser på Android</string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">Minst</string>
+    <string name="authentication_code">Autentiseringskode</string>
+    <string name="authentication_code_header">AUTENTISERINGSKODE</string>
+    <string name="authentication_key">Autentiseringsnøkkel</string>
+    <string name="authentication_key_invalid">Base32-autentiseringsnøkkelen er ugyldig. Tillatte tegn er a–z, A–Z, 2–7, mellomrom og bindestrek.</string>
     <string name="backup_creation_failed">Klarte ikke opprette sikkerhetskopi</string>
     <string name="backup_file">Sikkerhetskopifil</string>
     <string name="backup_file_help">
@@ -48,6 +53,7 @@
     <string name="confirm">Bekreft</string>
     <string name="cannot_delete_record">Klarte ikke slette oppføring - %1$s</string>
     <string name="content_file">Innholdsfil</string>
+    <string name="copy_authentication_code">Kopier autentiseringskoden</string>
     <string name="copy_email">Kopier e-post</string>
     <string name="copy_notes">Kopier notater</string>
     <string name="copy_password">Kopier passord</string>
@@ -74,6 +80,7 @@
     <string name="delete_policy">Slett regler</string>
     <string name="delete_policy_msg">Slett regler \"%1$s\"?</string>
     <string name="delete_record_msg">Slett oppføring \"%1$s\"?</string>
+    <string name="digits">Siffer</string>
     <string name="directory_for_files">Mappe for filer</string>
     <string name="discard">Forkast</string>
     <string name="discard_unsaged_changes_p">Forkast ulagrede endringer?</string>
@@ -339,6 +346,7 @@
     </string>
     <string name="saved_password_invalid_biometrics_change">Det lagrede passordet er ugyldig på grunn av en biometrisk endring. Velg å lagre passordet på nytt, og åpne filen med passordet.</string>
     <string name="saving_file">Lagrer %s …</string>
+    <string name="secret_key">Hemmelig nøkkel</string>
     <string name="security_settings">Sikkerhetsinnstillinger</string>
     <string name="search">Søk</string>
     <string name="search_hint">Søk PasswdSafe</string>
@@ -366,10 +374,13 @@
     <string name="sync">Synkroniser</string>
     <string name="sync_account_deleted">Synkroniseringskonto slettet. Bruk menyen til å velge en annen mulighet.</string>
     <string name="theme">Tema</string>
+    <string name="time_start">Starttidspunkt</string>
+    <string name="time_step">Tidssteg</string>
     <string name="times_header">ANTALL</string>
     <string name="title">Tittel</string>
     <string name="touch_sensor_to_save_the_password">Berør sensor for å lagre passordet</string>
     <string name="touch_sensor_to_load_saved_password">Berør sensor for å laste inn lagrede passord</string>
+    <string name="toggle_passwords">Slå passord av/på</string>
     <string name="unknown_sync_file">Ukjent synkroniseringsfil</string>
     <string name="unprotect_all">Fjern beskyttelse alle oppføringer</string>
     <string name="unprotect_group">Fjern beskyttelse av gruppeoppføringer</string>
