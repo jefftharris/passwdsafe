@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -17,8 +17,8 @@ android {
         resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 36
         // <major><minor><bugfix><beta/extra>
-        versionCode = 6260100
-        versionName = "6.26.1"
+        versionCode = 6270000
+        versionName = "6.27.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
