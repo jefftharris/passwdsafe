@@ -132,6 +132,16 @@ public class PasswdSafeIME extends InputMethodService
     }
 
     @Override
+    public boolean onEvaluateInputViewShown()
+    {
+        boolean ignored = super.onEvaluateInputViewShown();
+        // Always show the IME.  The base implementation may not show if there
+        // is a hardware keyboard, but that's not relevant to use password
+        // fields.
+        return true;
+    }
+
+    @Override
     public void onStartInputView(EditorInfo info, boolean restarting)
     {
         super.onStartInputView(info, restarting);
