@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -10,12 +10,17 @@
     <string name="add">Hinzufügen</string>
     <string name="add_policy">Regel hinzufügen</string>
     <string name="add_record">Eintrag hinzufügen</string>
+    <string name="algorithm">Algorithmus</string>
     <string name="alias_base_record_header">ALIAS</string>
     <string name="alias_to_same_record">Alias auf den gleichen Eintrag</string>
     <string name="any_changes_will_be_lost">Alle Änderungen am Eintrag gehen verloren.</string>
     <string name="app_desc">Programm zum Zugriff und Bearbeiten von PasswordSafe-Datenbanken für Android</string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">Mind.</string>
+    <string name="authentication_code">Authentifizierungs-Code</string>
+    <string name="authentication_code_header">AUTHENTIFIZIERUNGS-CODE</string>
+    <string name="authentication_key">Authentifizierungs-Schlüssel</string>
+    <string name="authentication_key_invalid">Der Base32-Authentifizierungs-Schlüssel ist ungültig. Erlaubte Zeichen sind a–z, A–Z, 2–7, Leerzeichen und Bindestrich.</string>
     <string name="backup_creation_failed">Backup fehlgeschlagen</string>
     <string name="backup_file">Backupdatei</string>
     <string name="backup_file_help">
@@ -49,6 +54,7 @@
     <string name="confirm">Bestätigen</string>
     <string name="cannot_delete_record">Eintrag kann nicht gelöscht werden - %1$s</string>
     <string name="content_file">Inhaltsdatei</string>
+    <string name="copy_authentication_code">Authentifizierungs-Schlüssel kopieren</string>
     <string name="copy_email">E-Mail kopieren</string>
     <string name="copy_notes">Notizen kopieren</string>
     <string name="copy_password">Passwort kopieren</string>
@@ -81,6 +87,7 @@
     <string name="delete_policy">Regel löschen</string>
     <string name="delete_policy_msg">Regel \"%1$s\" löschen?</string>
     <string name="delete_record_msg">Eintrag \"%1$s\" löschen?</string>
+    <string name="digits">Ziffern</string>
     <string name="directory_for_files">Standardordner</string>
     <string name="discard">Verwerfen</string>
     <string name="discard_unsaged_changes_p">Nicht gespeicherte Änderungen verwerfen?</string>
@@ -366,6 +373,7 @@
     </string>
     <string name="saved_password_invalid_biometrics_change">Das gespeicherte Passwort ist ungültig, weil sich die biometrischen Daten geändert haben. Um das Passwort erneut zu speichern, muss die Datei mit dem Passwort entsperrt werden.</string>
     <string name="saving_file">Speichere %s …</string>
+    <string name="secret_key">Geheimer Schlüssel</string>
     <string name="security_settings">Sicherheitseinstellungen</string>
     <string name="search">Suchen</string>
     <string name="search_hint">In PasswdSafe suchen</string>
@@ -393,10 +401,13 @@
     <string name="sync">Synchronisieren</string>
     <string name="sync_account_deleted">Konto gelöscht. Bitte andere Option im Menü wählen.</string>
     <string name="theme">Theme</string>
+    <string name="time_start">Startzeit</string>
+    <string name="time_step">Zeitschritt</string>
     <string name="times_header">ZEITEN</string>
     <string name="title">Titel</string>
     <string name="touch_sensor_to_save_the_password">Sensor berühren um das Passwort zu speichern</string>
     <string name="touch_sensor_to_load_saved_password">Sensor berühren um das Passwort zu laden</string>
+    <string name="toggle_passwords">Passwörter umschalten</string>
     <string name="unknown_sync_file">Unbekannte Synchronisations-Datei</string>
     <string name="unprotect_all">Alle Einträge freigeben</string>
     <string name="unprotect_group">Gruppe freigeben</string>
