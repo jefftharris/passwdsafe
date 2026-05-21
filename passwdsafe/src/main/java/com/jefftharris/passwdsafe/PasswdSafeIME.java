@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -56,6 +56,7 @@ public class PasswdSafeIME extends InputMethodService
     private static final int TITLE_KEY = -104;
     private static final int NOTES_KEY = -105;
     private static final int PREVIOUS_PASSWORD_KEY = -106;
+    private static final int AUTHCODE_KEY = -107;
 
     // Control keys
     public static final int ENTER_KEY = -200;
@@ -128,6 +129,16 @@ public class PasswdSafeIME extends InputMethodService
         itsQwertyKeyboard.setOptions(info, res);
         itsSymbolsKeyboard.setOptions(info, res);
         itsSymbolsShiftKeyboard.setOptions(info, res);
+    }
+
+    @Override
+    public boolean onEvaluateInputViewShown()
+    {
+        boolean ignored = super.onEvaluateInputViewShown();
+        // Always show the IME.  The base implementation may not show if there
+        // is a hardware keyboard, but that's not relevant to use password
+        // fields.
+        return true;
     }
 
     @Override
@@ -289,6 +300,7 @@ public class PasswdSafeIME extends InputMethodService
         case URL_KEY:
         case EMAIL_KEY:
         case NOTES_KEY:
+        case AUTHCODE_KEY:
         case PREVIOUS_PASSWORD_KEY: {
             String keyStr = refresh((fileData, rec) -> {
                 if ((fileData == null) || (rec == null)) {
@@ -337,6 +349,14 @@ public class PasswdSafeIME extends InputMethodService
                         return null;
                     }
                     return entries.get(0).getPasswd();
+                }
+                case AUTHCODE_KEY: {
+                    try (var totp = fileData.getTotp(rec);
+                         var authcode = (totp != null) ? totp.get().generate() :
+                                        null) {
+                        return (authcode != null) ?
+                               authcode.get().unprotectAsString() : null;
+                    }
                 }
                 }
                 return null;
