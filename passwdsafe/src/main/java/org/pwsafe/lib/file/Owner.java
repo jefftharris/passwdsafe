@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -20,6 +20,7 @@ public final class Owner<T extends AutoCloseable> implements AutoCloseable
 {
     private T itsItem;
     private int itsRefCount = 1;
+    private static final String TAG = "org.pwsafe.lib.file.Owner";
 
     /**
      * Owner as a method parameter
@@ -83,7 +84,7 @@ public final class Owner<T extends AutoCloseable> implements AutoCloseable
                 try {
                     itsItem.close();
                 } catch (Exception e) {
-                    Log.getInstance(Owner.class.getName()).error(e);
+                    Log.getInstance(TAG).error(e);
                 }
                 itsItem = null;
             }
@@ -99,7 +100,7 @@ public final class Owner<T extends AutoCloseable> implements AutoCloseable
         try {
             if ((itsItem != null) && (itsRefCount > 0)) {
                 Exception e = new Exception("NOT FINALIZED");
-                Log.getInstance(Owner.class.getName()).error(e);
+                Log.getInstance(TAG).error(e);
             }
         } finally {
             super.finalize();

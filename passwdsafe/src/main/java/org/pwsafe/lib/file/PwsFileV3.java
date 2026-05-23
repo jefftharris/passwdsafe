@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2024-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2024-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -59,6 +59,8 @@ public final class PwsFileV3 extends PwsFile
     private TwofishPws twofishCbc;
     HmacPws hasher;
     private PwsRecordV3 headerRecord;
+
+    private static final String TAG = "org.pwsafe.lib.file.PwsFileV3";
 
     /**
      * Constructs and initialises a new, empty version 3 PasswordSafe
@@ -195,7 +197,7 @@ public final class PwsFileV3 extends PwsFile
 
         } catch (Exception e) {
             var ioe = new IOException("Error reading encrypted fields", e);
-            Log.getInstance(PwsFileV3.class.getName()).error(ioe);
+            Log.getInstance(TAG).error(ioe);
             throw ioe;
         }
         twofishCbc = new TwofishPws(decryptedRecordKey, false,
@@ -325,7 +327,7 @@ public final class PwsFileV3 extends PwsFile
      * an integral multiple of <code>BLOCK_LENGTH</code>.
      */
     @Override
-    public void readDecryptedBytes(byte[] buff)
+    public void readDecryptedBytes(@NonNull byte[] buff)
             throws EndOfFileException, IOException
     {
         if ((buff.length == 0) || ((buff.length % getBlockSize()) != 0)) {
@@ -341,7 +343,7 @@ public final class PwsFileV3 extends PwsFile
             decrypted = twofishCbc.processCBC(buff);
         } catch (Exception e) {
             var ioe = new IOException("Error decrypting field");
-            Log.getInstance(PwsFileV3.class.getName()).error(ioe);
+            Log.getInstance(TAG).error(ioe);
             throw ioe;
         }
         Util.copyBytes(decrypted, buff);

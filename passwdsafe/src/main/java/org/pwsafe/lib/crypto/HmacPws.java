@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2024-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2024-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -32,7 +32,7 @@ public class HmacPws
             itsMac = Mac.getInstance("HmacSHA256");
         } catch (NoSuchAlgorithmException e) {
             var keye = new InvalidKeyException("No algorithm", e);
-            Log.getInstance(HmacPws.class.getName()).error(keye);
+            Log.getInstance("org.pwsafe.lib.crypto.HmacPws").error(keye);
             throw keye;
         }
         itsMac.init(new SecretKeySpec(key, itsMac.getAlgorithm()));

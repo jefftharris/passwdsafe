@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-import java.util.Objects;
 
 /**
  * Superclass for common functionality for V1 and V2 Files.
@@ -34,8 +33,7 @@ import java.util.Objects;
  */
 public abstract class PwsFileV1V2 extends PwsFile
 {
-    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
-            PwsFileV1V2.class.getPackage()).getName());
+    private static final Log LOG = Log.getInstance("org.pwsafe.lib.file");
 
 
     /**

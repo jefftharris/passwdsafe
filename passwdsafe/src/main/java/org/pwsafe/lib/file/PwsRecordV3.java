@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Objects;
 
 /**
  * Support for new v3 Record type.
@@ -35,8 +34,7 @@ public class PwsRecordV3 extends PwsRecord
     @Serial
     private static final long serialVersionUID = -3160317668375599155L;
 
-    private static final Log LOG = Log.getInstance(
-            Objects.requireNonNull(PwsRecordV3.class.getPackage()).getName());
+    private static final Log LOG = Log.getInstance("org.pwsafe.lib.file");
 
     /**
      * Minor version for PasswordSafe 3.25 with protected entry support
