@@ -46,5 +46,8 @@
 -dontwarn javax.annotation.Nonnull
 -dontwarn javax.annotation.Nullable
 
-
-#-printconfiguration /tmp/full-r8-config.txt
+#
+# ProGuard debugging settings.  Enable to dump the configuration or usage.
+#
+#-printconfiguration /tmp/full-r8-passwdsafe-config.txt
+#-printusage /tmp/full-r8-passwdsafe-usage.txt

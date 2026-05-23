@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -15,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * An implementation of the PwsStorage class that reads and writes to files.
@@ -28,8 +27,7 @@ public class PwsFileStorage extends PwsStreamStorage
     /**
      * An object for logging activity in this class.
      */
-    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
-            PwsFileStorage.class.getPackage()).getName());
+    private static final Log LOG = Log.getInstance("org.pwsafe.lib.file");
 
     /*
      * Build an implementation given the filename for the underlying storage.

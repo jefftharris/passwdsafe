@@ -17,7 +17,7 @@ android {
         resourceConfigurations += ['de', 'fr', 'nb']
         targetSdkVersion 36
         // <major><minor><bugfix><beta/extra>
-        versionCode = 6270000
+        versionCode = 6270001
         versionName = "6.27.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -36,6 +36,7 @@ android {
     buildTypes {
         debug {
             debuggable = true
+            minifyEnabled = true
             proguardFiles += getDefaultProguardFile(
                     'proguard-android-optimize.txt')
             proguardFiles += 'proguard-rules.pro'
@@ -55,6 +56,8 @@ android {
             ndk {
                 debugSymbolLevel = "FULL"
             }
+            // Uncomment below to run minified release build in emulator
+            // signingConfig signingConfigs.debug
         }
     }
     compileOptions {

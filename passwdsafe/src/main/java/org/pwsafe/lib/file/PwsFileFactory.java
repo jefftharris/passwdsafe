@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -7,6 +7,9 @@
  */
 package org.pwsafe.lib.file;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.crypto.BlowfishPwsECB;
@@ -18,7 +21,6 @@ import org.pwsafe.lib.exception.UnsupportedFileVersionException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Objects;
 
 /**
  * This is a singleton factory class used to load a PasswordSafe file.  It is
@@ -29,8 +31,7 @@ import java.util.Objects;
  */
 public class PwsFileFactory
 {
-    private static final Log LOG = Log.getInstance(Objects.requireNonNull(
-            PwsFileFactory.class.getPackage()).getName());
+    private static final Log LOG = Log.getInstance("org.pwsafe.lib.file");
 
     private static final int MAX_HEADER_LEN = PwsFile.STUFF_LENGTH +
                                               PwsFile.HASH_LENGTH;
@@ -109,10 +110,10 @@ public class PwsFileFactory
      * @param stuff       the random bytes.
      * @return the generated checksum.
      */
-    private static byte[] genRandHash(Owner<PwsPassword>.Param passwdParam,
-                                      String charEnc,
-                                      byte[] stuff)
-            throws UnsupportedEncodingException
+    private static byte[] genRandHash(
+            @NonNull Owner<PwsPassword>.Param passwdParam,
+            String charEnc,
+            byte[] stuff) throws UnsupportedEncodingException
     {
         SHA1 md;
         BlowfishPwsECB ecb;
@@ -159,6 +160,7 @@ public class PwsFileFactory
      * @param passwd   the passphrase for the file
      * @return The correct subclass of {@link PwsFile} for the file.
      */
+    @NonNull
     public static PwsFile loadFile(String filename,
                                    Owner<PwsPassword>.Param passwd)
             throws EndOfFileException, InvalidPassphraseException, IOException,
@@ -176,7 +178,8 @@ public class PwsFileFactory
      * @param passwd  the passphrase for the file
      * @return The correct subclass of {@link PwsFile} for the file.
      */
-    public static PwsFile loadFromStorage(PwsStorage storage,
+    @NonNull
+    public static PwsFile loadFromStorage(@NonNull PwsStorage storage,
                                           Owner<PwsPassword>.Param passwd)
             throws EndOfFileException, InvalidPassphraseException, IOException,
                    UnsupportedFileVersionException
@@ -231,6 +234,8 @@ public class PwsFileFactory
      *
      * @return A new empty PasswordSafe database.
      */
+    @NonNull
+    @Contract(" -> new")
     public static PwsFile newFile()
     {
         return new PwsFileV3();

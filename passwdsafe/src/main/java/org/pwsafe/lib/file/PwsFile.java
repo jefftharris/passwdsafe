@@ -1,14 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
- * All rights reserved. Use of the code is allowed under the
- * Artistic License 2.0 terms, as specified in the LICENSE file
- * distributed with this code, or available from
- * http://www.opensource.org/licenses/artistic-license-2.0.php
- */
-
-/*
- * $Id: PwsFile.java 411 2009-09-25 18:19:34Z roxon $
- *
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -46,7 +37,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -94,8 +84,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public abstract class PwsFile
 {
-    private static final Log LOG = Log.getInstance(
-            Objects.requireNonNull(PwsFile.class.getPackage()).getName());
+    private static final Log LOG = Log.getInstance("org.pwsafe.lib.file");
 
     /**
      * Length of RandStuff in bytes.
@@ -818,8 +807,7 @@ public abstract class PwsFile
      */
     private class FileIterator implements Iterator<PwsRecord>
     {
-        private final Log LOG = Log.getInstance(Objects.requireNonNull(
-                FileIterator.class.getPackage()).getName());
+        private final Log LOG = Log.getInstance("org.pwsafe.lib.file");
 
         private final PwsFile file;
         private final Iterator<PwsRecord> recDelegate;

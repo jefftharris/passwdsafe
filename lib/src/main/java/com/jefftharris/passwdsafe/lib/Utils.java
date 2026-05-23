@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -87,7 +87,7 @@ public final class Utils
                     c.close();
                 }
             } catch (Exception e) {
-                Log.e(Utils.class.getSimpleName(), "Error closing", e);
+                Log.e("Utils", "Error closing", e);
             }
         }
     }

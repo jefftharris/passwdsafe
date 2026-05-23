@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
- * Copyright (©) 2024 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2024-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -47,6 +47,7 @@ public class SHA256Pws {
     /**
      * Hash the incoming bytes
      */
+    @NonNull
     public static byte[] digest(byte[] incoming) {
 
         return getSha().digest(incoming);
@@ -82,7 +83,7 @@ public class SHA256Pws {
             return MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
             var re = new RuntimeException("No algorithm", e);
-            Log.getInstance(SHA256Pws.class.getName()).error(re);
+            Log.getInstance("org.pwsafe.lib.crypto.SHA256Pws").error(re);
             throw re;
         }
     }
