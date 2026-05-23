@@ -143,3 +143,8 @@
 -dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
 -dontwarn reactor.blockhound.integration.BlockHoundIntegration
 
+#
+# ProGuard debugging settings.  Enable to dump the configuration or usage.
+#
+#-printconfiguration /tmp/full-r8-sync-config.txt
+#-printusage /tmp/full-r8-sync-usage.txt
