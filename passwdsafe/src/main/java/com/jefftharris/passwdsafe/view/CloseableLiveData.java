@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -18,6 +18,8 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 public class CloseableLiveData<T extends AutoCloseable>
         extends MutableLiveData<T> implements AutoCloseable
 {
+    private boolean itsIsClosed = false;
+
     private static final String TAG = "CloseableLiveData";
 
     /**
@@ -39,7 +41,7 @@ public class CloseableLiveData<T extends AutoCloseable>
     public void setValue(T value)
     {
         doClose(false);
-        super.setValue(value);
+        doSetValue(value);
     }
 
    /**
@@ -73,8 +75,19 @@ public class CloseableLiveData<T extends AutoCloseable>
         }
     }
 
+    private void doSetValue(T value)
+    {
+        itsIsClosed = false;
+        super.setValue(value);
+    }
+
     private void doClose(boolean setNull)
     {
+        if (itsIsClosed) {
+            return;
+        }
+        itsIsClosed = true;
+
         T value = getValue();
         if (value != null) {
             try {
@@ -83,7 +96,7 @@ public class CloseableLiveData<T extends AutoCloseable>
                 PasswdSafeUtil.dbginfo(TAG, e, "Error closing live data");
             }
             if (setNull) {
-                setValue(null);
+                doSetValue(null);
             }
         }
     }
