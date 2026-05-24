@@ -255,6 +255,9 @@ public class YubikeyMgr
                 if (itsUser == null) {
                     return;
                 }
+                if (itsTimer != null) {
+                    itsTimer.cancel();
+                }
                 try (var password = itsUser.getUserPassword()) {
                     if (password == null) {
                         itsResult.postValue(new KeyResult(null, null));
