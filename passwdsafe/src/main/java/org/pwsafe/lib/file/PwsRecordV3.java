@@ -556,6 +556,24 @@ public class PwsRecordV3 extends PwsRecord
                      TOTP_TIME_STEP,
                      TOTP_START_TIME -> sb.append(value);
                 }
+            } else if (fieldType instanceof PwsHeaderTypeV3) {
+                switch ((PwsHeaderTypeV3)fieldType) {
+                case VERSION,
+                     UUID,
+                     NON_DEFAULT_PREFS,
+                     TREE_DISPLAY_STATUS,
+                     LAST_SAVE_TIME,
+                     LAST_SAVE_WHO,
+                     LAST_SAVE_WHAT,
+                     LAST_SAVE_USER,
+                     LAST_SAVE_HOST,
+                     NAMED_PASSWORD_POLICIES,
+                     LAST_PASSWORD_CHANGE -> sb.append(value);
+                case YUBICO,
+                     END_OF_RECORD,
+                     UNKNOWN -> {
+                }
+                }
             }
         }
         sb.append(" }");

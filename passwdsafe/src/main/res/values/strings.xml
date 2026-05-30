@@ -424,6 +424,7 @@
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_debugging">YubiKey Debugging</string>
     <string name="yubikey_error">Error communicating with the YubiKey: %1$s</string>
+    <string name="yubikey_header_load_error" tools:ignore="MissingTranslation">YubiKey secret key header field failed to load.  Saving will remove the field which contains a backup of the YubiKey secret used to program other keys.</string>
     <string name="yubikey_nfc_disabled">YubiKey NFC disabled. To enable, use the menu to open the NFC settings.</string>
     <string name="yubikey_slot_1">YubiKey Slot 1</string>
     <string name="yubikey_slot_2">YubiKey Slot 2</string>

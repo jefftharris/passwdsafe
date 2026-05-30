@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2022-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2022-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -25,6 +25,7 @@ import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
 import com.jefftharris.passwdsafe.lib.view.GuiUtils;
 
 import org.jetbrains.annotations.Contract;
+import org.pwsafe.lib.exception.HeaderYubicoLoadException;
 import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.PrintWriter;
@@ -189,7 +190,12 @@ public class PasswdSafeRecordErrorsFragment extends ListFragment
               .append(rle.itsRecord.toString());
             for (var err: rle.itsErrors) {
                 sb.append("\n\n");
-                err.printStackTrace(printer);
+                if (err instanceof HeaderYubicoLoadException) {
+                    sb.append(
+                            ctx.getString(R.string.yubikey_header_load_error));
+                } else {
+                    err.printStackTrace(printer);
+                }
             }
             return sb.toString();
         }
