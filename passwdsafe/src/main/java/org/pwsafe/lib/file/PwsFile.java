@@ -207,7 +207,7 @@ public abstract class PwsFile
     private ArrayList<RecordLoadException> itsLoadErrors = null;
 
     /**
-     * Constructs and initialises a new, empty PasswordSafe database in memory.
+     * Constructs and initializes a new, empty PasswordSafe database in memory.
      */
     protected PwsFile()
     {
@@ -459,7 +459,7 @@ public abstract class PwsFile
     }
 
     /**
-     * Returns an flag as to whether this file or any of its records have
+     * Returns a flag whether this file or any of its records have
      * been modified.
      *
      * @return <code>true</code> if the file has been modified,
@@ -790,7 +790,7 @@ public abstract class PwsFile
     /**
      * Add a record load error
      */
-    private void addLoadError(RecordLoadException rle)
+    protected void addLoadError(RecordLoadException rle)
     {
         if (itsLoadErrors == null) {
             itsLoadErrors = new ArrayList<>();

@@ -63,7 +63,7 @@ public final class PwsFileV3 extends PwsFile
     private static final String TAG = "org.pwsafe.lib.file.PwsFileV3";
 
     /**
-     * Constructs and initialises a new, empty version 3 PasswordSafe
+     * Constructs and initializes a new, empty version 3 PasswordSafe
      * database in memory.
      */
     public PwsFileV3()
@@ -299,7 +299,20 @@ public final class PwsFileV3 extends PwsFile
     protected void readExtraHeader()
             throws EndOfFileException, IOException, RecordLoadException
     {
-        headerRecord = new PwsRecordV3(this, PwsRecord.Type.HEADER);
+        try {
+            headerRecord = new PwsRecordV3(this, PwsRecord.Type.HEADER);
+        } catch (RecordLoadException rle) {
+            var rec = rle.itsRecord;
+            if ((rec.getField(PwsHeaderTypeV3.VERSION) != null) &&
+                (rec.getField(PwsHeaderTypeV3.UUID) != null)) {
+
+                // Use the partial header record from the error
+                headerRecord = (PwsRecordV3)rec;
+                addLoadError(rle);
+            } else {
+                throw rle;
+            }
+        }
     }
 
     /**
