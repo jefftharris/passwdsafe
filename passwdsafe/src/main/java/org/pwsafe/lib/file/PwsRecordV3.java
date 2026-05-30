@@ -253,7 +253,7 @@ public class PwsRecordV3 extends PwsRecord
     protected void loadRecord(PwsFile file)
             throws EndOfFileException, RecordLoadException
     {
-        ArrayList<Throwable> itemErrors = null;
+        var itemErrors = new ItemErrors();
         for (; ; ) {
             try {
                 Item item = new ItemV3((PwsFileV3)file);
@@ -377,21 +377,14 @@ public class PwsRecordV3 extends PwsRecord
                 }
                 }
             } catch (EndOfFileException eof) {
-                if (itemErrors != null) {
-                    throw new RecordLoadException(this, itemErrors);
-                }
+                itemErrors.checkErrors(this);
                 throw eof;
             } catch (Throwable t) {
-                if (itemErrors == null) {
-                    itemErrors = new ArrayList<>();
-                }
                 itemErrors.add(t);
             }
         }
 
-        if (itemErrors != null) {
-            throw new RecordLoadException(this, itemErrors);
-        }
+        itemErrors.checkErrors(this);
     }
 
     /**
@@ -555,4 +548,26 @@ public class PwsRecordV3 extends PwsRecord
         return sb.toString();
     }
 
+    /**
+     * Accumulated errors parsing a record
+     */
+    private static class ItemErrors
+    {
+        private ArrayList<Throwable> itsErrors;
+
+        public void add(Throwable t)
+        {
+            if (itsErrors == null) {
+                itsErrors = new ArrayList<>(1);
+            }
+            itsErrors.add(t);
+        }
+
+        public void checkErrors(PwsRecordV3 rec) throws RecordLoadException
+        {
+            if (itsErrors != null) {
+                throw new RecordLoadException(rec, itsErrors);
+            }
+        }
+    }
 }
