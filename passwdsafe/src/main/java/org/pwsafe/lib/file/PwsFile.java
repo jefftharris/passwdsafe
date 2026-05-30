@@ -790,7 +790,7 @@ public abstract class PwsFile
     /**
      * Add a record load error
      */
-    private void addLoadError(RecordLoadException rle)
+    protected void addLoadError(RecordLoadException rle)
     {
         if (itsLoadErrors == null) {
             itsLoadErrors = new ArrayList<>();
