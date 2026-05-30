@@ -251,7 +251,7 @@ public class PwsRecordV3 extends PwsRecord
     }
 
     /**
-     * Initialises this record by reading its data from <code>file</code>.
+     * Initializes this record by reading its data from <code>file</code>.
      *
      * @param file the file to read the data from.
      */

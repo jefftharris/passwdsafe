@@ -63,7 +63,7 @@ public final class PwsFileV3 extends PwsFile
     private static final String TAG = "org.pwsafe.lib.file.PwsFileV3";
 
     /**
-     * Constructs and initialises a new, empty version 3 PasswordSafe
+     * Constructs and initializes a new, empty version 3 PasswordSafe
      * database in memory.
      */
     public PwsFileV3()
