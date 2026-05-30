@@ -14,6 +14,7 @@ import org.pwsafe.lib.Log;
 import org.pwsafe.lib.UUID;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
+import org.pwsafe.lib.exception.HeaderYubicoLoadException;
 import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.IOException;
@@ -60,6 +61,11 @@ public class PwsRecordV3 extends PwsRecord
      * Minor version of the max supported database format
      */
     public static final byte DB_FMT_MINOR_VERSION = DB_FMT_MINOR_3_30;
+
+    /**
+     * Expected length of the Yubico header field
+     */
+    private static final int HEADER_YUBICO_LEN = 20;
 
     /**
      * Create a new record with all mandatory fields given their default value.
@@ -281,9 +287,18 @@ public class PwsRecordV3 extends PwsRecord
                          LAST_SAVE_WHAT,
                          LAST_SAVE_USER,
                          LAST_SAVE_HOST,
-                         NAMED_PASSWORD_POLICIES,
-                         YUBICO -> itemVal =
+                         NAMED_PASSWORD_POLICIES -> itemVal =
                             new PwsStringUnicodeField(type, item.getByteData());
+                    case YUBICO -> {
+                        var data = item.getByteData();
+                        if (data.length == HEADER_YUBICO_LEN) {
+                            itemVal = new PwsUnknownField(itemType, type,
+                                                          item.getByteData());
+                        } else {
+                            itemErrors.add(new HeaderYubicoLoadException());
+                            continue; // Skip bad field
+                        }
+                    }
                     case END_OF_RECORD,
                          UNKNOWN -> {
                     }
