@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -26,7 +26,7 @@ public enum PwsHeaderTypeV3 implements PwsFieldType
     LAST_SAVE_USER(0x07, PwsStringUnicodeField.class),
     LAST_SAVE_HOST(0x08, PwsStringUnicodeField.class),
     NAMED_PASSWORD_POLICIES(0x10, PwsStringUnicodeField.class),
-    YUBICO(0x12, PwsStringUnicodeField.class),
+    YUBICO(0x12, PwsUnknownField.class),
     LAST_PASSWORD_CHANGE(0x13, PwsTimeField.class),
     END_OF_RECORD(255, null),
 

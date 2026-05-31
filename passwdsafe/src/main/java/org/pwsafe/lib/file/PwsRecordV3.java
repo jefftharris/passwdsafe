@@ -14,6 +14,7 @@ import org.pwsafe.lib.Log;
 import org.pwsafe.lib.UUID;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.exception.EndOfFileException;
+import org.pwsafe.lib.exception.HeaderYubicoLoadException;
 import org.pwsafe.lib.exception.RecordLoadException;
 
 import java.io.IOException;
@@ -60,6 +61,11 @@ public class PwsRecordV3 extends PwsRecord
      * Minor version of the max supported database format
      */
     public static final byte DB_FMT_MINOR_VERSION = DB_FMT_MINOR_3_30;
+
+    /**
+     * Expected length of the Yubico header field
+     */
+    private static final int HEADER_YUBICO_LEN = 20;
 
     /**
      * Create a new record with all mandatory fields given their default value.
@@ -245,7 +251,7 @@ public class PwsRecordV3 extends PwsRecord
     }
 
     /**
-     * Initialises this record by reading its data from <code>file</code>.
+     * Initializes this record by reading its data from <code>file</code>.
      *
      * @param file the file to read the data from.
      */
@@ -253,7 +259,7 @@ public class PwsRecordV3 extends PwsRecord
     protected void loadRecord(PwsFile file)
             throws EndOfFileException, RecordLoadException
     {
-        ArrayList<Throwable> itemErrors = null;
+        var itemErrors = new ItemErrors();
         for (; ; ) {
             try {
                 Item item = new ItemV3((PwsFileV3)file);
@@ -281,9 +287,18 @@ public class PwsRecordV3 extends PwsRecord
                          LAST_SAVE_WHAT,
                          LAST_SAVE_USER,
                          LAST_SAVE_HOST,
-                         NAMED_PASSWORD_POLICIES,
-                         YUBICO -> itemVal =
+                         NAMED_PASSWORD_POLICIES -> itemVal =
                             new PwsStringUnicodeField(type, item.getByteData());
+                    case YUBICO -> {
+                        var data = item.getByteData();
+                        if (data.length == HEADER_YUBICO_LEN) {
+                            itemVal = new PwsUnknownField(itemType, type,
+                                                          item.getByteData());
+                        } else {
+                            itemErrors.add(new HeaderYubicoLoadException());
+                            continue; // Skip bad field
+                        }
+                    }
                     case END_OF_RECORD,
                          UNKNOWN -> {
                     }
@@ -377,21 +392,14 @@ public class PwsRecordV3 extends PwsRecord
                 }
                 }
             } catch (EndOfFileException eof) {
-                if (itemErrors != null) {
-                    throw new RecordLoadException(this, itemErrors);
-                }
+                itemErrors.checkErrors(this);
                 throw eof;
             } catch (Throwable t) {
-                if (itemErrors == null) {
-                    itemErrors = new ArrayList<>();
-                }
                 itemErrors.add(t);
             }
         }
 
-        if (itemErrors != null) {
-            throw new RecordLoadException(this, itemErrors);
-        }
+        itemErrors.checkErrors(this);
     }
 
     /**
@@ -548,6 +556,24 @@ public class PwsRecordV3 extends PwsRecord
                      TOTP_TIME_STEP,
                      TOTP_START_TIME -> sb.append(value);
                 }
+            } else if (fieldType instanceof PwsHeaderTypeV3) {
+                switch ((PwsHeaderTypeV3)fieldType) {
+                case VERSION,
+                     UUID,
+                     NON_DEFAULT_PREFS,
+                     TREE_DISPLAY_STATUS,
+                     LAST_SAVE_TIME,
+                     LAST_SAVE_WHO,
+                     LAST_SAVE_WHAT,
+                     LAST_SAVE_USER,
+                     LAST_SAVE_HOST,
+                     NAMED_PASSWORD_POLICIES,
+                     LAST_PASSWORD_CHANGE -> sb.append(value);
+                case YUBICO,
+                     END_OF_RECORD,
+                     UNKNOWN -> {
+                }
+                }
             }
         }
         sb.append(" }");
@@ -555,4 +581,26 @@ public class PwsRecordV3 extends PwsRecord
         return sb.toString();
     }
 
+    /**
+     * Accumulated errors parsing a record
+     */
+    private static class ItemErrors
+    {
+        private ArrayList<Throwable> itsErrors;
+
+        public void add(Throwable t)
+        {
+            if (itsErrors == null) {
+                itsErrors = new ArrayList<>(1);
+            }
+            itsErrors.add(t);
+        }
+
+        public void checkErrors(PwsRecordV3 rec) throws RecordLoadException
+        {
+            if (itsErrors != null) {
+                throw new RecordLoadException(rec, itsErrors);
+            }
+        }
+    }
 }
