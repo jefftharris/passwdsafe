@@ -403,6 +403,7 @@
     <string name="yubikey">YubiKey</string>
     <string name="yubikey_debugging">YubiKey-feilsøking</string>
     <string name="yubikey_error">Klarte ikke kommuniserer med YubiKey-en: %1$s</string>
+    <string name="yubikey_header_load_error">Klarte ikke laste inn hodefeltet for YubiKey hemmelig nøkkel. Lagring vil fjerne feltet som inneholder en  kopi av YubiKey hemmeligheten som brukes til å programmere andre nøkler.</string>
     <string name="yubikey_nfc_disabled">YubiKey NFC deaktivert: For å aktivere, bruk menyen for å åpne NFC-innstillingene.</string>
     <string name="yubikey_slot_1">YubiKey plass 1</string>
     <string name="yubikey_slot_2">YubiKey plass 2</string>
