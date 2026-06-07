@@ -1,12 +1,5 @@
 /*
  * Copyright (©) 2025-2026 Jeff Harris <jefftharris@gmail.com>
- * All rights reserved. Use of the code is allowed under the
- * Artistic License 2.0 terms, as specified in the LICENSE file
- * distributed with this code, or available from
- * http://www.opensource.org/licenses/artistic-license-2.0.php
- */
-
-/*
  * Copyright (c) 2008-2009 David Muller <roxon@users.sourceforge.net>.
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
@@ -17,6 +10,7 @@ package org.pwsafe.lib.file;
 
 import androidx.annotation.NonNull;
 
+import org.pwsafe.lib.Log;
 import org.pwsafe.lib.Util;
 import org.pwsafe.lib.crypto.HmacPws;
 import org.pwsafe.lib.crypto.SHA256Pws;
@@ -55,12 +49,19 @@ import java.security.InvalidKeyException;
  */
 public class PwsFileHeaderV3 implements Serializable
 {
+    /** Minimum password has iterations to use.  Update when saving as needed to
+     * keep up with iterations updates from PC Password Safe.
+     */
+    private static final int MIN_HASH_ITERATIONS = 0x50000;
+
+    private static final Log LOG = Log.getInstance("org.pwsafe.lib.file");
+
     @Serial
     private static final long serialVersionUID = 1L;
 
     private byte[] tag = new byte[4];
     private final byte[] salt = new byte[32];
-    private final int iter;
+    private int iter;
     private byte[] password = new byte[32];
     private byte[] b1 = new byte[16];
     private byte[] b2 = new byte[16];
@@ -75,7 +76,7 @@ public class PwsFileHeaderV3 implements Serializable
     PwsFileHeaderV3()
     {
         tag = PwsFileV3.ID_STRING;
-        iter = 2048;
+        iter = MIN_HASH_ITERATIONS;
         Util.newRandBytes(salt);
         Util.newRandBytes(IV);
     }
@@ -226,6 +227,11 @@ public class PwsFileHeaderV3 implements Serializable
         // to the attacker. Therefore, we'll hash the salt.
         updateRandHashedBytes(salt);
         updateRandHashedBytes(IV);
+
+        if (iter < MIN_HASH_ITERATIONS) {
+            LOG.warn("Updating min hash iterations");
+            iter = MIN_HASH_ITERATIONS;
+        }
 
         try (Owner<PwsPassword> passwd = passwdParam.use()) {
             final byte[] stretchedPassword = Util.stretchPassphrase(
