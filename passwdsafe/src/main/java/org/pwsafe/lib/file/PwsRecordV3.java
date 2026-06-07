@@ -65,7 +65,7 @@ public class PwsRecordV3 extends PwsRecord
     /**
      * Expected length of the Yubico header field
      */
-    private static final int HEADER_YUBICO_LEN = 20;
+    public static final int HEADER_YUBICO_LEN = 20;
 
     /**
      * Create a new record with all mandatory fields given their default value.

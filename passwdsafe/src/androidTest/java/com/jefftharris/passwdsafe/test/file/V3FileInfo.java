@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.pwsafe.lib.UUID;
+import org.pwsafe.lib.Util;
 import org.pwsafe.lib.file.PwsFile;
 import org.pwsafe.lib.file.PwsFileV3;
 import org.pwsafe.lib.file.PwsHeaderTypeV3;
@@ -48,7 +49,7 @@ class V3FileInfo
     private String itsLastSaveUser;
     private String itsLastSaveHost;
     private String itsNamedPasswordPolicies;
-    private String itsYubico;
+    private byte[] itsYubico;
     private Date itsLastPasswordChange;
     private int itsUnknownField1 = -1;
     private byte[] itsUnknownValue1 = null;
@@ -82,7 +83,10 @@ class V3FileInfo
         itsLastSaveHost = getHeaderStr(PwsHeaderTypeV3.LAST_SAVE_HOST);
         itsNamedPasswordPolicies =
                 getHeaderStr(PwsHeaderTypeV3.NAMED_PASSWORD_POLICIES);
-        itsYubico = getHeaderStr(PwsHeaderTypeV3.YUBICO);
+        itsYubico = getHeaderBytes(PwsHeaderTypeV3.YUBICO);
+        if (itsYubico != null) {
+            assertEquals(PwsRecordV3.HEADER_YUBICO_LEN, itsYubico.length);
+        }
         itsLastPasswordChange =
                 getHeaderTime(PwsHeaderTypeV3.LAST_PASSWORD_CHANGE);
     }
@@ -133,9 +137,11 @@ class V3FileInfo
                 itsNamedPasswordPolicies));
 
         assertNull(itsYubico);
-        itsYubico = String.format("YUBICO - %s", itsUuid);
+        itsYubico = new byte[PwsRecordV3.HEADER_YUBICO_LEN];
+        Util.newRandBytes(itsYubico);
         itsHeaderRec.setField(
-                new PwsStringUnicodeField(PwsHeaderTypeV3.YUBICO, itsYubico));
+                new PwsUnknownField(PwsHeaderTypeV3.YUBICO.getId(),
+                                    PwsHeaderTypeV3.YUBICO, itsYubico));
 
         assertNull(itsLastPasswordChange);
         itsLastPasswordChange = PwsTimeField.normalizeDate(new Date());
@@ -185,7 +191,7 @@ class V3FileInfo
         assertEquals(itsNamedPasswordPolicies,
                      fileInfo.itsNamedPasswordPolicies);
         assertNotNull(itsYubico);
-        assertEquals(itsYubico, fileInfo.itsYubico);
+        assertArrayEquals(itsYubico, fileInfo.itsYubico);
         assertNotNull(itsLastPasswordChange);
         assertEquals(itsLastPasswordChange, fileInfo.itsLastPasswordChange);
 
@@ -293,6 +299,21 @@ class V3FileInfo
             assertTrue(timeField instanceof PwsTimeField);
             assertTrue(timeField.getValue() instanceof Date);
             return (Date)timeField.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    private byte[] getHeaderBytes(
+            @SuppressWarnings("SameParameterValue") @NonNull
+            PwsHeaderTypeV3 field)
+    {
+        var byteField = itsHeaderRec.getField(field);
+        if (byteField != null) {
+            assertTrue(byteField instanceof PwsUnknownField);
+            assertTrue(byteField.getValue() instanceof byte[]);
+            return (byte[])byteField.getValue();
         } else {
             return null;
         }
