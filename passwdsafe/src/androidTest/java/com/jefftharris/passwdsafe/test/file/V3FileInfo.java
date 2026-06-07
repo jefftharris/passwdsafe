@@ -65,10 +65,10 @@ class V3FileInfo
         assertTrue(version instanceof PwsVersionField);
         assertTrue(version.getValue() instanceof Integer);
         itsVersion = (Integer)version.getValue();
-        assertEquals((3 << 24 | PwsRecordV3.DB_FMT_MINOR_3_30 << 16),
+        assertEquals((3 << 24 | PwsRecordV3.DB_FMT_MINOR_3_47 << 16),
                      itsVersion);
         assertEquals(3, ((PwsVersionField)version).getMajor());
-        assertEquals(PwsRecordV3.DB_FMT_MINOR_3_30,
+        assertEquals(PwsRecordV3.DB_FMT_MINOR_3_47,
                      ((PwsVersionField)version).getMinor());
 
         itsUuid = getUuid(itsHeaderRec);

@@ -48,11 +48,6 @@ public class PwsRecordV3 extends PwsRecord
     public static final byte DB_FMT_MINOR_3_28 = 10;
 
     /**
-     * Minor version for PasswordSafe 3.30
-     */
-    public static final byte DB_FMT_MINOR_3_30 = 0x0D;
-
-    /**
      * Minor version for PasswordSafe 3.47
      */
     public static final byte DB_FMT_MINOR_3_47 = 0x0E;
@@ -60,7 +55,7 @@ public class PwsRecordV3 extends PwsRecord
     /**
      * Minor version of the max supported database format
      */
-    public static final byte DB_FMT_MINOR_VERSION = DB_FMT_MINOR_3_30;
+    public static final byte DB_FMT_MINOR_VERSION = DB_FMT_MINOR_3_47;
 
     /**
      * Expected length of the Yubico header field
