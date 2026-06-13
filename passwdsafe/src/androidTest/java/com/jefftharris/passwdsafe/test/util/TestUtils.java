@@ -20,7 +20,12 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.intent.Checks.checkNotNull;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -109,5 +114,14 @@ public class TestUtils
                 errorMatcher.describeTo(description);
             }
         };
+    }
+
+    /**
+     * Click a button
+     */
+    public static void clickButton(int buttonId)
+    {
+        onView(withId(buttonId))
+                .perform(closeSoftKeyboard(), scrollTo(), click());
     }
 }
