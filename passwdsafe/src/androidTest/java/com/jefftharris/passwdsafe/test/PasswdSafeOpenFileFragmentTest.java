@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.test;
 
 import android.net.Uri;
+import androidx.annotation.NonNull;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -31,6 +32,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.jefftharris.passwdsafe.test.util.TestUtils.withTextInputError;
+import static com.jefftharris.passwdsafe.test.util.ViewActions.setChecked;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.emptyString;
 
@@ -40,13 +42,13 @@ import static org.hamcrest.Matchers.emptyString;
 @RunWith(AndroidJUnit4.class)
 public class PasswdSafeOpenFileFragmentTest
 {
-    @Rule
+    @Rule(order=1)
     public TestModeRule itsTestMode = new TestModeRule();
 
-    @Rule
+    @Rule(order=2)
     public TestV3FileRule itsTestFile = new TestV3FileRule();
 
-    @Rule
+    @Rule(order=3)
     public ActivityScenarioRule<PasswdSafe> itsActivityRule =
             new ActivityScenarioRule<>(PasswdSafeUtil.createOpenIntent(
                     Uri.fromFile(itsTestFile.getFile()), null));
@@ -54,7 +56,7 @@ public class PasswdSafeOpenFileFragmentTest
     @Test
     public void testOpen()
     {
-        verifyInitialFields();
+        verifyInitialFields(itsTestFile, false);
         onView(withId(R.id.passwd_edit))
                 .perform(replaceText(TestV3FileRule.PASSWD));
         TestUtils.clickButton(R.id.open);
@@ -65,27 +67,34 @@ public class PasswdSafeOpenFileFragmentTest
     @Test
     public void testEmptyPassword()
     {
-        verifyInitialFields();
+        verifyInitialFields(itsTestFile, false);
         TestUtils.clickButton(R.id.open);
         onView(withId(R.id.passwd_input))
                 .check(matches(withTextInputError("Invalid password")));
+        onView(withId(R.id.passwd_edit)).check(matches(withText("")));
     }
 
     @Test
     public void testBadPassword()
     {
-        verifyInitialFields();
+        verifyInitialFields(itsTestFile, false);
         onView(withId(R.id.passwd_edit))
                 .perform(replaceText(TestV3FileRule.PASSWD + "BAD"));
         TestUtils.clickButton(R.id.open);
         onView(withId(R.id.passwd_input))
                 .check(matches(withTextInputError("Invalid password")));
+        onView(withId(R.id.passwd_edit)).check(
+                matches(withText(TestV3FileRule.PASSWD + "BAD")));
     }
 
-    private void verifyInitialFields()
+    /**
+     * Validate the initial fields for the open fragment
+     */
+    public static void verifyInitialFields(@NonNull TestV3FileRule testFile,
+                                           boolean hasYubikey)
     {
         onView(withId(R.id.file))
-                .check(matches(withText("Open " + itsTestFile.getFileName())));
+                .check(matches(withText("Open " + testFile.getFileName())));
         onView(withId(R.id.passwd_edit))
                 .check(matches(withText(emptyString())));
 
@@ -93,8 +102,15 @@ public class PasswdSafeOpenFileFragmentTest
                      withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
                 .check(matches(isNotChecked()));
 
+        var yubikeyVis = hasYubikey ? ViewMatchers.Visibility.VISIBLE :
+                         ViewMatchers.Visibility.GONE;
         onView(withId(R.id.yubikey)).check(
-                matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+                matches(withEffectiveVisibility(yubikeyVis)));
+        if (hasYubikey) {
+            // Ensure previous test with yubikey doesn't affect current test
+            onView(withId(R.id.yubikey)).perform(setChecked(false));
+        }
+
         onView(withId(R.id.yubikey_debugging)).check(
                 matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.yubikey_nfc_disabled)).check(
