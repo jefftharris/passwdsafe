@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2019 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2019-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.test.util;
 
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -15,6 +16,7 @@ import androidx.test.espresso.util.HumanReadables;
 import androidx.test.espresso.util.TreeIterables;
 
 import org.hamcrest.Matcher;
+import org.jetbrains.annotations.Contract;
 
 import java.util.concurrent.TimeoutException;
 
@@ -73,5 +75,15 @@ public class ViewActions
                         .build();
             }
         };
+    }
+
+    /**
+     * Perform action of ensuring a checkbox or the like is checked or not
+     */
+    @NonNull
+    @Contract(value = "_ -> new", pure = true)
+    public static ViewAction setChecked(final boolean checked)
+    {
+        return new SetCheckedViewAction(checked);
     }
 }

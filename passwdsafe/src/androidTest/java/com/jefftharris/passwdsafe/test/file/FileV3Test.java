@@ -268,6 +268,18 @@ public class FileV3Test
         });
     }
 
+    @NonNull
+    public static PwsFile createFile(@NonNull File saveFile,
+                                     @NonNull Owner<PwsPassword>.Param passwd)
+            throws IOException
+    {
+        var file = new PwsFileV3();
+        file.setStorage(
+                new PwsFileStorage(saveFile.getAbsolutePath(), null));
+        file.setPassphrase(passwd);
+        return file;
+    }
+
     private void doTestLoadSave(@NonNull LoadSaveTester tester)
             throws Exception
     {
@@ -275,9 +287,8 @@ public class FileV3Test
         saveFile.deleteOnExit();
         try (Owner<PwsPassword> PASSWD = PwsPassword.create("test123")) {
             {
-                var file = createFile(saveFile);
+                var file = createFile(saveFile, PASSWD.pass());
                 try {
-                    file.setPassphrase(PASSWD.pass());
                     tester.parseNewFileInfo(file);
                     verifyEmpty(file);
                     tester.populate(file);
@@ -403,14 +414,5 @@ public class FileV3Test
         rec.setField(new PwsPasswdUnicodeField(PwsFieldTypeV3.PASSWORD,
                                                password, file));
         return new RecInfo(rec, title, password);
-    }
-
-    @NonNull
-    private PwsFile createFile(@NonNull File saveFile) throws IOException
-    {
-        var file = new PwsFileV3();
-        file.setStorage(
-                new PwsFileStorage(saveFile.getAbsolutePath(), null));
-        return file;
     }
 }

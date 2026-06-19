@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -9,7 +9,6 @@ package com.jefftharris.passwdsafe;
 
 import android.app.Activity;
 import android.os.CountDownTimer;
-import android.util.Log;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +27,6 @@ import org.pwsafe.lib.file.Owner;
 import org.pwsafe.lib.file.PwsPassword;
 
 import java.io.Closeable;
-import java.io.UnsupportedEncodingException;
 
 
 /**
@@ -92,7 +90,7 @@ public class YubikeyMgr
         }
         itsUser = user;
 
-        if (YubikeyViewModel.TEST) {
+        if (YubikeyViewModel.isTesting()) {
             testYubikey();
         } else {
             startYubikey();
@@ -242,6 +240,10 @@ public class YubikeyMgr
     @UiThread
     private void testYubikey()
     {
+        var testingRsrc = YubikeyViewModel.getTestingRsrc();
+        if (testingRsrc != null) {
+            testingRsrc.increment();
+        }
         new CountDownTimer(5000, 5000)
         {
             @Override
@@ -252,28 +254,41 @@ public class YubikeyMgr
             @Override
             public void onFinish()
             {
-                if (itsUser == null) {
-                    return;
-                }
-                if (itsTimer != null) {
-                    itsTimer.cancel();
-                }
-                try (var password = itsUser.getUserPassword()) {
-                    if (password == null) {
-                        itsResult.postValue(new KeyResult(null, null));
+                try {
+                    if (itsUser == null) {
                         return;
                     }
-                    String utf8 = "UTF-8";
-                    byte[] bytes = password.get().getBytes(utf8);
-                    String passwordStr = new String(bytes, utf8).toLowerCase();
-                    try (Owner<PwsPassword> newPassword = PwsPassword.create(
-                            passwordStr)) {
-                        itsResult.postValue(
-                                new KeyResult(newPassword.pass(), null));
+                    if (itsTimer != null) {
+                        itsTimer.cancel();
                     }
-                } catch (UnsupportedEncodingException e) {
-                    Log.e(TAG, "encode error", e);
-                    itsResult.postValue(new KeyResult(null, e));
+                    try (var password = itsUser.getUserPassword()) {
+                        if (password == null) {
+                            itsResult.postValue(new KeyResult(null, null));
+                            return;
+                        }
+                        var pw = password.get();
+                        // Flip char cases to simulate the Yubikey response
+                        char[] passwordChars = new char[pw.length()];
+                        for (int i = 0; i < passwordChars.length; ++i) {
+                            char c = pw.charAt(i);
+                            if (Character.isUpperCase(c)) {
+                                c = Character.toLowerCase(c);
+                            } else if (Character.isLowerCase(c)) {
+                                c = Character.toUpperCase(c);
+                            }
+                            passwordChars[i] = c;
+                        }
+                        try (Owner<PwsPassword> newPassword =
+                                     PwsPassword.create(
+                                passwordChars)) {
+                            itsResult.postValue(
+                                    new KeyResult(newPassword.pass(), null));
+                        }
+                    }
+                } finally {
+                    if (testingRsrc != null) {
+                        testingRsrc.decrement();
+                    }
                 }
             }
         }.start();
