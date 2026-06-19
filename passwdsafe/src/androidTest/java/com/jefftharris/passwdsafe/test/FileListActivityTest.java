@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2017-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2017-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -35,7 +35,7 @@ import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.DocumentsContractCompat;
 import com.jefftharris.passwdsafe.lib.DynamicPermissionMgr;
 import com.jefftharris.passwdsafe.lib.PasswdSafeUtil;
-import com.jefftharris.passwdsafe.test.util.ChildCheckedViewAction;
+import com.jefftharris.passwdsafe.test.util.SetCheckedViewAction;
 import com.jefftharris.passwdsafe.test.util.TestModeRule;
 
 import org.hamcrest.Description;
@@ -340,9 +340,9 @@ public class FileListActivityTest
 
         if (ApiCompat.supportsExternalFilesDirs()) {
 
-            ChildCheckedViewAction legacyCheckAction =
-                    new ChildCheckedViewAction(android.R.id.checkbox,
-                                               showLegacy);
+            SetCheckedViewAction legacyCheckAction =
+                    new SetCheckedViewAction(android.R.id.checkbox,
+                                             showLegacy);
             onView(withId(R.id.recycler_view))
                     .perform(RecyclerViewActions.actionOnItem(
                             hasDescendant(

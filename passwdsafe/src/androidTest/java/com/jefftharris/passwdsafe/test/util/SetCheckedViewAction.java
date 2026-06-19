@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2018 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2018-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.isA;
 /**
  * View action for ensuring a checkable item is checked or not
  */
-public class ChildCheckedViewAction implements ViewAction
+public class SetCheckedViewAction implements ViewAction
 {
     private final int itsChildId;
     private final boolean itsIsChecked;
@@ -30,9 +30,18 @@ public class ChildCheckedViewAction implements ViewAction
     /**
      * Constructor
      */
-    public ChildCheckedViewAction(int childId, boolean checked)
+    public SetCheckedViewAction(int childId, boolean checked)
     {
         itsChildId = childId;
+        itsIsChecked = checked;
+    }
+
+    /**
+     * Constructor
+     */
+    public SetCheckedViewAction(boolean checked)
+    {
+        itsChildId = -1;
         itsIsChecked = checked;
     }
 
@@ -72,7 +81,8 @@ public class ChildCheckedViewAction implements ViewAction
     @Override
     public void perform(UiController uiController, View view)
     {
-        Checkable checkableView = view.findViewById(itsChildId);
+        Checkable checkableView = (itsChildId == -1) ? (Checkable)view :
+                                  view.findViewById(itsChildId);
         itsPrevChecked = checkableView.isChecked();
         checkableView.setChecked(itsIsChecked);
     }
