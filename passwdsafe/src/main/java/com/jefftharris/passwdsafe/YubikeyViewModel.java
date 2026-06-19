@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2023-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2023-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -14,10 +14,13 @@ import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.os.Handler;
 import android.os.Looper;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.jefftharris.passwdsafe.lib.ApiCompat;
 import com.jefftharris.passwdsafe.lib.ManagedRef;
@@ -44,7 +47,7 @@ public class YubikeyViewModel extends AndroidViewModel
     public static final int KEY_TIMEOUT = 30 * 1000;
 
     // Also decide proper log level in logback.xml
-    public static final boolean TEST = false;//PasswdSafeUtil.DEBUG;
+    private static volatile CountingIdlingResource itsTestingIdleRsrc;
 
     private static final long NFC_STOP_DELAY = 5 * 1000;
 
@@ -112,7 +115,7 @@ public class YubikeyViewModel extends AndroidViewModel
     {
         itsNfcState = getNfcState(ctx);
 
-        if (TEST) {
+        if (isTesting()) {
             return YubiState.ENABLED;
         }
 
@@ -238,6 +241,32 @@ public class YubikeyViewModel extends AndroidViewModel
         boolean traceEnabled =
                 PasswdSafeLog.isExplicitlyEnabled(YUBIKEY_TRACE_TAG);
         setDebugLogTracing(traceEnabled);
+    }
+
+    /**
+     * Is the app running while testing the Yubikey
+     */
+    public static boolean isTesting()
+    {
+        return itsTestingIdleRsrc != null;
+    }
+
+    /**
+     * Get the idling resource in use during testing of the Yubikey
+     */
+    @Nullable
+    public static CountingIdlingResource getTestingRsrc()
+    {
+        return itsTestingIdleRsrc;
+    }
+
+    /**
+     * Set whether the app is running while testing the Yubikey
+     */
+    @Keep
+    public static void setTesting(@Nullable CountingIdlingResource idleRsrc)
+    {
+        itsTestingIdleRsrc = idleRsrc;
     }
 
     @Override
