@@ -871,7 +871,8 @@ public class PasswdSafeEditRecordFragment
                         getString(R.string.authentication_key_invalid);
                 case INVALID_ALGORITHM,
                      INVALID_NUM_DIGITS,
-                     INVALID_TIME_STEP -> totpErrorMsg = status.toString();
+                     INVALID_TIME_STEP,
+                     INVALID_TIME_START -> totpErrorMsg = status.toString();
                 }
             }
         }
@@ -1066,6 +1067,7 @@ public class PasswdSafeEditRecordFragment
             }
             case INVALID_ALGORITHM,
                  INVALID_TIME_STEP,
+                 INVALID_TIME_START,
                  INVALID_SECRET_KEY,
                  INVALID_NUM_DIGITS -> {
                 itsTotp.setText(null);

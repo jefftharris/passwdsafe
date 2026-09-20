@@ -627,6 +627,7 @@ public class PasswdSafeRecordBasicFragment
             }
             case INVALID_ALGORITHM,
                  INVALID_TIME_STEP,
+                 INVALID_TIME_START,
                  INVALID_SECRET_KEY,
                  INVALID_NUM_DIGITS -> {
                 itsTotp.setText(getString(R.string.error_fmt, status));
