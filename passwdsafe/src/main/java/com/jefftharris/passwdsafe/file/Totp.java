@@ -65,6 +65,8 @@ public class Totp implements AutoCloseable
     public static final long DEFAULT_TIME_STEP = 30;
     public static final long T0 = 0;
 
+    public static final int INVALID_NUM_DIGITS = -1;
+    public static final long INVALID_TIME_STEP = -1;
     private static final int[] DIGITS_POWER
             // 0  1   2    3     4      5       6        7         8
             = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000};
