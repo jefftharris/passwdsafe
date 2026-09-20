@@ -293,7 +293,8 @@ public class PasswdSafeRecordTotpViewModel extends AndroidViewModel
             case INVALID_ALGORITHM,
                  INVALID_NUM_DIGITS,
                  INVALID_SECRET_KEY,
-                 INVALID_TIME_STEP -> true;
+                 INVALID_TIME_STEP,
+                 INVALID_TIME_START -> true;
         };
     }
 
