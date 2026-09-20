@@ -8,6 +8,7 @@
 package com.jefftharris.passwdsafe.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -42,10 +43,15 @@ public abstract class DialogValidator
         @Override
         protected final View getDoneButton()
         {
-            return itsDialog.getButton(
-                    androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
+            return itsDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         }
 
+        @Override
+        @Nullable
+        protected final View getNeutralButton()
+        {
+            return itsDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+        }
     }
 
     private final Context itsContext;
@@ -95,14 +101,27 @@ public abstract class DialogValidator
         }
 
         getDoneButton().setEnabled(!isError);
+
+        var neutralButton = getNeutralButton();
+        if (neutralButton != null) {
+            neutralButton.setEnabled(doCheckNeutralEnabled(!isError));
+        }
     }
 
     protected abstract View getDoneButton();
 
     @Nullable
+    protected abstract View getNeutralButton();
+
+    @Nullable
     protected String doValidation()
     {
         return null;
+    }
+
+    protected boolean doCheckNeutralEnabled(boolean valid)
+    {
+        return valid;
     }
 
     @NonNull
