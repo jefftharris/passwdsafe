@@ -23,6 +23,9 @@ public abstract class AbstractDialogClickListener
         case DialogInterface.BUTTON_NEGATIVE:
             onCancelClicked();
             break;
+        case DialogInterface.BUTTON_NEUTRAL:
+            onNeutralClicked(dialog);
+            break;
         }
     }
 
@@ -36,6 +39,10 @@ public abstract class AbstractDialogClickListener
     }
 
     protected void onCancelClicked()
+    {
+    }
+
+    protected void onNeutralClicked(DialogInterface dialog)
     {
     }
 }
