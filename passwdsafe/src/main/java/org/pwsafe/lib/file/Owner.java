@@ -21,6 +21,9 @@ public final class Owner<T extends AutoCloseable> implements AutoCloseable
 {
     private T itsItem;
     private int itsRefCount = 1;
+    private final StackTraceElement[] itsCtorStackTrace;
+
+    private static final boolean DEBUG_CTOR = false;
     private static final String TAG = "org.pwsafe.lib.file.Owner";
 
     /**
@@ -56,6 +59,11 @@ public final class Owner<T extends AutoCloseable> implements AutoCloseable
     public Owner(@NonNull T item)
     {
         itsItem = item;
+        if (DEBUG_CTOR) {
+            itsCtorStackTrace = Thread.currentThread().getStackTrace();
+        } else {
+            itsCtorStackTrace = null;
+        }
     }
 
     /**
@@ -113,7 +121,14 @@ public final class Owner<T extends AutoCloseable> implements AutoCloseable
     {
         try {
             if ((itsItem != null) && (itsRefCount > 0)) {
-                Exception e = new Exception("NOT FINALIZED");
+                Exception ctorEx = null;
+                if (DEBUG_CTOR) {
+                    ctorEx = new Exception("CTOR Stack Trace");
+                    ctorEx.setStackTrace(itsCtorStackTrace);
+                }
+                Exception e = new Exception(
+                        String.format("NOT FINALIZED class %s",
+                                      itsItem.getClass()), ctorEx);
                 Log.getInstance(TAG).error(e);
             }
         } finally {
