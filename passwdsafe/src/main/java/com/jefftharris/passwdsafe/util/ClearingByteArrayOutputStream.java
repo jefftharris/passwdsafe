@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2019 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2019-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -30,6 +30,5 @@ public final class ClearingByteArrayOutputStream extends ByteArrayOutputStream
     {
         super.close();
         Util.clearArray(buf);
-        Runtime.getRuntime().gc();
     }
 }
