@@ -447,37 +447,30 @@
                     android:text="@string/authentication_code"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/totp_secret_key_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/secret_key"
-                    app:passwordToggleEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/totp_secret_key"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textMultiLine|textPassword"
-                        android:textAppearance="?android:attr/textAppearanceSmall"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
                 <RelativeLayout
                     android:id="@+id/totp_value_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
                     android:clickable="true"
                     android:focusable="true">
+
+                    <Button
+                        android:id="@+id/totp_edit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/edit"/>
 
                     <ProgressBar
                         android:id="@+id/totp_progress"
                         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@id/totp_edit"
                         android:clickable="false"
                         android:indeterminate="false"
                         android:progress="0"/>
@@ -486,12 +479,23 @@
                         android:id="@+id/totp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/totp_edit"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
                         android:layout_toStartOf="@id/totp_progress"
                         android:clickable="false"/>
 
                 </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/totp_error"
+                    style="@style/TextAppearance.Design.Error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:paddingLeft="4dp"
+                    android:paddingEnd="4dp"
+                    android:paddingRight="4dp"/>
 
             </LinearLayout>
 

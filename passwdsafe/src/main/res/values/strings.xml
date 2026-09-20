@@ -13,14 +13,18 @@
     <string name="algorithm">Algorithm</string>
     <string name="alias_base_record_header">ALIAS</string>
     <string name="alias_to_same_record">Alias to the same record</string>
+    <string name="allow_delete" tools:ignore="MissingTranslation">Allow delete</string>
     <string name="any_changes_will_be_lost">Any changes to the record will be lost.</string>
     <string name="app_desc">Access PasswordSafe databases on Android</string>
     <string name="app_name">PasswdSafe</string>
     <string name="at_least">At least</string>
     <string name="authentication_code">Authentication Code</string>
     <string name="authentication_code_header">AUTHENTICATION CODE</string>
+    <string name="authentication_num_digits_invalid" tools:ignore="MissingTranslation">Number of digits must be between 1 and 8</string>
     <string name="authentication_key">Authentication Key</string>
     <string name="authentication_key_invalid">The Base32 authentication key is invalid. Allowed characters are a–z, A–Z, 2–7, space, and dash.</string>
+    <string name="authentication_time_start_invalid" tools:ignore="MissingTranslation">Time start must be a valid date in seconds</string>
+    <string name="authentication_time_step_invalid" tools:ignore="MissingTranslation">Time step must be greater than zero</string>
     <string name="backup_creation_failed">Backup creation failed</string>
     <string name="backup_file">Backup file</string>
     <string name="backup_file_help">
@@ -93,6 +97,7 @@
     <string name="duplicate_entry">Duplicate entry</string>
     <string name="duplicate_name">Duplicate name</string>
     <string name="edit_item">Edit %s</string>
+    <string name="edit_authentication_code" tools:ignore="MissingTranslation">Edit Authentication Code</string>
     <string name="edit_policy">Edit Policy</string>
     <string name="email">Email</string>
     <string name="email_attachment">Email Attachment</string>
@@ -402,6 +407,7 @@
     <string name="touch_sensor_to_save_the_password">Touch sensor to save the password</string>
     <string name="touch_sensor_to_load_saved_password">Touch sensor to load saved password</string>
     <string name="toggle_passwords">Toggle Passwords</string>
+    <string name="unknown_hash_algorithm" tools:ignore="MissingTranslation">Unknown hash algorithm</string>
     <string name="unknown_sync_file">Unknown sync file</string>
     <string name="unprotect_all">Unprotect All Records</string>
     <string name="unprotect_group">Unprotect Group Records</string>
