@@ -55,6 +55,7 @@ import com.jefftharris.passwdsafe.lib.view.TextInputUtils;
 import com.jefftharris.passwdsafe.lib.view.TypefaceUtils;
 import com.jefftharris.passwdsafe.util.Optional;
 import com.jefftharris.passwdsafe.util.Pair;
+import com.jefftharris.passwdsafe.view.AuthCodeEditDialog;
 import com.jefftharris.passwdsafe.view.ChooseRecordActResultContract;
 import com.jefftharris.passwdsafe.view.DatePickerDialogFragment;
 import com.jefftharris.passwdsafe.view.EditRecordResult;
@@ -67,7 +68,6 @@ import com.jefftharris.passwdsafe.view.TimePickerDialogFragment;
 
 import org.jetbrains.annotations.Contract;
 import org.pwsafe.lib.file.Owner;
-import org.pwsafe.lib.file.PwsPassword;
 import org.pwsafe.lib.file.PwsRecord;
 
 import java.util.ArrayList;
@@ -108,6 +108,7 @@ public class PasswdSafeEditRecordFragment
     private TimePickerDialogFragment.Client itsTimePickerDlg;
     private NewGroupDialog.Client itsNewGroupDlg;
     private PasswdPolicyEditDialog.Client itsPasswdPolicyDlg;
+    private AuthCodeEditDialog.Client itsAuthCodeDlg;
     private final Validator itsValidator = new Validator();
     private final TreeSet<String> itsGroups =
             new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -171,11 +172,10 @@ public class PasswdSafeEditRecordFragment
     private TextView itsHistoryMaxSize;
     private ListView itsHistoryList;
     private View itsTotpGroup;
-    private TextInputLayout itsTotpSecretKeyInput;
-    private EditText itsTotpSecretKey;
-    private View itsTotpValueRow;
     private TextView itsTotp;
     private ProgressBar itsTotpProgress;
+    private Button itsTotpEditBtn;
+    private TextView itsTotpError;
     private View itsNotesLabel;
     private TextView itsNotes;
     private ActivityResultLauncher<ChooseRecordActResultContract.Args>
@@ -213,6 +213,7 @@ public class PasswdSafeEditRecordFragment
         itsTimePickerDlg = new TimePickerDialogFragment.Client(this, TAG);
         itsNewGroupDlg = new NewGroupDialog.Client(this, TAG);
         itsPasswdPolicyDlg = new PasswdPolicyEditDialog.Client(this, TAG);
+        itsAuthCodeDlg = new AuthCodeEditDialog.Client(this, TAG);
 
         itsRecordSelectionLauncher = registerForActivityResult(
                 new ChooseRecordActResultContract(),
@@ -220,7 +221,8 @@ public class PasswdSafeEditRecordFragment
 
         itsTotpViewModel = new ViewModelProvider(this).get(
                 PasswdSafeRecordTotpViewModel.class);
-        itsTotpViewModel.getState().observe(this, this::onTotpChanged);
+        itsTotpViewModel.getState().observe(this, this::onTotpStateChanged);
+        itsTotpViewModel.getConfig().observe(this, this::onTotpConfigChanged);
     }
 
     @Override
@@ -318,15 +320,13 @@ public class PasswdSafeEditRecordFragment
 
         // TOTP
         itsTotpGroup = rootView.findViewById(R.id.totp_group);
-        itsTotpSecretKeyInput =
-                rootView.findViewById(R.id.totp_secret_key_input);
-        itsTotpSecretKey = rootView.findViewById(R.id.totp_secret_key);
-        TypefaceUtils.setMonospace(itsTotpSecretKey, ctx);
-        itsValidator.registerTextView(itsTotpSecretKey);
-        itsTotpValueRow = rootView.findViewById(R.id.totp_value_row);
-        itsTotpValueRow.setOnClickListener(this);
+        View totpValueRow = rootView.findViewById(R.id.totp_value_row);
+        totpValueRow.setOnClickListener(this);
         itsTotp = rootView.findViewById(R.id.totp);
         itsTotpProgress = rootView.findViewById(R.id.totp_progress);
+        itsTotpEditBtn = rootView.findViewById(R.id.totp_edit);
+        itsTotpEditBtn.setOnClickListener(this);
+        itsTotpError = rootView.findViewById(R.id.totp_error);
 
         // Notes
         itsNotesLabel = rootView.findViewById(R.id.notes_label);
@@ -527,6 +527,10 @@ public class PasswdSafeEditRecordFragment
             }
         } else if (id == R.id.policy_edit) {
             itsPasswdPolicyDlg.show(itsCurrPolicy, null);
+        } else if (id == R.id.totp_edit) {
+            itsTotpViewModel.updateStateShown(
+                    PasswdSafeRecordTotpViewModel.VisibiltyChange.HIDE);
+            itsAuthCodeDlg.show();
         } else if (id == R.id.totp_value_row) {
             itsTotpViewModel.updateStateShown(
                     PasswdSafeRecordTotpViewModel.VisibiltyChange.TOGGLE);
@@ -602,6 +606,8 @@ public class PasswdSafeEditRecordFragment
             handleNewGroup(result);
         } else if (itsPasswdPolicyDlg.checkKey(requestKey)) {
             handlePolicyEditComplete(result);
+        } else if (itsAuthCodeDlg.checkKey(requestKey)) {
+            handleTotpEditComplete(result);
         }
     }
 
@@ -833,50 +839,18 @@ public class PasswdSafeEditRecordFragment
                           @Nullable PwsRecord editRec)
     {
         if (itsIsV3) {
-            boolean secretKeySet = false;
             if (editRec != null) {
                 try (var totp = fileData.getTotp(editRec)) {
-                    if (totp != null) {
-                        try (var secretKey = totp.get().getSecretKey()) {
-                            secretKey.get().setInto(itsTotpSecretKey);
-                            secretKeySet = true;
-                        }
-                    }
+                    itsTotpViewModel.setTotp(Owner.maybePass(totp));
                 }
+            } else {
+                itsTotpViewModel.setTotp(null);
             }
-            if (!secretKeySet) {
-                itsTotpSecretKey.setText(null);
-            }
-            PasswordVisibilityMenuHandler.set(getContext(), itsTotpSecretKey);
         } else {
+            itsTotpViewModel.setTotp(null);
             GuiUtils.setVisible(itsTotpGroup, false);
+            itsTotpEditBtn.setEnabled(false);
         }
-    }
-
-    /**
-     * Handle a change in the TOTP settings
-     * @return null if valid; error message otherwise
-     */
-    private String handleTotpChanged()
-    {
-        String totpErrorMsg = null;
-        try (var totpVal = getUpdatedTotp()) {
-            itsTotpViewModel.setTotp((totpVal != null) ? totpVal.pass() : null);
-            if (totpVal != null) {
-                var status = totpVal.get().getStatus();
-                switch (status) {
-                case OK -> {
-                }
-                case INVALID_SECRET_KEY -> totpErrorMsg =
-                        getString(R.string.authentication_key_invalid);
-                case INVALID_ALGORITHM,
-                     INVALID_NUM_DIGITS,
-                     INVALID_TIME_STEP,
-                     INVALID_TIME_START -> totpErrorMsg = status.toString();
-                }
-            }
-        }
-        return totpErrorMsg;
     }
 
     /**
@@ -1036,16 +1010,16 @@ public class PasswdSafeEditRecordFragment
     /**
      * Handle a change in TOTP state
      */
-    private void onTotpChanged(
+    private void onTotpStateChanged(
             @Nullable PasswdSafeRecordTotpViewModel.State totpState)
     {
         if (totpState == null) {
             return;
         }
 
+        boolean isTotpValueShown = false;
         var status = totpState.getStatus();
         if (status != null) {
-            GuiUtils.setVisible(itsTotpValueRow, true);
             switch (status) {
             case OK -> {
                 boolean isShown = totpState.isShown();
@@ -1053,6 +1027,7 @@ public class PasswdSafeEditRecordFragment
                     try (var value = totpState.getValue()) {
                         if (value != null) {
                             value.get().setInto(itsTotp);
+                            isTotpValueShown = true;
                         } else {
                             itsTotp.setText(null);
                         }
@@ -1061,24 +1036,60 @@ public class PasswdSafeEditRecordFragment
                 } else {
                     itsTotp.setText(R.string.hidden_password_normal);
                 }
-                TypefaceUtils.enableMonospace(itsTotp, isShown,
-                                              requireContext());
-                GuiUtils.setVisible(itsTotpProgress, isShown);
             }
             case INVALID_ALGORITHM,
                  INVALID_TIME_STEP,
                  INVALID_TIME_START,
                  INVALID_SECRET_KEY,
-                 INVALID_NUM_DIGITS -> {
-                itsTotp.setText(null);
-                GuiUtils.setVisible(itsTotpProgress, false);
-            }
+                 INVALID_NUM_DIGITS -> itsTotp.setText(null);
             }
         } else {
-            GuiUtils.setVisible(itsTotpValueRow, false);
-            itsTotp.setText(null);
-            GuiUtils.setVisible(itsTotpProgress, false);
+            itsTotp.setText(R.string.none);
         }
+        TypefaceUtils.enableMonospace(itsTotp, isTotpValueShown,
+                                      requireContext());
+        GuiUtils.setVisible(itsTotpProgress, isTotpValueShown);
+    }
+
+    /**
+     * Handle a change in TOTP configuration
+     */
+    private void onTotpConfigChanged(
+            @Nullable PasswdSafeRecordTotpViewModel.Config config)
+    {
+        if (config == null) {
+            return;
+        }
+
+        String totpErrorMsg = null;
+        try (var totp = config.getTotp()) {
+            PasswdSafeUtil.dbginfo(TAG, "onTotpChanged config: hastotp %b",
+                                   (totp != null));
+            if (totp != null) {
+                var status = totp.get().getStatus();
+                switch (status) {
+                case OK -> {
+                }
+                case INVALID_SECRET_KEY -> totpErrorMsg =
+                        getString(R.string.authentication_key_invalid);
+                case INVALID_ALGORITHM,
+                     INVALID_NUM_DIGITS,
+                     INVALID_TIME_STEP,
+                     INVALID_TIME_START -> totpErrorMsg = status.toString();
+                }
+            }
+        }
+
+        itsValidator.setTotpErrorMsg(totpErrorMsg);
+    }
+
+    /**
+     * Handle when the TOTP edit dialog is complete
+     */
+    private void handleTotpEditComplete(@NonNull Bundle result)
+    {
+        PasswdSafeUtil.dbginfo(TAG, "handleTotpEditComplete result: %s",
+                               result);
     }
 
     /**
@@ -1644,16 +1655,8 @@ public class PasswdSafeEditRecordFragment
     @Nullable
     private Owner<Totp> getUpdatedTotp()
     {
-        var secretKeyStr = itsTotpSecretKey.getText();
-        if (secretKeyStr.length() == 0) {
-            return null;
-        }
-
-        try (var secretKeyVal = PwsPassword.create(secretKeyStr)) {
-            return new Owner<>(new Totp(secretKeyVal.pass(), Totp.Hash.SHA1,
-                                     Totp.DEFAULT_NUM_DIGITS,
-                                     Totp.DEFAULT_TIME_STEP, Totp.T0));
-        }
+        var totpConfig = itsTotpViewModel.getConfig().getValue();
+        return (totpConfig != null) ? totpConfig.getTotp() : null;
     }
 
     /**
@@ -1705,6 +1708,12 @@ public class PasswdSafeEditRecordFragment
             if (!paused) {
                 validate();
             }
+        }
+
+        protected final void setTotpErrorMsg(@Nullable String errorMsg)
+        {
+            itsTotpErrorMsg = errorMsg;
+            validate();
         }
 
         /**
@@ -1783,8 +1792,10 @@ public class PasswdSafeEditRecordFragment
                 }
                 GuiUtils.setVisible(itsExpireDateWarning, warnExpiryDate);
 
-                valid &= !TextInputUtils.setTextInputError(
-                        itsTotpErrorMsg, itsTotpSecretKeyInput);
+                boolean totpValid = (itsTotpErrorMsg == null);
+                valid &= totpValid;
+                GuiUtils.setVisible(itsTotpError, !totpValid);
+                itsTotpError.setText(itsTotpErrorMsg);
             }
 
             boolean invalidHistory = false;
@@ -1819,9 +1830,6 @@ public class PasswdSafeEditRecordFragment
         @Override
         public final void afterTextChanged(Editable s)
         {
-            if (s == itsTotpSecretKey.getText()) {
-                itsTotpErrorMsg = handleTotpChanged();
-            }
             validate();
         }
 
