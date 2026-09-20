@@ -62,7 +62,7 @@ public class Totp implements AutoCloseable
     }
 
     public static final int DEFAULT_NUM_DIGITS = 6;
-    public static final int DEFAULT_TIME_STEP = 30;
+    public static final long DEFAULT_TIME_STEP = 30;
     public static final long T0 = 0;
 
     private static final int[] DIGITS_POWER
@@ -85,7 +85,7 @@ public class Totp implements AutoCloseable
     public Totp(@NonNull Owner<PwsPassword>.Param secretKeyParam,
                 @NonNull Hash hash,
                 int numDigits,
-                int timeStep,
+                long timeStep,
                 long timeStart)
     {
         itsSecretKey = secretKeyParam.use();
@@ -266,7 +266,7 @@ public class Totp implements AutoCloseable
     private static Pair<Status, Mac> init(@NonNull PwsPassword secretKey,
                                           @NonNull Hash hash,
                                           int numDigits,
-                                          int timeStep)
+                                          long timeStep)
     {
         Key secretKeySpec;
         try {
