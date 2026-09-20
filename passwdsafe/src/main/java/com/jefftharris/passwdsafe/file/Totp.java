@@ -268,14 +268,6 @@ public class Totp implements AutoCloseable
                                           int numDigits,
                                           int timeStep)
     {
-        if ((numDigits <= 0) || (numDigits >= DIGITS_POWER.length)) {
-            return new Pair<>(Status.INVALID_NUM_DIGITS, null);
-        }
-
-        if (timeStep <= 0) {
-            return new Pair<>(Status.INVALID_TIME_STEP, null);
-        }
-
         Key secretKeySpec;
         try {
             if (secretKey.length() == 0) {
@@ -306,6 +298,14 @@ public class Totp implements AutoCloseable
             }
         } catch (UnsupportedEncodingException | RuntimeException e) {
             return new Pair<>(Status.INVALID_SECRET_KEY, null);
+        }
+
+        if ((numDigits <= 0) || (numDigits >= DIGITS_POWER.length)) {
+            return new Pair<>(Status.INVALID_NUM_DIGITS, null);
+        }
+
+        if (timeStep <= 0) {
+            return new Pair<>(Status.INVALID_TIME_STEP, null);
         }
 
         try {
