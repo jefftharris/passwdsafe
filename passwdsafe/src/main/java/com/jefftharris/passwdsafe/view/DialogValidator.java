@@ -57,6 +57,7 @@ public abstract class DialogValidator
     private final Context itsContext;
     private final TextView itsErrorMsgView;
     private final String itsErrorFmt;
+    private boolean itsIsPaused = false;
     private final TextWatcher itsTextWatcher = new AbstractTextWatcher()
     {
         public void afterTextChanged(Editable s)
@@ -81,6 +82,13 @@ public abstract class DialogValidator
         tv.addTextChangedListener(itsTextWatcher);
     }
 
+    public void setPaused(boolean paused) {
+        if (paused != itsIsPaused) {
+            itsIsPaused = paused;
+            validate();
+        }
+    }
+
     public void reset()
     {
         validate();
@@ -88,6 +96,10 @@ public abstract class DialogValidator
 
     public final void validate()
     {
+        if (itsIsPaused) {
+            return;
+        }
+
         String errorMsg = doValidation();
         boolean isError = (errorMsg != null);
         if (itsErrorMsgView != null) {
