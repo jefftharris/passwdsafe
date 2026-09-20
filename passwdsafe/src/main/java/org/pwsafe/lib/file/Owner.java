@@ -9,6 +9,7 @@ package org.pwsafe.lib.file;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.pwsafe.lib.Log;
 
@@ -89,6 +90,19 @@ public final class Owner<T extends AutoCloseable> implements AutoCloseable
                 itsItem = null;
             }
         }
+    }
+
+    /**
+     * Maybe pass the given object if non-null
+     *
+     * @param obj The object to pass if non-null
+     * @return The passed object if non-null; null otherwise
+     */
+    @Nullable
+    public static <T extends AutoCloseable> Owner<T>.Param maybePass(
+            @Nullable Owner<T> obj)
+    {
+        return (obj != null) ? obj.pass() : null;
     }
 
     /**
