@@ -43,7 +43,8 @@ public class Totp implements AutoCloseable
         INVALID_ALGORITHM,
         INVALID_NUM_DIGITS,
         INVALID_SECRET_KEY,
-        INVALID_TIME_STEP
+        INVALID_TIME_STEP,
+        INVALID_TIME_START
     }
 
     ///  Hash function to use for TOTP values
@@ -62,8 +63,12 @@ public class Totp implements AutoCloseable
     }
 
     public static final int DEFAULT_NUM_DIGITS = 6;
-    public static final int DEFAULT_TIME_STEP = 30;
+    public static final long DEFAULT_TIME_STEP = 30;
     public static final long T0 = 0;
+
+    public static final int INVALID_NUM_DIGITS = -1;
+    public static final long INVALID_TIME_STEP = -1;
+    public static final long INVALID_TIME_START = Long.MIN_VALUE;
 
     private static final int[] DIGITS_POWER
             // 0  1   2    3     4      5       6        7         8
@@ -85,11 +90,12 @@ public class Totp implements AutoCloseable
     public Totp(@NonNull Owner<PwsPassword>.Param secretKeyParam,
                 @NonNull Hash hash,
                 int numDigits,
-                int timeStep,
+                long timeStep,
                 long timeStart)
     {
         itsSecretKey = secretKeyParam.use();
-        var init = init(itsSecretKey.get(), hash, numDigits, timeStep);
+        var init = init(itsSecretKey.get(), hash, numDigits, timeStep,
+                        timeStart);
         itsStatus = init.first();
         itsHmac = init.second();
         itsHash = hash;
@@ -170,7 +176,8 @@ public class Totp implements AutoCloseable
         case INVALID_ALGORITHM,
              INVALID_NUM_DIGITS,
              INVALID_SECRET_KEY,
-             INVALID_TIME_STEP -> {
+             INVALID_TIME_STEP,
+             INVALID_TIME_START -> {
             return null;
         }
         }
@@ -262,20 +269,13 @@ public class Totp implements AutoCloseable
      * Initialize the overall status and MAC
      */
     @NonNull
-    @Contract("_, _, _, _ -> new")
+    @Contract("_, _, _, _, _ -> new")
     private static Pair<Status, Mac> init(@NonNull PwsPassword secretKey,
                                           @NonNull Hash hash,
                                           int numDigits,
-                                          int timeStep)
+                                          long timeStep,
+                                          long timeStart)
     {
-        if ((numDigits <= 0) || (numDigits >= DIGITS_POWER.length)) {
-            return new Pair<>(Status.INVALID_NUM_DIGITS, null);
-        }
-
-        if (timeStep <= 0) {
-            return new Pair<>(Status.INVALID_TIME_STEP, null);
-        }
-
         Key secretKeySpec;
         try {
             if (secretKey.length() == 0) {
@@ -306,6 +306,18 @@ public class Totp implements AutoCloseable
             }
         } catch (UnsupportedEncodingException | RuntimeException e) {
             return new Pair<>(Status.INVALID_SECRET_KEY, null);
+        }
+
+        if ((numDigits <= 0) || (numDigits >= DIGITS_POWER.length)) {
+            return new Pair<>(Status.INVALID_NUM_DIGITS, null);
+        }
+
+        if (timeStep <= 0) {
+            return new Pair<>(Status.INVALID_TIME_STEP, null);
+        }
+
+        if (timeStart == INVALID_TIME_START) {
+            return new Pair<>(Status.INVALID_TIME_START, null);
         }
 
         try {

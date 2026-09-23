@@ -1,5 +1,5 @@
 /*
- * Copyright (©) 2016-2025 Jeff Harris <jefftharris@gmail.com>
+ * Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
  * All rights reserved. Use of the code is allowed under the
  * Artistic License 2.0 terms, as specified in the LICENSE file
  * distributed with this code, or available from
@@ -76,7 +76,6 @@ public class PwsPassword implements Closeable
             return createOwner(Arrays.copyOf(chars, chars.length));
         } finally {
             Util.clearArray(chars);
-            Runtime.getRuntime().gc();
         }
     }
 
@@ -100,7 +99,6 @@ public class PwsPassword implements Closeable
             }
         } finally {
             Util.clearArray(bytes);
-            Runtime.getRuntime().gc();
         }
     }
 
@@ -222,7 +220,6 @@ public class PwsPassword implements Closeable
             Util.clearArray(bytes);
         }
         itsEncBytes.clear();
-        Runtime.getRuntime().gc();
     }
 
     /**

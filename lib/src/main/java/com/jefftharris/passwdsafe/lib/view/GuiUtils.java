@@ -129,7 +129,6 @@ public final class GuiUtils
     public static void clearEditText(@NonNull EditText tv)
     {
         tv.getText().clear();
-        Runtime.getRuntime().gc();
     }
 
     /**

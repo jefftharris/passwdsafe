@@ -289,7 +289,8 @@ public class PasswdSafeRecordPasswordFragment
                 case INVALID_ALGORITHM,
                      INVALID_NUM_DIGITS,
                      INVALID_SECRET_KEY,
-                     INVALID_TIME_STEP -> {
+                     INVALID_TIME_STEP,
+                     INVALID_TIME_START -> {
                     itsTotpSecretKey.setText(
                             getString(R.string.error_fmt, status));
                     TypefaceUtils.enableMonospace(itsTotpSecretKey, false, act);

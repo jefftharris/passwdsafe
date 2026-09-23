@@ -388,6 +388,21 @@ public final class TotpTest
         }
     }
 
+    @Test
+    public void testInvalidTimeStart()
+    {
+        for (var timeStart: new long[] {Long.MIN_VALUE}) {
+            for (var hash: Totp.Hash.values()) {
+                try (var secretKey = createSecretKey(hash);
+                     var totp = new Totp(secretKey.pass(), hash, 6,
+                                         Totp.DEFAULT_TIME_STEP, timeStart)) {
+                    assertEquals(Totp.Status.INVALID_TIME_START,
+                                 totp.getStatus());
+                }
+            }
+        }
+    }
+
     @NonNull
     private static Owner<PwsPassword> createSecretKey(@NonNull Totp.Hash hash)
     {
