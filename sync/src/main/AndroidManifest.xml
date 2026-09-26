@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (©) 2016-2024 Jeff Harris <jefftharris@gmail.com>
+  ~ Copyright (©) 2016-2026 Jeff Harris <jefftharris@gmail.com>
   ~ All rights reserved. Use of the code is allowed under the
   ~ Artistic License 2.0 terms, as specified in the LICENSE file
   ~ distributed with this code, or available from
@@ -106,6 +106,7 @@
                 android:value="com.jefftharris.passwdsafe.sync.MainActivity"/>
         </activity>
 
+        <!-- Dropbox auth activity -->
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
@@ -122,11 +123,22 @@
             </intent-filter>
         </activity>
 
+        <!-- Replace Box OAuthActivity with a custom override -->
         <activity
-            android:name="com.box.androidsdk.content.auth.OAuthActivity"
+            tools:node="remove"
+            android:name="com.box.androidsdk.content.auth.OAuthActivity"/>
+
+        <activity
+            android:name=".box.BoxOAuthActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"/>
 
+        <activity-alias
+            android:name="com.box.androidsdk.content.auth.OAuthActivity"
+            android:exported="true"
+            android:targetActivity=".box.BoxOAuthActivity"/>
+
+        <!-- OneDrive auth activity -->
         <activity
             android:name="com.microsoft.identity.client.BrowserTabActivity"
             android:exported="true">
