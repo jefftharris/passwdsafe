@@ -76,6 +76,12 @@
     <string name="updating_account">Aktualisiere Konto &#8230;</string>
 
     <string name="release_notes">
+        &lt;b&gt;3.13.1&lt;/b&gt; - Box-Authentifikation verbessert. Unterstützung für die
+        neue webbasierte Authentifikation bei Box hinzugefügt. Vorsicht:  Es ist
+        möglich, dass Browser auf Android 12 und älter wegen fehlender
+        JavaScript-Funktionen sich nicht erfolgreich bei Box authenfizieren
+        können.
+        \n\n
         &lt;b&gt;3.13.0&lt;/b&gt; - Update für Android 16-Kompatibilität.
         OneDrive-Unterstützung aktualisiert.
         \n\n
